@@ -35,3 +35,5 @@ class SprintView(DetailView):
         context['resolved_issues'] = Issue.objects.filter(status="resolved", project_id=self.kwargs['prkey'],
                                                           sprint_id=self.kwargs['sprintkey'])
         return context
+
+
