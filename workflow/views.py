@@ -18,7 +18,7 @@ def issue(request, prkey, issuekey):
 
 
 def profile(request, prkey, userkey):
-    current_user = get_object_or_404(User, pk=userkey, project=prkey)
+    current_user = get_object_or_404(User, pk=userkey)
     return render(request, 'workflow/profile.html', {
         'user': current_user,
     })
