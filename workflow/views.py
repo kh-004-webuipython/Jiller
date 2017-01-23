@@ -1,7 +1,7 @@
 from django.shortcuts import get_object_or_404, render
 from django.views.generic import DetailView
 
-from .models import Issue, Sprint, Project, Employee
+from .models import Issue, Sprint, Project
 
 # Create your views here.
 
@@ -17,10 +17,10 @@ def issue(request, prkey, issuekey):
     })
 
 
-def profile(request, userkey):
-    current_user = get_object_or_404(Employee, pk=userkey)
+def profile(request):
+    current_user = request.user
     return render(request, 'workflow/profile.html', {
-        'user': current_user,
+        'user': current_user
     })
 
 
