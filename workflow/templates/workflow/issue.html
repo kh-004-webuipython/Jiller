@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <p>This is issue and it has next params:</p>
+    <p>Project: {{ issue.project}}</p>
+    <p>Author: {{ issue.author}}</p>
+    <p>Sprint: {{ issue.sprint}}</p>
+    <p>Employee: {{ issue.employee}}</p>
+    <p>Title: {{ issue.title}}</p>
+    <p>Description: {{ issue.description}}</p>
+    <p>Status: {{ issue.status}}</p>
+    <p>Estimation: {{ issue.estimation}}h</p>
+{% endblock %}
+

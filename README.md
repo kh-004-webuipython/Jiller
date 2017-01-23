@@ -1,9 +1,12 @@
 Manual for Ubuntu.
+
 1) First of all we need to install "pip" and "virtualenv", write in terminal:
 
 sudo apt-get install pip
 
 sudo apt-get install virtualenv
+
+note: it could be python-pip and python-virtualenv
 
 2) Then after installation, to create virtual environment folder write in terminal:
 
