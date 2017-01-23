@@ -23,6 +23,12 @@ def profile(request, prkey, userkey):
         'user': current_user,
     })
 
+def project(request, prkey):
+    projects = Project.objects.filter(project=prkey)
+    return render(request, 'workflow/projects.html', {
+        'projects': projects,
+    })
+
 
 class SprintView(DetailView):
     model = Sprint

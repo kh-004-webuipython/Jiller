@@ -1,0 +1,10 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h2> Projects </h2>
+        {% for project in projects %}
+            <p><a href ="{{ project.get_absolute_url }}">{{ project.title}}</a></p>
+            <p>Start date: {{ project.start_date}}</p>
+            <p>End date: {{ project.end_date}}</p>
+    {% endfor %}
+{% endblock %}
