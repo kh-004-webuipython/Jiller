@@ -1,7 +1,7 @@
 from django.shortcuts import get_object_or_404, render
 from django.views.generic import DetailView
 
-from .models import Issue, Sprint
+from .models import Issue, Sprint, Project, Profile, User
 
 # Create your views here.
 
@@ -14,6 +14,13 @@ def issue(request, prkey, issuekey):
     current_issue = get_object_or_404(Issue, pk=issuekey, project=prkey)
     return render(request, 'workflow/issue.html', {
         'issue': current_issue,
+    })
+
+
+def profile(request, prkey, userkey):
+    current_user = get_object_or_404(User, pk=userkey, project=prkey)
+    return render(request, 'workflow/profile.html', {
+        'user': current_user,
     })
 
 
