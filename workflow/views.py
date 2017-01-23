@@ -1,5 +1,5 @@
 from django.shortcuts import get_object_or_404, render
-from django.views.generic import DetailView
+from django.views.generic import DetailView, ListView
 
 from .models import Issue, Sprint, Project
 
@@ -23,12 +23,10 @@ def profile(request):
         'user': current_user
     })
 
-
-def project(request):
-    projects = Project.objects.filter()
-    return render(request, 'workflow/projects.html', {
-        'projects': projects,
-    })
+class ProjectListView(ListView):
+    model = Project
+    paginate_by = 10
+    template_name = 'workflow/projects.html'
 
 
 class SprintView(DetailView):
