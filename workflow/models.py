@@ -68,7 +68,8 @@ class Issue(models.Model):
     project = models.ForeignKey(Project, verbose_name=_('Project'))
     sprint = models.ForeignKey(Sprint, verbose_name=_('Sprint'), null=True, blank=True)
     author = models.ForeignKey(Employee, verbose_name=_('Author'), related_name='author_user')
-    employee = models.ForeignKey(Employee, verbose_name=_('Employee'), related_name='worker_user', null=True, blank=True)
+    employee = models.ForeignKey(Employee, verbose_name=_('Employee'), related_name='worker_user', null=True,
+                                 blank=True)
     title = models.CharField(verbose_name=_('Title'), max_length=255)
     description = models.TextField(verbose_name=_('Description'), null=True, blank=True)
     status = models.CharField(verbose_name=_('Status'), choices=ISSUE_STATUS_CHOICES, default=NEW, null=True,
@@ -93,7 +94,7 @@ class IssueLog(models.Model):
     issue = models.ForeignKey(Issue, verbose_name=_('Issue'))
     user = models.ForeignKey(Employee, verbose_name=_('Employee'))
     date_created = models.DateTimeField(verbose_name=_('Time'), auto_now_add=True)
-    labor_costs = models.PositiveIntegerField(verbose_name=_('Labor costs'), validators=[MaxValueValidator(240)],)
+    labor_costs = models.PositiveIntegerField(verbose_name=_('Labor costs'), validators=[MaxValueValidator(240)], )
     note = models.CharField(verbose_name=_('Note'), max_length=255)
 
     def __str__(self):
