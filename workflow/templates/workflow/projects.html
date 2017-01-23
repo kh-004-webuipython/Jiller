@@ -1,10 +1,11 @@
 {% extends 'base.html' %}
 
 {% block content %}
-    <h2> Projects </h2> <a href ="{% url '/project/create/'%}">Add</a>
+    <h2> Projects </h2>  <a href =".">Add</a>
         {% for project in projects %}
-            <p><a href ="{% url 'workflow:project'%}">{{ project.title}}</a></p>
-            <p>Start date: {{ project.start_date}}</p>
-            <p>End date: {{ project.end_date}}</p>
+            <p><a href ="{% url 'workflow:project'%}">{{ Project.title}}</a></p>
+            <p>Description: {{ Project.description}}</p>
+            <p>Start date: {{ Project.start_date}}</p>
+            <p>End date: {{ Project.end_date}}</p>
     {% endfor %}
 {% endblock %}

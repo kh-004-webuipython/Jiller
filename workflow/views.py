@@ -1,7 +1,7 @@
 from django.shortcuts import get_object_or_404, render
 from django.views.generic import DetailView
 
-from .models import Issue, Sprint, Project, Profile, Employee
+from .models import Issue, Sprint, Project, Employee
 
 # Create your views here.
 
@@ -24,8 +24,8 @@ def profile(request, userkey):
     })
 
 
-def project(request, prkey):
-    projects = Project.objects.filter(project=prkey)
+def project(request):
+    projects = Project.objects.filter()
     return render(request, 'workflow/projects.html', {
         'projects': projects,
     })

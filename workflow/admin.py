@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.conf.urls import url
 
-from .models import Project, Sprint, Issue, ProjectTeam, IssueLog, Employee
+from .models import Project, Sprint, Issue, ProjectTeam, Employee
 # Register your models here.
 
 admin.site.register(Project)
