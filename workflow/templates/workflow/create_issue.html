@@ -9,14 +9,9 @@
 
 {% block content %}
   {{ block.super }}
-  <h1 style="margin: 30px">Create project</h1>
-  <div style="margin: 30px">
-    <form method="POST" action="">
-      {% csrf_token %}
-      {{ form.as_p }}
-      <input type="submit" class="btn btn-primary" value="Save">
-    </form>
-  </div>
-  </body>
-  </html>
+  <h1>Project "{{ project_id }}"</h1>
+  <h2>Add issue:</h2>
+  <h3>Title:</h3><input type="text" size="25">
+  <h3>Description:</h3><textarea rows="5" cols="40"></textarea></br></br>
+  <input type="submit" value="Create">
 {% endblock %}
