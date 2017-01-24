@@ -94,7 +94,7 @@ class IssueLog(models.Model):
     user = models.ForeignKey(Employee, verbose_name=_('Employee'))
     date_created = models.DateTimeField(verbose_name=_('Time'), auto_now_add=True)
     labor_costs = models.PositiveIntegerField(verbose_name=_('Labor costs'), validators=[MaxValueValidator(240)],)
-    note = models.CharField(max_length=255, verbose_name=_('Note'))
+    note = models.CharField(verbose_name=_('Note'), max_length=255)
 
     def __str__(self):
         return "{} hours. {} - {}".format(self.labor_costs, self.issue.title, self.user.get_full_name)
