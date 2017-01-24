@@ -2,12 +2,13 @@
 {% load staticfiles %}
 
 {% block content %}
-  {{ block.super }}
-    <h2>Backlog | Project - {project.id}</h2>
+{{ block.super }}
+<h2>Backlog | Project - {{project.id}}</h2>
     <ul>
     {% for issue in issues %}
-        <li><strong>{{ sprint.id }}</strong> -
-            <a href="url 'sprint' project.id issue.id"></a></li>
+        <li><strong>{{ issue.id }}</strong> -
+            <a href="{% url 'workflow:issue' project.id issue.id %}">
+                {{ issue.title }}</a></li>
     {% endfor %}
     </ul>
 {% endblock %}

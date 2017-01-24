@@ -52,10 +52,14 @@ def team(request, project_id):
 def not_found(request):
     return render(request, 'workflow/not_found.html')
 
-
 def backlog(request, pr_id):
-    project = Project.objects.filter(pk=pr_id)
-    issues = Issue.objects.filter(project=pr_id).filter(status__isnull=True)
+    try:
+        project = Project.objects.get(pk=pr_id)
+        issues = Issue.objects.filter(project=pr_id).filter(sprint__isnull=True)
+    except Project.DoesNotExist:
+        raise Http404("Project does not exist")
+    except Issue.DoesNotExist:
+        raise Http404("Issue does not exist")
 
     return render(request, 'workflow/backlog.html', {'project': project,
                                                      'issues': issues})
