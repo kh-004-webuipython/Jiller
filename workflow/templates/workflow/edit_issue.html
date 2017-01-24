@@ -1,4 +1,4 @@
-{% extends 'base.html' %}
+{% extends 'workflow/project_navbar.html' %}
 {% load staticfiles %}
 
 {% block styles %}
@@ -7,5 +7,6 @@
 {% endblock %}
 
 {% block content %}
+  {{ block.super }}
     <h2>{{ issue_id }} issue was edited for project {{ project_id }}</h2>
 {% endblock %}

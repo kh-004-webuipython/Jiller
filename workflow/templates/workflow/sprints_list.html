@@ -1,6 +1,7 @@
 {% extends 'workflow/project_navbar.html' %}
 
 {% block content %}
+{{ block.super }}
     <h2>Sprints list | Project - {{ project.id }}</h2>
     <ul>
     {% for sprint in sprints %}

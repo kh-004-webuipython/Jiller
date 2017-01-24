@@ -2,6 +2,7 @@
 {% load staticfiles %}
 
 {% block styles %}
+  {{ block.super }}
   <link rel="stylesheet" type="text/css" href="{% static 'base.css' %}"/>
   <link rel="stylesheet"
         href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
@@ -14,15 +15,15 @@
       <div class="container-fluid">
         <ul class="nav navbar-nav">
           <li class="active"><a
-              href="{% url 'workflow:project_detail' project.id %}">Project
+              href="{% url 'workflow:project_detail' 1 %}">Project
             Detail</a></li>
-          <li><a href="{% url 'workflow:sprint' project.id 1 %}">Sprint</a>
+          <li><a href="{% url 'workflow:sprint' 1 1 %}">Sprint</a>
           </li>
-          <li><a href="{% url 'workflow:backlog' project.id %}">Backlog</a>
+          <li><a href="{% url 'workflow:backlog' 1 %}">Backlog</a>
           </li>
-          <li><a href="{% url 'workflow:spints_list' project.id %}">History</a>
+          <li><a href="{#% url 'workflow:spints_list' 1 %#}">History</a>
           </li>
-          <li><a href="{% url 'workflow:team' project.id %}">Team</a></li>
+          <li><a href="{% url 'workflow:team' 1 %}">Team</a></li>
         </ul>
       </div>
     </nav>

@@ -1,6 +1,7 @@
 {% extends 'workflow/project_navbar.html' %}
 
 {% block content %}
+  {{ block.super }}
   <p>this is sprint and it has next params:</p>
   <p>Sprint Title: {{ object.title }}</p>
   <p>Start_date: {{ object.start_date }}</p>

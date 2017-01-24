@@ -1,4 +1,4 @@
-{% extends 'base.html' %}
+{% extends 'workflow/project_navbar.html' %}
 {% load staticfiles %}
 
 {% block styles %}
@@ -7,6 +7,7 @@
 {% endblock %}
 
 {% block content %}
+  {{ block.super }}
     <h1>Project "{{ project_id }}"</h1>
     <h2>Add issue:</h2>
     <h3>Title:</h3><input type="text" size="25">

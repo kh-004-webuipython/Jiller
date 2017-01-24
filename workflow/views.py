@@ -1,19 +1,29 @@
-
 from django.contrib import messages
 from django.contrib.auth import authenticate, login
 from django.utils.translation import ugettext_lazy as _
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import Http404
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
-from django.views.generic import DetailView
+from django.views.generic import DetailView, ListView
 from django.urls import reverse_lazy
 
 from .forms import LoginForm, RegistrationForm
 from .models import Project, ProjectTeam, Issue, Sprint, Employee
 
+
 def index(request):
     return render(request, 'workflow/index.html')
 
+def profile(request):
+    current_user = request.user
+    return render(request, 'workflow/profile.html', {
+        'user': current_user
+    })
+
+class ProjectListView(ListView):
+    model = Project
+    paginate_by = 10
+    template_name = 'workflow/projects.html'
 
 def sprints_list(request, pr_id):
     try:
@@ -29,11 +39,13 @@ def sprints_list(request, pr_id):
 
 
 def create_issue(request, project_id):
-    return render(request, 'workflow/create_issue.html', {'project_id': project_id})
+    return render(request, 'workflow/create_issue.html',
+                  {'project_id': project_id})
 
 
 def edit_issue(request, project_id, issue_id):
-    return render(request, 'workflow/edit_issue.html', {'project_id': project_id, 'issue_id': issue_id})
+    return render(request, 'workflow/edit_issue.html',
+                  {'project_id': project_id, 'issue_id': issue_id})
 
 
 def team(request, project_id):
@@ -54,9 +66,9 @@ def backlog(request, pr_id):
     except Issue.DoesNotExist:
         raise Http404("Issue does not exist")
 
-
     return render(request, 'workflow/backlog.html', {'project': project,
                                                      'issues': issues})
+
 
 def issue(request, project_id, issue_id):
     current_issue = get_object_or_404(Issue, pk=issue_id, project=project_id)
@@ -86,11 +98,13 @@ class SprintView(DetailView):
             issues_from_this_sprint.filter(status="resolved")
         return context
 
+
 def login_form(request):
     if request.method == 'POST':
         form = LoginForm(request.POST)
         if form.is_valid():
-            user = authenticate(username=form.cleaned_data['username'], password=form.cleaned_data['password'])
+            user = authenticate(username=form.cleaned_data['username'],
+                                password=form.cleaned_data['password'])
             if user is not None:
                 login(request, user)
                 return redirect('workflow:profile')
@@ -102,7 +116,6 @@ def login_form(request):
     return render(request, 'workflow/login.html', {'form': form})
 
 
-
 def registration_form(request):
     if request.method == 'POST':
         form = RegistrationForm(request.POST)
@@ -112,12 +125,13 @@ def registration_form(request):
             last_name = form.cleaned_data['last_name']
             first_name = form.cleaned_data['first_name']
             email = form.cleaned_data['email']
-            employee = Employee.objects.create_user(username, email, password, last_name=last_name, first_name=first_name)
+            employee = Employee.objects.create_user(username, email, password,
+                                                    last_name=last_name,
+                                                    first_name=first_name)
             return redirect('workflow:profile')
 
     form = RegistrationForm()
     return render(request, 'workflow/registration.html')
-
 
 
 def project_detail(request, project_id):
@@ -136,7 +150,7 @@ def projtest(request):
 class ProjectDetail(DetailView):
     queryset = Project.objects.all()
 
-    def get_object(self):
+    def get_object(self):   # TODO: object
         object = super(ProjectDetail, self).get_object()
         return object
 
@@ -158,3 +172,13 @@ class ProjectDelete(DeleteView):
     success_url = reverse_lazy('author-list')
     template_name_suffix = '_delete_form'
 
+
+def employee_index_view(request):
+    employee_list = Employee.objects.all()
+    return render(request, 'employee/index.html',
+                  {'employee_list': employee_list})
+
+
+def employee_detail_view(request, employee_id):
+    employee = get_object_or_404(Employee, pk=employee_id)
+    return render(request, 'employee/detail.html', {'employee': employee})
