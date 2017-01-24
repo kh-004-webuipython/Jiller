@@ -2,7 +2,8 @@
 {% load staticfiles %}
 
 {% block content %}
-    <h2>Backlog | Project - {{project.id}}</h2>
+{{ block.super }}
+<h2>Backlog | Project - {{project.id}}</h2>
     <ul>
     {% for issue in issues %}
         <li><strong>{{ issue.id }}</strong> -
