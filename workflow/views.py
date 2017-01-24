@@ -4,7 +4,7 @@ from django.utils.translation import ugettext_lazy as _
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import Http404
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
-from django.views.generic import DetailView
+from django.views.generic import DetailView, ListView
 from django.urls import reverse_lazy
 
 from .forms import LoginForm, RegistrationForm
@@ -13,6 +13,17 @@ from .models import Project, ProjectTeam, Issue, Sprint, Employee
 
 def index(request):
     return render(request, 'workflow/index.html')
+
+def profile(request):
+    current_user = request.user
+    return render(request, 'workflow/profile.html', {
+        'user': current_user
+    })
+
+class ProjectListView(ListView):
+    model = Project
+    paginate_by = 10
+    template_name = 'workflow/projects.html'
 
 
 def sprints_list(request, pr_id):
