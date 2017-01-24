@@ -8,7 +8,7 @@ app_name = 'workflow'
 urlpatterns = [
 
     url(r'^$', views.index, name='index'),
-    url(r'^$profile/$', views.profile, name='profile'),
-    url(r'^$project/$', ProjectListView.as_view(), name='projects'),
+    url(r'^profile/$', views.profile, name='profile'),
+    url(r'^project/$', ProjectListView.as_view(), name='projects'),
 
 ]
