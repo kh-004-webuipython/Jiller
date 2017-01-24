@@ -1,13 +1,13 @@
 {% extends 'workflow/project_navbar.html' %}
-{% load staticfiles %}
 
 {% block content %}
 {{ block.super }}
-    <h2>Sprints list | Project - {project.id}</h2>
+    <h2>Sprints list | Project - {{ project.id }}</h2>
     <ul>
     {% for sprint in sprints %}
         <li><strong>{{ sprint.id }}</strong> -
-            <a href="url 'sprint' project.id sprint.id"></a></li>
+            <a href="{% url 'workflow:sprint' project.id sprint.id %}">
+                {{ sprint.title }}</a></li>
     {% endfor %}
     </ul>
 {% endblock %}

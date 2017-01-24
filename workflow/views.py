@@ -25,10 +25,14 @@ class ProjectListView(ListView):
     paginate_by = 10
     template_name = 'workflow/projects.html'
 
-
 def sprints_list(request, pr_id):
-    project = Project.objects.filter(pk=pr_id)
-    sprints = Sprint.objects.filter(project=pr_id)
+    try:
+        project = Project.objects.get(pk=pr_id)
+        sprints = Sprint.objects.filter(project=pr_id)
+    except Project.DoesNotExist:
+        raise Http404("Project does not exist")
+    except Sprint.DoesNotExist:
+        raise Http404("Sprint does not exist")
 
     return render(request, 'workflow/sprints_list.html', {'project': project,
                                                           'sprints': sprints})
@@ -51,6 +55,7 @@ def team(request, project_id):
 
 def not_found(request):
     return render(request, 'workflow/not_found.html')
+
 
 def backlog(request, pr_id):
     try:
