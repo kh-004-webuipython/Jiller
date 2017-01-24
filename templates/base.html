@@ -1,3 +1,4 @@
+{% load i18n %}
 {% load static %}
 <!DOCTYPE html>
 <html>
@@ -8,7 +9,7 @@
 
   <meta name="description" content="Common UI Features &amp; Elements"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
-  <title>Jiller | {% block title %} {% endblock %}</title>
+  <title>Jiller | {% block title %}Home{% endblock %}</title>
 
   {% block favicon %}
     <link rel="shortcut icon" href="{% static 'img/favicon.ico' %}"/>
@@ -21,8 +22,6 @@
     <!-- bootstrap & fontawesome -->
     <link rel="stylesheet" href='{% static 'css/bootstrap.css' %}' type='text/css'/>
     <link rel="stylesheet" href="{% static 'css/font-awesome.css' %}" type='text/css'/>
-
-    <!-- page specific plugin styles -->
 
     <!-- text fonts -->
     <link rel="stylesheet" href="{% static 'css/ace-fonts.css' %}" type='text/css'/>
@@ -67,7 +66,7 @@
         {% if request.user.is_authenticated %}
           <li class="light-blue">
             <a data-toggle="dropdown" href="#" class="dropdown-toggle">
-              <span class="user-info"><small>Welcome,</small>
+              <span class="user-info"><small>{% trans 'Welcome,' %}</small>
                 {{ request.user }}</span>
               <i class="ace-icon fa fa-caret-down"></i>
             </a>
@@ -150,30 +149,38 @@
     </div><!-- /.sidebar-shortcuts -->
 
     <ul class="nav nav-list">
-{#      <li class="">#}
-{#        <a href=".">#}
-{#          <i class="menu-icon"> <span class="glyphicon glyphicon-file"></span></i>#}
-{#          <span class="menu-text"> Training list </span>#}
-{#        </a>#}
-{##}
-{#        <b class="arrow"></b>#}
-{#      </li>#}
-{#      <li class="">#}
-{#        <a href=".">#}
-{#          <i class="menu-icon"><span class="glyphicon glyphicon-star"></span></i>#}
-{#          <span class="menu-text"> Our trainers </span>#}
-{#        </a>#}
-{##}
-{#        <b class="arrow"></b>#}
-{#      </li>#}
-{#      <li class="">#}
-{#        <a href=".">#}
-{#          <i class="menu-icon"><span class="glyphicon glyphicon-flag"></span></i>#}
-{#          <span class="menu-text"> Future events </span>#}
-{#        </a>#}
-{##}
-{#        <b class="arrow"></b>#}
-{#      </li>#}
+      <li class="">
+        <a href="{% url 'employee:index' %}">
+          <i class="menu-icon"> <span class="glyphicon glyphicon-user"></span></i>
+          <span class="menu-text">{% trans 'Employee' %}</span>
+        </a>
+
+        <b class="arrow"></b>
+      </li>
+      {#      <li class="">#}
+      {#        <a href=".">#}
+      {#          <i class="menu-icon"><span class="glyphicon glyphicon-star"></span></i>#}
+      {#          <span class="menu-text"> Sprints </span>#}
+      {#        </a>#}
+      {##}
+      {#        <b class="arrow"></b>#}
+      {#      </li>#}
+      {#      <li class="">#}
+      {#        <a href=".">#}
+      {#          <i class="menu-icon"><span class="glyphicon glyphicon-flag"></span></i>#}
+      {#          <span class="menu-text"> Employee </span>#}
+      {#        </a>#}
+      {##}
+      {#        <b class="arrow"></b>#}
+      {#      </li>#}
+      {#      <li class="">#}
+      {#        <a href=".">#}
+      {#          <i class="menu-icon"><span class="glyphicon glyphicon-flag"></span></i>#}
+      {#          <span class="menu-text"> Employee </span>#}
+      {#        </a>#}
+      {##}
+      {#        <b class="arrow"></b>#}
+      {#      </li>#}
     </ul><!-- /.nav-list -->
 
     <!-- #section:basics/sidebar.layout.minimize -->
@@ -193,6 +200,10 @@
       <div class="breadcrumbs ace-save-state" id="breadcrumbs">
         <ul class="breadcrumb">
           {% block breadcrumbs %}
+            <li>
+            <i class="ace-icon fa fa-home home-icon"></i>
+            <a href="{% url 'workflow:index' %}">{% trans 'Home' %}</a>
+          </li>
           {% endblock %}
         </ul><!-- /.breadcrumb -->
 
@@ -248,53 +259,13 @@
 {# Local scripts #}
 {% block scripts %}
   <!-- basic scripts -->
-
-  <!--[if !IE]> -->
-  <script src="../static/js/jquery.js"></script>
-
-  <!-- <![endif]-->
-
-  <!--[if IE]>
-<script src="../assets/js/jquery1x.js"></script>
-<![endif]-->
-  <script type="text/javascript">
-    if ('ontouchstart' in document.documentElement) document.write("<script src='../assets/js/jquery.mobile.custom.js'>" + "<" + "/script>");
-  </script>
-  <script src="../static/js/bootstrap.js"></script>
-
-  <!-- page specific plugin scripts -->
+  <script src="{% static 'js/jquery.js' %}"></script>
+  <script src="{% static 'js/bootstrap.js'%}"></script>
 
   <!-- ace scripts -->
-  <script src="../static/js/ace/elements.scroller.js"></script>
-  <script src="../static/js/ace/elements.colorpicker.js"></script>
-  <script src="../static/js/ace/elements.fileinput.js"></script>
-  <script src="../static/js/ace/elements.typeahead.js"></script>
-  <script src="../static/js/ace/elements.wysiwyg.js"></script>
-  <script src="../static/js/ace/elements.spinner.js"></script>
-  <script src="../static/js/ace/elements.treeview.js"></script>
-  <script src="../static/js/ace/elements.wizard.js"></script>
-  <script src="../static/js/ace/elements.aside.js"></script>
-  <script src="../static/js/ace/ace.js"></script>
-  <script src="../static/js/ace/ace.ajax-content.js"></script>
-  <script src="../static/js/ace/ace.touch-drag.js"></script>
-  <script src="../static/js/ace/ace.sidebar.js"></script>
-  <script src="../static/js/ace/ace.sidebar-scroll-1.js"></script>
-  <script src="../static/js/ace/ace.submenu-hover.js"></script>
-  <script src="../static/js/ace/ace.widget-box.js"></script>
-  <script src="../static/js/ace/ace.settings.js"></script>
-  <script src="../static/js/ace/ace.settings-rtl.js"></script>
-  <script src="../static/js/ace/ace.settings-skin.js"></script>
-  <script src="../static/js/ace/ace.widget-on-reload.js"></script>
-  <script src="../static/js/ace/ace.searchbox-autocomplete.js"></script>
+  <script src="{% static 'js/ace/ace.js' %}"></script>
+  <script src="{% static 'js/ace/ace.sidebar.js' %}"></script>
 
-  <!-- inline scripts related to this page -->
-
-  <!-- the following scripts are used in demo only for onpage help and you don't need them -->
-  <link rel="stylesheet" href="../static/css/ace.onpage-help.css"/>
-
-  <script type="text/javascript"> ace.vars['base'] = '..'; </script>
-  <script src="../static/js/ace/elements.onpage-help.js"></script>
-  <script src="../static/js/ace/ace.onpage-help.js"></script>
 
 {% endblock %}
 

@@ -1,0 +1,142 @@
+{% extends 'base.html' %}
+{% load i18n %}
+{% load static %}
+{% load gravatar %}
+
+{% block title %} Employee {% endblock %}
+
+{% block breadcrumbs %}
+  {{ block.super }}
+  <li><span>{% trans 'Employee' %}</span></li>
+{% endblock %}
+
+{% block content %}
+  <div class="row">
+    <div class="col-xs-12">
+      <table id="simple-table" class="table  table-bordered table-hover">
+        <thead>
+        <tr>
+          <th>{% trans 'Details' %}</th>
+          <th>{% trans 'Name' %}</th>
+          <th>{% trans 'Role' %}</th>
+          <th>{% trans 'Loged' %}</th>
+          <th>{% trans 'Is active' %}</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for employee in employee_list %}
+          <tr>
+            <td class="center">
+              <div class="action-buttons">
+                <a href="#" class="green bigger-140 show-details-btn" title="Show Details">
+                  <i class="ace-icon fa fa-angle-double-down"></i>
+                  <span class="sr-only">Details</span>
+                </a>
+              </div>
+            </td>
+            <td>
+              <a href="{% url 'employee:detail' employee.id %}">{{ employee.get_full_name }}</a>
+            </td>
+            <td><span>{{ employee.role }}</span></td>
+            <td><span>123</span></td>
+            <td>
+              {% if employee.is_active %}
+                <i class="ace-icon fa fa-check bigger-110 green"></i>
+              {% else %}
+                <i class="ace-icon fa fa-times bigger-110 red"></i>
+              {% endif %}
+            </td>
+          </tr>
+          <tr class="detail-row">
+            <td colspan="8">
+              <div class="table-detail">
+                <div class="row">
+                  <div class="col-xs-12 col-sm-2">
+                    <div class="text-center">
+                      <img class="thumbnail inline no-margin-bottom" src="
+                          {% if employee.photo %}{{ employee.get_cropped_photo }}
+                          {% else %}{{ employee.email|gravatar_url }}
+                          {% endif %}"/>
+                      <br/>
+                      <div class="width-80 label label-info label-xlg arrowed-in arrowed-in-right">
+                        <div class="inline position-relative">
+                          <a class="user-title-label" href="#">
+                            {% if employee.is_authenticated %}
+                              <i class="ace-icon fa fa-circle light-green"></i>
+                            {% else %}
+                              <i class="ace-icon fa fa-circle light-red"></i>
+                            {% endif %}
+                            <span class="white">{{ employee.username }}</span>
+                          </a>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="col-xs-12 col-sm-10">
+                    <div class="space visible-xs"></div>
+
+                    <div class="profile-user-info profile-user-info-striped">
+                      <div class="profile-info-row">
+                        <div class="profile-info-name"> Username</div>
+
+                        <div class="profile-info-value">
+                          <span>{{ employee.username }}</span>
+                        </div>
+                      </div>
+                      <div class="profile-info-row">
+                        <div class="profile-info-name"> Email</div>
+
+                        <div class="profile-info-value">
+                          <span>{{ employee.email }}</span>
+                        </div>
+                      </div>
+
+
+
+                      {% if employee.calculate_age %}
+                        <div class="profile-info-row">
+                          <div class="profile-info-name"> Age</div>
+
+                          <div class="profile-info-value">
+                            <span>{{ employee.calculate_age }}</span>
+                          </div>
+                        </div>
+                      {% endif %}
+
+                      <div class="profile-info-row">
+                        <div class="profile-info-name"> Joined</div>
+
+                        <div class="profile-info-value">
+                          <span>{{ employee.get_pretty_date_joined }}</span>
+                        </div>
+                      </div>
+                      <div class="profile-info-row">
+                        {% if employee.is_authenticated %}
+                          <div class="profile-info-name">Online</div>
+                          <div class="profile-info-value">
+                          <span>True</span>
+                        {% else %}
+                          <div class="profile-info-name">Last login</div>
+                          <div class="profile-info-value">
+                          <span>{{ employee.last_login }}</span>
+                        {% endif %}
+                        </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+            </td>
+          </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+    </div><!-- /.span -->
+  </div><!-- /.row -->
+{% endblock %}
+
+{% block extrascripts %}
+
+  <script src="{% static 'js/table.js' %}"></script>
+
+{% endblock %}

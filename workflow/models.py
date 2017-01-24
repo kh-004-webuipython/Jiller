@@ -1,26 +1,13 @@
 from __future__ import unicode_literals
 
+from django.core.exceptions import ValidationError
 from django.utils.translation import ugettext_lazy as _
 from django.core.validators import MaxValueValidator
 
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 
-
-class Employee(AbstractUser):
-    DEVELOPER = 'developer'
-    PRODUCT_OWNER = 'product owner'
-    SCRUM_MASTER = 'scrum master'
-    EMPLOYEE_ROLES_CHOICES = (
-        (DEVELOPER, _('Developer')),
-        (PRODUCT_OWNER, _('Product Owner')),
-        (SCRUM_MASTER, _('Scrum Master'))
-    )
-
-    role = models.CharField(max_length=255,choices=EMPLOYEE_ROLES_CHOICES, verbose_name=_('Role'))
-
-    def __str__(self):
-        return self.username
+from employee.models import Employee
 
 
 class Project(models.Model):
@@ -65,6 +52,7 @@ class Issue(models.Model):
         (RESOLVED, _('Resolved'))
     )
     root = models.ForeignKey('self', null=True, blank=True)
+    project = models.ForeignKey(Project, null=True, blank=True)
     sprint = models.ForeignKey(Sprint, verbose_name=_('Sprint'))
     author = models.ForeignKey(Employee, verbose_name=_('Author'), related_name='author_user')
     employee = models.ForeignKey(Employee, verbose_name=_('Employee'), related_name='worker_user', null=True, blank=True)
@@ -77,6 +65,11 @@ class Issue(models.Model):
 
     def __str__(self):
         return self.title
+
+    def save(self, *args, **kwargs):
+        if self.sprint.project != self.project:
+            return ValidationError("Sprint is incorrect")
+        super(Issue, self).save(*args, **kwargs)
 
 
 class ProjectTeam(models.Model):

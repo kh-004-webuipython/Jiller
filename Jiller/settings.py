@@ -38,6 +38,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'workflow',
+    'employee',
+    'sorl.thumbnail'
 ]
 
 MIDDLEWARE = [
@@ -123,4 +125,9 @@ STATIC_URL = '/static/'
 STATICFILES_DIRS = (os.path.join(BASE_DIR, 'static'),)
 
 
-AUTH_USER_MODEL = 'workflow.Employee'
+AUTH_USER_MODEL = 'employee.Employee'
+
+try:
+    from local_settings import *
+except ImportError:
+    pass
