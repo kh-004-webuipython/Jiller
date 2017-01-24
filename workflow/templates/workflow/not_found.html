@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+{% load staticfiles %}
+
+{% block styles %}
+    {{block.super}}
+    <link rel="stylesheet" type="text/css" href="{% static 'workflow/style.css' %}" />
+{% endblock %}
+
+{% block content %}
+    <h2>Page not found</h2>
+{% endblock %}

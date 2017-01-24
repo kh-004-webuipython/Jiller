@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+{% load staticfiles %}
+
+{% block styles %}
+    {{block.super}}
+    <link rel="stylesheet" type="text/css" href="{% static 'workflow/style.css' %}" />
+{% endblock %}
+
+{% block content %}
+    <h2>This is a page for {{ project_id }} project team</h2>
+{% endblock %}
