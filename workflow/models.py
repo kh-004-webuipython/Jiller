@@ -106,7 +106,8 @@ class Issue(models.Model):
                               choices=ISSUE_STATUS_CHOICES, default=NEW,
                               null=True, blank=True, max_length=255)
     estimation = models.PositiveIntegerField(verbose_name=_('Estimation'),
-                                             validators=[MaxValueValidator(240)],
+                                             validators=[
+                                                 MaxValueValidator(240)],
                                              null=True, blank=True)
 
     def __str__(self):
@@ -133,7 +134,8 @@ class IssueLog(models.Model):
     date_created = models.DateTimeField(verbose_name=_('Time'),
                                         auto_now_add=True)
     labor_costs = models.PositiveIntegerField(verbose_name=_('Labor costs'),
-                                              validators=[MaxValueValidator(240)],)
+                                              validators=[
+                                                  MaxValueValidator(240)], )
     note = models.TextField(verbose_name=_('Note'))
 
     def __str__(self):

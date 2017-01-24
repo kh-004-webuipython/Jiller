@@ -1,9 +1,10 @@
 {% extends 'workflow/project_navbar.html' %}
 
 {% block content %}
-    {{ block.super }}
-    <form action="{% url 'workflow:project_detail' project.id %}" method="post">{% csrf_token %}
-        {{ form.as_p }}
-        <input type="submit" value="Update"/>
-    </form>
+  {{ block.super }}
+  <form action="{% url 'workflow:project_detail' project.id %}"
+        method="post">{% csrf_token %}
+    {{ form.as_p }}
+    <input type="submit" value="Update"/>
+  </form>
 {% endblock %}

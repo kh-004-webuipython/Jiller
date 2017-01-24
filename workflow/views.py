@@ -14,16 +14,19 @@ from .models import Project, ProjectTeam, Issue, Sprint, Employee
 def index(request):
     return render(request, 'workflow/index.html')
 
+
 def profile(request):
     current_user = request.user
     return render(request, 'workflow/profile.html', {
         'user': current_user
     })
 
+
 class ProjectListView(ListView):
     model = Project
     paginate_by = 10
     template_name = 'workflow/projects.html'
+
 
 def sprints_list(request, pr_id):
     try:
@@ -49,7 +52,6 @@ def edit_issue(request, project_id, issue_id):
 
 
 def team(request, project_id):
-
     return render(request, 'workflow/team.html', {'project_id': project_id})
 
 
@@ -60,7 +62,8 @@ def not_found(request):
 def backlog(request, pr_id):
     try:
         project = Project.objects.get(pk=pr_id)
-        issues = Issue.objects.filter(project=pr_id).filter(sprint__isnull=True)
+        issues = Issue.objects.filter(project=pr_id).filter(
+            sprint__isnull=True)
     except Project.DoesNotExist:
         raise Http404("Project does not exist")
     except Issue.DoesNotExist:
@@ -150,7 +153,7 @@ def projtest(request):
 class ProjectDetail(DetailView):
     queryset = Project.objects.all()
 
-    def get_object(self):   # TODO: object
+    def get_object(self):  # TODO: object
         object = super(ProjectDetail, self).get_object()
         return object
 
