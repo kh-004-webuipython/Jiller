@@ -1,3 +1,4 @@
+from django.shortcuts import get_object_or_404, render
 from django.contrib import messages
 from django.contrib.auth import authenticate, login
 from django.utils.translation import ugettext_lazy as _
@@ -7,15 +8,43 @@ from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.views.generic import DetailView
 from django.urls import reverse_lazy
 
-from workflow.forms import LoginForm, RegistrationForm
-from workflow.models import Employee
-from workflow.models import Project
-
+from .forms import LoginForm, RegistrationForm
+from .models import Employee
+from .models import Project
+from .models import Issue, Sprint
 
 
 def index(request):
     return render(request, 'workflow/index.html')
 
+
+def issue(request, project_id, issue_id):
+    current_issue = get_object_or_404(Issue, pk=issue_id, project=project_id)
+    return render(request, 'workflow/issue.html', {
+        'issue': current_issue, 'project_id': project_id, 'issue_id': issue_id
+    })
+
+
+class SprintView(DetailView):
+    model = Sprint
+    template_name = 'workflow/sprint.html'
+    query_pk_and_slug = True
+    pk_url_kwarg = 'sprint_id'
+    slug_field = 'project'
+    slug_url_kwarg = 'project_id'
+
+    def get_context_data(self, **kwargs):
+        context = super(SprintView, self).get_context_data(**kwargs)
+        cur_proj = self.kwargs['project_id']
+        cur_spr = self.kwargs['sprint_id']
+        issues_from_this_sprint = Issue.objects.filter(project_id=cur_proj,
+                                                       sprint_id=cur_spr)
+        context['new_issues'] = issues_from_this_sprint.filter(status="new")
+        context['in_progress_issues'] = \
+            issues_from_this_sprint.filter(status="in progress")
+        context['resolved_issues'] = \
+            issues_from_this_sprint.filter(status="resolved")
+        return context
 
 def login_form(request):
     if request.method == 'POST':
@@ -88,3 +117,4 @@ class ProjectDelete(DeleteView):
     model = Project
     success_url = reverse_lazy('author-list')
     template_name_suffix = '_delete_form'
+
