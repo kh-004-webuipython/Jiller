@@ -15,13 +15,13 @@ def index(request):
     return render(request, 'workflow/index.html')
 
 
-
 def backlog(request, pr_id):
-    project = Project.objects.filter(pk=pr_id)
-    issues = Issue.objects.filter(project=pr_id).filter(status__isnull=True)
+    project = Project.objects.get(pk=pr_id)
+    issues = Issue.objects.filter(project=pr_id).filter(sprint__isnull=True)
 
     return render(request, 'workflow/backlog.html', {'project': project,
                                                      'issues': issues})
+
 
 def issue(request, project_id, issue_id):
     current_issue = get_object_or_404(Issue, pk=issue_id, project=project_id)
