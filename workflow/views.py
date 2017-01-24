@@ -15,13 +15,13 @@ def index(request):
     return render(request, 'workflow/index.html')
 
 
-
 def sprints_list(request, pr_id):
-    project = Project.objects.filter(pk=pr_id)
+    project = Project.objects.get(pk=pr_id)
     sprints = Sprint.objects.filter(project=pr_id)
 
     return render(request, 'workflow/sprints_list.html', {'project': project,
                                                           'sprints': sprints})
+
 
 def create_issue(request, project_id):
     return render(request, 'workflow/create_issue.html', {'project_id': project_id})
@@ -39,9 +39,10 @@ def team(request, project_id):
 def not_found(request):
     return render(request, 'workflow/not_found.html')
 
+
 def backlog(request, pr_id):
-    project = Project.objects.filter(pk=pr_id)
-    issues = Issue.objects.filter(project=pr_id).filter(status__isnull=True)
+    project = Project.objects.get(pk=pr_id)
+    issues = Issue.objects.filter(project=pr_id).filter(sprint__isnul=True)
 
     return render(request, 'workflow/backlog.html', {'project': project,
                                                      'issues': issues})
