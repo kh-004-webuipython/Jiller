@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+{% load staticfiles %}
+
+{% block styles %}
+  <link rel="stylesheet" type="text/css" href="{% static 'base.css' %}"/>
+  <link rel="stylesheet"
+        href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+{% endblock %}
+
+<div class="container">
+  {% block content %}
+    <h2>{{ project.title }} </h2>
+    <nav class="navbar navbar-default">
+      <div class="container-fluid">
+        <ul class="nav navbar-nav">
+          <li class="active"><a
+              href="{% url 'workflow:project_detail' project.id %}">Project
+            Detail</a></li>
+          <li><a href="{% url 'workflow:sprint' project.id 1 %}">Sprint</a>
+          </li>
+          <li><a href="{% url 'workflow:backlog' project.id %}">Backlog</a>
+          </li>
+          <li><a href="{% url 'workflow:spints_list' project.id %}">History</a>
+          </li>
+          <li><a href="{% url 'workflow:team' project.id %}">Team</a></li>
+        </ul>
+      </div>
+    </nav>
+  {% endblock %}
+</div>
+
+
+

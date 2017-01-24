@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+{% load staticfiles %}
+
+{% block styles %}
+{{block.super}}
+<link rel="stylesheet" type="text/css" href="{% static 'workflow/style.css' %}"/>
+{% endblock %}
+
+{% block content %}
+
+<div class="container">
+
+    <div class="row">
+        <form action="{% url 'workflow:login'%}" method="post">
+            {% csrf_token %}
+            <div class="col-md-3"></div>
+            <div class="col-md-3">
+                <h3>Login</h3>
+                <input name="username" type="text" placeholder="Login" required>
+            </div>
+            <div class="col-md-3">
+                <h3>Password</h3>
+                <input name="password" type="password" placeholder="Password" required>
+            </div>
+            <div class="col-md-3"></div>
+            {% for message in messages %}
+            <div class="col-md-12 col-lg-offset-5">
+                <p><strong>{{message}}</strong></p>
+            </div>
+            {% endfor %}
+            <div class="col-md-12 col-lg-offset-5">
+                <input type="submit" value="Log in">
+            </div>
+        </form>
+    </div>
+
+    <div class="row">
+        <div class="col-md-3">
+            <a href="{% url 'workflow:registration'%}">Registration</a>
+        </div>
+    </div>
+
+</div>
+{% endblock %}
