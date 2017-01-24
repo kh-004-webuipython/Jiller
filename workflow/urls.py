@@ -11,7 +11,7 @@ urlpatterns = [
     url(r'^registration/$', views.registration_form, name='registration'),
 
     url(r'^profile/$', views.profile, name='profile'),
-    url(r'^project/$', ProjectListView.as_view(), name='projects'),
+    url(r'^project/$', views.ProjectListView.as_view(), name='projects'),
 
     # /project/create/
     url(r'^project/create/$', views.ProjectCreate.as_view(),
