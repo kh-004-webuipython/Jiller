@@ -1,31 +1,23 @@
 from django.conf.urls import url
 
 from . import views
+from workflow.views import ProjectUpdate, ProjectCreate, ProjectDelete, \
+    ProjectDetail
 
 app_name = 'workflow'
 urlpatterns = [
-
     url(r'^$', views.index, name='index'),
-
     url(r'^login/$', views.login_form, name='login'),
     url(r'^registration/$', views.registration_form, name='registration'),
 
-    url(r'^profile/$', views.profile, name='profile'),
-    url(r'^project/$', views.ProjectListView.as_view(), name='projects'),
-
-    # /project/create/
     url(r'^project/create/$', views.ProjectCreate.as_view(),
         name='project_create'),
 
-    # /project/[pr_id]/
-    url(r'^project/(?P<pk>[0-9]+)/$', views.ProjectDetail.as_view(),
+    url(r'^project/(?P<pk>\d+)/$', views.ProjectDetail.as_view(),
         name='project_detail'),
 
-    # /project/update/[pr_id]/
     url(r'^project/update/(?P<pk>\d+)/$', views.ProjectUpdate.as_view(),
         name='project_update'),
-
-    # /project/delete/[pr_id]/
     url(r'^project/delete/(?P<pk>\d+)/$', views.ProjectDelete.as_view(),
         name='project_delete'),
 
@@ -45,6 +37,4 @@ urlpatterns = [
 
     url(r'^employee/$', views.employee_index_view, name='employee-index'),
     url(r'^employee/(?P<employee_id>[0-9]+)/$', views.employee_detail_view,
-        name='employee-detail'),
-
-]
+        name='employee-detail'), ]

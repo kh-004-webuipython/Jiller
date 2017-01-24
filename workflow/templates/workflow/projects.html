@@ -3,7 +3,7 @@
 {% block title %}Projects{% endblock %}
 
 {% block content %}
-  <a href="{#% url 'workflow:project_create' %#}">Create project</a>
+  <a href="{% url 'workflow:project_create' %}">Create project</a>
   {% for project in object_list %}
     <table class="table table-hover">
       <thead>
