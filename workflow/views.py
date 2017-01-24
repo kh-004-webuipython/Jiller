@@ -16,8 +16,13 @@ def index(request):
 
 
 def sprints_list(request, pr_id):
-    project = Project.objects.get(pk=pr_id)
-    sprints = Sprint.objects.filter(project=pr_id)
+    try:
+        project = Project.objects.get(pk=pr_id)
+        sprints = Sprint.objects.filter(project=pr_id)
+    except Project.DoesNotExist:
+        raise Http404("Project does not exist")
+    except Sprint.DoesNotExist:
+        raise Http404("Sprint does not exist")
 
     return render(request, 'workflow/sprints_list.html', {'project': project,
                                                           'sprints': sprints})
@@ -41,8 +46,14 @@ def not_found(request):
 
 
 def backlog(request, pr_id):
-    project = Project.objects.get(pk=pr_id)
-    issues = Issue.objects.filter(project=pr_id).filter(sprint__isnul=True)
+    try:
+        project = Project.objects.get(pk=pr_id)
+        issues = Issue.objects.filter(project=pr_id).filter(sprint__isnul=True)
+    except Project.DoesNotExist:
+        raise Http404("Project does not exist")
+    except Issue.DoesNotExist:
+        raise Http404("Issue does not exist")
+
 
     return render(request, 'workflow/backlog.html', {'project': project,
                                                      'issues': issues})
