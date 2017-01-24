@@ -48,7 +48,7 @@ def not_found(request):
 def backlog(request, pr_id):
     try:
         project = Project.objects.get(pk=pr_id)
-        issues = Issue.objects.filter(project=pr_id).filter(sprint__isnul=True)
+        issues = Issue.objects.filter(project=pr_id).filter(sprint__isnull=True)
     except Project.DoesNotExist:
         raise Http404("Project does not exist")
     except Issue.DoesNotExist:
