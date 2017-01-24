@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+{% load staticfiles %}
+
+{% block styles %}
+    <link rel="stylesheet" type="text/css" href="{% static 'base.css' %}"/>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+{% endblock %}
+
+<div class="container">
+    {% block content %}
+       <h2>{{ project.title }} </h2>
+        <nav class="navbar navbar-default">
+            <div class="container-fluid">
+
+                <ul class="nav navbar-nav">
+                    <li class="active"><a href="#">Project Detail</a></li>
+                    <li><a href="#">Sprint</a></li>
+                    <li><a href="#">Backlog</a></li>
+                    <li><a href="#">History</a></li>
+                    <li><a href="#">Team</a></li>
+                </ul>
+            </div>
+        </nav>
+    {% endblock %}
+</div>
+
+
+
