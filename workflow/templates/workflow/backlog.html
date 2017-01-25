@@ -1,0 +1,14 @@
+{% extends 'workflow/project_navbar.html' %}
+{% load staticfiles %}
+
+{% block content %}
+  {{ block.super }}
+  <h2>Backlog | Project - {{ project.id }}</h2>
+  <ul>
+    {% for issue in issues %}
+      <li><strong>{{ issue.id }}</strong> -
+        <a href="{% url 'workflow:issue' project.id issue.id %}">
+          {{ issue.title }}</a></li>
+    {% endfor %}
+  </ul>
+{% endblock %}

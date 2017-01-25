@@ -1,0 +1,21 @@
+{% extends 'workflow/project_navbar.html' %}
+{% load staticfiles %}
+
+{% block content %}
+{{ block.super }}
+<div class="container">
+  <form>
+    <h2>Create issue | Project - {{ project_id }}</h2>
+    <p>Sprint: {{ issue.sprint }}</p>
+    <p>Author: {{ issue.author }}</p>
+    <p>Employee: {{ issue.employee }}</p>
+    <p>Title:</p>
+    <input type="text">
+
+    <p>Description:</p>
+    <textarea></textarea><br><br>
+
+    <input type="submit" value="Save">
+  </form>
+</div>
+{% endblock %}
