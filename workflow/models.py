@@ -95,9 +95,9 @@ class Issue(models.Model):
     project = models.ForeignKey(Project, null=True, blank=True)
     sprint = models.ForeignKey(Sprint, verbose_name=_('Sprint'))
     author = models.ForeignKey(Employee, verbose_name=_('Author'),
-                               related_name='author_user')
+                               related_name='author_issue_set')
     employee = models.ForeignKey(Employee, verbose_name=_('Employee'),
-                                 related_name='worker_user', null=True,
+                                 related_name='employee_issue_set', null=True,
                                  blank=True)
     title = models.CharField(verbose_name=_('Title'), max_length=255)
     description = models.TextField(verbose_name=_('Description'), null=True,
