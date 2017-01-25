@@ -1,3 +1,4 @@
+from django.shortcuts import get_list_or_404
 from django.contrib import messages
 from django.contrib.auth import authenticate, login
 from django.utils.translation import ugettext_lazy as _
@@ -31,6 +32,7 @@ class ProjectListView(ListView):
     def get_queryset(self):
         return Project.objects.order_by('-start_date')
 
+
 def sprints_list(request, pr_id):
     try:
         project = Project.objects.get(pk=pr_id)
@@ -50,16 +52,14 @@ def create_issue(request, project_id):
 
 
 def edit_issue(request, project_id, issue_id):
-    return render(request, 'workflow/edit_issue.html',
-                  {'project_id': project_id, 'issue_id': issue_id})
+    issue = get_object_or_404(Issue, pk=issue_id)
+    return render(request, 'workflow/edit_issue.html', {'project_id': project_id, 'issue': issue})
 
 
 def team(request, project_id):
-    return render(request, 'workflow/team.html', {'project_id': project_id})
-
-
-def not_found(request):
-    return render(request, 'workflow/not_found.html')
+    current_project = get_object_or_404(Project, pk=project_id)
+    team_list = get_list_or_404(ProjectTeam, project=current_project)
+    return render(request, 'workflow/team.html', {'team_list': team_list, 'project_id': project_id})
 
 
 def backlog(request, pr_id):
@@ -180,3 +180,4 @@ def employee_index_view(request):
 def employee_detail_view(request, employee_id):
     employee = get_object_or_404(Employee, pk=employee_id)
     return render(request, 'employee/detail.html', {'employee': employee})
+

@@ -4,10 +4,16 @@ from . import views
 
 app_name = 'workflow'
 urlpatterns = [
+    url(r'^project/(?P<project_id>\w+)/issue/create/$', views.create_issue, name='create_issue'),
+    url(r'^project/(?P<project_id>\w+)/issue/(?P<issue_id>\w+)/edit/$', views.edit_issue, name='edit_issue'),
+    url(r'^project/(?P<project_id>\w+)/team/$', views.team, name='team'),
+
     url(r'^$', views.index, name='index'),
     url(r'^login/$', views.login_form, name='login'),
     url(r'^registration/$', views.registration_form, name='registration'),
 
+url(r'^profile/$', views.profile, name='profile'),
+    url(r'^project/$', views.ProjectListView.as_view(), name='projects'),
     url(r'^project/create/$', views.ProjectCreate.as_view(),
         name='project_create'),
 
@@ -36,4 +42,5 @@ urlpatterns = [
     url(r'^employee/$', views.employee_index_view, name='employee-index'),
     url(r'^employee/(?P<employee_id>[0-9]+)/$', views.employee_detail_view,
         name='employee-detail'),
+
 ]
