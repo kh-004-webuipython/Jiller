@@ -1,8 +1,6 @@
 from django.conf.urls import url
 
 from . import views
-from workflow.views import ProjectUpdate, ProjectCreate, ProjectDelete, \
-    ProjectDetail
 
 app_name = 'workflow'
 urlpatterns = [
@@ -37,4 +35,5 @@ urlpatterns = [
 
     url(r'^employee/$', views.employee_index_view, name='employee-index'),
     url(r'^employee/(?P<employee_id>[0-9]+)/$', views.employee_detail_view,
-        name='employee-detail'), ]
+        name='employee-detail'),
+]
