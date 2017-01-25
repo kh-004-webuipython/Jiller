@@ -24,9 +24,10 @@ def profile(request):
 
 class ProjectListView(ListView):
     model = Project
-    paginate_by = 10
     template_name = 'workflow/projects.html'
 
+    def get_queryset(self):
+        return Project.objects.order_by('-start_date')
 
 def sprints_list(request, pr_id):
     try:
