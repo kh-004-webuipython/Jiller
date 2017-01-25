@@ -1,12 +1,4 @@
 {% extends 'base.html' %}
-{% load staticfiles %}
-
-{% block styles %}
-  {{ block.super }}
-  <link rel="stylesheet" type="text/css" href="{% static 'base.css' %}"/>
-  <link rel="stylesheet"
-        href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
-{% endblock %}
 
 <div class="container">
   {% block content %}
