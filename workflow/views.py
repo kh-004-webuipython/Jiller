@@ -9,9 +9,7 @@ from django.views.generic import DetailView, ListView
 from django.urls import reverse
 
 from .forms import LoginForm, RegistrationForm, ProjectForm
-from .models import Employee
-from .models import Project
-from .models import Issue, Sprint
+from .models import Project, ProjectTeam, Issue, Sprint, Employee
 
 
 def index(request):
@@ -168,7 +166,7 @@ class ProjectDelete(DeleteView):
     model = Project
 
     def get_success_url(self):
-        return reverse('workflow:index')
+        return reverse('workflow:projects')
 
 
 def employee_index_view(request):
