@@ -5,9 +5,9 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.http import Http404
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.views.generic import DetailView, ListView
-from django.urls import reverse_lazy
+from django.urls import reverse
 
-from .forms import LoginForm, RegistrationForm
+from .forms import LoginForm, RegistrationForm, ProjectForm
 from .models import Project, ProjectTeam, Issue, Sprint, Employee
 
 
@@ -138,43 +138,35 @@ def registration_form(request):
     return render(request, 'workflow/registration.html')
 
 
-def project_detail(request, project_id):
-    try:
-        project = Project.objects.get(pk=project_id)
-    except Project.DoesNotExist:
-        raise Http404("Question does not exist")
-    return render(request, 'workflow/project_detail.html',
-                  {'project': project})
+class ProjectCreate(CreateView):
+    model = Project
+    form_class = ProjectForm
+    template_name = 'workflow/project_create_form.html'
 
-
-def projtest(request):
-    return render(request, 'workflow/project_navbar.html')
+    def get_success_url(self):
+        return reverse('workflow:project_detail',
+                       kwargs={'pk': self.object.id})
 
 
 class ProjectDetail(DetailView):
-    queryset = Project.objects.all()
-
-    def get_object(self):  # TODO: object
-        object = super(ProjectDetail, self).get_object()
-        return object
-
-
-class ProjectCreate(CreateView):
     model = Project
-    fields = ['title', 'end_date']
-    template_name_suffix = '_create_form'
 
 
 class ProjectUpdate(UpdateView):
     model = Project
-    fields = ['title', 'end_date']
-    template_name_suffix = '_update_form'
+    form_class = ProjectForm
+    template_name = 'workflow/project_update_form.html'
+
+    def get_success_url(self):
+        return reverse('workflow:project_detail',
+                       kwargs={'pk': self.object.id})
 
 
 class ProjectDelete(DeleteView):
     model = Project
-    success_url = reverse_lazy('author-list')
-    template_name_suffix = '_delete_form'
+
+    def get_success_url(self):
+        return reverse('workflow:projects')
 
 
 def employee_index_view(request):

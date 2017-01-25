@@ -16,11 +16,11 @@
       </thead>
       <tbody>
       <tr>
-        <td><a href="{% url 'workflow:projects' %}">{{ Project.title }}</a>
+        <td><a href="{% url 'workflow:project_detail' project.id %}">{{ project.title }}</a>
         </td>
-        <td>{{ Project.start_date|date:"d.m.Y в H:i" }}</td>
-        <td>{{ Project.end_date|date:"d.m.Y в H:i" }}</td>
-        <td>Status{{ Project.status }}</td>
+        <td>{{ project.start_date }}</td>
+        <td>{{ project.end_date }}</td>
+        <td>Status{{ project.status }}</td>
       </tr>
       </tbody>
     </table>
