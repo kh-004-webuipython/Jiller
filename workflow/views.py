@@ -8,7 +8,7 @@ from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.views.generic import DetailView, ListView
 from django.urls import reverse_lazy
 
-from .forms import LoginForm, RegistrationForm
+from .forms import LoginForm, RegistrationForm, EditIssueForm
 from .models import Project, ProjectTeam, Issue, Sprint, Employee
 
 
