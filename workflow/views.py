@@ -8,7 +8,7 @@ from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.views.generic import DetailView, ListView
 from django.urls import reverse_lazy
 
-from .forms import LoginForm, RegistrationForm
+from .forms import LoginForm, RegistrationForm, SprintCreateForm
 from .models import Project, ProjectTeam, Issue, Sprint, Employee
 
 
@@ -51,13 +51,15 @@ def create_issue(request, project_id):
 
 def edit_issue(request, project_id, issue_id):
     issue = get_object_or_404(Issue, pk=issue_id)
-    return render(request, 'workflow/edit_issue.html', {'project_id': project_id, 'issue': issue})
+    return render(request, 'workflow/edit_issue.html',
+                  {'project_id': project_id, 'issue': issue})
 
 
 def team(request, project_id):
     current_project = get_object_or_404(Project, pk=project_id)
     team_list = get_list_or_404(ProjectTeam, project=current_project)
-    return render(request, 'workflow/team.html', {'team_list': team_list, 'project_id': project_id})
+    return render(request, 'workflow/team.html',
+                  {'team_list': team_list, 'project_id': project_id})
 
 
 def backlog(request, pr_id):
@@ -187,3 +189,12 @@ def employee_detail_view(request, employee_id):
     employee = get_object_or_404(Employee, pk=employee_id)
     return render(request, 'employee/detail.html', {'employee': employee})
 
+
+class SprintCreate(CreateView):
+    model = Sprint
+    form_class = SprintCreateForm
+    template_name_suffix = '_create_form'
+
+    def get_success_url(self):
+        return reverse_lazy('workflow:sprint', args=(self.object.project_id,
+                                                     self.object.id))
