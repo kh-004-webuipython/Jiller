@@ -50,17 +50,12 @@ def create_issue(request, project_id):
 
 
 def edit_issue(request, project_id, issue_id):
-    #issue = get_object_or_404(Issue, pk=issue_id)
-    form = EditIssueForm(request.POST)
+    current_issue = get_object_or_404(Issue, pk=issue_id, project=project_id)
+    if request.method == "POST":
+        form = EditIssueForm(request.POST, instance=current_issue)
+    else:
+        form = EditIssueForm(instance=current_issue)
     return render(request, 'workflow/edit_issue.html', {'form': form})
-
-
-class EditIssue(UpdateView):
-    model = Issue
-    fields = ['project', 'sprint', 'author', 'employee', 'title', 'description', 'status']
-    template_name_suffix = '_edit_form'
-    pk_url_kwarg = 'issue_id'
-    slug_field = 'sprint_id'
 
 
 def team(request, project_id):
