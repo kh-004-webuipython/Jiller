@@ -8,7 +8,7 @@ from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.views.generic import DetailView, ListView, FormView
 from django.urls import reverse_lazy
 
-from .forms import LoginForm, RegistrationForm, EditIssueForm
+from .forms import LoginForm, RegistrationForm
 from .models import Project, ProjectTeam, Issue, Sprint, Employee
 
 
@@ -54,11 +54,10 @@ def edit_issue(request, project_id, issue_id):
     return render(request, 'workflow/edit_issue.html', {'project_id': project_id, 'issue': issue})
 
 
-class EditIssue(FormView):
+class EditIssue(UpdateView):
     model = Issue
-    #fields = ['project', 'sprint', 'author', 'employee', 'title', 'description', 'status']
-    template_name = 'workflow/issue_edit_form.html'
-    form_class = EditIssueForm
+    fields = ['project', 'sprint', 'author', 'employee', 'title', 'description', 'status']
+    template_name_suffix = '_edit_form'
 
 
 def team(request, project_id):
