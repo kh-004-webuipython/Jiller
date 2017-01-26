@@ -8,7 +8,7 @@ from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.views.generic import DetailView, ListView, FormView
 from django.urls import reverse_lazy
 
-from .forms import LoginForm, RegistrationForm, EditIssueForm
+from .forms import LoginForm, RegistrationForm, EditIssueForm, CreateIssueForm
 from .models import Project, ProjectTeam, Issue, Sprint, Employee
 
 
@@ -45,13 +45,14 @@ def sprints_list(request, pr_id):
 
 
 def create_issue(request, project_id):
-    return render(request, 'workflow/create_issue.html',
-                  {'project_id': project_id})
+    form = CreateIssueForm(request.POST)
+    return render(request, 'workflow/create_issue.html', {'form': form})
 
 
 def edit_issue(request, project_id, issue_id):
-    issue = get_object_or_404(Issue, pk=issue_id)
-    return render(request, 'workflow/edit_issue.html', {'project_id': project_id, 'issue': issue})
+    #issue = get_object_or_404(Issue, pk=issue_id)
+    form = EditIssueForm(request.POST)
+    return render(request, 'workflow/edit_issue.html', {'form': form})
 
 
 class EditIssue(UpdateView):

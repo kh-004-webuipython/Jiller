@@ -17,8 +17,13 @@ class RegistrationForm(forms.Form):
     first_name = forms.CharField(label='First name', max_length=255)
 
 
-class EditIssueForm(ModelForm):
+class EditIssueForm(forms.ModelForm):
     class Meta:
         model = Issue
-        fields = ['project', 'sprint', 'author', 'employee', 'title', 'description', 'status']
+        fields = '__all__'
 
+
+class CreateIssueForm(forms.ModelForm):
+    class Meta:
+        model = Issue
+        fields = '__all__'
