@@ -7,13 +7,20 @@
     <nav class="navbar navbar-default">
       <div class="container-fluid">
         <ul class="nav navbar-nav">
-          <li class="active"><a
-              href="{% url 'workflow:project_detail' project.id %}">Project
-            Detail</a></li>
+
+          {% url 'workflow:project_detail' project.id as project_detail %}
+          <li {% if request.path == project_detail %} class="active"
+          {% endif %}><a href="{{ project_detail }}">Project Detail</a></li>
+
+
           <li><a href="{% url 'workflow:sprint' 1 1 %}">Sprint</a>
           </li>
-          <li><a href="{% url 'workflow:backlog' project.id %}">Backlog</a>
+
+          {% url 'workflow:backlog' project.id as backlog %}
+          <li {% if request.path == backlog %} class="active"
+          {% endif %}><a href="{{ backlog }}">Backlog</a>
           </li>
+
           <li><a href="{% url 'workflow:sprints_list' project.id %}">History</a>
           </li>
           <li><a href="{% url 'workflow:team' 1 %}">Team</a></li>
