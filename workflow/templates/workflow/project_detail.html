@@ -1,8 +1,10 @@
 {% extends 'base.html' %}
 
-{% include 'project_navbar.html' %}
 
 {% block content %}
+  <div class="project_navbar">
+    {% include 'workflow/project_navbar.html' %}
+  </div>
 
   <p>Description: {{ project.description }}</p>
   <p>Start Date: {{ project.start_date }}</p>
