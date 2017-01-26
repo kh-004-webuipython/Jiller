@@ -8,7 +8,7 @@ from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.views.generic import DetailView, ListView, FormView
 from django.urls import reverse_lazy
 
-from .forms import LoginForm, RegistrationForm
+from .forms import LoginForm, RegistrationForm, EditIssueForm
 from .models import Project, ProjectTeam, Issue, Sprint, Employee
 
 
@@ -58,6 +58,8 @@ class EditIssue(UpdateView):
     model = Issue
     fields = ['project', 'sprint', 'author', 'employee', 'title', 'description', 'status']
     template_name_suffix = '_edit_form'
+    pk_url_kwarg = 'issue_id'
+    slug_field = 'sprint_id'
 
 
 def team(request, project_id):
