@@ -5,7 +5,7 @@ from django.utils.translation import ugettext_lazy as _
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import Http404
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
-from django.views.generic import DetailView, ListView
+from django.views.generic import DetailView, ListView, FormView
 from django.urls import reverse_lazy
 
 from .forms import LoginForm, RegistrationForm, EditIssueForm
@@ -52,6 +52,13 @@ def create_issue(request, project_id):
 def edit_issue(request, project_id, issue_id):
     issue = get_object_or_404(Issue, pk=issue_id)
     return render(request, 'workflow/edit_issue.html', {'project_id': project_id, 'issue': issue})
+
+
+class EditIssue(FormView):
+    model = Issue
+    #fields = ['project', 'sprint', 'author', 'employee', 'title', 'description', 'status']
+    template_name = 'workflow/issue_edit_form.html'
+    form_class = EditIssueForm
 
 
 def team(request, project_id):

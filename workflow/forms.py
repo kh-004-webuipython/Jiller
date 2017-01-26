@@ -1,4 +1,6 @@
 from django import forms
+from django.forms import ModelForm, Select, RadioSelect
+from .models import Issue
 
 
 class LoginForm(forms.Form):
@@ -14,12 +16,10 @@ class RegistrationForm(forms.Form):
     first_name = forms.CharField(label='First name', max_length=255)
 
 
-class EditIssueForm(forms.Form):
-    title = forms.CharField(label='Sprint', max_length=255)
-    author = forms.CharField(label='Author', max_length=255)
-    employee = forms.CharField(label='Employee', max_length=255)
-    title = forms.CharField(label='Title', max_length=255)
-    description = forms.CharField(label='Description', widget=forms.Textarea)
-    status = forms.CharField(label='Status', max_length=255)
-
-
+class EditIssueForm(ModelForm):
+    class Meta:
+        model = Issue
+        fields = ('project', 'sprint', 'author', 'employee', 'title', 'description', 'status')
+        widgets = {
+            'status': RadioSelect(),
+        }
