@@ -150,6 +150,7 @@ class ProjectCreate(CreateView):
 
 class ProjectDetail(DetailView):
     model = Project
+    template_name = 'workflow/project_detail.html'
 
 
 class ProjectUpdate(UpdateView):
