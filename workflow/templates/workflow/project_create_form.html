@@ -1,16 +1,13 @@
-{% extends 'workflow/project_navbar.html' %}
-{% load staticfiles %}
-
-{% block styles %}
-  {{ block.super }}
-  <link rel="stylesheet" type="text/css"
-        href="{% static 'workflow/style.css' %}"/>
-{% endblock %}
+{% extends 'base.html' %}
 
 {% block content %}
   {{ block.super }}
-  <form action="" method="post">{% csrf_token %}
-    {{ form.as_p }}
-    <input type="submit" value="Save"/>
-  </form>
+  <h1 style="margin: 30px">Create project</h1>
+  <div style="margin: 30px">
+    <form method="POST" action="">
+      {% csrf_token %}
+      {{ form.as_p }}
+      <input type="submit" class="btn btn-primary" value="Save">
+    </form>
+  </div>
 {% endblock %}

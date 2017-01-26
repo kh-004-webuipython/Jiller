@@ -1,4 +1,5 @@
 from django.conf.urls import url
+
 from . import views
 
 app_name = 'workflow'
@@ -8,26 +9,19 @@ urlpatterns = [
     url(r'^project/(?P<project_id>\w+)/team/$', views.team, name='team'),
 
     url(r'^$', views.index, name='index'),
-
     url(r'^login/$', views.login_form, name='login'),
     url(r'^registration/$', views.registration_form, name='registration'),
 
-    url(r'^profile/$', views.profile, name='profile'),
+url(r'^profile/$', views.profile, name='profile'),
     url(r'^project/$', views.ProjectListView.as_view(), name='projects'),
-
-    # /project/create/
     url(r'^project/create/$', views.ProjectCreate.as_view(),
         name='project_create'),
 
-    # /project/[pr_id]/
-    url(r'^project/(?P<pk>[0-9]+)/$', views.ProjectDetail.as_view(),
+    url(r'^project/(?P<pk>\d+)/$', views.ProjectDetail.as_view(),
         name='project_detail'),
 
-    # /project/update/[pr_id]/
     url(r'^project/update/(?P<pk>\d+)/$', views.ProjectUpdate.as_view(),
         name='project_update'),
-
-    # /project/delete/[pr_id]/
     url(r'^project/delete/(?P<pk>\d+)/$', views.ProjectDelete.as_view(),
         name='project_delete'),
 
