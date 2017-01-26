@@ -12,9 +12,9 @@
             Detail</a></li>
           <li><a href="{% url 'workflow:sprint' 1 1 %}">Sprint</a>
           </li>
-          <li><a href="{% url 'workflow:backlog' 1 %}">Backlog</a>
+          <li><a href="{% url 'workflow:backlog' project.id %}">Backlog</a>
           </li>
-          <li><a href="{#% url 'workflow:spints_list' 1 %#}">History</a>
+          <li><a href="{% url 'workflow:sprints_list' project.id %}">History</a>
           </li>
           <li><a href="{% url 'workflow:team' 1 %}">Team</a></li>
         </ul>
