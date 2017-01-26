@@ -8,7 +8,7 @@ from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.views.generic import DetailView, ListView, FormView
 from django.urls import reverse_lazy
 
-from .forms import LoginForm, RegistrationForm, EditIssueForm, CreateIssueForm
+from .forms import LoginForm, RegistrationForm, IssueForm, TeamForm
 from .models import Project, ProjectTeam, Issue, Sprint, Employee
 
 
@@ -34,7 +34,7 @@ class ProjectListView(ListView):
 def sprints_list(request, pr_id):
     try:
         project = Project.objects.get(pk=pr_id)
-        sprints = Sprint.objects.filter(project=pr_id)
+        sprints = Sprint.objects.filter(project=project)
     except Project.DoesNotExist:
         raise Http404("Project does not exist")
     except Sprint.DoesNotExist:
@@ -45,16 +45,28 @@ def sprints_list(request, pr_id):
 
 
 def create_issue(request, project_id):
-    form = CreateIssueForm(request.POST)
-    return render(request, 'workflow/create_issue.html', {'form': form})
+    #if request.method == 'POST':
+    form = IssueForm(request.POST)
+    if form.is_valid():
+        current_project = get_object_or_404(Project, pk=project_id)
+        new_issue = Issue.objects.create(project=current_project)
+        new_issue.save()
+    #else:
+    #    form = IssueForm()
+
+    return render(request, 'workflow/edit_issue.html', {'form': form})
 
 
 def edit_issue(request, project_id, issue_id):
     current_issue = get_object_or_404(Issue, pk=issue_id, project=project_id)
     if request.method == "POST":
-        form = EditIssueForm(request.POST, instance=current_issue)
+        form = IssueForm(request.POST, instance=current_issue)
+        if form.is_valid():
+            current_issue = form.save(commit=False)
+            current_issue.save()
+            #return redirect('workflow:issue', project=current_issue.project_id, pk=current_issue.pk)
     else:
-        form = EditIssueForm(instance=current_issue)
+        form = IssueForm(instance=current_issue)
     return render(request, 'workflow/edit_issue.html', {'form': form})
 
 

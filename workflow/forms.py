@@ -1,7 +1,7 @@
 from django import forms
 from django.forms import ModelForm, Select
 from django.forms.widgets import ChoiceInput
-from .models import Issue
+from .models import Issue, ProjectTeam
 
 
 class LoginForm(forms.Form):
@@ -17,13 +17,14 @@ class RegistrationForm(forms.Form):
     first_name = forms.CharField(label='First name', max_length=255)
 
 
-class EditIssueForm(forms.ModelForm):
+class IssueForm(forms.ModelForm):
     class Meta:
         model = Issue
         fields = '__all__'
 
 
-class CreateIssueForm(forms.ModelForm):
+class TeamForm(forms.ModelForm):
     class Meta:
-        model = Issue
+        model = ProjectTeam
         fields = '__all__'
+
