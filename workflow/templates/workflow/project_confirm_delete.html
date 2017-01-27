@@ -6,14 +6,8 @@
     {% include 'workflow/project_navbar.html' %}
   </div>
 
-  <form action="" method="post">{% csrf_token %}
-    <p>Are you sure you want to delete "{{ object }}"?</p>
-    <input type="submit" value="Confirm"/>
-  </form>
   <form role="form" action="" class="form-horizontal" method="post">
-    {% for field in form %}
       <div class="form-group {% if form.errors %} has-error {% endif %}">
-      <label class="col-sm-3 control-label no-padding-right">{{ field.label_tag }}</label>
       <div class="col-sm-9">
         <p>Are you sure you want to delete "{{ object }}"?</p>
         <div class="help-block col-xs-12 col-sm-reset inline">
@@ -23,7 +17,6 @@
         </div>
       </div>
       </div>
-    {% endfor %}
     {% csrf_token %}
     <div class="clearfix">
     <div class="col-sm-offset-3 col-sm-9">

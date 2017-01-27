@@ -5208,11 +5208,6 @@ body.mob-safari .sidebar.sidebar-fixed {
     padding: 0 3px !important;
   }
 }
-.footer {
-  padding-top: 75px;
-  height: 0;
-  width: 0;
-}
 .footer .footer-inner {
   text-align: center;
   position: absolute;

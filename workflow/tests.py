@@ -4,7 +4,7 @@ from django.urls import reverse
 from .models import Project
 
 
-class ProjectMethodTests(TestCase):
+class ProjectTests(TestCase):
     def create_project(self, title='only a test',
                        description='yes, this is only a test',
                        start_date='2017-12-14', end_date='2017-12-14'):
@@ -25,7 +25,11 @@ class ProjectMethodTests(TestCase):
     #     self.assertEqual(resp.status_code, 200)
     #     self.assertIn(w.title, resp.content)
 
-    # def test_project_detail(self):
-    #     response = self.client.get()
-    #     self.assertEqual(response.status_code, 200)
+    def test_project_create(self):
+        response = self.client.get(reverse('workflow:project_create'))
+        self.assertEqual(response.status_code, 200)
 
+    def test_project_detail(self):
+        test_project = self.create_project()
+        response = self.client.get(reverse('workflow:project_detail', kwargs={'pk': test_project.id}))
+        self.assertEqual(response.status_code, 200)

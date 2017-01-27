@@ -1,10 +1,11 @@
 {% extends 'base.html' %}
 
 {% block content %}
+  {{ block.super }}
   <div class="project_navbar">
     {% include 'workflow/project_navbar.html' %}
   </div>
-  <h3 class="col-sm-offset-3">Update project</h3>
+ <h3 class="col-sm-offset-3">Update project</h3>
   <form role="form" action="" class="form-horizontal" method="post">
     {% for field in form %}
       <div class="form-group {% if form.errors %} has-error {% endif %}">
@@ -27,4 +28,5 @@
       </div>
     </div>
   </form>
+
 {% endblock %}
