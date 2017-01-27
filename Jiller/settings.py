@@ -49,6 +49,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'middleware.LoginRequiredMiddleware.LoginRequiredMiddleware',
 ]
 
 ROOT_URLCONF = 'Jiller.urls'
@@ -125,6 +126,14 @@ STATICFILES_DIRS = (os.path.join(BASE_DIR, 'static'),)
 
 
 AUTH_USER_MODEL = 'workflow.Employee'
+
+LOGIN_URL = 'workflow:login'
+
+LOGIN_EXEMPT_URLS = (
+ r'^login/$',
+ r'^registration/$',
+)
+
 
 try:
     from local_settings import *
