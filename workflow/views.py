@@ -9,8 +9,11 @@ from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.views.generic import DetailView, ListView
 from django.urls import reverse
 from django.urls import reverse_lazy as _
+from django.views.generic import DetailView, ListView, FormView
+from django.urls import reverse_lazy
 
 from .forms import LoginForm, RegistrationForm, ProjectForm
+from .forms import LoginForm, RegistrationForm, IssueForm, TeamForm
 from .models import Project, ProjectTeam, Issue, Sprint, Employee
 
 
@@ -46,19 +49,49 @@ def sprints_list(request, project_id):
 
 
 def create_issue(request, project_id):
-    return render(request, 'workflow/create_issue.html',
-                  {'project_id': project_id})
+    # current_project = get_object_or_404(Project, pk=project_id)
+    # user = request.user.id
+    # new_issue = Issue.objects.create(project=current_project, author_id=user, title='new issue')
+    # form = IssueForm(instance=new_issue)
+    # if form.is_valid():
+    #     new_issue.save()
+    #
+    # return render(request, 'workflow/create_issue.html', {'form': form})
+
+    if request.method == "POST":
+        form = IssueForm(request.POST)
+        if form.is_valid():
+            new_issue = form.save(commit=False)
+            new_issue.save()
+            return redirect('workflow:backlog', project_id)
+    else:
+        form = IssueForm()
+    return render(request, 'workflow/edit_issue.html', {'form': form})
+
+
 
 
 def edit_issue(request, project_id, issue_id):
-    issue = get_object_or_404(Issue, pk=issue_id)
-    return render(request, 'workflow/edit_issue.html', {'project_id': project_id, 'issue': issue})
+    current_issue = get_object_or_404(Issue, pk=issue_id, project=project_id)
+    if request.method == "POST":
+        form = IssueForm(request.POST, instance=current_issue)
+        if form.is_valid():
+            current_issue = form.save(commit=False)
+            current_issue.save()
+            return redirect('workflow:backlog', project_id)
+    else:
+        form = IssueForm(instance=current_issue)
+    return render(request, 'workflow/edit_issue.html', {'form': form})
 
 
 def team(request, project_id):
     current_project = get_object_or_404(Project, pk=project_id)
-    team_list = get_list_or_404(ProjectTeam, project=current_project)
-    return render(request, 'workflow/team.html', {'team_list': team_list, 'project_id': project_id})
+    try:
+        team_list = ProjectTeam.objects.filter(project=current_project)
+    except ProjectTeam.DoesNotExist:
+        raise Http404("No team on project")
+    return render(request, 'workflow/team.html', {'team_list': team_list,
+                                                  'project_id': project_id})
 
 
 def backlog(request, project_id):

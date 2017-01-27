@@ -10,6 +10,9 @@ from django.forms import ModelForm
 
 class DateInput(forms.DateInput):
     input_type = 'date'
+from django.forms import ModelForm, Select
+from django.forms.widgets import ChoiceInput
+from .models import Issue, ProjectTeam
 
 
 class LoginForm(forms.Form):
@@ -48,3 +51,16 @@ class ProjectForm(ModelForm):
         widgets = {
             'end_date': DateInput(),
         }
+
+
+class IssueForm(forms.ModelForm):
+    class Meta:
+        model = Issue
+        fields = '__all__'
+
+
+class TeamForm(forms.ModelForm):
+    class Meta:
+        model = ProjectTeam
+        fields = '__all__'
+

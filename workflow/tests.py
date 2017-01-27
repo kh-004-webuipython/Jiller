@@ -4,6 +4,7 @@ from django.urls import reverse
 
 from .models import Project, Issue, Employee, Sprint, ProjectTeam
 
+
 class BacklogViewTests(TestCase):
     def test_backlog_view_with_no_issues(self):
         project = Project.objects.create(title='title')
@@ -40,6 +41,7 @@ class BacklogViewTests(TestCase):
         response = self.client.get(reverse('workflow:backlog',
                                            args=[project.id+1, ]))
         self.assertEqual(response.status_code, 404)
+
 
 class SprintsListViewTests(TestCase):
     def test_sprints_list_view_with_no_sprint(self):
