@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'workflow',
+    'sorl.thumbnail',
 ]
 
 MIDDLEWARE = [
@@ -48,6 +49,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'Jiller.middleware.LoginRequiredMiddleware.LoginRequiredMiddleware',
 ]
 
 ROOT_URLCONF = 'Jiller.urls'
@@ -121,3 +123,19 @@ USE_TZ = True
 STATIC_URL = '/static/'
 
 STATICFILES_DIRS = (os.path.join(BASE_DIR, 'static'),)
+
+
+AUTH_USER_MODEL = 'workflow.Employee'
+
+LOGIN_URL = 'workflow:login'
+
+LOGIN_EXEMPT_URLS = (
+ r'^login/$',
+ r'^registration/$',
+)
+
+
+try:
+    from local_settings import *
+except ImportError:
+    pass
