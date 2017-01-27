@@ -10,7 +10,7 @@ from django.views.generic import DetailView, ListView
 from django.urls import reverse
 from django.urls import reverse_lazy as _
 
-from .forms import LoginForm, RegistrationForm, ProjectForm
+from .forms import LoginForm, RegistrationForm, ProjectForm, SprintCreateForm
 from .models import Project, ProjectTeam, Issue, Sprint, Employee
 
 
@@ -183,4 +183,14 @@ def employee_index_view(request):
 def employee_detail_view(request, employee_id):
     employee = get_object_or_404(Employee, pk=employee_id)
     return render(request, 'employee/detail.html', {'employee': employee})
+
+class SprintCreate(CreateView):
+    model = Sprint
+    form_class = SprintCreateForm
+    template_name_suffix = '_create_form'
+
+    def get_success_url(self):
+        return _('workflow:sprint', args=(self.object.project_id,
+                                          self.object.id))
+
 
