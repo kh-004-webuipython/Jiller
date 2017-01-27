@@ -49,7 +49,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'middleware.LoginRequiredMiddleware',
+    'Jiller.middleware.LoginRequiredMiddleware.LoginRequiredMiddleware',
 ]
 
 ROOT_URLCONF = 'Jiller.urls'
