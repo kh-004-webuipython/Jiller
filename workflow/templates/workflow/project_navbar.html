@@ -7,16 +7,15 @@
     <nav class="navbar navbar-default">
       <div class="container-fluid">
         <ul class="nav navbar-nav">
-          <li ><a
-              href="{% url 'workflow:project_detail' project.id %}">Project
-            Detail</a></li>
+          <li><a href="{% url 'workflow:project_detail' project.id %}">
+              Project Detail</a></li>
           <li><a href="{% url 'workflow:sprint' 1 1 %}">Sprint</a>
           </li>
           <li><a href="{% url 'workflow:backlog' project.id %}">Backlog</a>
           </li>
           <li><a href="{% url 'workflow:sprints_list' project.id %}">History</a>
           </li>
-          <li><a href="{% url 'workflow:team' project.id %}">Team</a></li>
+          <li><a href="{% url 'workflow:team' 1 %}">Team</a></li>
         </ul>
       </div>
     </nav>

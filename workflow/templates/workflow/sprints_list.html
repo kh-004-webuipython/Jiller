@@ -3,6 +3,8 @@
 {% block content %}
   {{ block.super }}
   <h2>Sprints list | Project - {{ project.title }}</h2>
+
+  {% if sprints %}
   <div class="table-responsive">
   <table class="table table-hover">
     <thead>
@@ -46,4 +48,7 @@
     </tbody>
   </table>
   </div>
+  {% else %}
+    <h3>No sprints.</h3>
+  {% endif %}
 {% endblock %}
