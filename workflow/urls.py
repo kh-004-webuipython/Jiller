@@ -3,9 +3,9 @@ from . import views
 
 app_name = 'workflow'
 urlpatterns = [
-    url(r'^project/(?P<project_id>\w+)/issue/create/$', views.create_issue, name='create_issue'),
-    url(r'^project/(?P<project_id>\w+)/issue/(?P<issue_id>\w+)/edit/$', views.edit_issue, name='edit_issue'),
-    url(r'^project/(?P<project_id>\w+)/team/$', views.team, name='team'),
+    url(r'^project/(?P<project_id>\d+)/issue/(?P<issue_id>\d+)/edit/$', views.edit_issue, name='edit_issue'),
+    url(r'^project/(?P<project_id>\d+)/issue/create/$', views.create_issue, name='create_issue'),
+    url(r'^project/(?P<project_id>\d+)/team/$', views.team, name='team'),
 
     url(r'^$', views.index, name='index'),
 
@@ -22,6 +22,9 @@ urlpatterns = [
     url(r'^project/(?P<pk>\d+)/$', views.ProjectDetail.as_view(),
         name='project_detail'),
 
+
+
+
     # /project/update/[pr_id]/
     url(r'^project/update/(?P<pk>\d+)/$', views.ProjectUpdate.as_view(),
         name='project_update'),
@@ -32,12 +35,10 @@ urlpatterns = [
 
     url(r'^project/(?P<project_id>[0-9]+)/backlog/$', views.backlog,
         name='backlog'),
-    url(r'^project/(?P<project_id>\w+)/issue/create/$',
+    url(r'^project/(?P<project_id>\d+)/issue/create/$',
         views.create_issue, name='create_issue'),
     url(r'^project/(?P<project_id>[0-9]+)/issue/(?P<issue_id>[0-9]+)/$',
         views.issue, name='issue'),
-    url(r'^project/(?P<project_id>\w+)/issue/(?P<issue_id>\w+)/edit/$',
-        views.edit_issue, name='edit_issue'),
     url(r'^project/(?P<project_id>\w+)/team/$', views.team, name='team'),
     url(r'^project/(?P<pr_id>[0-9]+)/sprint/$',
         views.sprints_list, name='sprints_list'),

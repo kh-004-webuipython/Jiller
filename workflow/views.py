@@ -51,16 +51,15 @@ def sprints_list(request, project_id):
 
 
 def create_issue(request, project_id):
-    #if request.method == 'POST':
-    form = IssueForm(request.POST)
-    if form.is_valid():
-        current_project = get_object_or_404(Project, pk=project_id)
-        new_issue = Issue.objects.create(project=current_project)
-        new_issue.save()
-    #else:
-    #    form = IssueForm()
 
-    return render(request, 'workflow/edit_issue.html', {'form': form})
+    current_project = get_object_or_404(Project, pk=project_id)
+    user = request.user.id
+    new_issue = Issue.objects.create(project=current_project, author_id=user, title='new issue')
+    form = IssueForm(instance=new_issue)
+    if form.is_valid():
+        new_issue.save()
+
+    return render(request, 'workflow/create_issue.html', {'form': form})
 
 
 def edit_issue(request, project_id, issue_id):
@@ -70,7 +69,7 @@ def edit_issue(request, project_id, issue_id):
         if form.is_valid():
             current_issue = form.save(commit=False)
             current_issue.save()
-            #return redirect('workflow:issue', project=current_issue.project_id, pk=current_issue.pk)
+            return redirect('workflow:issue', project_id, issue_id)
     else:
         form = IssueForm(instance=current_issue)
     return render(request, 'workflow/edit_issue.html', {'form': form})
@@ -79,7 +78,8 @@ def edit_issue(request, project_id, issue_id):
 def team(request, project_id):
     current_project = get_object_or_404(Project, pk=project_id)
     team_list = get_list_or_404(ProjectTeam, project=current_project)
-    return render(request, 'workflow/team.html', {'team_list': team_list, 'project_id': project_id})
+    return render(request, 'workflow/team.html', {'team_list': team_list,
+                                                  'project_id': project_id})
 
 
 def backlog(request, project_id):

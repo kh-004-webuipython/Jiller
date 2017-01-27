@@ -1,7 +1,8 @@
-{% extends 'workflow/project_navbar.html' %}
+{% extends 'base.html' %}
+{% load staticfiles %}
 
 {% block content %}
-  {{ block.super }}
+{{ block.super }}
   <p>This is issue and it has next params:</p>
   <p>Title: {{ issue.title }}</p>
   <p>Description: {{ issue.description }}</p>
