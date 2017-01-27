@@ -1,3 +1,8 @@
 *.pyc
 *.pyo
+*.sqlite3
 .idea
+local_settings.py
+venv
+htmlcov
+.coverage
