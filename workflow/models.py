@@ -68,7 +68,7 @@ class Sprint(models.Model):
         (FINISHED, _('Finished'))
     )
     title = models.CharField(verbose_name=_('Title'), max_length=255)
-    project = models.ForeignKey(Project)
+    project = models.ForeignKey(Project, verbose_name=_('Project'))
     team = models.ForeignKey('ProjectTeam')
     start_date = models.DateField(verbose_name=_('Start date'), null=True,
                                   blank=True)
