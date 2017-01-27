@@ -147,14 +147,19 @@
         <span class="btn btn-danger"></span>
       </div>
     </div><!-- /.sidebar-shortcuts -->
-
     <ul class="nav nav-list">
       <li class="">
         <a href="{% url 'workflow:employee-index' %}">
           <i class="menu-icon"> <span class="glyphicon glyphicon-user"></span></i>
           <span class="menu-text">{% trans 'Employee' %}</span>
         </a>
-
+        <b class="arrow"></b>
+      </li>
+        <li class="">
+        <a href="{% url 'workflow:projects' %}">
+          <i class="menu-icon"> <span class="glyphicon glyphicon-flag"></span></i>
+          <span class="menu-text">{% trans 'Projects' %}</span>
+        </a>
         <b class="arrow"></b>
       </li>
       {#      <li class="">#}

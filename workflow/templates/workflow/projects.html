@@ -12,7 +12,6 @@
         <th>Project title</th>
         <th>Start date</th>
         <th>End date</th>
-        <th>Status</th>
       </tr>
       </thead>
   <tbody>
@@ -23,7 +22,6 @@
         </td>
         <td>{{ project.start_date|date:"d.m.Y" }}</td>
         <td>{{ project.end_date|date:"d.m.Y" }}</td>
-        <td>{{ project.status }}</td>
       </tr>
   {% endfor %}
   </tbody>

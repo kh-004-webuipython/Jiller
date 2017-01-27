@@ -2,8 +2,8 @@
 
 {% block content %}
   {{ block.super }}
-  <p>This is a project and it has such params:</p>
-  <p>Title: {{ project.title }}</p>
+
+  <p>Description: {{ project.description }}</p>
   <p>Start Date: {{ project.start_date }}</p>
   <p>End Date: {{ project.end_date }}</p>
   <a href="{% url 'workflow:project_update' project.id %}"> Edit </a>

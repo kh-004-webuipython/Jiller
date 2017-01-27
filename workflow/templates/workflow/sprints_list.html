@@ -2,12 +2,48 @@
 
 {% block content %}
   {{ block.super }}
-  <h2>Sprints list | Project - {{ project.id }}</h2>
-  <ul>
-    {% for sprint in sprints %}
-      <li><strong>{{ sprint.id }}</strong> -
-        <a href="{% url 'workflow:sprint' project.id sprint.id %}">
-          {{ sprint.title }}</a></li>
-    {% endfor %}
-  </ul>
+  <h2>Sprints list | Project - {{ project.title }}</h2>
+  <div class="table-responsive">
+  <table class="table table-hover">
+    <thead>
+      <tr>
+        <th>Id</th>
+        <th>Title</th>
+        <th>Status</th>
+        <th>Start date</th>
+        <th>End date</th>
+        <th>Order</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for sprint in sprints %}
+      <tr>
+        <td>{{ sprint.id }}</td>
+        <td><a href="{% url 'workflow:sprint' project.id sprint.id %}">
+            {{ sprint.title }}</a></td>
+        <td>
+        {% if sprint.status %} {{ sprint.status }}
+        {% else %}-
+        {% endif %}
+        </td>
+        <td>
+        {% if sprint.start_date %} {{ sprint.start_date }}
+        {% else %}-
+        {% endif %}
+        </td>
+        <td>
+        {% if sprint.end_date %} {{ sprint.end_date }}
+        {% else %}-
+        {% endif %}
+        </td>
+        <td>
+        {% if sprint.order %} {{ sprint.order }}
+        {% else %}-
+        {% endif %}
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  </div>
 {% endblock %}

@@ -1,3 +1,4 @@
+from django.http import HttpResponseRedirect
 from django.shortcuts import get_list_or_404
 from django.contrib import messages
 from django.contrib.auth import authenticate, login
@@ -5,9 +6,13 @@ from django.utils.translation import ugettext_lazy as _
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import Http404
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
+from django.views.generic import DetailView, ListView
+from django.urls import reverse
+from django.urls import reverse_lazy as _
 from django.views.generic import DetailView, ListView, FormView
 from django.urls import reverse_lazy
 
+from .forms import LoginForm, RegistrationForm, ProjectForm
 from .forms import LoginForm, RegistrationForm, IssueForm, TeamForm
 from .models import Project, ProjectTeam, Issue, Sprint, Employee
 
@@ -28,13 +33,14 @@ class ProjectListView(ListView):
     template_name = 'workflow/projects.html'
 
     def get_queryset(self):
-        return Project.objects.order_by('-start_date')
+        return Project.objects.filter(is_active=True).order_by('-start_date')
 
 
-def sprints_list(request, pr_id):
+def sprints_list(request, project_id):
     try:
-        project = Project.objects.get(pk=pr_id)
-        sprints = Sprint.objects.filter(project=project)
+        project = Project.objects.get(pk=project_id)
+        sprints = Sprint.objects.filter(project=project_id)\
+            .exclude(status=Sprint.ACTIVE)
     except Project.DoesNotExist:
         raise Http404("Project does not exist")
     except Sprint.DoesNotExist:
@@ -76,10 +82,10 @@ def team(request, project_id):
     return render(request, 'workflow/team.html', {'team_list': team_list, 'project_id': project_id})
 
 
-def backlog(request, pr_id):
+def backlog(request, project_id):
     try:
-        project = Project.objects.get(pk=pr_id)
-        issues = Issue.objects.filter(project=pr_id).filter(
+        project = Project.objects.get(pk=project_id)
+        issues = Issue.objects.filter(project=project_id).filter(
             sprint__isnull=True)
     except Project.DoesNotExist:
         raise Http404("Project does not exist")
@@ -123,8 +129,7 @@ def login_form(request):
     if request.method == 'POST':
         form = LoginForm(request.POST)
         if form.is_valid():
-            user = authenticate(username=form.cleaned_data['username'],
-                                password=form.cleaned_data['password'])
+            user = authenticate(username=form.cleaned_data['username'], password=form.cleaned_data['password'])
             if user is not None:
                 login(request, user)
                 return redirect('workflow:profile')
@@ -145,52 +150,51 @@ def registration_form(request):
             last_name = form.cleaned_data['last_name']
             first_name = form.cleaned_data['first_name']
             email = form.cleaned_data['email']
-            employee = Employee.objects.create_user(username, email, password,
-                                                    last_name=last_name,
+            employee = Employee.objects.create_user(username, email, password, last_name=last_name,
                                                     first_name=first_name)
             return redirect('workflow:profile')
-
-    form = RegistrationForm()
-    return render(request, 'workflow/registration.html')
-
-
-def project_detail(request, project_id):
-    try:
-        project = Project.objects.get(pk=project_id)
-    except Project.DoesNotExist:
-        raise Http404("Question does not exist")
-    return render(request, 'workflow/project_detail.html',
-                  {'project': project})
-
-
-def projtest(request):
-    return render(request, 'workflow/project_navbar.html')
-
-
-class ProjectDetail(DetailView):
-    queryset = Project.objects.all()
-
-    def get_object(self):  # TODO: object
-        object = super(ProjectDetail, self).get_object()
-        return object
+    else:
+        form = RegistrationForm()
+    return render(request, 'workflow/registration.html', {'form': form.as_p()})
 
 
 class ProjectCreate(CreateView):
     model = Project
-    fields = ['title', 'end_date']
-    template_name_suffix = '_create_form'
+    form_class = ProjectForm
+    template_name = 'workflow/project_create_form.html'
+
+    def get_success_url(self):
+        return reverse('workflow:project_detail',
+                       kwargs={'pk': self.object.id})
+
+
+class ProjectDetail(DetailView):
+    model = Project
 
 
 class ProjectUpdate(UpdateView):
     model = Project
-    fields = ['title', 'end_date']
-    template_name_suffix = '_update_form'
+    form_class = ProjectForm
+    template_name = 'workflow/project_update_form.html'
+
+    def get_success_url(self):
+        return reverse('workflow:project_detail',
+                       kwargs={'pk': self.object.id})
 
 
 class ProjectDelete(DeleteView):
     model = Project
-    success_url = reverse_lazy('author-list')
-    template_name_suffix = '_delete_form'
+
+    def get_success_url(self):
+        return reverse('workflow:projects')
+
+    def delete(self, request, *args, **kwargs):
+        project = Project.objects.get(id=kwargs['pk'])
+
+        project.is_active = False
+        project.save()
+        return HttpResponseRedirect(
+            reverse('workflow:projects'))
 
 
 def employee_index_view(request):
