@@ -6,8 +6,15 @@ urlpatterns = [
 
     url(r'^$', views.index, name='index'),
 
-    url(r'^project/(?P<project_id>\w+)/sprint/create/$',
+    url(r'^project/(?P<pk>[0-9]+)/activesprint/$',
+        views.ActiveSprintViewtypeView.as_view(), name='active_sprint'),
+
+    url(r'^project/(?P<pk>\w+)/sprint/create/$',
         views.SprintCreate.as_view(), name='sprint_create'),
+
+    #url for delete sprint. Hidden until create field is_active in Sprint model
+    #url(r'^project/(?P<pk>\w+)/sprint/delete/$',
+    #views.SprintDelete.as_view(), name='sprint_delete'),
 
     url(r'^login/$', views.login_form, name='login'),
     url(r'^registration/$', views.registration_form, name='registration'),
