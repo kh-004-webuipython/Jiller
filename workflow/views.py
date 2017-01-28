@@ -46,14 +46,16 @@ def sprints_list(request, project_id):
 
 
 def create_issue(request, project_id):
+    project = Project.objects.get(pk=project_id)
     return render(request, 'workflow/create_issue.html',
-                  {'project_id': project_id})
+                  {'project': project})
 
 
 def edit_issue(request, project_id, issue_id):
+    project = Project.objects.get(pk=project_id)
     cur_issue = get_object_or_404(Issue, pk=issue_id)
     return render(request, 'workflow/edit_issue.html',
-                  {'project_id': project_id, 'issue': cur_issue})
+                  {'project': project, 'issue': cur_issue})
 
 
 def team(request, project_id):
@@ -230,6 +232,29 @@ class ActiveSprintViewtypeView(DetailView):
             status="resolved")
         context['project'] = Project.objects.get(id=self.kwargs['pk'])
         return context
+
+
+def push_issue_in_active_sprint(request, project_id, issue_id, slug):
+    current_issue = get_object_or_404(Issue, pk=issue_id)
+    project = get_object_or_404(Project, pk=project_id)
+    sprint =  Sprint.objects.get(pk=current_issue.sprint_id) or None
+
+    if slug == 'right' and sprint and sprint.status != 'new':
+        if current_issue.status == "new":
+            current_issue.status = "in progress"
+            current_issue.save()
+        elif current_issue.status == "in progress":
+            current_issue.status = "resolved"
+            current_issue.save()
+    elif slug == 'left' and sprint and sprint.status != 'finished':
+        if current_issue.status == "resolved":
+            current_issue.status = "in progress"
+            current_issue.save()
+        elif current_issue.status == "in progress":
+            current_issue.status = "new"
+            current_issue.save()
+    return HttpResponseRedirect(
+        reverse('workflow:active_sprint', args=(project_id)))
 
 
 # This view for delete sprint. Hidden until create field is_active in

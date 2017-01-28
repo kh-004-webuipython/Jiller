@@ -16,8 +16,8 @@ urlpatterns = [
     #url(r'^project/(?P<pk>\d+)/sprint/delete/$',
     #views.SprintDelete.as_view(), name='sprint_delete'),
 
-    url(r'^issue/(?P<pk>\d+)/$',
-        views.SprintCreate.as_view(), name='sprint_create'),
+    url(r'^(?P<project_id>\d+)/(?P<issue_id>\d+)/(?P<slug>left|right)/$',
+        views.push_issue_in_active_sprint, name='issue_push'),
 
     url(r'^login/$', views.login_form, name='login'),
     url(r'^registration/$', views.registration_form, name='registration'),
