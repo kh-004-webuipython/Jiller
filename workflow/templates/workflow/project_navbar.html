@@ -8,9 +8,9 @@
           <li class="active"><a
               href="{% url 'workflow:project_detail' project.id %}">Project
             Detail</a></li>
-          <li><a href="{#% url 'workflow:active_sprint' project.id %#}">Sprint</a>
+          <li><a href="{% url 'workflow:sprint' project.id %}">Sprint</a>
           </li>
-          <li><a href="#% url 'workflow:backlog' project.id %#}">Backlog</a>
+          <li><a href="{% url 'workflow:backlog' project.id %}">Backlog</a>
           </li>
           <li><a href="{% url 'workflow:sprints_list' project.id %}">History</a>
           </li>
