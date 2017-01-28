@@ -232,6 +232,29 @@ class ActiveSprintViewtypeView(DetailView):
         return context
 
 
+def push_issue_in_active_sprint(request, project_id, issue_id, slug):
+    current_issue = get_object_or_404(Issue, pk=issue_id)
+    project = get_object_or_404(Project, pk=project_id)
+    sprint =  Sprint.objects.get(pk=current_issue.sprint_id) or None
+
+    if slug == 'right' and sprint and sprint.status != 'new':
+        if current_issue.status == "new":
+            current_issue.status = "in progress"
+            current_issue.save()
+        elif current_issue.status == "in progress":
+            current_issue.status = "resolved"
+            current_issue.save()
+    elif slug == 'left' and sprint and sprint.status != 'finished':
+        if current_issue.status == "resolved":
+            current_issue.status = "in progress"
+            current_issue.save()
+        elif current_issue.status == "in progress":
+            current_issue.status = "new"
+            current_issue.save()
+    return HttpResponseRedirect(
+        reverse('workflow:active_sprint', args=(project_id)))
+
+
 # This view for delete sprint. Hidden until create field is_active in
 # Sprint model
 #
