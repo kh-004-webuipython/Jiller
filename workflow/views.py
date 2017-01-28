@@ -36,12 +36,10 @@ class ProjectListView(ListView):
 def sprints_list(request, project_id):
     try:
         project = Project.objects.get(pk=project_id)
-        sprints = Sprint.objects.filter(project=project_id)\
-            .exclude(status=Sprint.ACTIVE)
     except Project.DoesNotExist:
         raise Http404("Project does not exist")
-    except Sprint.DoesNotExist:
-        raise Http404("Sprint does not exist")
+    sprints = Sprint.objects.filter(project=project_id)\
+        .exclude(status=Sprint.ACTIVE)
 
     return render(request, 'workflow/sprints_list.html', {'project': project,
                                                           'sprints': sprints})
@@ -66,12 +64,10 @@ def team(request, project_id):
 def backlog(request, project_id):
     try:
         project = Project.objects.get(pk=project_id)
-        issues = Issue.objects.filter(project=project_id).filter(
-            sprint__isnull=True)
     except Project.DoesNotExist:
         raise Http404("Project does not exist")
-    except Issue.DoesNotExist:
-        raise Http404("Issue does not exist")
+    issues = Issue.objects.filter(project=project_id)\
+        .filter(sprint__isnull=True)
 
     return render(request, 'workflow/backlog.html', {'project': project,
                                                      'issues': issues})
