@@ -69,8 +69,6 @@ def create_issue(request, project_id):
     return render(request, 'workflow/edit_issue.html', {'form': form})
 
 
-
-
 def edit_issue(request, project_id, issue_id):
     current_issue = get_object_or_404(Issue, pk=issue_id, project=project_id)
     if request.method == "POST":

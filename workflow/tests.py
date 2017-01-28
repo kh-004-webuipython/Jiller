@@ -4,6 +4,13 @@ from django.urls import reverse
 
 from .models import Project, Issue, Employee, Sprint, ProjectTeam
 
+class TeamListTests(TestCase):
+    def test_team_list_with_no_team(self):
+    '''
+        was_published_recently() should return False for questions whose
+        pub_date is in the future.
+    '''
+
 
 class BacklogViewTests(TestCase):
     def test_backlog_view_with_no_issues(self):
