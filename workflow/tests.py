@@ -1,15 +1,10 @@
 from django.test import TestCase
 
 from django.urls import reverse
+from django.utils import timezone
 
 from .models import Project, Issue, Employee, Sprint, ProjectTeam
 
-class TeamListTests(TestCase):
-    def test_team_list_with_no_team(self):
-    '''
-        was_published_recently() should return False for questions whose
-        pub_date is in the future.
-    '''
 
 
 class BacklogViewTests(TestCase):
@@ -48,7 +43,6 @@ class BacklogViewTests(TestCase):
         response = self.client.get(reverse('workflow:backlog',
                                            args=[project.id+1, ]))
         self.assertEqual(response.status_code, 404)
-
 
 class SprintsListViewTests(TestCase):
     def test_sprints_list_view_with_no_sprint(self):
