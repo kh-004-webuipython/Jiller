@@ -1,9 +1,9 @@
-from django.test import TestCase
+from django.test import TestCase, Client
 from django.urls import reverse
 from django.utils import timezone
 
-from .models import Project, Issue, Employee, Sprint, ProjectTeam
 
+from .models import Project, Issue, Employee, Sprint, ProjectTeam
 
 
 class BacklogViewTests(TestCase):
@@ -75,5 +75,3 @@ class SprintsListViewTests(TestCase):
         response = self.client.get(reverse('workflow:sprints_list',
                                            args=[project.id + 1, ]))
         self.assertEqual(response.status_code, 404)
-
-
