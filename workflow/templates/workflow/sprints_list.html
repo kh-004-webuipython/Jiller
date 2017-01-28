@@ -1,6 +1,9 @@
-{% extends 'workflow/project_navbar.html' %}
+{% extends 'base.html' %}
 
 {% block content %}
+ <div class="project_navbar">
+    {% include 'workflow/project_navbar.html' %}
+  </div>
   {{ block.super }}
   <h2>Sprints list | Project - {{ project.title }}</h2>
 

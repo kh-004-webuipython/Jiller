@@ -1,8 +1,9 @@
-{% extends 'workflow/project_navbar.html' %}
-{% load staticfiles %}
+{% extends 'base.html' %}
 
 {% block content %}
-  {{ block.super }}
+ <div class="project_navbar">
+    {% include 'workflow/project_navbar.html' %}
+  </div>
   <h2 class="inline">Backlog | Project - {{ project.title }}</h2>
 
   <a href="{% url 'workflow:create_issue' project.id %}" class="btn btn-primary pull-right"

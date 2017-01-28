@@ -1,9 +1,15 @@
-{% extends 'workflow/project_navbar.html' %}
+{% extends 'base.html' %}
 
 {% block title %}Active sprint{% endblock %}
 
 {% block content %}
-  {{ block.super }}
+  <div class="project_navbar">
+    {% include 'workflow/project_navbar.html' %}
+  </div>
+
+  <div class="project_navbar">
+    {% include 'workflow/project_navbar.html' %}
+  </div>
 
   <div class="table-responsive">
     <table class="table table-bordered">
@@ -40,12 +46,12 @@
             <td class="text-center">
               <a href="
 {% url 'workflow:issue' new_iss.project_id new_iss.id %}">
-              {{ new_iss.title }}</a>
+                {{ new_iss.title }}</a>
               <a href="
 {% url 'workflow:issue_push' new_iss.project_id new_iss.id 'right' %}">
               <span style="float: right"
                     class="glyphicon glyphicon-circle-arrow-right"></span>
-                </a>
+              </a>
           </tr>
         {% endfor %}
         </tbody>

@@ -157,7 +157,7 @@ def registration_form(request):
     return render(request, 'workflow/registration.html', {'form': form.as_p()})
 
 
-class ProjectCreate(CreateView):
+class ProjectCreateView(CreateView):
     model = Project
     form_class = ProjectForm
     template_name = 'workflow/project_create_form.html'
@@ -167,12 +167,12 @@ class ProjectCreate(CreateView):
                        kwargs={'pk': self.object.id})
 
 
-class ProjectDetail(DetailView):
+class ProjectDetailView(DetailView):
     model = Project
     template_name = 'workflow/project_detail.html'
 
 
-class ProjectUpdate(UpdateView):
+class ProjectUpdateView(UpdateView):
     model = Project
     form_class = ProjectForm
     template_name = 'workflow/project_update_form.html'
@@ -182,7 +182,7 @@ class ProjectUpdate(UpdateView):
                        kwargs={'pk': self.object.id})
 
 
-class ProjectDelete(DeleteView):
+class ProjectDeleteView(DeleteView):
     model = Project
 
     def get_success_url(self):
@@ -251,12 +251,12 @@ class SprintView(DetailView):
         return context
 
 
-class ActiveSprintViewtypeView(DetailView):
+class ActiveSprintView(DetailView):
     model = Sprint
     template_name = 'workflow/active_sprint.html'
 
     def get_context_data(self, **kwargs):
-        context = super(ActiveSprintViewtypeView, self).get_context_data(
+        context = super(ActiveSprintView, self).get_context_data(
             **kwargs)
         active_sprint = Sprint.objects.get(project_id=self.kwargs['pk'],
                                            status='active')
