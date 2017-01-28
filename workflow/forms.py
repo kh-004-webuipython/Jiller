@@ -4,7 +4,7 @@ from django.forms import PasswordInput, ModelForm
 from django.utils.translation import ugettext_lazy as _
 
 
-from .models import Project, Sprint, Employee
+from .models import Project, Sprint, Employee, Issue
 
 
 class DateInput(forms.DateInput):
@@ -47,6 +47,20 @@ class ProjectForm(ModelForm):
         widgets = {
             'end_date': DateInput(),
         }
+
+
+class IssueForm(forms.ModelForm):
+    class Meta:
+        model = Issue
+        fields = '__all__'
+
+
+# class TeamForm(forms.ModelForm):
+#     class Meta:
+#         model = ProjectTeam
+#         fields = '__all__'
+
+
 
 class SprintCreateForm(ModelForm):
 

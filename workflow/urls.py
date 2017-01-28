@@ -3,6 +3,9 @@ from . import views
 
 app_name = 'workflow'
 urlpatterns = [
+    url(r'^project/(?P<project_id>\d+)/issue/(?P<issue_id>\d+)/edit/$', views.edit_issue, name='edit_issue'),
+    url(r'^project/(?P<project_id>\d+)/issue/create/$', views.create_issue, name='create_issue'),
+    url(r'^project/(?P<project_id>\d+)/team/$', views.team, name='team'),
 
     url(r'^$', views.index, name='index'),
 
@@ -35,22 +38,22 @@ urlpatterns = [
     url(r'^project/delete/(?P<pk>\d+)/$', views.ProjectDelete.as_view(),
         name='project_delete'),
 
-    url(r'^project/(?P<project_id>\d+)/backlog/$', views.backlog,
+    url(r'^project/(?P<project_id>[0-9]+)/backlog/$', views.backlog,
         name='backlog'),
     url(r'^project/(?P<project_id>\d+)/issue/create/$',
         views.create_issue, name='create_issue'),
-    url(r'^project/(?P<project_id>\d+)/issue/(?P<issue_id>\d+)/$',
+    url(r'^project/(?P<project_id>[0-9]+)/issue/(?P<issue_id>[0-9]+)/$',
         views.issue, name='issue'),
     url(r'^project/(?P<project_id>\d+)/issue/(?P<issue_id>\d+)/edit/$',
         views.edit_issue, name='edit_issue'),
     url(r'^project/(?P<project_id>\d+)/team/$', views.team, name='team'),
     url(r'^project/(?P<project_id>\d+)/sprint/$',
         views.sprints_list, name='sprints_list'),
-    url(r'^project/(?P<project_id>\d+)/sprint/(?P<sprint_id>\d+)/$',
+    url(r'^project/(?P<project_id>[0-9]+)/sprint/(?P<sprint_id>[0-9]+)/$',
         views.SprintView.as_view(), name='sprint'),
 
     url(r'^employee/$', views.employee_index_view, name='employee-index'),
-    url(r'^employee/(?P<employee_id>\d+)/$', views.employee_detail_view,
+    url(r'^employee/(?P<employee_id>[0-9]+)/$', views.employee_detail_view,
         name='employee-detail'),
 
 ]
