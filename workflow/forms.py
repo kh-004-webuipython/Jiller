@@ -1,11 +1,10 @@
 from django import forms
 from django.core.exceptions import ValidationError
-from django.forms import PasswordInput
+from django.forms import PasswordInput, ModelForm
 from django.utils.translation import ugettext_lazy as _
 
-from workflow.models import Employee
-from .models import Project
-from django.forms import ModelForm
+
+from .models import Project, Sprint, Employee, Issue
 
 
 class DateInput(forms.DateInput):
@@ -46,5 +45,30 @@ class ProjectForm(ModelForm):
         model = Project
         fields = ['title', 'description', 'end_date']
         widgets = {
+            'end_date': DateInput(),
+        }
+
+
+class IssueForm(forms.ModelForm):
+    class Meta:
+        model = Issue
+        fields = '__all__'
+
+
+# class TeamForm(forms.ModelForm):
+#     class Meta:
+#         model = ProjectTeam
+#         fields = '__all__'
+
+
+
+class SprintCreateForm(ModelForm):
+
+    class Meta:
+        model = Sprint
+        fields = ['title', 'project', 'team', 'start_date', 'end_date',
+                  'order', 'status']
+        widgets = {
+            'start_date': DateInput(),
             'end_date': DateInput(),
         }
