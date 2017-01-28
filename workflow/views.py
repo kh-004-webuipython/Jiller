@@ -151,10 +151,10 @@ def registration_form(request):
             employee = Employee.objects.create_user(username, email, password,
                                                     last_name=last_name,
                                                     first_name=first_name)
-            return redirect('workflow:profile')
+            return redirect('workflow:index')
     else:
         form = RegistrationForm()
-    return render(request, 'workflow/registration.html', {'form': form.as_p()})
+    return render(request, 'workflow/registration.html', {'form': form})
 
 
 class ProjectCreate(CreateView):
