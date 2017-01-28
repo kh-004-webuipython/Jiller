@@ -46,14 +46,16 @@ def sprints_list(request, project_id):
 
 
 def create_issue(request, project_id):
+    project = Project.objects.get(pk=project_id)
     return render(request, 'workflow/create_issue.html',
-                  {'project_id': project_id})
+                  {'project': project})
 
 
 def edit_issue(request, project_id, issue_id):
+    project = Project.objects.get(pk=project_id)
     cur_issue = get_object_or_404(Issue, pk=issue_id)
     return render(request, 'workflow/edit_issue.html',
-                  {'project_id': project_id, 'issue': cur_issue})
+                  {'project': project, 'issue': cur_issue})
 
 
 def team(request, project_id):
