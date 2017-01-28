@@ -7,7 +7,7 @@ urlpatterns = [
     url(r'^$', views.index, name='index'),
 
     url(r'^project/(?P<pk>\d+)/activesprint/$',
-        views.ActiveSprintViewtypeView.as_view(), name='active_sprint'),
+        views.ActiveSprintView.as_view(), name='active_sprint'),
 
     url(r'^project/(?P<pk>\d+)/sprint/create/$',
         views.SprintCreate.as_view(), name='sprint_create'),
