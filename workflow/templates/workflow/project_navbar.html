@@ -15,7 +15,7 @@
           </li>
           <li><a href="{% url 'workflow:sprints_list' project.id %}">History</a>
           </li>
-          <li><a href="{% url 'workflow:team' 1 %}">Team</a></li>
+          <li><a href="{% url 'workflow:team' project.id %}">Team</a></li>
         </ul>
       </div>
     </nav>

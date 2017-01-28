@@ -58,9 +58,9 @@ def edit_issue(request, project_id, issue_id):
 
 def team(request, project_id):
     current_project = get_object_or_404(Project, pk=project_id)
-    team_list = get_list_or_404(ProjectTeam, project=current_project)
+    team_list = get_list_or_404(ProjectTeam, project=current_project.id)
     return render(request, 'workflow/team.html',
-                  {'team_list': team_list, 'project_id': project_id})
+                  {'team_list': team_list, 'project': current_project})
 
 
 def backlog(request, project_id):
