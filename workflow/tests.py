@@ -20,8 +20,7 @@ class LoginRequiredBase(TestCase):
 class ProjectsListViewTests(LoginRequiredBase):
     def test_projectlist_view_with_no_projects(self):
         response = self.client.get(reverse('workflow:projects'))
-        self.assertContains(response, "There is no projects yet.")
-        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "There is no projects yet.", status_code=200)
         self.assertQuerysetEqual(response.context['project_list'], [])
 
     def test_projectlist_view_with_projects(self):
@@ -29,6 +28,17 @@ class ProjectsListViewTests(LoginRequiredBase):
         response = self.client.get(reverse('workflow:projects'))
         self.assertQuerysetEqual(response.context['project_list'],
                                  ['<Project: title>'])
+
+class ProfileViewTests(LoginRequiredBase):
+    def test_profile_view_with_correct_user(self):
+        response = self.client.get(reverse('workflow:profile'))
+        self.assertContains(response, 'Miss', status_code=200)
+
+    def test_profile_view_with_incorrect_user(self):
+        self.user = Employee.objects.create_user('mark', 'webber@redbull.com', 'markpassword', first_name='Kiss',
+                                                 last_name='Dismiss', role=self.user_role_init)
+        response = self.client.get(reverse('workflow:profile'))
+        self.assertNotContains(response, 'Kiss')
 
 
 class BacklogViewTests(LoginRequiredBase):
