@@ -1,5 +1,9 @@
 {% extends 'base.html' %}
+{% load static %}
 
+{% block extrastyles %}
+  <link rel="stylesheet" href="{% static 'workflow/style.css' %}">
+{% endblock %}
 {% block content %}
 
   <div class="project_navbar">
@@ -7,21 +11,15 @@
   </div>
 
   <form role="form" action="" class="form-horizontal" method="post">
-      <div class="form-group {% if form.errors %} has-error {% endif %}">
-      <div class="col-sm-9">
-        <p>Are you sure you want to delete "{{ object }}"?</p>
-        <div class="help-block col-xs-12 col-sm-reset inline">
-          {% for error in field.errors %}
-            {{ error }}
-          {% endfor %}
-        </div>
-      </div>
-      </div>
-    {% csrf_token %}
-    <div class="clearfix">
-    <div class="col-sm-offset-3 col-sm-9">
-      <button type="submit" class="btn btn-confirm">Confirm</button>
+    <div class="col-sm-12 ">
+      <p class="">Are you sure you want to delete project "{{ object }}"?</p>
     </div>
-  </div>
+
+    {% csrf_token %}
+    <div class="col-sm-offset-3 col-sm-6">
+      <button type="submit" class="btn btn-danger center-block">Yes</button>
+       <a class = "btn btn-delete" href="{% url 'workflow:project_detail' project.id %}"> No </a>
+    </div>
+
   </form>
 {% endblock %}

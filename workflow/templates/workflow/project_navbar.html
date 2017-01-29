@@ -1,4 +1,27 @@
-<div class="container">
+<style>
+  .project_navbar{
+    padding:0;
+    width: auto;
+  }
+  .project_navbar .container-fluid{
+    padding:0;
+  }
+  .project_navbar .navbar-nav{
+    display:flex;
+    width:100%;
+  }
+  .project_navbar .navbar-nav li{
+    flex-grow: 1;
+    text-align: center;
+  }
+  @media only screen and (max-width: 991px){
+    .project_navbar .navbar-nav{
+      flex-direction: column;
+      margin: 0;
+    }
+  }
+</style>
+<div class="container project_navbar">
   {% block content %}
     <h2>Project {{ project.title }} </h2>
 
