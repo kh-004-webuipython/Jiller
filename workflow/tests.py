@@ -17,6 +17,19 @@ class LoginRequiredBase(TestCase):
                                                  last_name='Mister', role=self.user_role_init)
         self.client.login(username='john', password='johnpassword')
 
+class ProjectsListViewTests(LoginRequiredBase):
+    def test_projectlist_view_with_no_projects(self):
+        response = self.client.get(reverse('workflow:projects'))
+        self.assertContains(response, "There is no projects yet.")
+        self.assertEqual(response.status_code, 200)
+        self.assertQuerysetEqual(response.context['project_list'], [])
+
+    def test_projectlist_view_with_projects(self):
+        project = Project.objects.create(title='title')
+        response = self.client.get(reverse('workflow:projects'))
+        self.assertQuerysetEqual(response.context['project_list'],
+                                 ['<Project: title>'])
+
 
 class BacklogViewTests(LoginRequiredBase):
     def test_backlog_view_with_no_issues(self):
