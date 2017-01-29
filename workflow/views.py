@@ -264,7 +264,7 @@ class ActiveSprintView(DetailView):
             **kwargs)
         try:
             Sprint.objects.get(project_id=self.kwargs['pk'],
-                                               status='active')
+                               status='active')
         except Sprint.DoesNotExist:
             raise Http404("There is no active sprint in the project")
 
@@ -282,10 +282,9 @@ class ActiveSprintView(DetailView):
         return context
 
 
-
 def push_issue_in_active_sprint(request, project_id, issue_id, slug):
     current_issue = get_object_or_404(Issue, pk=issue_id)
-    sprint =  Sprint.objects.get(pk=current_issue.sprint_id)
+    sprint = Sprint.objects.get(pk=current_issue.sprint_id)
 
     if slug == 'right' and sprint and sprint.status != 'new':
         if current_issue.status == "new":
@@ -303,7 +302,6 @@ def push_issue_in_active_sprint(request, project_id, issue_id, slug):
             current_issue.save()
     return HttpResponseRedirect(
         reverse('workflow:active_sprint', args=(project_id)))
-
 
 # This view for delete sprint. Hidden until create field is_active in
 # Sprint model
