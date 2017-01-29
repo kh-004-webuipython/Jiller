@@ -19,8 +19,9 @@ urlpatterns = [
     url(r'^(?P<project_id>\d+)/(?P<issue_id>\d+)/(?P<slug>left|right)/$',
         views.push_issue_in_active_sprint, name='issue_push'),
 
-    url(r'^login/$', views.login_form, name='login'),
-    url(r'^registration/$', views.registration_form, name='registration'),
+    url(r'^login/$', views.login_form_view, name='login'),
+    url(r'^registration/$', views.registration_form_view, name='registration'),
+    url(r'^logout/$', views.user_logout_view, name='logout'),
 
     url(r'^profile/$', views.profile, name='profile'),
     url(r'^project/$', views.ProjectListView.as_view(), name='projects'),
