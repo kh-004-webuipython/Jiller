@@ -1,6 +1,7 @@
 from __future__ import unicode_literals
 
 from django.contrib.auth.models import AbstractUser
+from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
 from django.db import models
 from django.core.exceptions import ValidationError
@@ -48,7 +49,7 @@ class Project(models.Model):
     description = models.TextField(verbose_name=_('Description'), null=True,
                                    blank=True)
     start_date = models.DateField(verbose_name=_('Start date'),
-                                  default=datetime.now())
+                                  default=timezone.now)
     end_date = models.DateField(verbose_name=_('End date'), null=True,
                                 blank=True)
     is_active = models.BooleanField(verbose_name=_('Is active'), null=False,
