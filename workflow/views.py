@@ -162,7 +162,6 @@ def user_logout_view(request):
     return redirect('workflow:login')
 
 
-class ProjectCreate(CreateView):
 class ProjectCreateView(CreateView):
     model = Project
     form_class = ProjectForm
