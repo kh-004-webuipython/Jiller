@@ -9,9 +9,15 @@
         <div class="col-sm-9">
           {{ field }}
           <div class="help-block col-xs-12 col-sm-reset inline">
-            {% for error in field.errors %}
-              {{ error }}
-            {% endfor %}
+             {% if field.errors %}
+                    <ul>
+                        {% for error in field.errors %}
+                        <li>
+                            {{ error }}
+                        </li>
+                        {% endfor %}
+                        {% endif %}
+                    </ul>
           </div>
         </div>
       </div>
