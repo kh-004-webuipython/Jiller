@@ -12,17 +12,17 @@ class LoginRequiredBase(TestCase):
         self.user_role_init = Employee.DEVELOPER
 
     def setUp(self):
-        print(self.user_role_init)
         self.client = Client()
         self.user = Employee.objects.create_user('john', 'lennon@thebeatles.com', 'johnpassword', first_name='Miss',
                                                  last_name='Mister', role='PO')
+        self.client.login(username='john', password='johnpassword')
 
 
 class BacklogViewTests(LoginRequiredBase):
     def test_backlog_view_with_no_issues(self):
         project = Project.objects.create(title='title')
         response = self.client.get(reverse('workflow:backlog',
-                                           args=[project.id, ]))
+                                           kwargs={'project_id':project.id}))
         self.assertContains(response, "No issues.")
         self.assertEqual(response.status_code, 200)
         self.assertQuerysetEqual(response.context['issues'], [])
