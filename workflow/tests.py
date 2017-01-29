@@ -120,7 +120,7 @@ class ProjectViewTests(LoginRequiredBase):
         response = self.client.get(reverse('workflow:project_create'))
         self.assertEqual(response.status_code, 200)
 
-    def check_how_many_oprojects_is_in_db_now(self):
+    def check_how_many_objects_are_in_db_now(self):
         all_projects_in_database = Project.objects.all()
         self.assertEquals(all_projects_in_database.count(), 1)
 
