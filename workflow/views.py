@@ -1,7 +1,7 @@
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_list_or_404
 from django.contrib import messages
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate, login, logout
 from django.utils.translation import ugettext_lazy as _
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import Http404
@@ -122,7 +122,7 @@ class SprintView(DetailView):
         return context
 
 
-def login_form(request):
+def login_form_view(request):
     if request.method == 'POST':
         form = LoginForm(request.POST)
         if form.is_valid():
@@ -139,7 +139,7 @@ def login_form(request):
     return render(request, 'workflow/login.html', {'form': form})
 
 
-def registration_form(request):
+def registration_form_view(request):
     if request.method == 'POST':
         form = RegistrationForm(request.POST)
         if form.is_valid():
@@ -155,6 +155,11 @@ def registration_form(request):
     else:
         form = RegistrationForm()
     return render(request, 'workflow/registration.html', {'form': form})
+
+
+def user_logout_view(request):
+    logout(request)
+    return redirect('workflow:login')
 
 
 class ProjectCreate(CreateView):
