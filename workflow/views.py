@@ -10,7 +10,7 @@ from django.views.generic import DetailView, ListView
 from django.urls import reverse
 from django.urls import reverse_lazy as _
 
-from .forms import LoginForm, RegistrationForm, ProjectForm, SprintCreateForm
+from .forms import LoginForm, RegistrationForm, ProjectForm, SprintCreateForm, IssueForm
 from .models import Project, ProjectTeam, Issue, Sprint, Employee
 
 
@@ -46,23 +46,38 @@ def sprints_list(request, project_id):
 
 
 def create_issue(request, project_id):
-    project = Project.objects.get(pk=project_id)
-    return render(request, 'workflow/create_issue.html',
-                  {'project': project})
+    if request.method == "POST":
+        form = IssueForm(request.POST)
+        if form.is_valid():
+            new_issue = form.save(commit=False)
+            new_issue.save()
+            return redirect('workflow:backlog', project_id)
+    else:
+        form = IssueForm()
+    return render(request, 'workflow/edit_issue.html', {'form': form})
 
 
 def edit_issue(request, project_id, issue_id):
-    project = Project.objects.get(pk=project_id)
-    cur_issue = get_object_or_404(Issue, pk=issue_id)
-    return render(request, 'workflow/edit_issue.html',
-                  {'project': project, 'issue': cur_issue})
+    current_issue = get_object_or_404(Issue, pk=issue_id, project=project_id)
+    if request.method == "POST":
+        form = IssueForm(request.POST, instance=current_issue)
+        if form.is_valid():
+            current_issue = form.save(commit=False)
+            current_issue.save()
+            return redirect('workflow:backlog', project_id)
+    else:
+        form = IssueForm(instance=current_issue)
+    return render(request, 'workflow/edit_issue.html', {'form': form})
 
 
 def team(request, project_id):
     current_project = get_object_or_404(Project, pk=project_id)
-    team_list = get_list_or_404(ProjectTeam, project=current_project.id)
-    return render(request, 'workflow/team.html',
-                  {'team_list': team_list, 'project': current_project})
+    try:
+        team_list = ProjectTeam.objects.filter(project=current_project)
+    except ProjectTeam.DoesNotExist:
+        raise Http404("No team on project")
+    return render(request, 'workflow/team.html', {'team_list': team_list,
+                                                  'project': current_project})
 
 
 def backlog(request, project_id):
@@ -83,6 +98,28 @@ def issue(request, project_id, issue_id):
     return render(request, 'workflow/issue.html', {
         'issue': current_issue, 'project': project
     })
+
+
+class SprintView(DetailView):
+    model = Sprint
+    template_name = 'workflow/sprint.html'
+    query_pk_and_slug = True
+    pk_url_kwarg = 'sprint_id'
+    slug_field = 'project'
+    slug_url_kwarg = 'project_id'
+
+    def get_context_data(self, **kwargs):
+        context = super(SprintView, self).get_context_data(**kwargs)
+        cur_proj = self.kwargs['project_id']
+        cur_spr = self.kwargs['sprint_id']
+        issues_from_this_sprint = Issue.objects.filter(project_id=cur_proj,
+                                                       sprint_id=cur_spr)
+        context['new_issues'] = issues_from_this_sprint.filter(status="new")
+        context['in_progress_issues'] = \
+            issues_from_this_sprint.filter(status="in progress")
+        context['resolved_issues'] = \
+            issues_from_this_sprint.filter(status="resolved")
+        return context
 
 
 def login_form(request):
@@ -114,10 +151,10 @@ def registration_form(request):
             employee = Employee.objects.create_user(username, email, password,
                                                     last_name=last_name,
                                                     first_name=first_name)
-            return redirect('workflow:profile')
+            return redirect('workflow:index')
     else:
         form = RegistrationForm()
-    return render(request, 'workflow/registration.html', {'form': form.as_p()})
+    return render(request, 'workflow/registration.html', {'form': form})
 
 
 class ProjectCreate(CreateView):
