@@ -47,8 +47,7 @@ class Project(models.Model):
     title = models.CharField(verbose_name=_('Title'), max_length=255)
     description = models.TextField(verbose_name=_('Description'), null=True,
                                    blank=True)
-    start_date = models.DateField(verbose_name=_('Start date'),
-                                  auto_now_add=True)
+    start_date = models.DateField(verbose_name=_('Start date'))
     end_date = models.DateField(verbose_name=_('End date'), null=True,
                                 blank=True)
     is_active = models.BooleanField(verbose_name=_('Is active'), null=False,

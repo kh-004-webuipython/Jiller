@@ -3,7 +3,6 @@ from django.core.exceptions import ValidationError
 from django.forms import PasswordInput, ModelForm
 from django.utils.translation import ugettext_lazy as _
 
-
 from .models import Project, Sprint, Employee, Issue
 
 
@@ -18,7 +17,7 @@ class LoginForm(forms.Form):
 
 class RegistrationForm(forms.ModelForm):
     password_confirmation = forms.CharField(label='Confirm Password', max_length=255, widget=PasswordInput)
-    email_confirmation = forms.CharField(label='Confirm Email', max_length=255, required=False)
+    email_confirmation = forms.EmailField(label='Confirm Email', max_length=255, required=False)
 
     class Meta:
         model = Employee
@@ -43,8 +42,9 @@ class RegistrationForm(forms.ModelForm):
 class ProjectForm(ModelForm):
     class Meta:
         model = Project
-        fields = ['title', 'description', 'end_date']
+        fields = ['title', 'description', 'start_date','end_date']
         widgets = {
+            'start_date': DateInput(),
             'end_date': DateInput(),
         }
 
@@ -63,7 +63,6 @@ class IssueForm(forms.ModelForm):
 
 
 class SprintCreateForm(ModelForm):
-
     class Meta:
         model = Sprint
         fields = ['title', 'project', 'team', 'start_date', 'end_date',

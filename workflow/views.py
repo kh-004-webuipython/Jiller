@@ -151,10 +151,10 @@ def registration_form(request):
             employee = Employee.objects.create_user(username, email, password,
                                                     last_name=last_name,
                                                     first_name=first_name)
-            return redirect('workflow:profile')
+            return redirect('workflow:index')
     else:
         form = RegistrationForm()
-    return render(request, 'workflow/registration.html', {'form': form.as_p()})
+    return render(request, 'workflow/registration.html', {'form': form})
 
 
 class ProjectCreateView(CreateView):
@@ -258,6 +258,12 @@ class ActiveSprintView(DetailView):
     def get_context_data(self, **kwargs):
         context = super(ActiveSprintView, self).get_context_data(
             **kwargs)
+        try:
+            Sprint.objects.get(project_id=self.kwargs['pk'],
+                                               status='active')
+        except Sprint.DoesNotExist:
+            raise Http404("There is no active sprint in the project")
+
         active_sprint = Sprint.objects.get(project_id=self.kwargs['pk'],
                                            status='active')
         spr_index = active_sprint.id
@@ -272,10 +278,10 @@ class ActiveSprintView(DetailView):
         return context
 
 
+
 def push_issue_in_active_sprint(request, project_id, issue_id, slug):
     current_issue = get_object_or_404(Issue, pk=issue_id)
-    project = get_object_or_404(Project, pk=project_id)
-    sprint =  Sprint.objects.get(pk=current_issue.sprint_id) or None
+    sprint =  Sprint.objects.get(pk=current_issue.sprint_id)
 
     if slug == 'right' and sprint and sprint.status != 'new':
         if current_issue.status == "new":
