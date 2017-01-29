@@ -14,7 +14,7 @@ class LoginRequiredBase(TestCase):
     def setUp(self):
         self.client = Client()
         self.user = Employee.objects.create_user('john', 'lennon@thebeatles.com', 'johnpassword', first_name='Miss',
-                                                 last_name='Mister', role='PO')
+                                                 last_name='Mister', role=self.user_role_init)
         self.client.login(username='john', password='johnpassword')
 
 
