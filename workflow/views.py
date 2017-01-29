@@ -8,7 +8,6 @@ from django.http import Http404
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.views.generic import DetailView, ListView
 from django.urls import reverse
-from django.urls import reverse_lazy as _
 
 from .forms import LoginForm, RegistrationForm, ProjectForm, SprintCreateForm, IssueForm
 from .models import Project, ProjectTeam, Issue, Sprint, Employee
@@ -162,7 +161,7 @@ def user_logout_view(request):
     return redirect('workflow:login')
 
 
-class ProjectCreate(CreateView):
+class ProjectCreateView(CreateView):
     model = Project
     form_class = ProjectForm
     template_name = 'workflow/project_create_form.html'
@@ -172,11 +171,12 @@ class ProjectCreate(CreateView):
                        kwargs={'pk': self.object.id})
 
 
-class ProjectDetail(DetailView):
+class ProjectDetailView(DetailView):
     model = Project
+    template_name = 'workflow/project_detail.html'
 
 
-class ProjectUpdate(UpdateView):
+class ProjectUpdateView(UpdateView):
     model = Project
     form_class = ProjectForm
     template_name = 'workflow/project_update_form.html'
@@ -186,7 +186,7 @@ class ProjectUpdate(UpdateView):
                        kwargs={'pk': self.object.id})
 
 
-class ProjectDelete(DeleteView):
+class ProjectDeleteView(DeleteView):
     model = Project
 
     def get_success_url(self):
@@ -264,7 +264,7 @@ class ActiveSprintView(DetailView):
             **kwargs)
         try:
             Sprint.objects.get(project_id=self.kwargs['pk'],
-                                               status='active')
+                               status='active')
         except Sprint.DoesNotExist:
             raise Http404("There is no active sprint in the project")
 
@@ -282,10 +282,9 @@ class ActiveSprintView(DetailView):
         return context
 
 
-
 def push_issue_in_active_sprint(request, project_id, issue_id, slug):
     current_issue = get_object_or_404(Issue, pk=issue_id)
-    sprint =  Sprint.objects.get(pk=current_issue.sprint_id)
+    sprint = Sprint.objects.get(pk=current_issue.sprint_id)
 
     if slug == 'right' and sprint and sprint.status != 'new':
         if current_issue.status == "new":
@@ -303,7 +302,6 @@ def push_issue_in_active_sprint(request, project_id, issue_id, slug):
             current_issue.save()
     return HttpResponseRedirect(
         reverse('workflow:active_sprint', args=(project_id)))
-
 
 # This view for delete sprint. Hidden until create field is_active in
 # Sprint model
