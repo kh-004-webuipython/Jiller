@@ -22,3 +22,7 @@ html, body {
     position: static;
     margin-bottom: 5px;
 }
+
+a#createprojectbtn{
+    margin-bottom: 8px;
+}
