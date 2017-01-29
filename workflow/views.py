@@ -250,13 +250,19 @@ class SprintView(DetailView):
         return context
 
 
-class ActiveSprintViewtypeView(DetailView):
+class ActiveSprintView(DetailView):
     model = Sprint
     template_name = 'workflow/active_sprint.html'
 
     def get_context_data(self, **kwargs):
-        context = super(ActiveSprintViewtypeView, self).get_context_data(
+        context = super(ActiveSprintView, self).get_context_data(
             **kwargs)
+        try:
+            Sprint.objects.get(project_id=self.kwargs['pk'],
+                                               status='active')
+        except Sprint.DoesNotExist:
+            raise Http404("There is no active sprint in the project")
+
         active_sprint = Sprint.objects.get(project_id=self.kwargs['pk'],
                                            status='active')
         spr_index = active_sprint.id
@@ -271,10 +277,10 @@ class ActiveSprintViewtypeView(DetailView):
         return context
 
 
+
 def push_issue_in_active_sprint(request, project_id, issue_id, slug):
     current_issue = get_object_or_404(Issue, pk=issue_id)
-    project = get_object_or_404(Project, pk=project_id)
-    sprint =  Sprint.objects.get(pk=current_issue.sprint_id) or None
+    sprint =  Sprint.objects.get(pk=current_issue.sprint_id)
 
     if slug == 'right' and sprint and sprint.status != 'new':
         if current_issue.status == "new":
