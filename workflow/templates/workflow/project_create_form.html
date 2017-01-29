@@ -1,13 +1,27 @@
 {% extends 'base.html' %}
 
 {% block content %}
-  {{ block.super }}
-  <h1 style="margin: 30px">Create project</h1>
-  <div style="margin: 30px">
-    <form method="POST" action="">
-      {% csrf_token %}
-      {{ form.as_p }}
-      <input type="submit" class="btn btn-primary" value="Save">
-    </form>
-  </div>
+  <h3 class="col-sm-offset-3">Create project</h3>
+  <form role="form" action="" class="form-horizontal" method="post">
+    {% for field in form %}
+      <div class="form-group {% if form.errors %} has-error {% endif %}">
+        <label
+            class="col-sm-3 control-label no-padding-right">{{ field.label_tag }}</label>
+        <div class="col-sm-9">
+          {{ field }}
+          <div class="help-block col-xs-12 col-sm-reset inline">
+            {% for error in field.errors %}
+              {{ error }}
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+    {% endfor %}
+    {% csrf_token %}
+    <div class="clearfix">
+      <div class="col-sm-offset-3 col-sm-9">
+        <button type="submit" class="btn btn-success">Submit</button>
+      </div>
+    </div>
+  </form>
 {% endblock %}

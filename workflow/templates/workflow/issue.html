@@ -1,9 +1,12 @@
-{% extends 'workflow/project_navbar.html' %}
+{% extends 'base.html' %}
 
 {% block title %}Issue{% endblock %}
 
 {% block content %}
-  {{ block.super }}
+  <div class="project_navbar">
+    {% include 'workflow/project_navbar.html' %}
+  </div>
+
   <div class="table-responsive">
     <table class="table table-bordered">
     <thead>

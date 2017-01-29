@@ -22,3 +22,13 @@ html, body {
     position: static;
     margin-bottom: 5px;
 }
+
+.footer .container {
+    text-align: center;
+    margin: 20px 0;
+}
+
+.footer .container span{
+    margin: 20px 0;
+    text-align: center;
+}
