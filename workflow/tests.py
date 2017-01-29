@@ -88,16 +88,15 @@ from .models import Project, Issue, Employee, Sprint, ProjectTeam
 
 
 class ProjectViewTests(TestCase):
-
     @classmethod
     def setUpTestData(cls):
         # Set up data for the whole TestCase
         cls.project = Project.objects.create(title='only a test',
-                                     description='yes, this is only a test',
-                                     start_date= datetime.date(2017, 12, 14),
-                                     end_date= datetime.date(2017, 12, 14))
-
-
+                                             description='yes, this is only a test',
+                                             start_date=datetime.date(2017, 12,
+                                                                      14),
+                                             end_date=datetime.date(2017, 12,
+                                                                    14))
 
     # def create_project(self, title='only a test',
     #                    description='yes, this is only a test',
@@ -120,7 +119,7 @@ class ProjectViewTests(TestCase):
     #     self.assertEqual(resp.status_code, 200)
     #     self.assertIn(w.title, resp.content)
 
-    #create
+    # create
     def test_project_create(self):
         response = self.client.get(reverse('workflow:project_create'))
         self.assertEqual(response.status_code, 200)
@@ -128,7 +127,6 @@ class ProjectViewTests(TestCase):
     def check_how_many_oprojects_is_in_db_now(self):
         all_projects_in_database = Project.objects.all()
         self.assertEquals(all_projects_in_database.count(), 1)
-
 
     def check_all_project_attributes(self):
         only_project_in_database = Project.objects.all()[0]
@@ -141,23 +139,29 @@ class ProjectViewTests(TestCase):
         self.assertEquals(only_project_in_database.end_date,
                           self.project.end_date)
 
-    #detail
-    def test_project_detail(self):
+    # update
+    def test_project_update_page(self):
         test_project = self.project
         response = self.client.get(
             reverse('workflow:project_detail', kwargs={'pk': test_project.id}))
         self.assertEqual(response.status_code, 200)
 
-    #update
-    def test_project_update(self):
+    def test_project_updation(self):
         test_project = self.project
-        response = self.client.get(
-            reverse('workflow:project_detail', kwargs={'pk': test_project.id}))
-        self.assertEqual(response.status_code, 200)
 
-    #delete
-    def test_project_delete(self):
+
+    # delete
+    def test_project_delete_page(self):
         test_project = self.project
         response = self.client.get(
             reverse('workflow:project_delete', kwargs={'pk': test_project.id}))
+        self.assertEqual(response.status_code, 200)
+
+
+    # detail
+    def test_project_detail_page(self):
+        test_project = self.project
+        response = self.client.get(
+            reverse('workflow:project_detail',
+                    kwargs={'pk': test_project.id}))
         self.assertEqual(response.status_code, 200)
