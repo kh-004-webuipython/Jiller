@@ -3,15 +3,26 @@ from django.test import TestCase, Client
 from django.urls import reverse
 from django.utils import timezone
 
-
 from .models import Project, Issue, Employee, Sprint, ProjectTeam
 
 
-class BacklogViewTests(TestCase):
+class LoginRequiredBase(TestCase):
+    def __init__(self, *args, **kwargs):
+        super(LoginRequiredBase, self).__init__(*args, **kwargs)
+        self.user_role_init = Employee.DEVELOPER
+
+    def setUp(self):
+        self.client = Client()
+        self.user = Employee.objects.create_user('john', 'lennon@thebeatles.com', 'johnpassword', first_name='Miss',
+                                                 last_name='Mister', role=self.user_role_init)
+        self.client.login(username='john', password='johnpassword')
+
+
+class BacklogViewTests(LoginRequiredBase):
     def test_backlog_view_with_no_issues(self):
         project = Project.objects.create(title='title')
         response = self.client.get(reverse('workflow:backlog',
-                                           args=[project.id, ]))
+                                           kwargs={'project_id':project.id}))
         self.assertContains(response, "No issues.")
         self.assertEqual(response.status_code, 200)
         self.assertQuerysetEqual(response.context['issues'], [])
@@ -41,10 +52,11 @@ class BacklogViewTests(TestCase):
     def test_backlog_view_with_nonexistent_project(self):
         project = Project.objects.create(title='title')
         response = self.client.get(reverse('workflow:backlog',
-                                           args=[project.id+1, ]))
+                                           args=[project.id + 1, ]))
         self.assertEqual(response.status_code, 404)
 
-class SprintsListViewTests(TestCase):
+
+class SprintsListViewTests(LoginRequiredBase):
     def test_sprints_list_view_with_no_sprint(self):
         project = Project.objects.create(title='title')
         response = self.client.get(reverse('workflow:sprints_list',
