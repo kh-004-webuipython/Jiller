@@ -42,8 +42,9 @@ class RegistrationForm(forms.ModelForm):
 class ProjectForm(ModelForm):
     class Meta:
         model = Project
-        fields = ['title', 'description', 'end_date']
+        fields = ['title', 'description', 'start_date','end_date']
         widgets = {
+            'start_date': DateInput(),
             'end_date': DateInput(),
         }
 
