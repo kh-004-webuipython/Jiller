@@ -80,7 +80,7 @@ class SprintsListViewTests(TestCase):
 from .models import Project
 
 
-class ProjectTests(TestCase):
+class ProjectViewTests(TestCase):
     def create_project(self, title='only a test',
                        description='yes, this is only a test',
                        start_date='2017-12-14', end_date='2017-12-14'):
@@ -90,6 +90,7 @@ class ProjectTests(TestCase):
     def test_project_creation(self):
         test_project = self.create_project()
         self.assertTrue(isinstance(test_project, Project))
+        self.assertTrue(isinstance(test_project.title, Project.title))
 
     # views (uses reverse)
 
