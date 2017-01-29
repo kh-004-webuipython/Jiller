@@ -8,7 +8,6 @@ from django.http import Http404
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.views.generic import DetailView, ListView
 from django.urls import reverse
-from django.urls import reverse_lazy as _
 
 from .forms import LoginForm, RegistrationForm, ProjectForm, SprintCreateForm, IssueForm
 from .models import Project, ProjectTeam, Issue, Sprint, Employee
