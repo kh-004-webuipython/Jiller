@@ -42,10 +42,18 @@ class RegistrationForm(forms.ModelForm):
 class ProjectForm(ModelForm):
     class Meta:
         model = Project
-        fields = ['title', 'description', 'end_date']
+        fields = ['title', 'description', 'start_date','end_date']
         widgets = {
+            'start_date': DateInput(),
             'end_date': DateInput(),
         }
+
+    def clean(self):
+        cleaned_data = super(ProjectForm, self).clean()
+        start_date = cleaned_data.get('start_date')
+        end_date = cleaned_data.get('end_date')
+        if start_date > end_date:
+            self.add_error('end_date', _('End date cant\'t be earlies than start date'))
 
 
 class IssueForm(forms.ModelForm):
