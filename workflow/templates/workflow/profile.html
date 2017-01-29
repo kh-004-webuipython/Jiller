@@ -1,8 +1,15 @@
 {% extends 'base.html' %}
 
+{% load i18n %}
+
+{% block breadcrumbs %}
+  {{ block.super }}
+  <li><span>{% trans 'Profile' %}</span></li>
+{% endblock %}
+
 {% block content %}
   {% if request.user.is_authenticated %}
-    <p>Your profile:</p>
+    <h2>Your profile: {{ user.username }}</h2>
     <p>First Name: {{ user.first_name }}</p>
     <p>Last Name: {{ user.last_name }}</p>
     <p>Role: {{ user.role }}</p>
