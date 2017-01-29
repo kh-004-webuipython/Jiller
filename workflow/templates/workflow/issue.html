@@ -3,34 +3,32 @@
 {% block title %}Issue{% endblock %}
 
 {% block content %}
-  <div class="project_navbar">
-    {% include 'workflow/project_navbar.html' %}
-  </div>
+  {% include 'workflow/project_navbar.html' %}
 
   <div class="table-responsive">
     <table class="table table-bordered">
-    <thead>
-    <tr>
-      <th>Issue title</th>
-      <th>Description</th>
-      <th>Status</th>
-      <th>estimation</th>
-      <th>author</th>
-      <th>Sprint</th>
-      <th>Employee</th>
-    </tr>
-    </thead>
-    <tbody>
-    <tr>
-      <td>{{ issue.title }}</td>
-      <td>{{ issue.description }}</td>
-      <td>{{ issue.status }}</td>
-      <td>{{ issue.estimation }}h</td>
-      <td>{{ issue.author }}</td>
-      <td>{{ issue.sprint }}</td>
-      <td>{{ issue.employee }}</td>
-    </tr>
-    </tbody>
+      <thead>
+      <tr>
+        <th>Issue title</th>
+        <th>Description</th>
+        <th>Status</th>
+        <th>estimation</th>
+        <th>author</th>
+        <th>Sprint</th>
+        <th>Employee</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr>
+        <td>{{ issue.title }}</td>
+        <td>{{ issue.description }}</td>
+        <td>{{ issue.status }}</td>
+        <td>{{ issue.estimation }}h</td>
+        <td>{{ issue.author }}</td>
+        <td>{{ issue.sprint }}</td>
+        <td>{{ issue.employee }}</td>
+      </tr>
+      </tbody>
     </table>
   </div>
 

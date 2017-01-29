@@ -2,15 +2,13 @@
 {% load static %}
 
 {% block extrastyles %}
-  <link rel="stylesheet" href="{% static 'workflow/style.css' %}">
+  <link rel="stylesheet" href="{% static 'workflow/css/style.css' %}">
 {% endblock %}
 {% block content %}
-  <div class="project_navbar">
-    {% include 'workflow/project_navbar.html' %}
-  </div>
+  {% include 'workflow/project_navbar.html' %}
 
-  <div class = "project-detail row">
-    <div class="col-xs-12 col-sm-6">
+  <div class="col-xs-12 col-sm-10 col-sm-offset-1 project-detail row">
+    <div class="col-xs-12 col-sm-6 ">
       <p><span>Title:</span> {{ project.title }}</p>
     </div>
 
@@ -24,7 +22,8 @@
       <p class="pull-right"><span>End Date:</span> {{ project.end_date }}</p>
     </div>
     <div class="col-xs-12 col-sm-6 pull-right">
-      <a class = "btn btn-info pull-right" href="{% url 'workflow:project_update' project.id %}"> Edit </a>
+      <a class="btn btn-info pull-right"
+         href="{% url 'workflow:project_update' project.id %}"> Edit </a>
     </div>
   </div>
 {% endblock %}

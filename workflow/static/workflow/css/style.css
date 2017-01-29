@@ -13,3 +13,9 @@
     padding: 20px;
     font-size: 16px;
 }
+.register-link{
+    text-decoration: underline;
+    margin-left: 10px;
+    font-size: 16px;
+    margin-top: 5px;
+}

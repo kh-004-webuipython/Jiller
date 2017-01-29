@@ -2,9 +2,7 @@
 {% load staticfiles %}
 
 {% block content %}
-  <div class="project_navbar">
-    {% include 'workflow/project_navbar.html' %}
-  </div>
+  {% include 'workflow/project_navbar.html' %}
   <h2>Team list</h2>
   <ul>
     {% if team_list %}

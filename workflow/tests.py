@@ -145,7 +145,7 @@ class ProjectViewTests(LoginRequiredBase):
                     kwargs={'pk': test_project.id}))
         self.assertEqual(response.status_code, 200)
 
-    def test_project_updation(self):
+    def test_project_update(self):
         test_project = self.project
 
 
