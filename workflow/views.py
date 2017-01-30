@@ -223,7 +223,7 @@ class SprintCreate(CreateView):
         return context
 
     def get_success_url(self):
-        return _('workflow:sprint', args=(self.object.project_id,
+        return reverse('workflow:sprint', args=(self.object.project_id,
                                           self.object.id))
 
 
@@ -262,24 +262,29 @@ class ActiveSprintView(DetailView):
     def get_context_data(self, **kwargs):
         context = super(ActiveSprintView, self).get_context_data(
             **kwargs)
+
         try:
             Sprint.objects.get(project_id=self.kwargs['pk'],
                                status='active')
         except Sprint.DoesNotExist:
-            raise Http404("There is no active sprint in the project")
+            context['project'] = Project.objects.get(id=self.kwargs['pk'])
+            context['no_active_sprint'] = True
 
-        active_sprint = Sprint.objects.get(project_id=self.kwargs['pk'],
-                                           status='active')
-        spr_index = active_sprint.id
-        issues_from_active_sprint = Issue.objects.filter(
-            project_id=self.kwargs['pk'], sprint_id=spr_index)
-        context['new_issues'] = issues_from_active_sprint.filter(status="new")
-        context['in_progress_issues'] = issues_from_active_sprint.filter(
-            status="in progress")
-        context['resolved_issues'] = issues_from_active_sprint.filter(
-            status="resolved")
-        context['project'] = Project.objects.get(id=self.kwargs['pk'])
-        return context
+            return context
+        else:
+
+            active_sprint = Sprint.objects.get(project_id=self.kwargs['pk'],
+                                               status='active')
+            context['active_sprint'] = active_sprint
+            issues_from_active_sprint = Issue.objects.filter(
+                project_id=self.kwargs['pk'], sprint_id=active_sprint.id)
+            context['new_issues'] = issues_from_active_sprint.filter(status="new")
+            context['in_progress_issues'] = issues_from_active_sprint.filter(
+                status="in progress")
+            context['resolved_issues'] = issues_from_active_sprint.filter(
+                status="resolved")
+            context['project'] = Project.objects.get(id=self.kwargs['pk'])
+            return context
 
 
 def push_issue_in_active_sprint(request, project_id, issue_id, slug):

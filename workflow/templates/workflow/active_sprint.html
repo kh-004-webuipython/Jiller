@@ -6,6 +6,10 @@
   {% include 'workflow/project_navbar.html' %}
 
 
+  {% if no_active_sprint %}
+    <h4>There is no active sprint yet</h4>
+  {% endif %}
+  {% if not no_active_sprint %}
   <div class="table-responsive">
     <table class="table table-bordered">
       <thead>
@@ -17,9 +21,9 @@
       </thead>
       <tbody>
       <tr>
-        <td>{{ object.title }}</td>
-        <td>{{ object.start_date|date:"d/m/Y" }}</td>
-        <td>{{ object.end_date|date:"d/m/Y" }}</td>
+        <td>{{ active_sprint.title }}</td>
+        <td>{{ active_sprint.start_date|date:"d/m/Y" }}</td>
+        <td>{{ active_sprint.end_date|date:"d/m/Y" }}</td>
       </tr>
       </tbody>
     </table>
@@ -107,4 +111,5 @@
       </table>
     </div>
   </div>
+  {% endif %}
 {% endblock %}

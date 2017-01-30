@@ -26,4 +26,7 @@
          href="{% url 'workflow:project_update' project.id %}"> Edit </a>
     </div>
   </div>
+  <br><br><br><br><br>
+  <a href="{% url 'workflow:sprint_create' project.id %}"
+     class="btn btn-primary">Create new sprint</a>
 {% endblock %}
