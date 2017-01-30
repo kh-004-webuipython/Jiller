@@ -130,9 +130,9 @@ def login_form_view(request):
             if user is not None:
                 login(request, user)
                 return redirect('workflow:profile')
-            else:
-                messages.error(request, _("Wrong username or password"))
-                return redirect('workflow:login')
+
+        messages.error(request, _("Wrong username or password"))
+        return redirect('workflow:login')
     else:
         form = LoginForm()
     return render(request, 'workflow/login.html', {'form': form})
@@ -147,10 +147,12 @@ def registration_form_view(request):
             last_name = form.cleaned_data['last_name']
             first_name = form.cleaned_data['first_name']
             email = form.cleaned_data['email']
+            role = form.cleaned_data['role']
             employee = Employee.objects.create_user(username, email, password,
                                                     last_name=last_name,
-                                                    first_name=first_name)
-            return redirect('workflow:index')
+                                                    first_name=first_name,
+                                                    role=role)
+            return redirect('workflow:login')
     else:
         form = RegistrationForm()
     return render(request, 'workflow/registration.html', {'form': form})

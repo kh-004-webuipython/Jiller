@@ -37,6 +37,15 @@ class RegistrationForm(forms.ModelForm):
             self.add_error('password', _('Password do not equal confirm password'))
         if email != confirm_email:
             self.add_error('email', _('Email does not equal confirm email'))
+        user = Employee.objects.filter(username=cleaned_data['username']).first()
+        if user is not None:
+            self.add_error('username', _('User with this username already exists'))
+        user = Employee.objects.filter(email=email).first()
+        if user is not None:
+            self.add_error('email', _('User with this email already exists'))
+        role = cleaned_data.get('role')
+        if role not in (Employee.DEVELOPER, Employee.PRODUCT_OWNER, Employee.SCRUM_MASTER):
+            self.add_error('role', _('Wrong user role'))
 
 
 class ProjectForm(ModelForm):
