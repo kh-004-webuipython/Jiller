@@ -34,6 +34,32 @@ html, body {
     text-align: center;
 }
 
-a#createprojectbtn{
+a#createprojectbtn {
     margin-bottom: 8px;
+}
+
+.project-detail {
+    margin-top: 20px;
+    font-size: 16px;
+}
+
+.project-detail p {
+    padding: 20px 0;
+}
+
+.project-detail span {
+    font-weight: 600;
+}
+
+.form-horizontal div {
+    text-align: center;
+    padding: 20px;
+    font-size: 16px;
+}
+
+.register-link {
+    text-decoration: underline;
+    margin-left: 10px;
+    font-size: 16px;
+    margin-top: 5px;
 }
