@@ -1,10 +1,10 @@
 {% extends 'base.html' %}
 
 {% block content %}
-  {% include 'workflow/project_navbar.html' %}
+  {% include 'project/project_navbar.html' %}
   <h2 class="inline">Backlog | Project - {{ project.title }}</h2>
 
-  <a href="{% url 'workflow:create_issue' project.id %}"
+  <a href="{% url 'project:issue_create' project.id %}"
      class="btn btn-primary pull-right"
      role="button">Create issue</a>
 
@@ -25,10 +25,10 @@
           <tr>
             <td>{{ issue.id }}</td>
             <td>{{ issue.author }}</td>
-            <td><a href="{% url 'workflow:issue' project.id issue.id %}">
+            <td><a href="{% url 'project:issue_detail' project.id issue.id %}">
               {{ issue.title }}</a></td>
             <td>{{ issue.status }}</td>
-            <td><a href="{% url 'workflow:edit_issue' project.id issue.id %}">
+            <td><a href="{% url 'project:issue_edit' project.id issue.id %}">
               <span class="glyphicon glyphicon-pencil"></span></a></td>
           </tr>
         {% endfor %}

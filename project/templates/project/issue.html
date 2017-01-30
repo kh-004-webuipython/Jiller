@@ -3,7 +3,7 @@
 {% block title %}Issue{% endblock %}
 
 {% block content %}
-  {% include 'workflow/project_navbar.html' %}
+  {% include 'project/project_navbar.html' %}
 
   <div class="table-responsive">
     <table class="table table-bordered">
@@ -32,7 +32,7 @@
     </table>
   </div>
 
-  <a href="{% url 'workflow:edit_issue' project.id issue.id %}"
+  <a href="{% url 'project:issue_edit' project.id issue.id %}"
      class="btn btn-default">Edit this issue</a>
 {% endblock %}
 

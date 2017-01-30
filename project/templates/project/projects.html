@@ -9,8 +9,8 @@
 {% endblock %}
 
 {% block content %}
-  {{ block.super }}
-  <a class="btn btn-primary" id="createprojectbtn" href="{% url 'workflow:project_create' %}">Create project</a>
+
+  <a class="btn btn-primary" id="createprojectbtn" href="{% url 'project:create' %}">Create project</a>
 
   <table class="table table-bordered table-hover">
       <thead>
@@ -25,7 +25,7 @@
 
       <tr>
           <td>
-              <a href="{% url 'workflow:project_detail' project.id%}">{{ project.title }}</a>
+              <a href="{% url 'project:detail' project.id%}">{{ project.title }}</a>
           </td>
           <td>
               {{ project.start_date|date:"d.m.Y" }}

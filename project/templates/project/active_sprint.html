@@ -3,7 +3,7 @@
 {% block title %}Active sprint{% endblock %}
 
 {% block content %}
-  {% include 'workflow/project_navbar.html' %}
+  {% include 'project/project_navbar.html' %}
 
 
   {% if no_active_sprint %}
@@ -44,10 +44,10 @@
           <tr>
             <td class="text-center">
               <a href="
-{% url 'workflow:issue' new_iss.project_id new_iss.id %}">
+{% url 'project:issue' new_iss.project_id new_iss.id %}">
                 {{ new_iss.title }}</a>
               <a href="
-{% url 'workflow:issue_push' new_iss.project_id new_iss.id 'right' %}">
+{% url 'project:issue_push' new_iss.project_id new_iss.id 'right' %}">
               <span style="float: right"
                     class="glyphicon glyphicon-circle-arrow-right"></span>
               </a>
@@ -68,15 +68,15 @@
           <tr>
             <td class="text-center">
               <a href="
-{% url 'workflow:issue_push' progress.project_id progress.id 'left' %}">
+{% url 'project:issue_push' progress.project_id progress.id 'left' %}">
               <span style="float: left"
                     class="glyphicon glyphicon-circle-arrow-left"></span>
               </a>
               <a href="
-{% url 'workflow:issue' progress.project_id progress.id %}">
+{% url 'project:issue_detail' progress.project_id progress.id %}">
                 {{ progress.title }}</a>
               <a href="
-{% url 'workflow:issue_push' progress.project_id progress.id 'right' %}">
+{% url 'project:issue_push' progress.project_id progress.id 'right' %}">
               <span style="float: right"
                     class="glyphicon glyphicon-circle-arrow-right"></span>
               </a>
@@ -98,12 +98,12 @@
           <tr>
             <td class="text-center">
               <a href="
-{% url 'workflow:issue_push' resolved.project_id resolved.id 'left' %}">
+{% url 'project:issue_push' resolved.project_id resolved.id 'left' %}">
               <span style="float: left"
                     class="glyphicon glyphicon-circle-arrow-left"></span>
               </a>
               <a href="
-{% url 'workflow:issue' resolved.project_id resolved.id %}">
+{% url 'project:issue_detail' resolved.project_id resolved.id %}">
                 {{ resolved.title }}</a></td>
           </tr>
         {% endfor %}

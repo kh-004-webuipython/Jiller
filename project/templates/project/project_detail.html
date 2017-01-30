@@ -1,11 +1,8 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block extrastyles %}
-  <link rel="stylesheet" href="{% static 'workflow/css/style.css' %}">
-{% endblock %}
 {% block content %}
-  {% include 'workflow/project_navbar.html' %}
+  {% include 'project/project_navbar.html' %}
 
   <div class="col-xs-12 col-sm-10 col-sm-offset-1 project-detail row">
     <div class="col-xs-12 col-sm-6 ">
@@ -23,10 +20,10 @@
     </div>
     <div class="col-xs-12 col-sm-6 pull-right">
       <a class="btn btn-info pull-right"
-         href="{% url 'workflow:project_update' project.id %}"> Edit </a>
+         href="{% url 'project:update' project.id %}"> Edit </a>
     </div>
   </div>
   <br><br><br><br><br>
-  <a href="{% url 'workflow:sprint_create' project.id %}"
+  <a href="{% url 'project:create' project.id %}"
      class="btn btn-primary">Create new sprint</a>
 {% endblock %}

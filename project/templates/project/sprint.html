@@ -3,7 +3,7 @@
 {% block title %}Sprint{% endblock %}
 
 {% block content %}
-  {% include 'workflow/project_navbar.html' %}
+  {% include 'project/project_navbar.html' %}
 
   <div class="table-responsive">
     <table class="table table-bordered">
@@ -39,7 +39,7 @@
           <tr>
             <td class="text-center">
               <a href="
-{% url 'workflow:issue' new_issue.project_id new_issue.id %}">
+{% url 'project:issue_detail' new_issue.project_id new_issue.id %}">
                 {{ new_issue.title }}</a></td>
           </tr>
         {% endfor %}
@@ -63,7 +63,7 @@
           <tr>
             <td class="text-center">
               <a href="
-{% url 'workflow:issue' in_progress_issue.project_id in_progress_issue.id %}">
+{% url 'project:issue_detail' in_progress_issue.project_id in_progress_issue.id %}">
                 {{ in_progress_issue.title }}</a></td>
           </tr>
         {% endfor %}
@@ -88,7 +88,7 @@
           <tr>
             <td class="text-center">
               <a href="
-{% url 'workflow:issue' resolved_issue.project_id resolved_issue.id %}">
+{% url 'project:issue_detail' resolved_issue.project_id resolved_issue.id %}">
                 {{ resolved_issue.title }}</a></td>
           </tr>
         {% endfor %}
@@ -113,7 +113,7 @@
           <tr>
             <td class="text-center">
               <a href="
-{% url 'workflow:issue' closed_issue.project_id closed_issue.id %}">
+{% url 'project:issue_detail' closed_issue.project_id closed_issue.id %}">
                 {{ closed_issue.title }}</a></td>
           </tr>
         {% endfor %}

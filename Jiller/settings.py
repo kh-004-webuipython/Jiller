@@ -128,9 +128,9 @@ STATIC_URL = '/static/'
 STATICFILES_DIRS = (os.path.join(BASE_DIR, 'static'),)
 
 
-AUTH_USER_MODEL = 'workflow.Employee'
+AUTH_USER_MODEL = 'employee.Employee'
 
-LOGIN_URL = 'workflow:login'
+LOGIN_URL = 'general:login'
 
 LOGIN_EXEMPT_URLS = (
  r'^login/$',

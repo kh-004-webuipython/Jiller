@@ -2,7 +2,7 @@
 {% load staticfiles %}
 
 {% block content %}
-  {% include 'workflow/project_navbar.html' %}
+  {% include 'project/project_navbar.html' %}
   <h2>Team list</h2>
   <ul>
     {% if team_list %}
@@ -10,7 +10,7 @@
         {% if team.employees %}
           {% for employee in team.employees.all %}
             <li><strong><a
-                href="{% url 'workflow:employee-detail' employee.id %}">
+                href="{% url 'employee:detail' employee.id %}">
               {{ employee.first_name }} {{ employee.last_name }}</a></strong>
             </li>
           {% endfor %}

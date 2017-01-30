@@ -3,7 +3,7 @@
 {% block styles %}
   <link rel="stylesheet" href='{% static 'css/bootstrap.css' %}'
         type='text/css'/>
-  <link rel="stylesheet" type="text/css" href="{% static 'workflow/css/style.css' %}"/>
+  <link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}"/>
 {% endblock %}
 
 {% block content %}
@@ -12,7 +12,7 @@
   <div class="container">
     <div class="row">
       <div class="col-xs-12 col-sm-4 col-sm-offset-4">
-        <form class="form-signin" action="{% url 'workflow:login' %}"
+        <form class="form-signin" action="{% url 'general:login' %}"
               method="post">
           {% csrf_token %}
           <div class="form-group">
@@ -38,7 +38,7 @@
             <input class="btn btn-lg btn-primary btn-block" type="submit"
                    value="Log in">
             <div class="register-link">
-              <a href="{% url 'workflow:registration' %}" class="center-block">Register</a>
+              <a href="{% url 'general:registration' %}" class="center-block">Register</a>
             </div>
           </div>
         </form>

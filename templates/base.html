@@ -59,7 +59,7 @@
     <!-- /section:basics/sidebar.mobile.toggle -->
     <div class="navbar-header pull-left">
       <!-- #section:basics/navbar.layout.brand -->
-      <a href="." class="navbar-brand">
+      <a href="{% url 'general:home_page' %}" class="navbar-brand">
         <small>Jiller</small>
       </a>
     </div>
@@ -78,13 +78,13 @@
             </a>
               <ul class="user-menu dropdown-menu-right dropdown-menu dropdown-yellow dropdown-caret dropdown-close">
                   <li>
-                      <a href="{% url 'workflow:logout' %}">
+                      <a href="{% url 'general:logout' %}">
                           <i class="ace-icon fa fa-power-off"></i>
                           Logout
                       </a>
                   </li>
                   <li>
-                      <a href="{% url 'workflow:profile' %}">
+                      <a href="{% url 'general:profile' %}">
                           <i class="ace-icon fa fa-user"></i>
                           Profile
                       </a>
@@ -93,10 +93,10 @@
           </li>
         {% else %}
           <li class="light-blue">
-            <a href="{% url 'workflow:registration' %}">Registration</a>
+            <a href="{% url 'general:registration' %}">Registration</a>
           </li>
           <li class="light-blue">
-            <a href="{% url 'workflow:login' %}">Login</a>
+            <a href="{% url 'general:login' %}">Login</a>
           </li>
 
         {% endif %}
@@ -161,14 +161,14 @@
     </div><!-- /.sidebar-shortcuts -->
     <ul class="nav nav-list">
       <li class="">
-        <a href="{% url 'workflow:employee-index' %}">
+        <a href="{% url 'employee:list' %}">
           <i class="menu-icon"> <span class="glyphicon glyphicon-user"></span></i>
           <span class="menu-text">{% trans 'Employee' %}</span>
         </a>
         <b class="arrow"></b>
       </li>
       <li class="">
-        <a href="{% url 'workflow:projects' %}">
+        <a href="{% url 'project:list' %}">
           <i class="menu-icon"> <span class="glyphicon glyphicon-flag"></span></i>
           <span class="menu-text">{% trans 'Projects' %}</span>
         </a>
@@ -221,7 +221,7 @@
           {% block breadcrumbs %}
             <li>
               <i class="ace-icon fa fa-home home-icon"></i>
-              <a href="{% url 'workflow:index' %}">{% trans 'Home' %}</a>
+              <a href="{% url 'general:home_page' %}">{% trans 'Home' %}</a>
             </li>
           {% endblock %}
         </ul><!-- /.breadcrumb -->

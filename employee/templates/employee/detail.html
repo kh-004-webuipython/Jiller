@@ -7,7 +7,7 @@
 {% block breadcrumbs %}
   {{ block.super }}
   <li>
-    <a href="{% url 'workflow:employee-index' %}">{% trans 'Employee' %}</a>
+    <a href="{% url 'employee:list' %}">{% trans 'Employee' %}</a>
   </li>
   <li>
     <span>{{ employee.id }}</span>

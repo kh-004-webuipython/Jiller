@@ -25,13 +25,13 @@ class LoginRequiredBase(TestCase):
 
 class ProjectsListViewTests(LoginRequiredBase):
     def test_projectlist_view_with_no_projects(self):
-        response = self.client.get(reverse('workflow:projects'))
+        response = self.client.get(reverse('project:list'))
         self.assertContains(response, "There is no projects yet.", status_code=200)
         self.assertQuerysetEqual(response.context['project_list'], [])
 
     def test_projectlist_view_with_projects(self):
         project = Project.objects.create(title='title')
-        response = self.client.get(reverse('workflow:projects'))
+        response = self.client.get(reverse('project:list'))
         self.assertQuerysetEqual(response.context['project_list'],
                                  ['<Project: title>'])
 
@@ -42,7 +42,7 @@ class BacklogViewTests(LoginRequiredBase):
         project = Project.objects.create(title='title',
                                          start_date=datetime.date(
                                              2017, 12, 14))
-        response = self.client.get(reverse('workflow:backlog',
+        response = self.client.get(reverse('project:backlog',
                                            kwargs={'project_id': project.id}))
         self.assertContains(response, "No issues.")
         self.assertEqual(response.status_code, 200)
@@ -55,7 +55,7 @@ class BacklogViewTests(LoginRequiredBase):
         employee = Employee.objects.create(role=Employee.DEVELOPER)
         Issue.objects.create(project=project,
                              author=employee, title='title')
-        response = self.client.get(reverse('workflow:backlog',
+        response = self.client.get(reverse('project:backlog',
                                            args=[project.id, ]))
         self.assertQuerysetEqual(response.context['issues'],
                                  ['<Issue: title>'])
@@ -70,7 +70,7 @@ class BacklogViewTests(LoginRequiredBase):
                                        team=team)
         Issue.objects.create(project=project, author=employee,
                              title='title', sprint=sprint)
-        response = self.client.get(reverse('workflow:backlog',
+        response = self.client.get(reverse('project:backlog',
                                            args=[project.id, ]))
         self.assertQuerysetEqual(response.context['issues'], [])
 
@@ -78,7 +78,7 @@ class BacklogViewTests(LoginRequiredBase):
         project = Project.objects.create(title='title',
                                          start_date=datetime.date(
                                              2017, 12, 14))
-        response = self.client.get(reverse('workflow:backlog',
+        response = self.client.get(reverse('project:backlog',
                                            args=[project.id + 1, ]))
         self.assertEqual(response.status_code, 404)
 
@@ -88,7 +88,7 @@ class SprintsListViewTests(LoginRequiredBase):
         project = Project.objects.create(title='title',
                                          start_date=datetime.date(
                                              2017, 12, 14))
-        response = self.client.get(reverse('workflow:sprints_list',
+        response = self.client.get(reverse('project:sprints_list',
                                            args=[project.id, ]))
         self.assertContains(response, "No sprints.")
         self.assertEqual(response.status_code, 200)
@@ -100,7 +100,7 @@ class SprintsListViewTests(LoginRequiredBase):
                                              2017, 12, 14))
         team = ProjectTeam.objects.create(project=project, title='title')
         Sprint.objects.create(title='title', project=project, team=team)
-        response = self.client.get(reverse('workflow:sprints_list',
+        response = self.client.get(reverse('project:sprints_list',
                                            args=[project.id, ]))
         self.assertQuerysetEqual(response.context['sprints'],
                                  ['<Sprint: title>'])
@@ -112,7 +112,7 @@ class SprintsListViewTests(LoginRequiredBase):
         team = ProjectTeam.objects.create(project=project, title='title')
         Sprint.objects.create(title='title', project=project,
                               team=team, status=Sprint.ACTIVE)
-        response = self.client.get(reverse('workflow:sprints_list',
+        response = self.client.get(reverse('project:sprints_list',
                                            args=[project.id, ]))
         self.assertQuerysetEqual(response.context['sprints'], [])
 
@@ -120,7 +120,7 @@ class SprintsListViewTests(LoginRequiredBase):
         project = Project.objects.create(title='title',
                                          start_date=datetime.date(
                                              2017, 12, 14))
-        response = self.client.get(reverse('workflow:sprints_list',
+        response = self.client.get(reverse('project:sprints_list',
                                            args=[project.id + 1, ]))
         self.assertEqual(response.status_code, 404)
 
@@ -138,7 +138,7 @@ class ProjectViewTests(LoginRequiredBase):
         # create
 
     def test_project_create(self):
-        response = self.client.get(reverse('workflow:project_create'))
+        response = self.client.get(reverse('project:create'))
         self.assertEqual(response.status_code, 200)
 
     def check_how_many_objects_are_in_db_now(self):
@@ -162,7 +162,7 @@ class ProjectViewTests(LoginRequiredBase):
     def test_project_update_page(self):
         test_project = self.project
         response = self.client.get(
-            reverse('workflow:project_detail',
+            reverse('project:detail',
                     kwargs={'pk': test_project.id}))
         self.assertEqual(response.status_code, 200)
 
@@ -183,7 +183,7 @@ class ProjectViewTests(LoginRequiredBase):
     def test_project_delete_page(self):
         test_project = self.project
         response = self.client.get(
-            reverse('workflow:project_delete',
+            reverse('project:delete',
                     kwargs={'pk': test_project.id}))
         self.assertEqual(response.status_code, 200)
 
@@ -199,6 +199,6 @@ class ProjectViewTests(LoginRequiredBase):
     def test_project_detail_page(self):
         test_project = self.project
         response = self.client.get(
-            reverse('workflow:project_detail',
+            reverse('project:detail',
                     kwargs={'pk': test_project.id}))
         self.assertEqual(response.status_code, 200)
