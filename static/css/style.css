@@ -29,7 +29,11 @@ html, body {
     width: auto;
 }
 
-.footer .container span{
+.footer .container span {
     margin: 20px 0;
     text-align: center;
+}
+
+a#createprojectbtn{
+    margin-bottom: 8px;
 }

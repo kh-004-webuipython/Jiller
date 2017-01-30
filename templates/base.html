@@ -76,14 +76,19 @@
                 {{ request.user }}</span>
               <i class="ace-icon fa fa-caret-down"></i>
             </a>
-
-            <ul class="user-menu dropdown-menu-right dropdown-menu dropdown-yellow dropdown-caret dropdown-close">
-              <li>
-                <a href="{% url 'workflow:logout' %}">
-                  <i class="ace-icon fa fa-power-off"></i>
-                  Logout
-                </a>
-              </li>
+              <ul class="user-menu dropdown-menu-right dropdown-menu dropdown-yellow dropdown-caret dropdown-close">
+                  <li>
+                      <a href="{% url 'workflow:logout' %}">
+                          <i class="ace-icon fa fa-power-off"></i>
+                          Logout
+                      </a>
+                  </li>
+                  <li>
+                      <a href="{% url 'workflow:profile' %}">
+                          <i class="ace-icon fa fa-user"></i>
+                          Profile
+                      </a>
+                  </li>
             </ul>
           </li>
         {% else %}
