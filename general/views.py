@@ -27,9 +27,8 @@ def login_form_view(request):
             if user is not None:
                 login(request, user)
                 return redirect('general:profile')
-            else:
-                messages.error(request, _("Wrong username or password"))
-                return redirect('general:login')
+        messages.error(request, _("Wrong username or password"))
+        return redirect('general:login')
     else:
         form = LoginForm()
     return render(request, 'general/login.html', {'form': form})
@@ -44,10 +43,11 @@ def registration_form_view(request):
             last_name = form.cleaned_data['last_name']
             first_name = form.cleaned_data['first_name']
             email = form.cleaned_data['email']
+            role = form.cleaned_data['role']
             Employee.objects.create_user(username, email, password,
                                          last_name=last_name,
-                                         first_name=first_name)
-            return redirect('general:index')
+                                         first_name=first_name, role=role)
+            return redirect('general:login')
     else:
         form = RegistrationForm()
     return render(request, 'general/registration.html', {'form': form})
