@@ -289,16 +289,16 @@ class ActiveSprintView(DetailView):
 
 def push_issue_in_active_sprint(request, project_id, issue_id, slug):
     current_issue = get_object_or_404(Issue, pk=issue_id)
-    sprint = Sprint.objects.get(pk=current_issue.sprint_id)
+    sprint = get_object_or_404(Sprint, pk=current_issue.sprint_id)
 
-    if slug == 'right' and sprint and sprint.status != 'new':
+    if slug == 'right' and sprint and sprint.status == 'active':
         if current_issue.status == "new":
             current_issue.status = "in progress"
             current_issue.save()
         elif current_issue.status == "in progress":
             current_issue.status = "resolved"
             current_issue.save()
-    elif slug == 'left' and sprint and sprint.status != 'finished':
+    elif slug == 'left' and sprint and sprint.status == 'active':
         if current_issue.status == "resolved":
             current_issue.status = "in progress"
             current_issue.save()
