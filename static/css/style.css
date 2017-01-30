@@ -37,3 +37,7 @@ html, body {
 a#createprojectbtn{
     margin-bottom: 8px;
 }
+
+.btn-margin-top {
+    margin-top: 14px!important;
+}

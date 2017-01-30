@@ -7,7 +7,8 @@
 
   {% flag "create_issue" %}
   <a href="{% url 'workflow:create_issue' project.id %}"
-     class="btn btn-primary pull-right" role="button">Create issue</a>
+     class="btn-margin-top btn btn-primary pull-right"
+     role="button">Create issue</a>
   {% endflag %}
 
   {% if issues %}
