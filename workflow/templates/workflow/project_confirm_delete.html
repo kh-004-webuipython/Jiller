@@ -1,9 +1,24 @@
-{% extends 'workflow/project_navbar.html' %}
+{% extends 'base.html' %}
+{% load static %}
 
+{% block extrastyles %}
+  <link rel="stylesheet" href="{% static 'workflow/css/style.css' %}">
+{% endblock %}
 {% block content %}
-  {{ block.super }}
-  <form action="" method="post">{% csrf_token %}
-    <p>Are you sure you want to delete "{{ object }}"?</p>
-    <input type="submit" value="Confirm"/>
+
+  {% include 'workflow/project_navbar.html' %}
+
+  <form role="form" action="" class="form-horizontal" method="post">
+    <div class="col-sm-12 ">
+      <p class="">Are you sure you want to delete project "{{ object }}"?</p>
+    </div>
+
+    {% csrf_token %}
+    <div class="col-sm-offset-3 col-sm-6">
+      <button type="submit" class="btn btn-danger center-block">Yes</button>
+      <a class="btn btn-delete"
+         href="{% url 'workflow:project_detail' project.id %}"> No </a>
+    </div>
+
   </form>
 {% endblock %}

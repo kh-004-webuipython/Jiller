@@ -1,12 +1,31 @@
-{% extends 'workflow/project_navbar.html' %}
+{% extends 'base.html' %}
+{% load static %}
 
+{% block extrastyles %}
+  <link rel="stylesheet" href="{% static 'workflow/css/style.css' %}">
+{% endblock %}
 {% block content %}
-  {{ block.super }}
+  {% include 'workflow/project_navbar.html' %}
 
-  <p>Description: {{ project.description }}</p>
-  <p>Start Date: {{ project.start_date }}</p>
-  <p>End Date: {{ project.end_date }}</p>
-  <a href="{% url 'workflow:project_update' project.id %}"> Edit </a>
+  <div class="col-xs-12 col-sm-10 col-sm-offset-1 project-detail row">
+    <div class="col-xs-12 col-sm-6 ">
+      <p><span>Title:</span> {{ project.title }}</p>
+    </div>
+
+    <div class="col-xs-12 col-sm-12">
+      <p><span>Description: </span>{{ project.description }}</p>
+    </div>
+    <div class="col-xs-12 col-sm-6">
+      <p><span>Start Date:</span> {{ project.start_date }}</p>
+    </div>
+    <div class="col-xs-12 col-sm-6">
+      <p class="pull-right"><span>End Date:</span> {{ project.end_date }}</p>
+    </div>
+    <div class="col-xs-12 col-sm-6 pull-right">
+      <a class="btn btn-info pull-right"
+         href="{% url 'workflow:project_update' project.id %}"> Edit </a>
+    </div>
+  </div>
   <br><br><br><br><br>
   <a href="{% url 'workflow:sprint_create' project.id %}"
      class="btn btn-primary">Create new sprint</a>

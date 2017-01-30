@@ -1,9 +1,9 @@
-{% extends 'workflow/project_navbar.html' %}
+{% extends 'base.html' %}
 
 {% block title %}Sprint{% endblock %}
 
 {% block content %}
-  {{ block.super }}
+  {% include 'workflow/project_navbar.html' %}
 
   <div class="table-responsive">
     <table class="table table-bordered">
@@ -26,100 +26,100 @@
   </div>
 
 
-    {% if new_issues %}
-      <div class="col-lg-4">
-        <table class="table table-striped table-bordered">
-          <thead>
+  {% if new_issues %}
+    <div class="col-lg-4">
+      <table class="table table-striped table-bordered">
+        <thead>
+        <tr>
+          <th class="text-center"> New issues</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for new_issue in new_issues %}
           <tr>
-            <th class="text-center"> New issues</th>
-          </tr>
-          </thead>
-          <tbody>
-          {% for new_issue in new_issues %}
-            <tr>
-              <td class="text-center">
-                <a href="
+            <td class="text-center">
+              <a href="
 {% url 'workflow:issue' new_issue.project_id new_issue.id %}">
-                  {{ new_issue.title }}</a></td>
-            </tr>
-          {% endfor %}
-          </tbody>
-        </table>
-      </div>
-    {% endif %}
-
-
-
-    {% if in_progress_issues %}
-      <div class="col-lg-4">
-        <table class="table table-striped table-bordered">
-          <thead>
-          <tr>
-            <th class="text-center">Issues in progress</th>
+                {{ new_issue.title }}</a></td>
           </tr>
-          </thead>
-          <tbody>
-          {% for in_progress_issue in in_progress_issues %}
-            <tr>
-              <td class="text-center">
-                <a href="
+        {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% endif %}
+
+
+
+  {% if in_progress_issues %}
+    <div class="col-lg-4">
+      <table class="table table-striped table-bordered">
+        <thead>
+        <tr>
+          <th class="text-center">Issues in progress</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for in_progress_issue in in_progress_issues %}
+          <tr>
+            <td class="text-center">
+              <a href="
 {% url 'workflow:issue' in_progress_issue.project_id in_progress_issue.id %}">
-                  {{ in_progress_issue.title }}</a></td>
-            </tr>
-          {% endfor %}
-          </tbody>
-        </table>
-      </div>
-    {% endif %}
-
-
-
-
-    {% if resolved_issues %}
-      <div class="col-lg-4">
-        <table class="table table-striped table-bordered">
-          <thead>
-          <tr>
-            <th class="text-center">Resolved issues</th>
+                {{ in_progress_issue.title }}</a></td>
           </tr>
-          </thead>
-          <tbody>
-          {% for resolved_issue in resolved_issues %}
-            <tr>
-              <td class="text-center">
-                <a href="
+        {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% endif %}
+
+
+
+
+  {% if resolved_issues %}
+    <div class="col-lg-4">
+      <table class="table table-striped table-bordered">
+        <thead>
+        <tr>
+          <th class="text-center">Resolved issues</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for resolved_issue in resolved_issues %}
+          <tr>
+            <td class="text-center">
+              <a href="
 {% url 'workflow:issue' resolved_issue.project_id resolved_issue.id %}">
-                  {{ resolved_issue.title }}</a></td>
-            </tr>
-          {% endfor %}
-          </tbody>
-        </table>
-      </div>
-    {% endif %}
-
-
-
-
-    {% if closed_issues %}
-      <div class="col-lg-4">
-        <table class="table table-striped table-bordered">
-          <thead>
-          <tr>
-            <th class="text-center">Closed issues</th>
+                {{ resolved_issue.title }}</a></td>
           </tr>
-          </thead>
-          <tbody>
-          {% for closed_issue in closed_issues %}
-            <tr>
-              <td class="text-center">
-                <a href="
+        {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% endif %}
+
+
+
+
+  {% if closed_issues %}
+    <div class="col-lg-4">
+      <table class="table table-striped table-bordered">
+        <thead>
+        <tr>
+          <th class="text-center">Closed issues</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for closed_issue in closed_issues %}
+          <tr>
+            <td class="text-center">
+              <a href="
 {% url 'workflow:issue' closed_issue.project_id closed_issue.id %}">
-                  {{ closed_issue.title }}</a></td>
-            </tr>
-          {% endfor %}
-          </tbody>
-        </table>
-      </div>
-    {% endif %}
+                {{ closed_issue.title }}</a></td>
+          </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% endif %}
 
 {% endblock %}
