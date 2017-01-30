@@ -8,7 +8,7 @@ from .forms import LoginForm, RegistrationForm
 
 
 def home_page(request):
-    return render(request, 'general/index.html')
+    return render(request, 'general/home_page.html')
 
 
 def profile(request):
