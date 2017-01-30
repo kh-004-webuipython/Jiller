@@ -1,14 +1,13 @@
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_list_or_404
 from django.contrib import messages
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate, login, logout
 from django.utils.translation import ugettext_lazy as _
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import Http404
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.views.generic import DetailView, ListView
 from django.urls import reverse
-from django.urls import reverse_lazy as _
 
 from .forms import LoginForm, RegistrationForm, ProjectForm, SprintCreateForm, IssueForm
 from .models import Project, ProjectTeam, Issue, Sprint, Employee
@@ -122,7 +121,7 @@ class SprintView(DetailView):
         return context
 
 
-def login_form(request):
+def login_form_view(request):
     if request.method == 'POST':
         form = LoginForm(request.POST)
         if form.is_valid():
@@ -139,7 +138,7 @@ def login_form(request):
     return render(request, 'workflow/login.html', {'form': form})
 
 
-def registration_form(request):
+def registration_form_view(request):
     if request.method == 'POST':
         form = RegistrationForm(request.POST)
         if form.is_valid():
@@ -157,7 +156,12 @@ def registration_form(request):
     return render(request, 'workflow/registration.html', {'form': form})
 
 
-class ProjectCreate(CreateView):
+def user_logout_view(request):
+    logout(request)
+    return redirect('workflow:login')
+
+
+class ProjectCreateView(CreateView):
     model = Project
     form_class = ProjectForm
     template_name = 'workflow/project_create_form.html'
@@ -167,11 +171,12 @@ class ProjectCreate(CreateView):
                        kwargs={'pk': self.object.id})
 
 
-class ProjectDetail(DetailView):
+class ProjectDetailView(DetailView):
     model = Project
+    template_name = 'workflow/project_detail.html'
 
 
-class ProjectUpdate(UpdateView):
+class ProjectUpdateView(UpdateView):
     model = Project
     form_class = ProjectForm
     template_name = 'workflow/project_update_form.html'
@@ -181,7 +186,7 @@ class ProjectUpdate(UpdateView):
                        kwargs={'pk': self.object.id})
 
 
-class ProjectDelete(DeleteView):
+class ProjectDeleteView(DeleteView):
     model = Project
 
     def get_success_url(self):
@@ -260,7 +265,7 @@ class ActiveSprintView(DetailView):
 
         try:
             Sprint.objects.get(project_id=self.kwargs['pk'],
-                                               status='active')
+                               status='active')
         except Sprint.DoesNotExist:
             context['project'] = Project.objects.get(id=self.kwargs['pk'])
             context['no_active_sprint'] = True
@@ -282,10 +287,9 @@ class ActiveSprintView(DetailView):
             return context
 
 
-
 def push_issue_in_active_sprint(request, project_id, issue_id, slug):
     current_issue = get_object_or_404(Issue, pk=issue_id)
-    sprint =  Sprint.objects.get(pk=current_issue.sprint_id)
+    sprint = Sprint.objects.get(pk=current_issue.sprint_id)
 
     if slug == 'right' and sprint and sprint.status != 'new':
         if current_issue.status == "new":
@@ -303,7 +307,6 @@ def push_issue_in_active_sprint(request, project_id, issue_id, slug):
             current_issue.save()
     return HttpResponseRedirect(
         reverse('workflow:active_sprint', args=(project_id)))
-
 
 # This view for delete sprint. Hidden until create field is_active in
 # Sprint model

@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'workflow',
     'sorl.thumbnail',
+    'django_nose',
 ]
 
 MIDDLEWARE = [
@@ -134,6 +135,13 @@ LOGIN_EXEMPT_URLS = (
  r'^registration/$',
 )
 
+
+TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
+
+NOSE_ARGS = [
+    '--with-coverage',
+    '--cover-package=workflow',
+]
 
 try:
     from local_settings import *
