@@ -156,7 +156,7 @@ class SprintCreate(CreateView):
         return context
 
     def get_success_url(self):
-        return reverse('project:sprint', args=(self.object.project_id,
+        return reverse('project:sprint_detail', args=(self.object.project_id,
                                                self.object.id))
 
 
