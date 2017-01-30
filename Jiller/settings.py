@@ -37,7 +37,9 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'workflow',
+    'project',
+    'employee',
+    'general',
     'sorl.thumbnail',
     'django_nose',
 ]

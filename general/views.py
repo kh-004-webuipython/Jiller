@@ -7,13 +7,13 @@ from employee.models import Employee
 from .forms import LoginForm, RegistrationForm
 
 
-def index(request):
-    return render(request, 'workflow/index.html')
+def home_page(request):
+    return render(request, 'general/index.html')
 
 
 def profile(request):
     current_user = request.user
-    return render(request, 'workflow/profile.html', {
+    return render(request, 'general/profile.html', {
         'user': current_user
     })
 
@@ -26,13 +26,13 @@ def login_form_view(request):
                                 password=form.cleaned_data['password'])
             if user is not None:
                 login(request, user)
-                return redirect('workflow:profile')
+                return redirect('general:profile')
             else:
                 messages.error(request, _("Wrong username or password"))
-                return redirect('workflow:login')
+                return redirect('general:login')
     else:
         form = LoginForm()
-    return render(request, 'workflow/login.html', {'form': form})
+    return render(request, 'general/login.html', {'form': form})
 
 
 def registration_form_view(request):
@@ -47,12 +47,12 @@ def registration_form_view(request):
             Employee.objects.create_user(username, email, password,
                                          last_name=last_name,
                                          first_name=first_name)
-            return redirect('workflow:index')
+            return redirect('general:index')
     else:
         form = RegistrationForm()
-    return render(request, 'workflow/registration.html', {'form': form})
+    return render(request, 'general/registration.html', {'form': form})
 
 
 def user_logout_view(request):
     logout(request)
-    return redirect('workflow:login')
+    return redirect('general:login')
