@@ -2,7 +2,7 @@
 
 {% block styles %}
 <link rel="stylesheet" href='{% static 'css/bootstrap.css' %}'
-        type='text/css'/>
+type='text/css'/>
 <link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}"/>
 {% endblock %}
 
@@ -10,39 +10,46 @@
 
 <div class="container">
     <div class="row">
-        <div class="col-sm-6">
-            <h2 class="mb-5">Registration Form</h2>
-        </div>
+        <div class="col-sm-6 col-sm-offset-3">
+            <div class="panel panel-primary">
+                <div class="panel-heading">
+                    <h2 class="panel-title">Registration Form</h2>
+                </div>
+                <div class="panel-body">
 
-    </div>
-    <form action="{% url 'general:registration'%}" method="post">
-        {% csrf_token %}
-        {% for field in form %}
-        <div class="form-group row {% if field.errors %} has-error {% endif %}">
-            <label class="col-sm-3 control-label no-padding-right">{{ field.label_tag }}</label>
-            <div class="col-sm-9">
-                {{ field }}
-                <div class="help-block col-xs-12 col-sm-reset inline">
-                    {% if field.errors %}
-                    <ul>
-                        {% for error in field.errors %}
-                        <li>
-                            {{ error }}
-                        </li>
+                    <form action="{% url 'general:registration'%}" method="post">
+                        {% csrf_token %}
+                        {% for field in form %}
+                        <div class="form-group row {% if field.errors %} has-error {% endif %}">
+                            <label class="col-sm-4 control-label no-padding-right">{{ field.label_tag }}</label>
+                            <div class="col-sm-8">
+                                {{ field }}
+                                <div class="help-block col-xs-12 col-sm-reset inline">
+                                    {% if field.errors %}
+                                    <ul>
+                                        {% for error in field.errors %}
+                                        <li>
+                                            {{ error }}
+                                        </li>
+                                        {% endfor %}
+                                        {% endif %}
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
                         {% endfor %}
-                        {% endif %}
-                    </ul>
+                        <div class="row">
+                            <div class="col-md-4">
+                                <a href="{% url 'general:login' %}" class="center-block"><b><</b> Back</a>
+                            </div>
+                            <div class="col-md-3">
+                                <input type="submit" class="btn btn-md btn-primary btn-block" value="Register">
+                            </div>
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>
-        {% endfor %}
-        <div class="row">
-            <div class="col-md-3">
-                <input type="submit" value="Register">
-            </div>
-        </div>
-    </form>
 
 
-</div>
-{% endblock %}
+        {% endblock %}
