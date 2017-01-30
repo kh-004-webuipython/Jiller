@@ -7,4 +7,7 @@
   <p>Start Date: {{ project.start_date }}</p>
   <p>End Date: {{ project.end_date }}</p>
   <a href="{% url 'workflow:project_update' project.id %}"> Edit </a>
+  <br><br><br><br><br>
+  <a href="{% url 'workflow:sprint_create' project.id %}"
+     class="btn btn-primary">Create new sprint</a>
 {% endblock %}
