@@ -1,27 +1,11 @@
-from django.http import HttpResponseRedirect
-from django.shortcuts import get_list_or_404
-from django.contrib import messages
-from django.contrib.auth import authenticate, login, logout
-from django.utils.translation import ugettext_lazy as _
+from django.http import HttpResponseRedirect, Http404
 from django.shortcuts import render, redirect, get_object_or_404
-from django.http import Http404
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.views.generic import DetailView, ListView
 from django.urls import reverse
 
-from .forms import LoginForm, RegistrationForm, ProjectForm, SprintCreateForm, IssueForm
-from .models import Project, ProjectTeam, Issue, Sprint, Employee
-
-
-def index(request):
-    return render(request, 'workflow/index.html')
-
-
-def profile(request):
-    current_user = request.user
-    return render(request, 'workflow/profile.html', {
-        'user': current_user
-    })
+from .forms import ProjectForm, SprintCreateForm, IssueForm
+from .models import Project, ProjectTeam, Issue, Sprint
 
 
 class ProjectListView(ListView):
@@ -119,46 +103,6 @@ class SprintView(DetailView):
         context['resolved_issues'] = \
             issues_from_this_sprint.filter(status="resolved")
         return context
-
-
-def login_form_view(request):
-    if request.method == 'POST':
-        form = LoginForm(request.POST)
-        if form.is_valid():
-            user = authenticate(username=form.cleaned_data['username'],
-                                password=form.cleaned_data['password'])
-            if user is not None:
-                login(request, user)
-                return redirect('workflow:profile')
-            else:
-                messages.error(request, _("Wrong username or password"))
-                return redirect('workflow:login')
-    else:
-        form = LoginForm()
-    return render(request, 'workflow/login.html', {'form': form})
-
-
-def registration_form_view(request):
-    if request.method == 'POST':
-        form = RegistrationForm(request.POST)
-        if form.is_valid():
-            username = form.cleaned_data['username']
-            password = form.cleaned_data['password']
-            last_name = form.cleaned_data['last_name']
-            first_name = form.cleaned_data['first_name']
-            email = form.cleaned_data['email']
-            employee = Employee.objects.create_user(username, email, password,
-                                                    last_name=last_name,
-                                                    first_name=first_name)
-            return redirect('workflow:index')
-    else:
-        form = RegistrationForm()
-    return render(request, 'workflow/registration.html', {'form': form})
-
-
-def user_logout_view(request):
-    logout(request)
-    return redirect('workflow:login')
 
 
 class ProjectCreateView(CreateView):
