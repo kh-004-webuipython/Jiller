@@ -17,11 +17,11 @@ urlpatterns = [
 
     url(r'^project/create/$', views.ProjectCreateView.as_view(),
         name='project_create'),
-    url(r'^project/(?P<pk>\d+)/$', views.ProjectDetailView.as_view(),
+    url(r'^project/(?P<project_id>\d+)/$', views.ProjectDetailView.as_view(),
         name='project_detail'),
-    url(r'^project/update/(?P<pk>\d+)/$', views.ProjectUpdateView.as_view(),
+    url(r'^project/update/(?P<project_id>\d+)/$', views.ProjectUpdateView.as_view(),
         name='project_update'),
-    url(r'^project/delete/(?P<pk>\d+)/$', views.ProjectDeleteView.as_view(),
+    url(r'^project/delete/(?P<project_id>\d+)/$', views.ProjectDeleteView.as_view(),
         name='project_delete'),
 
     # backlog
@@ -33,14 +33,14 @@ urlpatterns = [
         views.sprints_list, name='sprints_list'),
     url(r'^project/(?P<project_id>[0-9]+)/sprint/(?P<sprint_id>[0-9]+)/$',
         views.SprintView.as_view(), name='sprint'),
-    url(r'^project/(?P<pk>\d+)/sprint/create/$',
+    url(r'^project/(?P<project_id>\d+)/sprint/create/$',
         views.SprintCreate.as_view(), name='sprint_create'),
     # url for delete sprint. Hidden until create field is_active in Sprint model
     # url(r'^project/(?P<pk>\d+)/sprint/delete/$',
     # views.SprintDelete.as_view(), name='sprint_delete'),
 
     # active_sprint
-    url(r'^project/(?P<pk>\d+)/activesprint/$',
+    url(r'^project/(?P<project_id>\d+)/activesprint/$',
         views.ActiveSprintView.as_view(), name='active_sprint'),
     url(r'^(?P<project_id>\d+)/(?P<issue_id>\d+)/(?P<slug>left|right)/$',
         views.push_issue_in_active_sprint, name='issue_push'),

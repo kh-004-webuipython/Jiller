@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% load i18n %}
+{% load waffle_tags %}
 
 {% block title %}Projects{% endblock %}
 
@@ -10,7 +11,10 @@
 
 {% block content %}
   {{ block.super }}
-  <a class="btn btn-primary" id="createprojectbtn" href="{% url 'workflow:project_create' %}">Create project</a>
+  {% flag "create_project" %}
+  <a class="btn btn-primary" id="createprojectbtn"
+     href="{% url 'workflow:project_create' %}">Create project</a>
+  {% endflag %}
 
   <table class="table table-bordered table-hover">
       <thead>
