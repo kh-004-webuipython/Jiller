@@ -23,6 +23,17 @@ html, body {
     margin-bottom: 5px;
 }
 
+.footer .container {
+    text-align: center;
+    margin: 0;
+    width: auto;
+}
+
+.footer .container span {
+    margin: 20px 0;
+    text-align: center;
+}
+
 a#createprojectbtn{
     margin-bottom: 8px;
 }
