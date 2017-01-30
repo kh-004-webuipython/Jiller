@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 
-{% block title %}Active sprint{% endblock %}
+{% block title %} Active sprint {% endblock %}
 
 {% block content %}
   {% include 'project/project_navbar.html' %}
@@ -9,7 +9,12 @@
   {% if no_active_sprint %}
     <h4>There is no active sprint yet</h4>
   {% endif %}
-  {% if not no_active_sprint %}
+
+  {% if to_much_active_sprint %}
+  <h4>There is en error in DB, You have 2 or more active sprints in a time</h4>
+  {% endif %}
+
+  {% if not no_active_sprint and not to_much_active_sprint%}
   <div class="table-responsive">
     <table class="table table-bordered">
       <thead>
@@ -44,7 +49,7 @@
           <tr>
             <td class="text-center">
               <a href="
-{% url 'project:issue' new_iss.project_id new_iss.id %}">
+{% url 'project:issue_detail' new_iss.project_id new_iss.id %}">
                 {{ new_iss.title }}</a>
               <a href="
 {% url 'project:issue_push' new_iss.project_id new_iss.id 'right' %}">

@@ -76,8 +76,11 @@ def backlog(request, project_id):
 
 
 def issue(request, project_id, issue_id):
+
     current_issue = get_object_or_404(Issue, pk=issue_id)
     project = get_object_or_404(Project, pk=project_id)
+    if current_issue.project_id != project.id:
+        raise Http404("Project does not exist")
     return render(request, 'project/issue.html', {
         'issue': current_issue, 'project': project
     })
@@ -102,6 +105,7 @@ class SprintView(DetailView):
             issues_from_this_sprint.filter(status="in progress")
         context['resolved_issues'] = \
             issues_from_this_sprint.filter(status="resolved")
+        context['project'] = Project.objects.get(id=cur_proj)
         return context
 
 
@@ -162,7 +166,7 @@ class SprintCreate(CreateView):
 
 class ActiveSprintView(DetailView):
     model = Sprint
-    template_name = 'project/active_sprint.html'
+    template_name = 'project/sprint_active.html'
 
     def get_context_data(self, **kwargs):
         context = super(ActiveSprintView, self).get_context_data(
@@ -174,10 +178,12 @@ class ActiveSprintView(DetailView):
         except Sprint.DoesNotExist:
             context['project'] = Project.objects.get(id=self.kwargs['pk'])
             context['no_active_sprint'] = True
-
+            return context
+        except Sprint.MultipleObjectsReturned:
+            context['project'] = Project.objects.get(id=self.kwargs['pk'])
+            context['to_much_active_sprint'] = True
             return context
         else:
-
             active_sprint = Sprint.objects.get(project_id=self.kwargs['pk'],
                                                status='active')
             context['active_sprint'] = active_sprint
@@ -194,16 +200,16 @@ class ActiveSprintView(DetailView):
 
 def push_issue_in_active_sprint(request, project_id, issue_id, slug):
     current_issue = get_object_or_404(Issue, pk=issue_id)
-    sprint = Sprint.objects.get(pk=current_issue.sprint_id)
+    sprint = get_object_or_404(Sprint, pk=current_issue.sprint_id)
 
-    if slug == 'right' and sprint and sprint.status != 'new':
+    if slug == 'right' and sprint.status == 'active':
         if current_issue.status == "new":
             current_issue.status = "in progress"
             current_issue.save()
         elif current_issue.status == "in progress":
             current_issue.status = "resolved"
             current_issue.save()
-    elif slug == 'left' and sprint and sprint.status != 'finished':
+    elif slug == 'left' and sprint.status == 'active':
         if current_issue.status == "resolved":
             current_issue.status = "in progress"
             current_issue.save()
@@ -211,7 +217,7 @@ def push_issue_in_active_sprint(request, project_id, issue_id, slug):
             current_issue.status = "new"
             current_issue.save()
     return HttpResponseRedirect(
-        reverse('project:active_sprint', args=(project_id)))
+        reverse('project:sprint_active', args=(project_id)))
 
 # This view for delete sprint. Hidden until create field is_active in
 # Sprint model
