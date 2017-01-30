@@ -1,0 +1,48 @@
+{% load staticfiles %}
+
+{% block styles %}
+<link rel="stylesheet" href='{% static 'css/bootstrap.css' %}'
+        type='text/css'/>
+<link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}"/>
+{% endblock %}
+
+{% block content %}
+
+<div class="container">
+    <div class="row">
+        <div class="col-sm-6">
+            <h2 class="mb-5">Registration Form</h2>
+        </div>
+
+    </div>
+    <form action="{% url 'general:registration'%}" method="post">
+        {% csrf_token %}
+        {% for field in form %}
+        <div class="form-group row {% if field.errors %} has-error {% endif %}">
+            <label class="col-sm-3 control-label no-padding-right">{{ field.label_tag }}</label>
+            <div class="col-sm-9">
+                {{ field }}
+                <div class="help-block col-xs-12 col-sm-reset inline">
+                    {% if field.errors %}
+                    <ul>
+                        {% for error in field.errors %}
+                        <li>
+                            {{ error }}
+                        </li>
+                        {% endfor %}
+                        {% endif %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+        <div class="row">
+            <div class="col-md-3">
+                <input type="submit" value="Register">
+            </div>
+        </div>
+    </form>
+
+
+</div>
+{% endblock %}

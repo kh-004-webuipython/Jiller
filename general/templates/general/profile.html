@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+
+{% load i18n %}
+
+{% block title %}Profile{% endblock %}
+
+{% block breadcrumbs %}
+  {{ block.super }}
+  <li><span>{% trans 'Profile' %}</span></li>
+{% endblock %}
+
+{% block content %}
+  {% if request.user.is_authenticated %}
+    <h2>Your profile: {{ user.username }}</h2>
+    <p>First Name: {{ user.first_name }}</p>
+    <p>Last Name: {{ user.last_name }}</p>
+    <p>Role: {{ user.role }}</p>
+  {% else %} <p>You're not authenticated</p>
+  {% endif %}
+{% endblock %}

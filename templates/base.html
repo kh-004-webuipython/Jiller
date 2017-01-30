@@ -8,7 +8,8 @@
   <meta charset="utf-8"/>
 
   <meta name="description" content="Common UI Features &amp; Elements"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
   <title>Jiller | {% block title %}Home{% endblock %}</title>
 
   {% block favicon %}
@@ -19,15 +20,20 @@
   {% block styles %}
     {#custom styles#}
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="stylesheet" href="{% static 'css/project-navbar.css' %}">
     <!-- bootstrap & fontawesome -->
-    <link rel="stylesheet" href='{% static 'css/bootstrap.css' %}' type='text/css'/>
-    <link rel="stylesheet" href="{% static 'css/font-awesome.css' %}" type='text/css'/>
+    <link rel="stylesheet" href='{% static 'css/bootstrap.css' %}'
+          type='text/css'/>
+    <link rel="stylesheet" href="{% static 'css/font-awesome.css' %}"
+          type='text/css'/>
 
     <!-- text fonts -->
-    <link rel="stylesheet" href="{% static 'css/ace-fonts.css' %}" type='text/css'/>
+    <link rel="stylesheet" href="{% static 'css/ace-fonts.css' %}"
+          type='text/css'/>
 
     <!-- ace styles -->
-    <link href='{% static "css/ace.css" %}' rel='stylesheet' type='text/css' class="ace-main-stylesheet"
+    <link href='{% static "css/ace.css" %}' rel='stylesheet' type='text/css'
+          class="ace-main-stylesheet"
           id="main-ace-style"/>
   {% endblock %}
 
@@ -40,7 +46,8 @@
 <div id="navbar" class="navbar navbar-default          ace-save-state">
   <div class="navbar-container ace-save-state" id="navbar-container">
     <!-- #section:basics/sidebar.mobile.toggle -->
-    <button type="button" class="navbar-toggle menu-toggler pull-left" id="menu-toggler" data-target="#sidebar">
+    <button type="button" class="navbar-toggle menu-toggler pull-left"
+            id="menu-toggler" data-target="#sidebar">
       <span class="sr-only">Toggle sidebar</span>
 
       <span class="icon-bar"></span>
@@ -53,7 +60,7 @@
     <!-- /section:basics/sidebar.mobile.toggle -->
     <div class="navbar-header pull-left">
       <!-- #section:basics/navbar.layout.brand -->
-      <a href="." class="navbar-brand">
+      <a href="{% url 'general:home_page' %}" class="navbar-brand">
         <small>Jiller</small>
       </a>
     </div>
@@ -70,22 +77,27 @@
                 {{ request.user }}</span>
               <i class="ace-icon fa fa-caret-down"></i>
             </a>
-
-            <ul class="user-menu dropdown-menu-right dropdown-menu dropdown-yellow dropdown-caret dropdown-close">
-              <li>
-                <a href="{% url 'workflow:logout' %}">
-                  <i class="ace-icon fa fa-power-off"></i>
-                  Logout
-                </a>
-              </li>
+              <ul class="user-menu dropdown-menu-right dropdown-menu dropdown-yellow dropdown-caret dropdown-close">
+                  <li>
+                      <a href="{% url 'general:logout' %}">
+                          <i class="ace-icon fa fa-power-off"></i>
+                          Logout
+                      </a>
+                  </li>
+                  <li>
+                      <a href="{% url 'general:profile' %}">
+                          <i class="ace-icon fa fa-user"></i>
+                          Profile
+                      </a>
+                  </li>
             </ul>
           </li>
         {% else %}
           <li class="light-blue">
-            <a href="{% url 'workflow:registration' %}">Registration</a>
+            <a href="{% url 'general:registration' %}">Registration</a>
           </li>
           <li class="light-blue">
-            <a href="{% url 'workflow:login' %}">Login</a>
+            <a href="{% url 'general:login' %}">Login</a>
           </li>
 
         {% endif %}
@@ -100,19 +112,20 @@
 <!-- /section:basics/navbar.layout -->
 <div class="main-container ace-save-state" id="main-container">
   <script type="text/javascript">
-    try {
-      ace.settings.loadState('main-container')
-    } catch (e) {
-    }
+      try {
+          ace.settings.loadState('main-container')
+      } catch (e) {
+      }
   </script>
 
   <!-- #section:basics/sidebar -->
-  <div id="sidebar" class="sidebar                  responsive                    ace-save-state">
+  <div id="sidebar"
+       class="sidebar                  responsive                    ace-save-state">
     <script type="text/javascript">
-      try {
-        ace.settings.loadState('sidebar')
-      } catch (e) {
-      }
+        try {
+            ace.settings.loadState('sidebar')
+        } catch (e) {
+        }
     </script>
 
     <div class="sidebar-shortcuts" id="sidebar-shortcuts">
@@ -149,14 +162,14 @@
     </div><!-- /.sidebar-shortcuts -->
     <ul class="nav nav-list">
       <li class="">
-        <a href="{% url 'workflow:employee-index' %}">
+        <a href="{% url 'employee:list' %}">
           <i class="menu-icon"> <span class="glyphicon glyphicon-user"></span></i>
           <span class="menu-text">{% trans 'Employee' %}</span>
         </a>
         <b class="arrow"></b>
       </li>
-        <li class="">
-        <a href="{% url 'workflow:projects' %}">
+      <li class="">
+        <a href="{% url 'project:list' %}">
           <i class="menu-icon"> <span class="glyphicon glyphicon-flag"></span></i>
           <span class="menu-text">{% trans 'Projects' %}</span>
         </a>
@@ -190,8 +203,10 @@
 
     <!-- #section:basics/sidebar.layout.minimize -->
     <div class="sidebar-toggle sidebar-collapse" id="sidebar-collapse">
-      <i id="sidebar-toggle-icon" class="ace-icon fa fa-angle-double-left ace-save-state"
-         data-icon1="ace-icon fa fa-angle-double-left" data-icon2="ace-icon fa fa-angle-double-right"></i>
+      <i id="sidebar-toggle-icon"
+         class="ace-icon fa fa-angle-double-left ace-save-state"
+         data-icon1="ace-icon fa fa-angle-double-left"
+         data-icon2="ace-icon fa fa-angle-double-right"></i>
     </div>
 
     <!-- /section:basics/sidebar.layout.minimize -->
@@ -206,9 +221,9 @@
         <ul class="breadcrumb">
           {% block breadcrumbs %}
             <li>
-            <i class="ace-icon fa fa-home home-icon"></i>
-            <a href="{% url 'workflow:index' %}">{% trans 'Home' %}</a>
-          </li>
+              <i class="ace-icon fa fa-home home-icon"></i>
+              <a href="{% url 'general:home_page' %}">{% trans 'Home' %}</a>
+            </li>
           {% endblock %}
         </ul><!-- /.breadcrumb -->
 
@@ -216,7 +231,8 @@
         <div class="nav-search" id="nav-search">
           <form class="form-search">
 								<span class="input-icon">
-									<input type="text" placeholder="Search ..." class="nav-search-input" id="nav-search-input"
+									<input type="text" placeholder="Search ..."
+                         class="nav-search-input" id="nav-search-input"
                          autocomplete="off"/>
 									<i class="ace-icon fa fa-search nav-search-icon"></i>
 								</span>
@@ -225,7 +241,6 @@
 
         <!-- /section:basics/content.searchbox -->
       </div>
-
       <!-- /section:basics/content.breadcrumbs -->
       <div class="page-content">
         <div class="row">
@@ -242,16 +257,11 @@
       </div><!-- /.page-content -->
     </div>
   </div><!-- /.main-content -->
-
   <div class="footer">
-    <div class="footer-inner">
-      <!-- #section:basics/footer -->
-      <div class="footer-content">
+    <div class="container">
         <span class="bigger-120">
           Jiller
         </span>
-      </div>
-      <!-- /section:basics/footer -->
     </div>
   </div>
 
@@ -265,7 +275,7 @@
 {% block scripts %}
   <!-- basic scripts -->
   <script src="{% static 'js/jquery.js' %}"></script>
-  <script src="{% static 'js/bootstrap.js'%}"></script>
+  <script src="{% static 'js/bootstrap.js' %}"></script>
 
   <!-- ace scripts -->
   <script src="{% static 'js/ace/ace.js' %}"></script>
