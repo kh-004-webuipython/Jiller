@@ -53,14 +53,16 @@
                 <div class="row">
                   <div class="col-xs-12 col-sm-2">
                     <div class="text-center">
-                      <img class="thumbnail inline no-margin-bottom" src="
+                      <a href="{% url 'employee:detail' employee.id %}">
+                        <img class="thumbnail inline no-margin-bottom" src="
                           {% if employee.photo %}{{ employee.get_cropped_photo }}
                           {% else %}{{ employee.email|gravatar_url }}
                           {% endif %}"/>
+                      </a>
                       <br/>
                       <div class="width-80 label label-info label-xlg arrowed-in arrowed-in-right">
                         <div class="inline position-relative">
-                          <a class="user-title-label" href="#">
+                          <a class="user-title-label" href="{% url 'employee:detail' employee.id %}">
                             {% if employee.is_authenticated %}
                               <i class="ace-icon fa fa-circle light-green"></i>
                             {% else %}
