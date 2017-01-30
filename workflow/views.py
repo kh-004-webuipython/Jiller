@@ -12,6 +12,12 @@ from django.urls import reverse
 from .forms import LoginForm, RegistrationForm, ProjectForm, SprintCreateForm, IssueForm
 from .models import Project, ProjectTeam, Issue, Sprint, Employee
 
+from django.utils.decorators import method_decorator
+from .decorators import user_belongs_project, \
+    edit_project_detail, create_project, create_sprint
+from waffle.decorators import waffle_flag
+import waffle
+
 
 def index(request):
     return render(request, 'workflow/index.html')
@@ -32,6 +38,7 @@ class ProjectListView(ListView):
         return Project.objects.filter(is_active=True).order_by('-start_date')
 
 
+@user_belongs_project
 def sprints_list(request, project_id):
     try:
         project = Project.objects.get(pk=project_id)
@@ -44,6 +51,8 @@ def sprints_list(request, project_id):
                                                           'sprints': sprints})
 
 
+@user_belongs_project
+@waffle_flag('create_issue', 'workflow:projects')
 def create_issue(request, project_id):
     if request.method == "POST":
         form = IssueForm(request.POST)
@@ -56,6 +65,8 @@ def create_issue(request, project_id):
     return render(request, 'workflow/edit_issue.html', {'form': form})
 
 
+@user_belongs_project
+@waffle_flag('edit_issue', 'workflow:projects')
 def edit_issue(request, project_id, issue_id):
     current_issue = get_object_or_404(Issue, pk=issue_id, project=project_id)
     if request.method == "POST":
@@ -69,6 +80,7 @@ def edit_issue(request, project_id, issue_id):
     return render(request, 'workflow/edit_issue.html', {'form': form})
 
 
+@user_belongs_project
 def team(request, project_id):
     current_project = get_object_or_404(Project, pk=project_id)
     try:
@@ -79,6 +91,7 @@ def team(request, project_id):
                                                   'project': current_project})
 
 
+@user_belongs_project
 def backlog(request, project_id):
     try:
         project = Project.objects.get(pk=project_id)
@@ -91,6 +104,7 @@ def backlog(request, project_id):
                                                      'issues': issues})
 
 
+@user_belongs_project
 def issue(request, project_id, issue_id):
     current_issue = get_object_or_404(Issue, pk=issue_id)
     project = get_object_or_404(Project, pk=project_id)
@@ -119,6 +133,10 @@ class SprintView(DetailView):
         context['resolved_issues'] = \
             issues_from_this_sprint.filter(status="resolved")
         return context
+
+    @method_decorator(user_belongs_project)
+    def dispatch(self, *args, **kwargs):
+        return super(SprintView, self).dispatch(*args, **kwargs)
 
 
 def login_form_view(request):
@@ -164,26 +182,44 @@ def user_logout_view(request):
 class ProjectCreateView(CreateView):
     model = Project
     form_class = ProjectForm
+    query_pk_and_slug = True
+    pk_url_kwarg = 'project_id'
     template_name = 'workflow/project_create_form.html'
 
     def get_success_url(self):
         return reverse('workflow:project_detail',
-                       kwargs={'pk': self.object.id})
+                       kwargs={'project_id': self.object.id})
+
+    @method_decorator(create_project)
+    def dispatch(self, *args, **kwargs):
+        return super(ProjectCreateView, self).dispatch(*args, **kwargs)
 
 
 class ProjectDetailView(DetailView):
     model = Project
+    query_pk_and_slug = True
+    pk_url_kwarg = 'project_id'
     template_name = 'workflow/project_detail.html'
+
+    @method_decorator(user_belongs_project)
+    def dispatch(self, *args, **kwargs):
+        return super(ProjectDetailView, self).dispatch(*args, **kwargs)
 
 
 class ProjectUpdateView(UpdateView):
     model = Project
     form_class = ProjectForm
+    query_pk_and_slug = True
+    pk_url_kwarg = 'project_id'
     template_name = 'workflow/project_update_form.html'
 
     def get_success_url(self):
         return reverse('workflow:project_detail',
-                       kwargs={'pk': self.object.id})
+                       kwargs={'project_id': self.object.id})
+
+    @method_decorator(edit_project_detail)
+    def dispatch(self, *args, **kwargs):
+        return super(ProjectUpdateView, self).dispatch(*args, **kwargs)
 
 
 class ProjectDeleteView(DeleteView):
@@ -193,7 +229,7 @@ class ProjectDeleteView(DeleteView):
         return reverse('workflow:projects')
 
     def delete(self, request, *args, **kwargs):
-        project = Project.objects.get(id=kwargs['pk'])
+        project = Project.objects.get(id=kwargs['project_id'])
 
         project.is_active = False
         project.save()
@@ -215,16 +251,22 @@ def employee_detail_view(request, employee_id):
 class SprintCreate(CreateView):
     model = Sprint
     form_class = SprintCreateForm
+    query_pk_and_slug = True
+    pk_url_kwarg = 'project_id'
     template_name_suffix = '_create_form'
 
     def get_context_data(self, **kwargs):
         context = super(SprintCreate, self).get_context_data(**kwargs)
-        context['project'] = Project.objects.get(id=self.kwargs['pk'])
+        context['project'] = Project.objects.get(id=self.kwargs['project_id'])
         return context
 
     def get_success_url(self):
         return reverse('workflow:sprint', args=(self.object.project_id,
                                           self.object.id))
+
+    @method_decorator(create_sprint)
+    def dispatch(self, *args, **kwargs):
+        return super(SprintCreate, self).dispatch(*args, **kwargs)
 
 
 class SprintView(DetailView):
@@ -254,9 +296,15 @@ class SprintView(DetailView):
 
         return context
 
+    @method_decorator(user_belongs_project)
+    def dispatch(self, *args, **kwargs):
+        return super(SprintView, self).dispatch(*args, **kwargs)
+
 
 class ActiveSprintView(DetailView):
     model = Sprint
+    query_pk_and_slug = True
+    pk_url_kwarg = 'project_id'
     template_name = 'workflow/active_sprint.html'
 
     def get_context_data(self, **kwargs):
@@ -264,29 +312,35 @@ class ActiveSprintView(DetailView):
             **kwargs)
 
         try:
-            Sprint.objects.get(project_id=self.kwargs['pk'],
+            Sprint.objects.get(project_id=self.kwargs['project_id'],
                                status='active')
         except Sprint.DoesNotExist:
-            context['project'] = Project.objects.get(id=self.kwargs['pk'])
+            context['project'] = Project.objects.get(id=self.kwargs['project_id'])
             context['no_active_sprint'] = True
 
             return context
         else:
 
-            active_sprint = Sprint.objects.get(project_id=self.kwargs['pk'],
+            active_sprint = Sprint.objects.get(project_id=self.kwargs['project_id'],
                                                status='active')
             context['active_sprint'] = active_sprint
             issues_from_active_sprint = Issue.objects.filter(
-                project_id=self.kwargs['pk'], sprint_id=active_sprint.id)
+                project_id=self.kwargs['project_id'], sprint_id=active_sprint.id)
             context['new_issues'] = issues_from_active_sprint.filter(status="new")
             context['in_progress_issues'] = issues_from_active_sprint.filter(
                 status="in progress")
             context['resolved_issues'] = issues_from_active_sprint.filter(
                 status="resolved")
-            context['project'] = Project.objects.get(id=self.kwargs['pk'])
+            context['project'] = Project.objects.get(id=self.kwargs['project_id'])
             return context
 
+    @method_decorator(user_belongs_project)
+    def dispatch(self, *args, **kwargs):
+        return super(ActiveSprintView, self).dispatch(*args, **kwargs)
 
+
+@user_belongs_project
+@waffle_flag('push_issue', 'workflow:projects')
 def push_issue_in_active_sprint(request, project_id, issue_id, slug):
     current_issue = get_object_or_404(Issue, pk=issue_id)
     sprint = Sprint.objects.get(pk=current_issue.sprint_id)
