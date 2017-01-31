@@ -2,7 +2,7 @@
 {% load waffle_tags %}
 
 {% block content %}
-  {% include 'project/project_navbar.html' %}
+  {% include 'project/project_navbar.html' with backlog=True %}
   <h2 class="inline">Backlog | Project - {{ project.title }}</h2>
 
   <a href="{% url 'project:issue_create' project.id %}"
