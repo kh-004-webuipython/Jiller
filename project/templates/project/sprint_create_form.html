@@ -6,6 +6,9 @@
 {% block breadcrumbs %}
   {{ block.super }}
   <li>
+    <a href="{% url 'project:list' %}">Projects</a>
+  </li>
+  <li>
     <a href="{% url 'project:detail' project.id %}">{{ project.title }}</a>
   </li>
   <li>
