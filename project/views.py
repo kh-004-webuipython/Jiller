@@ -34,10 +34,10 @@ def issue_create_view(request, project_id):
         if form.is_valid():
             new_issue = form.save(commit=False)
             new_issue.save()
-            return redirect('workflow:backlog', project_id)
+            return redirect('project:backlog', project_id)
     else:
         form = CreateIssueForm()
-    return render(request, 'workflow/create_issue.html', {'form': form})
+    return render(request, 'project/create_issue.html', {'form': form})
 
 
 def issue_edit_view(request, project_id, issue_id):
@@ -47,10 +47,10 @@ def issue_edit_view(request, project_id, issue_id):
         if form.is_valid():
             current_issue = form.save(commit=False)
             current_issue.save()
-            return redirect('workflow:backlog', project_id)
+            return redirect('project:backlog', project_id)
     else:
         form = EditIssueForm(instance=current_issue)
-    return render(request, 'workflow/edit_issue.html', {'form': form})
+    return render(request, 'project/edit_issue.html', {'form': form})
 
 
 def team_view(request, project_id):
@@ -59,8 +59,8 @@ def team_view(request, project_id):
         team_list = ProjectTeam.objects.filter(project=current_project)
     except ProjectTeam.DoesNotExist:
         raise Http404("No team on project")
-    return render(request, 'workflow/team.html', {'team_list': team_list,
-                                                  'project': current_project})
+    return render(request, 'project/team.html', {'team_list': team_list,
+                                                 'project': current_project})
 
 
 def backlog(request, project_id):
