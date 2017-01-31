@@ -39,8 +39,9 @@ class TeamViewTest(LoginRequiredBase):
         self.assertQuerysetEqual(response.context['team_list'], ['<ProjectTeam: title>'])
 
 
-class IssueFormTests(TestCase):
+class IssueFormTests(LoginRequiredBase):
     def setUp(self):
+        super(IssueFormTests, self).setUp()
         self.project = Project.objects.create()
         self.employee = Employee.objects.create()
         self.issue = Issue.objects.create(project=self.project, author=self.employee)
@@ -81,8 +82,9 @@ class IssueFormTests(TestCase):
         self.assertEqual(form.is_valid(), True)
 
 
-class IssueEditViewTests(TestCase):
+class IssueEditViewTests(LoginRequiredBase):
     def setUp(self):
+        super(IssueEditViewTests, self).setUp()
         self.client = Client()
         self.project = Project.objects.create()
         self.employee = Employee.objects.create()
@@ -115,8 +117,9 @@ class IssueEditViewTests(TestCase):
     #     self.assertTrue(isinstance(issue, Issue), False)
 
 
-class IssueCreateViewTests(TestCase):
+class IssueCreateViewTests(LoginRequiredBase):
     def setUp(self):
+        super(IssueCreateViewTests, self).setUp()
         self.client = Client()
         self.project = Project.objects.create()
         self.employee = Employee.objects.create()
@@ -296,8 +299,8 @@ class ProjectViewTests(LoginRequiredBase):
     def test_project_is_really_deleted(self):
         test_project = Project.objects.all()[0]
 
-        # response = self.client.get(reverse('workflow:project_delete',
-        #             kwargs={'pk': test_project.id}))
+        response = self.client.get(reverse('workflow:project_delete',
+                    kwargs={'pk': test_project.id}))
 
 
     # detail
