@@ -1,3 +1,5 @@
+import datetime
+
 from django.http import HttpResponseRedirect, Http404
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
@@ -152,6 +154,13 @@ class SprintCreate(CreateView):
     model = Sprint
     form_class = SprintCreateForm
     template_name_suffix = '_create_form'
+
+    def get_initial(self):
+        return {
+            'project': self.kwargs['pk'],
+            'start_date':datetime.datetime.now(),
+            'status':Sprint.NEW
+        }
 
     def get_context_data(self, **kwargs):
         context = super(SprintCreate, self).get_context_data(**kwargs)
