@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+{% load i18n %}
+
+{% block title %}Projects{% endblock %}
+
+{% block breadcrumbs %}
+  {{ block.super }}
+  <li><span>{% trans 'Projects' %}</span></li>
+{% endblock %}
+
+{% block content %}
+
+  <a class="btn btn-primary" id="createprojectbtn" href="{% url 'project:create' %}">Create project</a>
+
+  <table class="table table-bordered table-hover">
+      <thead>
+      <tr>
+        <th>Project title</th>
+        <th>Start date</th>
+        <th>End date</th>
+      </tr>
+      </thead>
+  <tbody>
+  {% for project in project_list %}
+
+      <tr>
+          <td>
+              <a href="{% url 'project:detail' project.id%}">{{ project.title }}</a>
+          </td>
+          <td>
+              {{ project.start_date|date:"d.m.Y" }}
+          </td>
+          <td>
+              {{ project.end_date|date:"d.m.Y" }}
+          </td>
+      </tr>
+
+  {% empty %}
+      <tr>
+          <td colspan="3">
+              There is no projects yet.
+          </td>
+      </tr>
+  {% endfor %}
+  </tbody>
+  </table>
+{% endblock %}

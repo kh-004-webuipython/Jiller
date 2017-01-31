@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load i18n %}
+
+{% block breadcrumbs %}
+  {{ block.super }}
+  <li>
+    <a href="{% url 'project:list' %}">Projects</a>
+  </li>
+  <li>
+    <span>{{ project.title }}</span>
+  </li>
+{% endblock %}
+{% block content %}
+  <a class="btn btn-info pull-right"
+     href="{% url 'project:update' project.id %}"> Edit project </a>
+  {% include 'project/project_navbar.html' with detail=True %}
+
+  <div class="col-xs-12 col-sm-12 project-detail row">
+    <div class="container">
+      <p><span>Title:</span> {{ project.title }}</p>
+      <p><span>Description: </span>{{ project.description }}</p>
+      <p><span>Start Date:</span> {{ project.start_date }}</p>
+      <p><span>End Date:</span> {{ project.end_date }}</p>
+      <a href="{% url 'project:sprint_create' project.id %}"
+         class="btn btn-primary">Create new sprint</a>
+    </div>
+  </div>
+
+{% endblock %}
+

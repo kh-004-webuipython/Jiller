@@ -22,3 +22,22 @@ html, body {
     position: static;
     margin-bottom: 5px;
 }
+
+.footer .container {
+    text-align: center;
+    margin: 0;
+    width: auto;
+}
+
+.footer .container span {
+    margin: 20px 0;
+    text-align: center;
+}
+
+a#createprojectbtn {
+    margin-bottom: 8px;
+}
+
+.navbar-margin-bottom{
+    margin-bottom: 10px;
+}
