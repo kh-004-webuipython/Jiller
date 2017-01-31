@@ -1,4 +1,16 @@
 {% extends 'base.html' %}
+{% load i18n %}
+
+{% block title %}Create project{% endblock %}
+{% block breadcrumbs %}
+  {{ block.super }}
+  <li>
+    <a href="{% url 'project:list' %}">Projects</a>
+  </li>
+  <li>
+    <span>{% trans 'Create project' %}</span>
+  </li>
+{% endblock %}
 
 {% block content %}
   <h3 class="col-sm-offset-3">Create project</h3>
@@ -10,15 +22,15 @@
         <div class="col-sm-9">
           {{ field }}
           <div class="help-block col-xs-12 col-sm-reset inline">
-           {% if field.errors %}
-                    <ul>
-                        {% for error in field.errors %}
-                        <li>
-                            {{ error }}
-                        </li>
-                        {% endfor %}
-                        {% endif %}
-                    </ul>
+            {% if field.errors %}
+              <ul>
+              {% for error in field.errors %}
+                <li>
+                  {{ error }}
+                </li>
+              {% endfor %}
+            {% endif %}
+            </ul>
           </div>
         </div>
       </div>
@@ -27,6 +39,8 @@
     <div class="clearfix">
       <div class="col-sm-offset-3 col-sm-9">
         <button type="submit" class="btn btn-success">Submit</button>
+        <a class="btn btn-base"
+           href="{% url 'project:list' %}"> Cancel </a>
       </div>
     </div>
   </form>

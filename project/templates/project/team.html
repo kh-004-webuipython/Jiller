@@ -1,5 +1,16 @@
 {% extends 'base.html' %}
 {% load static %}
+{% load i18n %}
+
+{% block title %}Team{% endblock %}
+
+{% block breadcrumbs %}
+  {{ block.super }}
+
+  <li>
+    <span>{% trans 'Team' %}</span>
+  </li>
+{% endblock %}
 
 {% block content %}
   {% include 'project/project_navbar.html' with team=True %}

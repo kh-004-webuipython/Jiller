@@ -1,4 +1,15 @@
 {% extends 'base.html' %}
+{% load i18n %}
+
+{% block title %}Sprints List{% endblock %}
+
+{% block breadcrumbs %}
+  {{ block.super }}
+
+  <li>
+    <span>{% trans 'Sprint History' %}</span>
+  </li>
+{% endblock %}
 
 {% block content %}
   {% include 'project/project_navbar.html' with sprint_list=True%}

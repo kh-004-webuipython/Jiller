@@ -1,6 +1,23 @@
 {% extends 'base.html' %}
+{% load i18n %}
 
-{% block title %}Issue{% endblock %}
+{% block title %}Issue detail{% endblock %}
+
+{% block breadcrumbs %}
+  {{ block.super }}
+  {% if issue.sprint %}
+    <li>
+      <a href="{% url 'project:sprint_active' project.id %}"> {{ issue.sprint.title }}</a>
+    </li>
+  {% else %}
+    <li>
+      <a href="{% url 'project:backlog' project.id %}">Backlog</a>
+    </li>
+  {% endif %}
+  <li>
+    <span>{{ issue.title }}</span>
+  </li>
+{% endblock %}
 
 {% block content %}
 

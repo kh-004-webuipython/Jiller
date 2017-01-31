@@ -1,7 +1,28 @@
 {% extends 'base.html' %}
+{% load i18n %}
 
+{% block title %}Edit issue{% endblock %}
+
+{% block breadcrumbs %}
+  {{ block.super }}
+  {% if issue.sprint %}
+    <li>
+      <a href="{% url 'project:sprint_active' project.id %}">{{ issue.sprint.title }}</a>
+    </li>
+  {% else %}
+    <li>
+      <a href="{% url 'project:backlog' project.id %}">Backlog</a>
+    </li>
+  {% endif %}
+  <li>
+    <a href="{% url 'project:issue_detail' project.id issue.id %}">{{ issue.title }}</a>
+  </li>
+  <li>
+    <span>{% trans 'Edit' %}</span>
+  </li>
+{% endblock %}
 {% block content %}
-  {% include 'project/project_navbar.html' with sprint_detail=True%}
+  {% include 'project/project_navbar.html' with sprint_detail=True %}
   <form role="form" action="" class="form-horizontal" method="post">
     {% for field in form %}
       <div class="form-group {% if field.errors %} has-error {% endif %}">
@@ -10,15 +31,15 @@
         <div class="col-sm-9">
           {{ field }}
           <div class="help-block col-xs-12 col-sm-reset inline">
-             {% if field.errors %}
-                    <ul>
-                        {% for error in field.errors %}
-                        <li>
-                            {{ error }}
-                        </li>
-                        {% endfor %}
-                        {% endif %}
-                    </ul>
+            {% if field.errors %}
+              <ul>
+              {% for error in field.errors %}
+                <li>
+                  {{ error }}
+                </li>
+              {% endfor %}
+            {% endif %}
+            </ul>
           </div>
         </div>
       </div>
