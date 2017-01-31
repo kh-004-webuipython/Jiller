@@ -296,11 +296,12 @@ class ProjectViewTests(LoginRequiredBase):
                     kwargs={'pk': test_project.id}))
         self.assertEqual(response.status_code, 200)
 
+
     def test_project_is_really_deleted(self):
         test_project = Project.objects.all()[0]
 
-        response = self.client.get(reverse('workflow:project_delete',
-                    kwargs={'pk': test_project.id}))
+        # response = self.client.get(reverse('workflow:project_delete',
+        #             kwargs={'pk': test_project.id}))
 
 
     # detail
