@@ -1,5 +1,6 @@
 import datetime
 from django.test import TestCase, Client
+from django.core.management import call_command
 
 from django.urls import reverse
 
@@ -21,8 +22,10 @@ class LoginRequiredBase(TestCase):
                                                  'johnpassword',
                                                  first_name='Miss',
                                                  last_name='Mister',
-                                                 role=self.user_role_init)
+                                                 role=self.user_role_init,
+                                                 is_staff=True)
         self.client.login(username='john', password='johnpassword')
+        call_command('loaddata', 'project/fixtures/test.json', verbosity=1)
 
 
 class TeamViewTest(LoginRequiredBase):

@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% load static %}
+{% load waffle_tags %}
 
 {% block content %}
   {% include 'project/project_navbar.html' %}
@@ -19,11 +20,15 @@
       <p class="pull-right"><span>End Date:</span> {{ project.end_date }}</p>
     </div>
     <div class="col-xs-12 col-sm-6 pull-right">
+      {% flag "edit_project_detail" %}
       <a class="btn btn-info pull-right"
          href="{% url 'project:update' project.id %}"> Edit </a>
+      {% endflag %}
     </div>
   </div>
   <br><br><br><br><br>
+  {% flag "create_sprint" %}
   <a href="{% url 'project:sprint_create' project.id %}"
      class="btn btn-primary">Create new sprint</a>
+  {% endflag %}
 {% endblock %}

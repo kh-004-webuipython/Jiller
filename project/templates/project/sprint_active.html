@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load waffle_tags %}
 
 {% block title %} Active sprint {% endblock %}
 
@@ -51,11 +52,12 @@
               <a href="
 {% url 'project:issue_detail' new_iss.project_id new_iss.id %}">
                 {{ new_iss.title }}</a>
+              {% flag "push_issue" %}
               <a href="
 {% url 'project:issue_push' new_iss.project_id new_iss.id 'right' %}">
               <span style="float: right"
                     class="glyphicon glyphicon-circle-arrow-right"></span>
-              </a>
+              </a>{% endflag %}
           </tr>
         {% endfor %}
         </tbody>
@@ -72,19 +74,21 @@
         {% for progress in in_progress_issues %}
           <tr>
             <td class="text-center">
+              {% flag "push_issue" %}
               <a href="
 {% url 'project:issue_push' progress.project_id progress.id 'left' %}">
               <span style="float: left"
                     class="glyphicon glyphicon-circle-arrow-left"></span>
-              </a>
+              </a>{% endflag %}
               <a href="
 {% url 'project:issue_detail' progress.project_id progress.id %}">
                 {{ progress.title }}</a>
+              {% flag "push_issue" %}
               <a href="
 {% url 'project:issue_push' progress.project_id progress.id 'right' %}">
               <span style="float: right"
                     class="glyphicon glyphicon-circle-arrow-right"></span>
-              </a>
+              </a>{% endflag %}
             </td>
           </tr>
         {% endfor %}
@@ -102,11 +106,12 @@
         {% for resolved in resolved_issues %}
           <tr>
             <td class="text-center">
+              {% flag "push_issue" %}
               <a href="
 {% url 'project:issue_push' resolved.project_id resolved.id 'left' %}">
               <span style="float: left"
                     class="glyphicon glyphicon-circle-arrow-left"></span>
-              </a>
+              </a>{% endflag %}
               <a href="
 {% url 'project:issue_detail' resolved.project_id resolved.id %}">
                 {{ resolved.title }}</a></td>

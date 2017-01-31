@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load waffle_tags %}
 
 {% block content %}
   {% include 'project/project_navbar.html' %}
@@ -17,7 +18,7 @@
           <th>Author</th>
           <th>Title</th>
           <th>Status</th>
-          <th></th>
+          {% flag "edit_issue" %}<th></th>{% endflag %}
         </tr>
         </thead>
         <tbody>
@@ -28,8 +29,10 @@
             <td><a href="{% url 'project:issue_detail' project.id issue.id %}">
               {{ issue.title }}</a></td>
             <td>{{ issue.status }}</td>
-            <td><a href="{% url 'project:issue_edit' project.id issue.id %}">
+            {% flag "edit_issue" %}
+            <td><a href="{% url 'workflow:edit_issue' project.id issue.id %}">
               <span class="glyphicon glyphicon-pencil"></span></a></td>
+            {% endflag %}
           </tr>
         {% endfor %}
         </tbody>
