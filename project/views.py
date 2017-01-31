@@ -6,7 +6,8 @@ from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.views.generic import DetailView, ListView
 from django.urls import reverse
 
-from .forms import ProjectForm, SprintCreateForm, CreateIssueForm, EditIssueForm
+from .forms import ProjectForm, SprintCreateForm, CreateIssueForm, \
+    EditIssueForm
 from .models import Project, ProjectTeam, Issue, Sprint
 
 
@@ -38,8 +39,11 @@ def issue_create_view(request, project_id):
             new_issue.save()
             return redirect('project:backlog', project_id)
     else:
-        form = CreateIssueForm(initial={'project': project_id, 'author': request.user.id})
-    return render(request, 'project/create_issue.html', {'form': form, 'project': Project.objects.get(pk=project_id)})
+        form = CreateIssueForm(
+            initial={'project': project_id, 'author': request.user.id})
+    return render(request, 'project/create_issue.html', {'form': form,
+                                                         'project': Project.objects.get(
+                                                             pk=project_id)})
 
 
 def issue_edit_view(request, project_id, issue_id):
@@ -52,7 +56,9 @@ def issue_edit_view(request, project_id, issue_id):
             return redirect('project:backlog', project_id)
     else:
         form = EditIssueForm(instance=current_issue)
-    return render(request, 'project/edit_issue.html', {'form': form, 'project': Project.objects.get(pk=project_id)})
+    return render(request, 'project/edit_issue.html',
+                  {'form': form, 'project': Project.objects.get(pk=project_id),
+                   'issue': Issue.objects.get(pk=issue_id)})
 
 
 def team_view(request, project_id):
@@ -203,7 +209,8 @@ class ActiveSprintView(DetailView):
             context['active_sprint'] = active_sprint
             issues_from_active_sprint = Issue.objects.filter(
                 project_id=self.kwargs['pk'], sprint_id=active_sprint.id)
-            context['new_issues'] = issues_from_active_sprint.filter(status="new")
+            context['new_issues'] = issues_from_active_sprint.filter(
+                status="new")
             context['in_progress_issues'] = issues_from_active_sprint.filter(
                 status="in progress")
             context['resolved_issues'] = issues_from_active_sprint.filter(

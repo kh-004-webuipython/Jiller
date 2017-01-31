@@ -1,44 +1,52 @@
 {% extends 'base.html' %}
 {% load static %}
+{% load i18n %}
+
 {% block title %}Create new sprint{% endblock %}
+{% block breadcrumbs %}
+  {{ block.super }}
+  <li>
+    <a href="{% url 'project:detail' project.id %}">{{ project.title }}</a>
+  </li>
+  <li>
+    <span>{% trans 'Create new sprint' %}</span>
+  </li>
+
+{% endblock %}
+
 
 {% block content %}
 
-  {% include 'project/project_navbar.html' with detail=True%}
-  <h1 style="margin: 30px">Create Sprint</h1>
-
-  <form class="form-horizontal" action="" method="post">
+  {% include 'project/project_navbar.html' with detail=True %}
+  <h3 class="col-sm-offset-3">Create sprint</h3>
+  <form role="form" action="" class="form-horizontal" method="post">
+    {% for field in form %}
+      <div class="form-group {% if field.errors %} has-error {% endif %}">
+        <label
+            class="col-sm-3 control-label no-padding-right">{{ field.label_tag }}</label>
+        <div class="col-sm-9">
+          {{ field }}
+          <div class="help-block col-xs-12 col-sm-reset inline">
+            {% if field.errors %}
+              <ul>
+              {% for error in field.errors %}
+                <li>
+                  {{ error }}
+                </li>
+              {% endfor %}
+            {% endif %}
+            </ul>
+          </div>
+        </div>
+      </div>
+    {% endfor %}
     {% csrf_token %}
-    <fieldset>
-      <legend>{{ title }}</legend>
-      {% for field in form %}
-        {% if field.errors %}
-          <div class="control-group error">
-            <label class="control-label">{{ field.label }}</label>
-            <div class="controls">{{ field }}
-              <span class="help-inline">
-                {% for error in field.errors %}
-                {{ error }}
-                {% endfor %}
-              </span>
-            </div>
-          </div>
-        {% else %}
-          <div class="control-group">
-            <label class="control-label">{{ field.label }}</label>
-            <div class="controls">{{ field }}
-              {% if field.help_text %}
-                <p class="help-inline">
-                  <small>{{ field.help_text }}</small>
-                </p>
-              {% endif %}
-            </div>
-          </div>
-        {% endif %}
-      {% endfor %}
-    </fieldset>
-    <div style="margin: 30px">
-      <button type="submit" class="btn btn-primary">Submit</button>
+    <div class="clearfix">
+      <div class="col-sm-offset-3 col-sm-9">
+        <button type="submit" class="btn btn-success">Submit</button>
+        <a class="btn btn-base"
+           href="{% url 'project:detail' project.id %}"> Cancel </a>
+      </div>
     </div>
   </form>
 {% endblock %}

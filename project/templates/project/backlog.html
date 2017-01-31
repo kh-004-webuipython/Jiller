@@ -1,5 +1,12 @@
 {% extends 'base.html' %}
+{% load i18n %}
 
+{% block breadcrumbs %}
+  {{ block.super }}
+  <li>
+    <span>{% trans 'Backlog' %}</span>
+  </li>
+{% endblock %}
 {% block content %}
   {% include 'project/project_navbar.html' with backlog=True %}
   <h2 class="inline">Backlog | Project - {{ project.title }}</h2>
