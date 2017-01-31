@@ -80,7 +80,7 @@ def issue(request, project_id, issue_id):
     current_issue = get_object_or_404(Issue, pk=issue_id)
     project = get_object_or_404(Project, pk=project_id)
     if current_issue.project_id != project.id:
-        raise Http404("Project does not exist")
+        raise Http404("Issue does not exist")
     return render(request, 'project/issue.html', {
         'issue': current_issue, 'project': project
     })
