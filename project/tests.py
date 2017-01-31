@@ -4,6 +4,7 @@ from django.test import TestCase, Client
 from django.urls import reverse
 
 from employee.models import Employee
+from project.forms import ProjectForm
 from .models import Project, Issue, Sprint, ProjectTeam
 
 
@@ -128,6 +129,7 @@ class SprintsListViewTests(LoginRequiredBase):
 class ProjectViewTests(LoginRequiredBase):
     def setUp(self):
         # Set up data for the whole TestCase
+        super(ProjectViewTests, self).setUp()
         self.project = Project.objects.create(title='only a test',
                                               description='yes, this is only a test',
                                               start_date=datetime.date(
@@ -141,11 +143,11 @@ class ProjectViewTests(LoginRequiredBase):
         response = self.client.get(reverse('project:create'))
         self.assertEqual(response.status_code, 200)
 
-    def check_how_many_objects_are_in_db_now(self):
+    def test_check_how_many_objects_are_in_db_now(self):
         all_projects_in_database = Project.objects.all()
         self.assertEquals(all_projects_in_database.count(), 1)
 
-    def check_all_project_attributes(self):
+    def test_check_all_project_attributes(self):
         only_project_in_database = Project.objects.all()[0]
         self.assertEquals(only_project_in_database, self.project)
         self.assertEquals(only_project_in_database.title,
@@ -161,22 +163,57 @@ class ProjectViewTests(LoginRequiredBase):
 
     def test_project_update_page(self):
         test_project = self.project
-        response = self.client.get(
-            reverse('project:detail',
+        response = self.client.post(
+            reverse('project:update',
                     kwargs={'pk': test_project.id}))
         self.assertEqual(response.status_code, 200)
 
     def test_project_update_valid(self):
         test_project = Project.objects.all()[0]
+        date = datetime.datetime.strptime('24052010', "%d%m%Y").date()
         form_data = {'title': test_project.title + '123',
                      'description': test_project.description + '123',
-                     'start_date': test_project.start_date + datetime.timedelta(
+                     'start_date': date + datetime.timedelta(
                          days=1),
-                     'end_date': test_project.end_date + datetime.timedelta(
-                         days=1)}
-        form = Project(data=form_data)
-        self.assertTrue(form.is_valid())
+                     'end_date': date + datetime.timedelta(
+                         days=2)}
+        response = self.client.post(
+            reverse('project:update',
+                    kwargs={'pk': test_project.id}), data=form_data)
+        url_detail = reverse('project:detail',
+                             kwargs={'pk': test_project.id})
+        self.assertRedirects(response, url_detail, status_code=302,
+                             target_status_code=200)
+        test_project = Project.objects.all()[0]
+        self.assertEquals(test_project.title, 'only a test123')
+        self.assertEquals(test_project.title, 'only a test123')
+        self.assertEquals(test_project.description,
+                          'yes, this is only a test123')
+        self.assertEquals(test_project.start_date,
+                          date + datetime.timedelta(
+                              days=1))
+        self.assertEquals(test_project.end_date,
+                          date + datetime.timedelta(
+                              days=2))
 
+    def test_incorrect_date(self):
+        test_project = Project.objects.all()[0]
+        print test_project.start_date
+        date = datetime.datetime.strptime('24052010', "%d%m%Y").date()
+        form_data = {'title': test_project.title + '123',
+                     'description': test_project.description + '123',
+                     'start_date': date + datetime.timedelta(
+                         days=5),
+                     'end_date': date + datetime.timedelta(
+                         days=2)}
+
+
+        # response = self.client.post(
+        #     reverse('project:update',
+        #             kwargs={'pk': test_project.id}), data=form_data)
+        # print test_project.start_date
+        # self.assertEqual(resp.context['error_message'], "You didn't select a choice.")
+        # self.assertEqual(response.status_code, 200)
 
         # delete
 
@@ -189,9 +226,14 @@ class ProjectViewTests(LoginRequiredBase):
 
     def test_project_is_really_deleted(self):
         test_project = Project.objects.all()[0]
-
-        # response = self.client.get(reverse('project:project_delete',
-        #             kwargs={'pk': test_project.id}))
+        response = self.client.post(
+            reverse('project:delete',
+                    kwargs={'pk': test_project.id}))
+        url_detail = reverse('project:list')
+        self.assertRedirects(response, url_detail, status_code=302,
+                             target_status_code=200)
+        test_project = Project.objects.all()[0]
+        self.assertEquals(test_project.is_active, False)
 
     # detail
 
