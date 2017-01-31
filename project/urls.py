@@ -31,8 +31,8 @@ urlpatterns = [
     # views.SprintDelete.as_view(), name='sprint_delete'),
 
     # active_sprint
-    url(r'^(?P<pk>\d+)/activesprint/$',
-        views.ActiveSprintView.as_view(), name='active_sprint'),
+    url(r'^(?P<pk>\d+)/sprint/active/$',
+        views.ActiveSprintView.as_view(), name='sprint_active'),
     url(r'^(?P<project_id>\d+)/(?P<issue_id>\d+)/(?P<slug>left|right)/$',
         views.push_issue_in_active_sprint, name='issue_push'),
 
