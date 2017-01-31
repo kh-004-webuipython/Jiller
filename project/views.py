@@ -6,7 +6,8 @@ from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.views.generic import DetailView, ListView
 from django.urls import reverse
 
-from .forms import ProjectForm, SprintCreateForm, CreateIssueForm, EditIssueForm
+from .forms import ProjectForm, SprintCreateForm, CreateIssueForm, \
+    EditIssueForm
 from .models import Project, ProjectTeam, Issue, Sprint
 
 from django.utils.decorators import method_decorator
@@ -46,8 +47,11 @@ def issue_create_view(request, project_id):
             new_issue.save()
             return redirect('project:backlog', project_id)
     else:
-        form = CreateIssueForm(initial={'project': project_id, 'author': request.user.id})
-    return render(request, 'project/create_issue.html', {'form': form, 'project': Project.objects.get(pk=project_id)})
+        form = CreateIssueForm(
+            initial={'project': project_id, 'author': request.user.id})
+    return render(request, 'project/create_issue.html', {'form': form,
+                                                         'project': Project.objects.get(
+                                                             pk=project_id)})
 
 
 @user_belongs_project
@@ -62,7 +66,9 @@ def issue_edit_view(request, project_id, issue_id):
             return redirect('project:backlog', project_id)
     else:
         form = EditIssueForm(instance=current_issue)
-    return render(request, 'project/edit_issue.html', {'form': form, 'project': Project.objects.get(pk=project_id)})
+    return render(request, 'project/edit_issue.html',
+                  {'form': form, 'project': Project.objects.get(pk=project_id),
+                   'issue': Issue.objects.get(pk=issue_id)})
 
 
 @user_belongs_project

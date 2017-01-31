@@ -1,5 +1,21 @@
 {% extends 'base.html' %}
 {% load static %}
+{% load i18n %}
+
+{% block title %}Team{% endblock %}
+
+{% block breadcrumbs %}
+  {{ block.super }}
+  <li>
+    <a href="{% url 'project:list' %}">Projects</a>
+  </li>
+  <li>
+    <a href="{% url 'project:detail' project.id %}">{{ project.title }}</a>
+  </li>
+  <li>
+    <span>{% trans 'Team' %}</span>
+  </li>
+{% endblock %}
 
 {% block content %}
   {% include 'project/project_navbar.html' with team=True %}
