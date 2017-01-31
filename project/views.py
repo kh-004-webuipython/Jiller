@@ -52,7 +52,7 @@ def issue_edit_view(request, project_id, issue_id):
             return redirect('project:backlog', project_id)
     else:
         form = EditIssueForm(instance=current_issue)
-    return render(request, 'project/edit_issue.html', {'form': form})
+    return render(request, 'project/edit_issue.html', {'form': form, 'project': Project.objects.get(pk=project_id)})
 
 
 def team_view(request, project_id):
@@ -158,8 +158,8 @@ class SprintCreate(CreateView):
     def get_initial(self):
         return {
             'project': self.kwargs['pk'],
-            'start_date':datetime.datetime.now(),
-            'status':Sprint.NEW
+            'start_date': datetime.datetime.now(),
+            'status': Sprint.NEW
         }
 
     def get_context_data(self, **kwargs):
