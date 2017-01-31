@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+
+  {% include 'project/project_navbar.html' with detail=True %}
+
+  <form role="form" action="" class="form-horizontal" method="post">
+    <div class="col-sm-12 ">
+      <p class="">Are you sure you want to delete project "{{ object }}"?</p>
+    </div>
+
+    {% csrf_token %}
+    <div class="col-sm-offset-3 col-sm-6">
+      <button type="submit" class="btn btn-danger center-block">Yes</button>
+      <a class="btn btn-delete"
+         href="{% url 'project:detail' project.id %}"> No </a>
+    </div>
+
+  </form>
+{% endblock %}

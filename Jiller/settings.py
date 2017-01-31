@@ -37,8 +37,11 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'workflow',
+    'project',
+    'employee',
+    'general',
     'sorl.thumbnail',
+    'django_nose',
 ]
 
 MIDDLEWARE = [
@@ -125,15 +128,22 @@ STATIC_URL = '/static/'
 STATICFILES_DIRS = (os.path.join(BASE_DIR, 'static'),)
 
 
-AUTH_USER_MODEL = 'workflow.Employee'
+AUTH_USER_MODEL = 'employee.Employee'
 
-LOGIN_URL = 'workflow:login'
+LOGIN_URL = 'general:login'
 
 LOGIN_EXEMPT_URLS = (
  r'^login/$',
  r'^registration/$',
 )
 
+
+TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
+
+NOSE_ARGS = [
+    '--with-coverage',
+    '--cover-package=general,project,employee',
+]
 
 try:
     from local_settings import *

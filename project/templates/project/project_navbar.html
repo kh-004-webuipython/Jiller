@@ -1,0 +1,35 @@
+{% load static %}
+
+<div class="page-header"><h1>{{ project.title }}</h1></div>
+<div class="tabbable">
+  <ul class="nav nav-tabs" id="myTab">
+    <li {% if detail %}class="active"{% endif %}>
+      <a href="{% url 'project:detail' project.id %}">
+        Detail
+      </a>
+    </li>
+    <li {% if sprint_detail %}class="active"{% endif %}>
+      <a href="{% url 'project:sprint_active' project.id %}">
+        Sprint
+      </a>
+    </li>
+    <li {% if backlog %}class="active"{% endif %}>
+      <a href="{% url 'project:backlog' project.id %}">
+        Backlog
+      </a>
+    </li>
+    <li {% if sprint_list %}class="active" {% endif %}>
+      <a href="{% url 'project:sprints_list' project.id %}">
+        Sprint history
+      </a>
+    </li>
+    <li {% if team %}class="active" {% endif %}>
+      <a href="{% url 'project:team' project.id %}">
+        Team
+      </a>
+    </li>
+  </ul>
+</div>
+<div class="clearfix navbar-margin-bottom"></div>
+
+
