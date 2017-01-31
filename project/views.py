@@ -1,3 +1,5 @@
+import datetime
+
 from django.http import HttpResponseRedirect, Http404
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
@@ -36,8 +38,8 @@ def issue_create_view(request, project_id):
             new_issue.save()
             return redirect('project:backlog', project_id)
     else:
-        form = CreateIssueForm()
-    return render(request, 'project/create_issue.html', {'form': form})
+        form = CreateIssueForm(initial={'project': project_id, 'author': request.user.id})
+    return render(request, 'project/create_issue.html', {'form': form, 'project': Project.objects.get(pk=project_id)})
 
 
 def issue_edit_view(request, project_id, issue_id):
@@ -76,7 +78,6 @@ def backlog(request, project_id):
 
 
 def issue(request, project_id, issue_id):
-
     current_issue = get_object_or_404(Issue, pk=issue_id)
     project = get_object_or_404(Project, pk=project_id)
     if current_issue.project_id != project.id:
@@ -154,6 +155,13 @@ class SprintCreate(CreateView):
     form_class = SprintCreateForm
     template_name_suffix = '_create_form'
 
+    def get_initial(self):
+        return {
+            'project': self.kwargs['pk'],
+            'start_date':datetime.datetime.now(),
+            'status':Sprint.NEW
+        }
+
     def get_context_data(self, **kwargs):
         context = super(SprintCreate, self).get_context_data(**kwargs)
         context['project'] = Project.objects.get(id=self.kwargs['pk'])
@@ -161,12 +169,18 @@ class SprintCreate(CreateView):
 
     def get_success_url(self):
         return reverse('project:sprint_detail', args=(self.object.project_id,
-                                               self.object.id))
+                                                      self.object.id))
 
 
 class ActiveSprintView(DetailView):
     model = Sprint
     template_name = 'project/sprint_active.html'
+
+    def get_object(self, queryset=None):
+        try:
+            return super(ActiveSprintView, self).get_object(queryset)
+        except:
+            return None
 
     def get_context_data(self, **kwargs):
         context = super(ActiveSprintView, self).get_context_data(

@@ -1,8 +1,7 @@
 {% extends 'base.html' %}
 
 {% block content %}
-  {% include 'project/project_navbar.html' %}
-  {{ block.super }}
+  {% include 'project/project_navbar.html' with sprint_list=True%}
   <h2>Sprints list | Project - {{ project.title }}</h2>
 
   {% if sprints %}
