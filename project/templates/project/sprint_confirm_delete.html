@@ -1,8 +1,7 @@
-{% extends 'project/project_navbar.html' %}
-
 {% block title %}Delete sprint{% endblock %}
 
 {% block content %}
+  {% include 'project/project_navbar.html' with sprint_detail=True %}
   {{ block.super }}
   <form action="" method="post">
     {% csrf_token %}
