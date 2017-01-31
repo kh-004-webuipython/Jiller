@@ -6,6 +6,8 @@ from django.urls import reverse
 from employee.models import Employee
 from project.forms import ProjectForm
 from .models import Project, Issue, Sprint, ProjectTeam
+from .forms import EditIssueForm, CreateIssueForm, IssueForm
+from django.shortcuts import get_object_or_404
 
 
 class LoginRequiredBase(TestCase):
@@ -22,6 +24,114 @@ class LoginRequiredBase(TestCase):
                                                  last_name='Mister',
                                                  role=self.user_role_init)
         self.client.login(username='john', password='johnpassword')
+
+
+class TeamViewTest(LoginRequiredBase):
+    def test_team_view_list_view_with_no_team(self):
+        project = Project.objects.create(title="Pr1")
+        response = self.client.get(reverse('project:team', kwargs={'project_id': project.id}))
+        self.assertContains(response, "no team on project", status_code=200)
+        self.assertQuerysetEqual(response.context['team_list'], [])
+
+    def test_team_view_list_view_with_one_team(self):
+        project = Project.objects.create(title="Pr1")
+        team = ProjectTeam.objects.create(project=project, title='title')
+        response = self.client.get(reverse('project:team', kwargs={'project_id': project.id}))
+        self.assertQuerysetEqual(response.context['team_list'], ['<ProjectTeam: title>'])
+
+
+class IssueFormTests(LoginRequiredBase):
+    def setUp(self):
+        super(IssueFormTests, self).setUp()
+        self.project = Project.objects.create()
+        self.employee = Employee.objects.create()
+        self.issue = Issue.objects.create(project=self.project, author=self.employee)
+
+    def test_form_is_valid_with_empty_fields(self):
+        """
+             method should return False if fields are empty
+        """
+        form = IssueForm()
+        self.assertEqual(form.is_valid(), False)
+
+    def test_form_is_valid_with_not_null_required_fields(self):
+        """
+             method should return True if required fields are full
+        """
+        form_data = {'project': self.project.pk, 'author': self.employee.pk, 'title': 'new issue'}
+        form = IssueForm(data=form_data)
+        self.assertEqual(form.is_valid(), True)
+
+    def test_form_is_valid_with_not_null_some_required_fields(self):
+        """
+             method should return False if some required fields are empty
+        """
+        form_data = {'project': self.project.pk, 'author': self.employee.pk}
+        form = IssueForm(data=form_data)
+        self.assertEqual(form.is_valid(), False)
+
+    def test_form_is_valid_with_all_fields_are_full(self):
+        """
+             method should return True if all fields are full right
+        """
+        form_data = {'root': self.issue.pk, 'project': self.project.pk,
+                     'author': self.employee.pk, 'employee': self.employee.pk,
+                     'title': 'new issue', 'description': 'description',
+                     'status': self.issue.status, 'estimation': 2
+        }
+        form = IssueForm(data=form_data)
+        self.assertEqual(form.is_valid(), True)
+
+
+class IssueEditViewTests(LoginRequiredBase):
+    def setUp(self):
+        super(IssueEditViewTests, self).setUp()
+        self.client = Client()
+        self.project = Project.objects.create()
+        self.employee = Employee.objects.create()
+        self.issue = Issue.objects.create(project=self.project, author=self.employee, title='title')
+
+    def test_issue_edit_view_use_right_template(self):
+        """
+            method should return OK if it use right template
+        """
+        response = self.client.post(reverse('project:issue_edit', args=[self.project.pk,
+                                                                        self.issue.pk]))
+        self.assertTemplateUsed(response, 'project/edit_issue.html')
+
+    def test_issue_edit_view_can_get_object(self):
+        """
+            method should be True and return title if it can get an object
+        """
+        issue = get_object_or_404(Issue, pk=self.issue.pk, project=self.project.pk)
+        self.assertTrue(isinstance(issue, Issue))
+        self.assertEqual(issue.__str__(), issue.title)
+
+    # def test_issue_edit_view_cant_get_object(self):
+    #     """
+    #         method should return False if it cant get an object
+    #     """
+    #     try:
+    #         issue = get_object_or_404(Issue, pk=0, project=0)
+    #     except Issue.DoesNotExist:
+    #         raise Http404("Project does not exist")
+    #     self.assertTrue(isinstance(issue, Issue), False)
+
+
+class IssueCreateViewTests(LoginRequiredBase):
+    def setUp(self):
+        super(IssueCreateViewTests, self).setUp()
+        self.client = Client()
+        self.project = Project.objects.create()
+        self.employee = Employee.objects.create()
+        self.issue = Issue.objects.create(project=self.project, author=self.employee, title='title')
+
+    def test_issue_create_view_use_right_template(self):
+        """
+            method should return OK if it use right template
+        """
+        response = self.client.post(reverse('project:issue_create', args=[self.project.pk]))
+        self.assertTemplateUsed(response, 'project/create_issue.html')
 
 
 class ProjectsListViewTests(LoginRequiredBase):
@@ -223,6 +333,7 @@ class ProjectViewTests(LoginRequiredBase):
             reverse('project:delete',
                     kwargs={'pk': test_project.id}))
         self.assertEqual(response.status_code, 200)
+
 
     def test_project_is_really_deleted(self):
         test_project = Project.objects.all()[0]
