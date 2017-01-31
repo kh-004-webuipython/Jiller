@@ -37,3 +37,7 @@ html, body {
 a#createprojectbtn {
     margin-bottom: 8px;
 }
+
+.navbar-margin-bottom{
+    margin-bottom: 10px;
+}

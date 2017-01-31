@@ -3,7 +3,7 @@
 {% block title %} Active sprint {% endblock %}
 
 {% block content %}
-  {% include 'project/project_navbar.html' %}
+  {% include 'project/project_navbar.html' with sprint_detail=True %}
 
 
   {% if no_active_sprint %}
