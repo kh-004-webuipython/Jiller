@@ -31,6 +31,19 @@ class IssueForm(forms.ModelForm):
         fields = '__all__'
 
 
+class CreateIssueForm(IssueForm):
+    def clean_title(self):
+        cleaned_data = super(IssueForm, self).clean()
+        title = cleaned_data.get('title')
+        if Issue.objects.filter(title=title):
+            raise forms.ValidationError('This title is already use')
+        return title
+
+
+class EditIssueForm(IssueForm):
+    pass
+
+
 # class TeamForm(forms.ModelForm):
 #     class Meta:
 #         model = ProjectTeam
