@@ -1,8 +1,8 @@
 {% extends 'base.html' %}
-{% load staticfiles %}
+{% load static %}
 
 {% block content %}
-  {% include 'project/project_navbar.html' %}
+  {% include 'project/project_navbar.html' with team=True %}
   <h2>Team list</h2>
   <ul>
     {% if team_list %}
