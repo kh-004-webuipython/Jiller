@@ -13,8 +13,11 @@ def user_belongs_project(function):
 
         project_team = ProjectTeam.objects.filter(project_id=kwargs['project_id'])
         for team in project_team:
-            employee = ProjectTeam.objects.get(
-                pk=team.id, employees=request.user.id)
+            try:
+                employee = ProjectTeam.objects.get(
+                    pk=team.id, employees=request.user.id)
+            except ProjectTeam.DoesNotExist:
+                return HttpResponseRedirect(reverse('project:list'))
             if employee:
                 return function(request, *args, **kwargs)
         return HttpResponseRedirect(reverse('project:list'))
