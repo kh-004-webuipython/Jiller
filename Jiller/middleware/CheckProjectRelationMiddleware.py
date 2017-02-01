@@ -24,16 +24,16 @@ class CheckProjectRelation(object):
         resolved = resolve(request.path)
         try:
             project_team = ProjectTeam.objects.filter(project_id=resolved.kwargs['project_id'])
-            if not isinstance(project_team, EmptyQuerySet):
-                for team in project_team:
-                    try:
-                        employee = ProjectTeam.objects.get(
-                            pk=team.id, employees=request.user.id)
-                    except:
-                        return HttpResponseForbidden()
-                    else:
-                        response = self.get_response(request)
-                        return response
+            for team in project_team:
+                try:
+                    employee = ProjectTeam.objects.get(
+                        pk=team.id, employees=request.user.id)
+                except:
+                    return HttpResponseForbidden()
+                else:
+                    response = self.get_response(request)
+                    return response
+
         except:
             return HttpResponseForbidden()
         return HttpResponseForbidden()
