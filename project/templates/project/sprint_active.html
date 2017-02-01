@@ -24,31 +24,26 @@
     <h4>There is no active sprint yet</h4>
   {% endif %}
 
-  {% if to_much_active_sprint %}
-    <h4>There is en error in DB, You have 2 or more active sprints in a
-      time</h4>
-  {% endif %}
-
-  {% if not no_active_sprint and not to_much_active_sprint %}
-    <div class="table-responsive">
-      <table class="table table-bordered">
-        <thead>
-        <tr>
-          <th>Sprint Title</th>
-          <th>Start date</th>
-          <th>End date</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr>
-          <td>{{ active_sprint.title }}</td>
-          <td>{{ active_sprint.start_date|date:"d/m/Y" }}</td>
-          <td>{{ active_sprint.end_date|date:"d/m/Y" }}</td>
-        </tr>
-        </tbody>
-      </table>
-    </div>
-    <br><br>
+  {% if not no_active_sprint %}
+  <div class="table-responsive">
+    <table class="table table-bordered">
+      <thead>
+      <tr>
+        <th>Sprint Title</th>
+        <th>Start date</th>
+        <th>End date</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr>
+        <td>{{ active_sprint.title }}</td>
+        <td>{{ active_sprint.start_date|date:"d/m/Y" }}</td>
+        <td>{{ active_sprint.end_date|date:"d/m/Y" }}</td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+  <br><br>
 
     <div class="text-center table-responsive">
       <p class="text-center"><strong>Dashboard</strong></p>

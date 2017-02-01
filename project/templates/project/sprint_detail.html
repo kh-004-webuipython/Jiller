@@ -139,4 +139,10 @@
     </div>
   {% endif %}
 
+  <div class="col-xs-12 col-sm-6 pull-left">
+    <a class="btn btn-info pull-left"
+       href="{% url 'project:sprint_activate' project.id object.id %}"> Change
+      status </a>
+  </div>
+
 {% endblock %}
