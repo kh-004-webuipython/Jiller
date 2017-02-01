@@ -22,13 +22,14 @@ urlpatterns = [
     # sprint
     url(r'^(?P<project_id>\d+)/sprint/$',
         views.sprints_list, name='sprints_list'),
-    url(r'^(?P<project_id>[0-9]+)/sprint/(?P<sprint_id>[0-9]+)/$',
-        views.SprintView.as_view(), name='sprint_detail'),
     url(r'^(?P<pk>\d+)/sprint/create/$',
         views.SprintCreate.as_view(), name='sprint_create'),
-    # url for delete sprint. Hidden until create field is_active in Sprint model
-    # url(r'^project/(?P<pk>\d+)/sprint/delete/$',
-    # views.SprintDelete.as_view(), name='sprint_delete'),
+    url(r'^(?P<project_id>\d+)/sprint/(?P<sprint_id>\d+)/$',
+        views.SprintView.as_view(), name='sprint_detail'),
+    url(r'^(?P<project_id>\d+)/sprint/(?P<sprint_id>\d+)/activate/$',
+        views.SprintStatusUpdate.as_view(), name='sprint_activate'),
+    #url(r'^(?P<project_id>\d+)/sprint/(?P<sprint_id>\d+)/delete/$',
+    #    views.SprintDelete.as_view(), name='sprint_delete'),
 
     # active_sprint
     url(r'^(?P<pk>\d+)/sprint/active/$',

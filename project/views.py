@@ -1,4 +1,4 @@
-from django.http import HttpResponseRedirect, Http404
+from django.http import HttpResponseRedirect, Http404, HttpResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.views.generic import DetailView, ListView
@@ -76,19 +76,18 @@ def backlog(request, project_id):
 
 
 def issue(request, project_id, issue_id):
-
     current_issue = get_object_or_404(Issue, pk=issue_id)
     project = get_object_or_404(Project, pk=project_id)
     if current_issue.project_id != project.id:
         raise Http404("Issue does not exist")
-    return render(request, 'project/issue.html', {
+    return render(request, 'project/issue_detail.html', {
         'issue': current_issue, 'project': project
     })
 
 
 class SprintView(DetailView):
     model = Sprint
-    template_name = 'project/sprint.html'
+    template_name = 'project/sprint_detail.html'
     query_pk_and_slug = True
     pk_url_kwarg = 'sprint_id'
     slug_field = 'project'
@@ -161,14 +160,26 @@ class SprintCreate(CreateView):
 
     def get_success_url(self):
         return reverse('project:sprint_detail', args=(self.object.project_id,
-                                               self.object.id))
+                                                      self.object.id))
 
 
 class ActiveSprintView(DetailView):
     model = Sprint
     template_name = 'project/sprint_active.html'
 
+    def get_object(self, queryset=None):
+        try:
+            return super(ActiveSprintView, self).get_object(queryset)
+        except:
+            try:
+                Project.objects.get(pk=self.kwargs['pk'])
+            except:
+                raise Http404("Project does not exist")
+        else:
+            return None
+
     def get_context_data(self, **kwargs):
+
         context = super(ActiveSprintView, self).get_context_data(
             **kwargs)
 
@@ -179,17 +190,14 @@ class ActiveSprintView(DetailView):
             context['project'] = Project.objects.get(id=self.kwargs['pk'])
             context['no_active_sprint'] = True
             return context
-        except Sprint.MultipleObjectsReturned:
-            context['project'] = Project.objects.get(id=self.kwargs['pk'])
-            context['to_much_active_sprint'] = True
-            return context
         else:
             active_sprint = Sprint.objects.get(project_id=self.kwargs['pk'],
                                                status='active')
             context['active_sprint'] = active_sprint
             issues_from_active_sprint = Issue.objects.filter(
                 project_id=self.kwargs['pk'], sprint_id=active_sprint.id)
-            context['new_issues'] = issues_from_active_sprint.filter(status="new")
+            context['new_issues'] = issues_from_active_sprint.filter(
+                status="new")
             context['in_progress_issues'] = issues_from_active_sprint.filter(
                 status="in progress")
             context['resolved_issues'] = issues_from_active_sprint.filter(
@@ -216,17 +224,36 @@ def push_issue_in_active_sprint(request, project_id, issue_id, slug):
         elif current_issue.status == "in progress":
             current_issue.status = "new"
             current_issue.save()
-    return HttpResponseRedirect(
-        reverse('project:sprint_active', args=(project_id)))
+    return HttpResponseRedirect(reverse('project:sprint_active',
+                                        args=(project_id)))
 
-# This view for delete sprint. Hidden until create field is_active in
-# Sprint model
-#
-# class SprintDelete(DeleteView):
-#    model = Sprint
-#    def delete(self, **kwargs):
-#        sprint = Sprint.objects.get(id=self.kwargs['pk'])
-#        sprint.is_active = False
-#        sprint.save()
-#        return HttpResponseRedirect(
-#            reverse('project:sprints_list'))
+
+class SprintStatusUpdate(UpdateView):
+    model = Sprint
+    template_name = 'project/sprint_update_form.html'
+    pk_url_kwarg = 'sprint_id'
+    slug_field = 'project'
+    slug_url_kwarg = 'project_id'
+    fields = ['status']
+
+    def get_context_data(self, **kwargs):
+        context = super(SprintStatusUpdate, self).get_context_data(**kwargs)
+        context['project'] = Project.objects.get(id=self.kwargs['project_id'])
+        return context
+
+    def get_success_url(self, **kwargs):
+        return reverse('project:sprint_active',
+                       kwargs={'pk': self.object.project_id})
+
+
+"""
+class SprintDelete(DeleteView):
+    model = Sprint
+
+    def delete(self, **kwargs):
+        sprint = Sprint.objects.get(id=self.kwargs['pk'])
+        sprint.is_active = False
+        sprint.save()
+        return HttpResponseRedirect(
+            reverse('project:sprints_list'))
+"""

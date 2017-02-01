@@ -10,11 +10,7 @@
     <h4>There is no active sprint yet</h4>
   {% endif %}
 
-  {% if to_much_active_sprint %}
-  <h4>There is en error in DB, You have 2 or more active sprints in a time</h4>
-  {% endif %}
-
-  {% if not no_active_sprint and not to_much_active_sprint%}
+  {% if not no_active_sprint %}
   <div class="table-responsive">
     <table class="table table-bordered">
       <thead>

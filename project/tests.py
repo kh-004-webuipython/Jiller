@@ -232,13 +232,12 @@ class SprintResponseTests(LoginRequiredBase):
         self.assertEqual(response.status_code, 200)
         inst_count = len(Sprint.objects.all())
         self.assertEqual(Sprint.objects.get(pk=1).status, 'new')
-
         start_date = datetime.datetime.now().strftime("%Y-%m-%d")
         end_date = datetime.datetime.now() + datetime.timedelta(days=14)
         end_date = end_date.strftime("%Y-%m-%d")
         data = {'title': "It's a New Sprint", 'project': project.id,
                 "start_date": start_date, "end_date": end_date,
-                'team': team.id}
+                'team': team.id, 'status':'new'}
         response = self.client.post(url, data)
         new_sprint = Sprint.objects.get(pk=2)
         self.assertEquals(new_sprint.start_date.strftime("%Y-%m-%d"),
@@ -288,7 +287,7 @@ class IssueResponseTests(LoginRequiredBase):
                       kwargs={'project_id': issue.project_id,
                               'issue_id': issue.id})
         response = self.client.get(url)
-        self.assertTemplateUsed(response, 'project/issue.html')
+        self.assertTemplateUsed(response, 'project/issue_detail.html')
 
 
 class ActiveSprintTests(LoginRequiredBase):
