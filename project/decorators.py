@@ -1,14 +1,12 @@
 from django.http import HttpResponseRedirect
 from django.urls import reverse
 from .models import ProjectTeam
-from employee.models import Employee
 from waffle.decorators import waffle_flag
 
 
 def user_belongs_project(function):
     def wrap(request, *args, **kwargs):
-        admin = Employee.objects.get(pk=request.user.id)
-        if admin.is_staff:
+        if request.user.is_staff:
             return function(request, *args, **kwargs)
 
         project_team = ProjectTeam.objects.filter(project_id=kwargs['project_id'])

@@ -206,7 +206,7 @@ class SprintCreate(CreateView):
 
     def get_initial(self):
         return {
-            'project': self.kwargs['pk'],
+            'project': self.kwargs['project_id'],
             'start_date': datetime.datetime.now(),
             'status': Sprint.NEW
         }
@@ -236,7 +236,7 @@ class ActiveSprintView(DetailView):
             return super(ActiveSprintView, self).get_object(queryset)
         except:
             try:
-                Project.objects.get(pk=self.kwargs['pk'])
+                Project.objects.get(pk=self.kwargs['project_id'])
             except:
                 raise Http404("Project does not exist")
         else:
@@ -311,7 +311,7 @@ class SprintStatusUpdate(UpdateView):
 
     def get_success_url(self, **kwargs):
         return reverse('project:sprint_active',
-                       kwargs={'pk': self.object.project_id})
+                       kwargs={'project_id': self.object.project_id})
 
 
 """
