@@ -1,10 +1,13 @@
-from django.http import HttpResponseRedirect, Http404, HttpResponse
+import datetime
+
+from django.http import HttpResponseRedirect, Http404
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.views.generic import DetailView, ListView
 from django.urls import reverse
 
-from .forms import ProjectForm, SprintCreateForm, IssueForm
+from .forms import ProjectForm, SprintCreateForm, CreateIssueForm, \
+    EditIssueForm
 from .models import Project, ProjectTeam, Issue, Sprint
 
 
@@ -28,32 +31,37 @@ def sprints_list(request, project_id):
                                                          'sprints': sprints})
 
 
-def create_issue(request, project_id):
+def issue_create_view(request, project_id):
     if request.method == "POST":
-        form = IssueForm(request.POST)
+        form = CreateIssueForm(request.POST)
         if form.is_valid():
             new_issue = form.save(commit=False)
             new_issue.save()
             return redirect('project:backlog', project_id)
     else:
-        form = IssueForm()
-    return render(request, 'project/edit_issue.html', {'form': form})
+        form = CreateIssueForm(
+            initial={'project': project_id, 'author': request.user.id})
+    return render(request, 'project/create_issue.html', {'form': form,
+                                                         'project': Project.objects.get(
+                                                             pk=project_id)})
 
 
-def edit_issue(request, project_id, issue_id):
+def issue_edit_view(request, project_id, issue_id):
     current_issue = get_object_or_404(Issue, pk=issue_id, project=project_id)
     if request.method == "POST":
-        form = IssueForm(request.POST, instance=current_issue)
+        form = EditIssueForm(request.POST, instance=current_issue)
         if form.is_valid():
             current_issue = form.save(commit=False)
             current_issue.save()
             return redirect('project:backlog', project_id)
     else:
-        form = IssueForm(instance=current_issue)
-    return render(request, 'project/edit_issue.html', {'form': form})
+        form = EditIssueForm(instance=current_issue)
+    return render(request, 'project/edit_issue.html',
+                  {'form': form, 'project': Project.objects.get(pk=project_id),
+                   'issue': Issue.objects.get(pk=issue_id)})
 
 
-def team(request, project_id):
+def team_view(request, project_id):
     current_project = get_object_or_404(Project, pk=project_id)
     try:
         team_list = ProjectTeam.objects.filter(project=current_project)
@@ -153,6 +161,13 @@ class SprintCreate(CreateView):
     form_class = SprintCreateForm
     template_name_suffix = '_create_form'
 
+    def get_initial(self):
+        return {
+            'project': self.kwargs['pk'],
+            'start_date': datetime.datetime.now(),
+            'status': Sprint.NEW
+        }
+
     def get_context_data(self, **kwargs):
         context = super(SprintCreate, self).get_context_data(**kwargs)
         context['project'] = Project.objects.get(id=self.kwargs['pk'])
@@ -179,7 +194,6 @@ class ActiveSprintView(DetailView):
             return None
 
     def get_context_data(self, **kwargs):
-
         context = super(ActiveSprintView, self).get_context_data(
             **kwargs)
 

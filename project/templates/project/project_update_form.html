@@ -1,8 +1,24 @@
 {% extends 'base.html' %}
+{% load i18n %}
+
+{% block title %}Update project{% endblock %}
+{% block breadcrumbs %}
+  {{ block.super }}
+  <li>
+    <a href="{% url 'project:list' %}">Projects</a>
+  </li>
+  <li>
+    <a href="{% url 'project:detail' project.id %}">{{ project.title }}</a>
+  </li>
+  <li>
+    <span>{% trans 'Edit' %}</span>
+  </li>
+
+{% endblock %}
 
 {% block content %}
 
-  {% include 'project/project_navbar.html' %}
+  {% include 'project/project_navbar.html' with detail=True %}
 
  <h3 class="col-sm-offset-3">Update project</h3>
   <form role="form" action="" class="form-horizontal" method="post">
@@ -30,7 +46,8 @@
     <div class="clearfix">
       <div class="col-sm-offset-3 col-sm-9">
         <button type="submit" class="btn btn-success">Submit</button>
-        <a class = "btn btn-delete" href="{% url 'project:delete' project.id %}"> Delete </a>
+        <button class="btn ">Cancel</button>
+        <a class = "btn btn-danger" href="{% url 'project:delete' project.id %}"> Delete </a>
 
       </div>
     </div>

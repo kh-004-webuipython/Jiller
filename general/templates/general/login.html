@@ -1,48 +1,55 @@
-{% load staticfiles %}
+{% load static %}
 
 {% block styles %}
-  <link rel="stylesheet" href='{% static 'css/bootstrap.css' %}'
-        type='text/css'/>
-  <link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}"/>
+<link rel="stylesheet" href='{% static 'css/bootstrap.css' %}'
+type='text/css'/>
+<link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}"/>
 {% endblock %}
 
 {% block content %}
 
 
-  <div class="container">
+<div class="container">
     <div class="row">
-      <div class="col-xs-12 col-sm-4 col-sm-offset-4">
-        <form class="form-signin" action="{% url 'general:login' %}"
-              method="post">
-          {% csrf_token %}
-          <div class="form-group">
-            <h3>Login</h3>
-            <input name="username" type="text" class="form-control"
-                   placeholder="Login" required
-                   class="btn-block">
-          </div>
-          <div class="form-group">
-            <h3>Password</h3>
-            <input name="password" type="password" class="form-control"
-                   placeholder="Password"
-                   required class="btn-block">
-          </div>
-          <div class="col-md-3"></div>
-          {% for message in messages %}
-            <div class="col-md-12 col-lg-offset-5">
-              <p><strong>{{ message }}</strong></p>
-            </div>
-          {% endfor %}
+        <div class="col-xs-12 col-sm-4 col-sm-offset-4">
+            <div class="panel panel-primary">
+                <div class="panel-heading">
+                    <h3 class="panel-title">Jiller</h3>
+                </div>
+                <div class="panel-body">
+                    <form class="form-signin" action="{% url 'general:login' %}"
+                          method="post">
+                        {% csrf_token %}
+                        <div class="form-group">
+                            <h3>Login</h3>
+                            <input name="username" type="text" class="form-control"
+                                   placeholder="Enter Login" required
+                                   class="btn-block">
+                        </div>
+                        <div class="form-group">
+                            <h3>Password</h3>
+                            <input name="password" type="password" class="form-control"
+                                   placeholder="Enter Password"
+                                   required class="btn-block">
+                        </div>
+                        <div class="col-md-12"></div>
+                        {% for message in messages %}
+                        <div class="col-md-12">
+                            <p><strong>{{ message }}</strong></p>
+                        </div>
+                        {% endfor %}
 
-          <div class="form-group">
-            <input class="btn btn-lg btn-primary btn-block" type="submit"
-                   value="Log in">
-            <div class="register-link">
-              <a href="{% url 'general:registration' %}" class="center-block">Register</a>
+                        <div class="form-group">
+                            <input class="btn btn-lg btn-primary btn-block" type="submit"
+                                   value="Log in">
+                            <div class="register-link">
+                                <a href="{% url 'general:registration' %}" class="center-block">Register</a>
+                            </div>
+                        </div>
+                    </form>
+                </div>
             </div>
-          </div>
-        </form>
-      </div>
+        </div>
     </div>
-  </div>
+</div>
 {% endblock %}

@@ -1,8 +1,26 @@
 {% extends 'base.html' %}
-{% load staticfiles %}
+{% load static %}
+{% load i18n %}
+
+{% block title %}Create issue{% endblock %}
+{% block breadcrumbs %}
+  {{ block.super }}
+  <li>
+    <a href="{% url 'project:list' %}">Projects</a>
+  </li>
+  <li>
+    <a href="{% url 'project:detail' project.id %}">{{ project.title }}</a>
+  </li>
+  <li>
+    <a href="{% url 'project:backlog' project.id %}">{% trans 'Backlog' %}</a>
+  </li>
+  <li>
+    <span>{% trans 'Create issue' %}</span>
+  </li>
+{% endblock %}
 
 {% block content %}
-{{ block.super }}
+{% include 'project/project_navbar.html' with sprint_detail=True%}
 <form role="form" action="" class="form-horizontal" method="post">
   {% for field in form %}
     <div class="form-group {% if form.errors %} has-error {% endif %}">
@@ -27,7 +45,8 @@
   <div class="clearfix">
     <div class="col-sm-offset-3 col-sm-9">
       <button type="submit" class="btn btn-success">Submit</button>
-      <button class="btn ">Cancel</button>
+      <a class="btn btn-base"
+         href="{% url 'project:backlog' project.id %}"> Cancel </a>
     </div>
   </div>
 </form>

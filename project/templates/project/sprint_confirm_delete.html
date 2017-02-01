@@ -1,12 +1,15 @@
-{% extends 'project/project_navbar.html' %}
-
 {% block title %}Delete sprint{% endblock %}
 
 {% block content %}
-  {{ block.super }}
+  {% include 'project/project_navbar.html' with sprint_detail=True %}
   <form action="" method="post">
     {% csrf_token %}
-    <p>Are you sure you want to delete this sprint???"{{ object }}"?</p>
-    <input type="submit" value="Confirm"/>
+    <p class="text-danger text-left">Are you sure you want to delete this
+      sprint?"{{ object }}"?</p>
+    <div class="col-sm-6">
+      <button type="submit" class="btn btn-danger center-block">Yes</button>
+      <a class="btn btn-delete"
+         href="{% url 'project:detail' project.id %}"> No </a>
+    </div>
   </form>
 {% endblock %}
