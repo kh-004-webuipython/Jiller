@@ -1,5 +1,6 @@
 import datetime
 from django.test import TestCase, Client
+from django.core.management import call_command
 
 from django.urls import reverse
 
@@ -23,8 +24,10 @@ class LoginRequiredBase(TestCase):
                                                  'johnpassword',
                                                  first_name='Miss',
                                                  last_name='Mister',
-                                                 role=self.user_role_init)
+                                                 role=self.user_role_init,
+                                                 is_staff=True)
         self.client.login(username='john', password='johnpassword')
+        call_command('loaddata', 'project/fixtures/test.json', verbosity=1)
 
 
 class TeamViewTest(LoginRequiredBase):
@@ -286,7 +289,7 @@ class ProjectViewTests(LoginRequiredBase):
         test_project = self.project
         response = self.client.post(
             reverse('project:update',
-                    kwargs={'pk': test_project.id}))
+                    kwargs={'project_id': test_project.id}))
         self.assertEqual(response.status_code, 200)
 
     def test_project_update_valid(self):
@@ -300,9 +303,9 @@ class ProjectViewTests(LoginRequiredBase):
                          days=2)}
         response = self.client.post(
             reverse('project:update',
-                    kwargs={'pk': test_project.id}), data=form_data)
+                    kwargs={'project_id': test_project.id}), data=form_data)
         url_detail = reverse('project:detail',
-                             kwargs={'pk': test_project.id})
+                             kwargs={'project_id': test_project.id})
         self.assertRedirects(response, url_detail, status_code=302,
                              target_status_code=200)
         test_project = Project.objects.all()[0]
@@ -326,7 +329,7 @@ class ProjectViewTests(LoginRequiredBase):
                          days=2)}
         response = self.client.post(
             reverse('project:update',
-                    kwargs={'pk': test_project.id}), data=form_data)
+                    kwargs={'project_id': test_project.id}), data=form_data)
         test_project = Project.objects.all()[0]
         self.assertNotEquals(test_project.start_date,
                           date + datetime.timedelta(
@@ -338,14 +341,14 @@ class ProjectViewTests(LoginRequiredBase):
         test_project = self.project
         response = self.client.get(
             reverse('project:delete',
-                    kwargs={'pk': test_project.id}))
+                    kwargs={'project_id': test_project.id}))
         self.assertEqual(response.status_code, 200)
 
     def test_project_is_really_deleted(self):
         test_project = Project.objects.all()[0]
         response = self.client.post(
             reverse('project:delete',
-                    kwargs={'pk': test_project.id}))
+                    kwargs={'project_id': test_project.id}))
         url_detail = reverse('project:list')
         self.assertRedirects(response, url_detail, status_code=302,
                              target_status_code=200)
@@ -358,7 +361,7 @@ class ProjectViewTests(LoginRequiredBase):
         test_project = self.project
         response = self.client.get(
             reverse('project:detail',
-                    kwargs={'pk': test_project.id}))
+                    kwargs={'project_id': test_project.id}))
         self.assertEqual(response.status_code, 200)
 
 
@@ -386,7 +389,7 @@ class SprintResponseTests(LoginRequiredBase):
         sprint = Sprint.objects.create(title='T_sprint', project_id=project.id,
                                        team_id=team.id, status='new')
         url = reverse('project:sprint_create',
-                      kwargs={'pk': sprint.project_id})
+                      kwargs={'project_id': sprint.project_id})
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
         inst_count = len(Sprint.objects.all())
@@ -457,7 +460,7 @@ class ActiveSprintTests(LoginRequiredBase):
                                        team_id=team.id, status='active')
         self.assertEqual(Sprint.objects.get(pk=1).status, 'active')
         url = reverse('project:sprint_active',
-                      kwargs={'pk': sprint.project_id})
+                      kwargs={'project_id': sprint.project_id})
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
 
@@ -486,7 +489,7 @@ class SprintDashboard(LoginRequiredBase):
         response = self.client.get(url)
         self.assertEqual(response.status_code, 302)
         url_redirect = reverse('project:sprint_active',
-                               kwargs={'pk': sprint.project_id})
+                               kwargs={'project_id': sprint.project_id})
         self.assertEqual(response['Location'], url_redirect)
 
         url = reverse('project:issue_push',
@@ -495,7 +498,7 @@ class SprintDashboard(LoginRequiredBase):
         response = self.client.get(url)
         self.assertEqual(response.status_code, 302)
         url_redirect = reverse('project:sprint_active',
-                               kwargs={'pk': sprint.project_id})
+                               kwargs={'project_id': sprint.project_id})
         self.assertEqual(response['Location'], url_redirect)
 
     def test_project_issue_push_right(self):

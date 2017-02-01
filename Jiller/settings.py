@@ -42,7 +42,12 @@ INSTALLED_APPS = [
     'general',
     'sorl.thumbnail',
     'django_nose',
+    'waffle',
 ]
+
+MIDDLEWARE_CLASSES = (
+    'waffle.middleware.WaffleMiddleware',
+)
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -56,6 +61,10 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = 'Jiller.urls'
+
+TEMPLATE_CONTEXT_PROCESSORS = (
+    'django.core.context_processors.request',
+)
 
 TEMPLATES = [
     {
