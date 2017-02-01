@@ -58,6 +58,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'Jiller.middleware.LoginRequiredMiddleware.LoginRequiredMiddleware',
+    'Jiller.middleware.CheckProjectRelationMiddleware.CheckProjectRelation',
 ]
 
 ROOT_URLCONF = 'Jiller.urls'
