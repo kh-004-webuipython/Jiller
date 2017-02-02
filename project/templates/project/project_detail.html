@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% load static %}
+{% load waffle_tags %}
 {% load i18n %}
 
 {% block breadcrumbs %}
@@ -12,8 +13,10 @@
   </li>
 {% endblock %}
 {% block content %}
+  {% flag "edit_project_detail" %}
   <a class="btn btn-info pull-right"
      href="{% url 'project:update' project.id %}"> Edit project </a>
+  {% endflag %}
   {% include 'project/project_navbar.html' with detail=True %}
 
   <div class="col-xs-12 col-sm-12 project-detail row">
@@ -26,4 +29,3 @@
   </div>
 
 {% endblock %}
-

@@ -46,7 +46,8 @@ def registration_form_view(request):
             role = form.cleaned_data['role']
             Employee.objects.create_user(username, email, password,
                                          last_name=last_name,
-                                         first_name=first_name, role=role)
+                                         first_name=first_name,
+                                         role=role)
             return redirect('general:login')
     else:
         form = RegistrationForm()
