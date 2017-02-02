@@ -11,7 +11,7 @@ from .forms import ProjectForm, SprintCreateForm, CreateIssueForm, \
 from .models import Project, ProjectTeam, Issue, Sprint
 
 from django.utils.decorators import method_decorator
-from .decorators import delete_project, user_belongs_project, \
+from .decorators import delete_project, \
     edit_project_detail, create_project, create_sprint
 from waffle.decorators import waffle_flag
 
@@ -24,7 +24,6 @@ class ProjectListView(ListView):
         return Project.objects.filter(is_active=True).order_by('-start_date')
 
 
-@user_belongs_project
 def sprints_list(request, project_id):
     try:
         project = Project.objects.get(pk=project_id)
@@ -37,7 +36,6 @@ def sprints_list(request, project_id):
                                                          'sprints': sprints})
 
 
-@user_belongs_project
 @waffle_flag('create_issue', 'project:list')
 def issue_create_view(request, project_id):
     if request.method == "POST":
@@ -54,7 +52,6 @@ def issue_create_view(request, project_id):
                                                              pk=project_id)})
 
 
-@user_belongs_project
 @waffle_flag('edit_issue', 'project:list')
 def issue_edit_view(request, project_id, issue_id):
     current_issue = get_object_or_404(Issue, pk=issue_id, project=project_id)
@@ -71,7 +68,6 @@ def issue_edit_view(request, project_id, issue_id):
                    'issue': Issue.objects.get(pk=issue_id)})
 
 
-@user_belongs_project
 def team_view(request, project_id):
     current_project = get_object_or_404(Project, pk=project_id)
     try:
@@ -82,7 +78,6 @@ def team_view(request, project_id):
                                                  'project': current_project})
 
 
-@user_belongs_project
 def backlog(request, project_id):
     try:
         project = Project.objects.get(pk=project_id)
@@ -95,7 +90,6 @@ def backlog(request, project_id):
                                                     'issues': issues})
 
 
-@user_belongs_project
 def issue(request, project_id, issue_id):
     current_issue = get_object_or_404(Issue, pk=issue_id)
     project = get_object_or_404(Project, pk=project_id)
@@ -128,10 +122,6 @@ class SprintView(DetailView):
         context['project'] = Project.objects.get(id=cur_proj)
         return context
 
-    @method_decorator(user_belongs_project)
-    def dispatch(self, *args, **kwargs):
-        return super(SprintView, self).dispatch(*args, **kwargs)
-
 
 class ProjectCreateView(CreateView):
     model = Project
@@ -154,10 +144,6 @@ class ProjectDetailView(DetailView):
     query_pk_and_slug = True
     pk_url_kwarg = 'project_id'
     template_name = 'project/project_detail.html'
-
-    @method_decorator(user_belongs_project)
-    def dispatch(self, *args, **kwargs):
-        return super(ProjectDetailView, self).dispatch(*args, **kwargs)
 
 
 class ProjectUpdateView(UpdateView):
@@ -267,12 +253,7 @@ class ActiveSprintView(DetailView):
             context['project'] = Project.objects.get(id=self.kwargs['project_id'])
             return context
 
-    @method_decorator(user_belongs_project)
-    def dispatch(self, *args, **kwargs):
-        return super(ActiveSprintView, self).dispatch(*args, **kwargs)
 
-
-@user_belongs_project
 @waffle_flag('push_issue', 'project:list')
 def push_issue_in_active_sprint(request, project_id, issue_id, slug):
     current_issue = get_object_or_404(Issue, pk=issue_id)
