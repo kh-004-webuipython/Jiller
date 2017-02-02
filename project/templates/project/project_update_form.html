@@ -1,4 +1,21 @@
 {% extends 'base.html' %}
+{% load waffle_tags %}
+{% load i18n %}
+
+{% block title %}Update project{% endblock %}
+{% block breadcrumbs %}
+  {{ block.super }}
+  <li>
+    <a href="{% url 'project:list' %}">Projects</a>
+  </li>
+  <li>
+    <a href="{% url 'project:detail' project.id %}">{{ project.title }}</a>
+  </li>
+  <li>
+    <span>{% trans 'Edit' %}</span>
+  </li>
+
+{% endblock %}
 
 {% block content %}
 
@@ -30,8 +47,11 @@
     <div class="clearfix">
       <div class="col-sm-offset-3 col-sm-9">
         <button type="submit" class="btn btn-success">Submit</button>
-        <a class = "btn btn-delete" href="{% url 'project:delete' project.id %}"> Delete </a>
-
+        
+        {% flag "delete_project" %}
+        <button class="btn ">Cancel</button>
+        <a class = "btn btn-danger" href="{% url 'project:delete' project.id %}"> Delete </a>
+        {% endflag %}
       </div>
     </div>
   </form>

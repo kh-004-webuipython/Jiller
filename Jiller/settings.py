@@ -15,6 +15,10 @@ import os
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
+MEDIA_ROOT = os.path.join(BASE_DIR, 'public', 'media')
+
+MEDIA_URL = '/media/'
+
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.10/howto/deployment/checklist/
@@ -42,7 +46,12 @@ INSTALLED_APPS = [
     'general',
     'sorl.thumbnail',
     'django_nose',
+    'waffle',
 ]
+
+MIDDLEWARE_CLASSES = (
+    'waffle.middleware.WaffleMiddleware',
+)
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -53,9 +62,14 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'Jiller.middleware.LoginRequiredMiddleware.LoginRequiredMiddleware',
+    'Jiller.middleware.CheckProjectRelationMiddleware.CheckProjectRelation',
 ]
 
 ROOT_URLCONF = 'Jiller.urls'
+
+TEMPLATE_CONTEXT_PROCESSORS = (
+    'django.core.context_processors.request',
+)
 
 TEMPLATES = [
     {

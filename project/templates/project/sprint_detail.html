@@ -1,6 +1,23 @@
 {% extends 'base.html' %}
+{% load i18n %}
 
 {% block title %}Sprint{% endblock %}
+
+{% block breadcrumbs %}
+  {{ block.super }}
+  <li>
+    <a href="{% url 'project:list' %}">Projects</a>
+  </li>
+  <li>
+    <a href="{% url 'project:detail' project.id %}">{{ project.title }}</a>
+  </li>
+  <li>
+    <a href="{% url 'project:sprints_list' project.id %}">{% trans 'Sprint History' %}</a>
+  </li>
+  <li>
+    <span>{{ sprint.title }}</span>
+  </li>
+{% endblock %}
 
 {% block content %}
   {% include 'project/project_navbar.html' with sprint_list=True %}
@@ -121,5 +138,11 @@
       </table>
     </div>
   {% endif %}
+
+  <div class="col-xs-12 col-sm-6 pull-left">
+    <a class="btn btn-info pull-left"
+       href="{% url 'project:sprint_activate' project.id object.id %}"> Change
+      status </a>
+  </div>
 
 {% endblock %}
