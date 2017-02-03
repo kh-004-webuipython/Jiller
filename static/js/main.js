@@ -1,6 +1,4 @@
-$( function() {
-    var alterData = {};
-
+$(function() {
     function getCookie(name) {
         var cookieValue = null;
 
@@ -34,13 +32,13 @@ $( function() {
         tolerance: 'pointer',
         forcePlaceholderSize: true,
         update: function(event, ui) {
-            order = $('#sortable tr');
+            var alterData = {};
+            order = document.querySelectorAll('#sortable tr');
 
             for(var i = 0; i < order.length; i++) {
                 if(i+1 != order[i].getAttribute('data-order')) {
                     var id = order[i].getAttribute('data-id');
                     alterData['' + id] = i + 1;
-                    console.log(alterData);
                 }
             }
 
@@ -53,11 +51,23 @@ $( function() {
             });
 
             $.ajax({
-                data: alterData,
+                data: { data: JSON.stringify(alterData) },
                 type: 'POST',
-                url: '/project/issue_order/'
+                url: '/project/issue_order/',
+
+                success : function(response){
+                    var element = $('#error-message');
+                    element.empty();
+                    for(var i = 0; i < order.length; i++)
+                        order[i].setAttribute('data-order', (i+1).toString())
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    var element = $('#error-message');
+                    element.empty();
+                    element.append('<h2 class="alert alert-warning">' +
+                        'Issue message wasn\'t changed.</h2>');
+                }
             });
         }
     });
-    $( "#sortable" ).disableSelection();
-} );
+});

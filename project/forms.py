@@ -11,7 +11,7 @@ class DateInput(forms.DateInput):
 class ProjectForm(forms.ModelForm):
     class Meta:
         model = Project
-        fields = ['title', 'description', 'start_date','end_date']
+        fields = ['title', 'description', 'start_date', 'end_date']
         widgets = {
             'start_date': DateInput(),
             'end_date': DateInput(),

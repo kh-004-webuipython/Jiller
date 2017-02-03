@@ -1,6 +1,6 @@
 import datetime
 
-from django.http import HttpResponseRedirect, Http404
+from django.http import HttpResponseRedirect, Http404, HttpResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.views.generic import DetailView, ListView
@@ -14,6 +14,7 @@ from django.utils.decorators import method_decorator
 from .decorators import delete_project, \
     edit_project_detail, create_project, create_sprint
 from waffle.decorators import waffle_flag
+import json
 
 
 class ProjectListView(ListView):
@@ -47,7 +48,7 @@ def issue_create_view(request, project_id):
     else:
         initial = {'project': project_id, 'author': request.user.id}
         if request.GET.get('root', False):
-            initial['root']=request.GET['root']
+            initial['root'] = request.GET['root']
         form = CreateIssueForm(initial=initial)
     return render(request, 'project/create_issue.html', {'form': form,
                                                          'project': Project.objects.get(
@@ -304,11 +305,17 @@ class SprintStatusUpdate(UpdateView):
 
 
 def issue_order(request):
-    if request.is_ajax():
-        message = "Yes, AJAX!"
-    else:
-        message = "Not Ajax"
-    return HttpResponse(message)
+    data = json.loads(request.POST.get('data'))
+    keys = data.keys()
+
+    if data:
+        for key in keys:
+            issue = Issue.objects.get(id=int(key))
+            if issue:
+                issue.order = int(data[key])
+                issue.save()
+
+    return HttpResponse()
 
 
 """
