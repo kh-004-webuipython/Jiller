@@ -14,11 +14,19 @@ from django.utils.decorators import method_decorator
 from .decorators import delete_project, \
     edit_project_detail, create_project, create_sprint
 from waffle.decorators import waffle_flag
+from .tables import ProjectTeamTable, ProjectTable
+from django_tables2 import SingleTableView, RequestConfig
 
 
-class ProjectListView(ListView):
+class ProjectListView(SingleTableView):
     model = Project
+    table_class = ProjectTable
     template_name = 'project/projects.html'
+    table_pagination = True
+
+    table_pagination = {
+        'per_page': 10
+    }
 
     def get_queryset(self):
         return Project.objects.filter(is_active=True).order_by('-start_date')
@@ -71,10 +79,10 @@ def issue_edit_view(request, project_id, issue_id):
 def team_view(request, project_id):
     current_project = get_object_or_404(Project, pk=project_id)
     try:
-        team_list = ProjectTeam.objects.filter(project=current_project)
+        teams_list = ProjectTeamTable(ProjectTeam.objects.filter(project=current_project))
     except ProjectTeam.DoesNotExist:
         raise Http404("No team on project")
-    return render(request, 'project/team.html', {'team_list': team_list,
+    return render(request, 'project/team.html', {'tables': teams_list,
                                                  'project': current_project})
 
 
