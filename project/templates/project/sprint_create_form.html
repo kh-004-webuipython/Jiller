@@ -24,25 +24,25 @@
   <form role="form" action="{% url 'project:sprint_create' project.id %}" class="form-horizontal" method="post">
     <div class="col-sm-6">
       {% for field in form %}
-        {% if not field.issue %}
-        <div class="form-group {% if field.errors %} has-error {% endif %}">
-          <label
-              class="col-sm-2 control-label no-padding-right">{{ field.label_tag }}</label>
-          <div class="col-sm-10">
-            {{ field }}
-            <div class="help-block col-xs-12 col-sm-reset inline">
-              {% if field.errors %}
-                <ul>
-                {% for error in field.errors %}
-                  <li>
-                    {{ error }}
-                  </li>
-                {% endfor %}
-              {% endif %}
-              </ul>
+        {% if not field.name == 'issue' %}
+          <div class="form-group {% if field.errors %} has-error {% endif %}">
+            <label
+                class="col-sm-2 control-label no-padding-right">{{ field.label_tag }}</label>
+            <div class="col-sm-10">
+              {{ field }}
+              <div class="help-block col-xs-12 col-sm-reset inline">
+                {% if field.errors %}
+                  <ul>
+                  {% for error in field.errors %}
+                    <li>
+                      {{ error }}
+                    </li>
+                  {% endfor %}
+                {% endif %}
+                </ul>
+              </div>
             </div>
           </div>
-        </div>
         {% endif %}
       {% endfor %}
       {% csrf_token %}
@@ -73,19 +73,19 @@
               <td><span>{{ issue.title }}</span></td>
               {% if issue.employee %}
                 <td>
-                <a href="{% url 'employee:detail' issue.employee.id %}">
-                  {{ issue.employee.get_full_name }}
-                </a>
-              </td>
+                  <a href="{% url 'employee:detail' issue.employee.id %}">
+                    {{ issue.employee.get_full_name }}
+                  </a>
+                </td>
               {% else %}
                 <td><span>None</span></td>
               {% endif %}
               <td><span>{{ issue.status }}</span></td>
-            {% if issue.estimation %}
-              <td><span>{{ issue.estimation }}</span></td>
-            {% else %}
-              <td><span>None</span></td>
-            {% endif %}
+              {% if issue.estimation %}
+                <td><span>{{ issue.estimation }}</span></td>
+              {% else %}
+                <td><span>None</span></td>
+              {% endif %}
             </tr>
           {% endfor %}
           </tbody>

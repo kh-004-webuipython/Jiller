@@ -206,6 +206,7 @@ class SprintCreate(CreateView):
         sprint.save()
         issue = form.cleaned_data['issue']
         issue.update(sprint=sprint)
+        self.object = sprint
         return redirect(self.get_success_url())
 
     def get_context_data(self, **kwargs):
@@ -216,8 +217,8 @@ class SprintCreate(CreateView):
         return context
 
     def get_success_url(self):
-        return reverse('project:sprint_detail', args=(self.project.id,
-                                                      self.get_object().id))
+        return reverse('project:sprint_detail', args=(self.object.project.id,
+                                                      self.object.id))
 
     @method_decorator(create_sprint)
     def dispatch(self, *args, **kwargs):
