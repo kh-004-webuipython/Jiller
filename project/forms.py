@@ -1,7 +1,7 @@
 from django import forms
 from django.utils.translation import ugettext_lazy as _
 
-from .models import Project, Sprint, Issue
+from .models import Project, Sprint, Issue, ProjectTeam
 
 
 class DateInput(forms.DateInput):
@@ -44,10 +44,10 @@ class EditIssueForm(IssueForm):
     pass
 
 
-# class TeamForm(forms.ModelForm):
-#     class Meta:
-#         model = ProjectTeam
-#         fields = '__all__'
+class TeamForm(forms.ModelForm):
+    class Meta:
+        model = ProjectTeam
+        fields = '__all__'
 
 
 class SprintCreateForm(forms.ModelForm):

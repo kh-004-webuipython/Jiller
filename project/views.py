@@ -7,7 +7,7 @@ from django.views.generic import DetailView, ListView
 from django.urls import reverse
 
 from .forms import ProjectForm, SprintCreateForm, CreateIssueForm, \
-    EditIssueForm
+    EditIssueForm, TeamForm
 from .models import Project, ProjectTeam, Issue, Sprint
 
 from employee.models import Employee
@@ -317,8 +317,20 @@ def change_user_in_team(request, project_id, user_id, team_id):
     return redirect('project:team', project_id)
 
 
-
-
+def team_create_view(request, project_id):
+    project = Project.objects.get(pk = project_id)
+    if request.method == "POST":
+        form = TeamForm(request.POST)
+        if form.is_valid():
+            new_issue = form.save(commit=False)
+            new_issue.save()
+            return redirect('project:detail', project_id)
+    else:
+        form = CreateIssueForm(
+            initial={'project': project_id, 'author': request.user.id})
+    print Project.objects.get(pk=project_id)
+    return render(request, 'project/team_create.html', {'form': form,
+                                                        'project': project})
 
 
 
