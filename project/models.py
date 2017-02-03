@@ -1,4 +1,5 @@
 from __future__ import unicode_literals
+from django.utils.encoding import python_2_unicode_compatible
 
 from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
@@ -7,6 +8,7 @@ from django.core.exceptions import ValidationError
 from django.core.validators import MaxValueValidator
 
 
+@python_2_unicode_compatible
 class Project(models.Model):
     title = models.CharField(verbose_name=_('Title'), max_length=255)
     description = models.TextField(verbose_name=_('Description'), null=True,
@@ -22,6 +24,7 @@ class Project(models.Model):
         return self.title
 
 
+@python_2_unicode_compatible
 class Sprint(models.Model):
     NEW = 'new'
     ACTIVE = 'active'
@@ -66,6 +69,7 @@ class Sprint(models.Model):
                 super(Sprint, self).save(*args, **kwargs)
 
 
+@python_2_unicode_compatible
 class Issue(models.Model):
     NEW = 'new'
     IN_PROGRESS = 'in progress'
@@ -107,6 +111,7 @@ class Issue(models.Model):
         super(Issue, self).save(*args, **kwargs)
 
 
+@python_2_unicode_compatible
 class ProjectTeam(models.Model):
     project = models.ForeignKey(Project, verbose_name=_('Project'))
     title = models.CharField(max_length=255, verbose_name=_('Title'))

@@ -45,8 +45,10 @@ def issue_create_view(request, project_id):
             new_issue.save()
             return redirect('project:backlog', project_id)
     else:
-        form = CreateIssueForm(
-            initial={'project': project_id, 'author': request.user.id})
+        initial = {'project': project_id, 'author': request.user.id}
+        if request.GET.get('root', False):
+            initial['root']=request.GET['root']
+        form = CreateIssueForm(initial=initial)
     return render(request, 'project/create_issue.html', {'form': form,
                                                          'project': Project.objects.get(
                                                              pk=project_id)})
@@ -95,9 +97,15 @@ def issue(request, project_id, issue_id):
     project = get_object_or_404(Project, pk=project_id)
     if current_issue.project_id != project.id:
         raise Http404("Issue does not exist")
-    return render(request, 'project/issue_detail.html', {
+    context = {
         'issue': current_issue, 'project': project
-    })
+    }
+    if current_issue.root:
+        context['root_issue'] = Issue.objects.get(pk=current_issue.root.id)
+    child_issues = Issue.objects.filter(root=current_issue.id)
+    if child_issues:
+        context['child_issues'] = child_issues
+    return render(request, 'project/issue_detail.html', context)
 
 
 class SprintView(DetailView):
