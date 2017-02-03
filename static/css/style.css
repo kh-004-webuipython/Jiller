@@ -41,3 +41,7 @@ a#createprojectbtn {
 .navbar-margin-bottom{
     margin-bottom: 10px;
 }
+
+.ui-sortable-helper {
+    display: table!important;
+}
