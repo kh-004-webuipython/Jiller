@@ -14,10 +14,12 @@ class Employee(AbstractUser):
     DEVELOPER = 'developer'
     PRODUCT_OWNER = 'product owner'
     SCRUM_MASTER = 'scrum master'
+    PROJECT_MASTER = 'project master'
     EMPLOYEE_ROLES_CHOICES = (
         (DEVELOPER, _('Developer')),
         (PRODUCT_OWNER, _('Product Owner')),
-        (SCRUM_MASTER, _('Scrum Master'))
+        (SCRUM_MASTER, _('Scrum Master')),
+        (PROJECT_MASTER, _('Project Master'))
     )
 
     role = models.CharField(max_length=255, choices=EMPLOYEE_ROLES_CHOICES,

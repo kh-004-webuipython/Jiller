@@ -47,6 +47,8 @@ urlpatterns = [
 
     # team
     url(r'^(?P<project_id>\d+)/team/$', views.team_view, name='team'),
+    url(r'^(?P<project_id>\d+)/(?P<user_id>\d+)/(?P<team_id>\d+)/change/$',
+        views.change_user_in_team, name='change_user_in_team'),
 
 
 ]

@@ -10,6 +10,8 @@ from .forms import ProjectForm, SprintCreateForm, CreateIssueForm, \
     EditIssueForm
 from .models import Project, ProjectTeam, Issue, Sprint
 
+from employee.models import Employee
+
 from django.utils.decorators import method_decorator
 from .decorators import delete_project, \
     edit_project_detail, create_project, create_sprint
@@ -70,12 +72,15 @@ def issue_edit_view(request, project_id, issue_id):
 
 def team_view(request, project_id):
     current_project = get_object_or_404(Project, pk=project_id)
+    user_list = Employee.objects.all()
+
     try:
         team_list = ProjectTeam.objects.filter(project=current_project)
     except ProjectTeam.DoesNotExist:
         raise Http404("No team on project")
     return render(request, 'project/team.html', {'team_list': team_list,
-                                                 'project': current_project})
+                                                 'project': current_project,
+                                                 'user_list': user_list})
 
 
 def backlog(request, project_id):
@@ -293,6 +298,31 @@ class SprintStatusUpdate(UpdateView):
     def get_success_url(self, **kwargs):
         return reverse('project:sprint_active',
                        kwargs={'project_id': self.object.project_id})
+
+
+
+
+def change_user_in_team(request, project_id, user_id, team_id):
+    if request.method == 'POST':
+        if 'add' in request.POST:
+            team = get_object_or_404(ProjectTeam, pk=team_id)
+            team.employees.add(user_id)
+
+            print 1, request.POST, team
+        if 'remove' in request.POST:
+            team = get_object_or_404(ProjectTeam, pk=team_id)
+            team.employees.remove(user_id)
+            print 2, request.POST
+        return redirect('project:team', project_id)
+    return redirect('project:team', project_id)
+
+
+
+
+
+
+
+
 
 
 """

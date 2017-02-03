@@ -114,5 +114,7 @@ class ProjectTeam(models.Model):
     employees = models.ManyToManyField('employee.Employee',
                                        verbose_name=_('Employees'))
 
+
+
     def __str__(self):
         return self.title
