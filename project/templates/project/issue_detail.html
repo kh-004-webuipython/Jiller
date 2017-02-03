@@ -139,6 +139,7 @@
                                         <tr>
                                             <th>#</th>
                                             <th>Title</th>
+                                            <th>Status</th>
                                             <th>Estimation</th>
                                         </tr>
                                         </thead>
@@ -149,6 +150,7 @@
                                                 <td>
                                                     <a href="{% url 'project:issue_detail' project.id child.id %}">{{ child.title }} </a>
                                                 </td>
+                                                <td>{{ child.status }}</td>
                                                 <td>{{ child.estimation }}</td>
                                             </tr>
                                         {% endfor %}
