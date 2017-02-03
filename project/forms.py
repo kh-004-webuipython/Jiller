@@ -11,7 +11,7 @@ class DateInput(forms.DateInput):
 class ProjectForm(forms.ModelForm):
     class Meta:
         model = Project
-        fields = ['title', 'description', 'start_date','end_date']
+        fields = ['title', 'description', 'start_date', 'end_date']
         widgets = {
             'start_date': DateInput(),
             'end_date': DateInput(),
@@ -40,9 +40,32 @@ class CreateIssueForm(IssueForm):
         return title
 
 
-class EditIssueForm(IssueForm):
-    pass
+class SprintCreateForm(forms.ModelForm):
+    issue = forms.ModelMultipleChoiceField(queryset=Issue.objects.all(),
+                                           # widget=forms.HiddenInput,
+                                           # label='',
+                                           required=False)
 
+    def __init__(self, *args, **kwargs):
+        self.project = kwargs.pop('project', None)
+        super(SprintCreateForm, self).__init__(*args, **kwargs)
+        if self.project:
+            self.fields['issue'].queryset = self.project.issue_set.filter(sprint=None)
+
+    def clean_status(self):
+        if self.cleaned_data['status'] == Sprint.ACTIVE and self.project.sprint_set.filter(
+                status=Sprint.ACTIVE).exists():
+            raise forms.ValidationError(
+                "You are already have an active sprint."
+            )
+        return self.cleaned_data['status']
+
+    class Meta:
+        model = Sprint
+        fields = ['title', 'team', 'end_date', 'order', 'issue', 'status']
+        widgets = {
+            'end_date': DateInput(),
+        }
 
 # class TeamForm(forms.ModelForm):
 #     class Meta:
@@ -50,12 +73,10 @@ class EditIssueForm(IssueForm):
 #         fields = '__all__'
 
 
-class SprintCreateForm(forms.ModelForm):
-    class Meta:
-        model = Sprint
-        fields = ['title', 'project', 'team', 'start_date', 'end_date',
-                  'order', 'status']
-        widgets = {
-            'start_date': DateInput(),
-            'end_date': DateInput(),
-        }
+class EditIssueForm(IssueForm):
+    pass
+
+
+
+
+
