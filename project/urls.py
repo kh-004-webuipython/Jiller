@@ -41,7 +41,7 @@ urlpatterns = [
     url(r'^(?P<project_id>\d+)/issue/create/$',
         views.issue_create_view, name='issue_create'),
     url(r'^(?P<project_id>[0-9]+)/issue/(?P<issue_id>[0-9]+)/$',
-        views.issue, name='issue_detail'),
+        views.issue_detail_view, name='issue_detail'),
     url(r'^(?P<project_id>\d+)/issue/(?P<issue_id>\d+)/edit/$',
         views.issue_edit_view, name='issue_edit'),
 

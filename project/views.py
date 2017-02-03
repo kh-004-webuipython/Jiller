@@ -92,7 +92,7 @@ def backlog(request, project_id):
                                                     'issues': issues})
 
 
-def issue(request, project_id, issue_id):
+def issue_detail_view(request, project_id, issue_id):
     current_issue = get_object_or_404(Issue, pk=issue_id)
     project = get_object_or_404(Project, pk=project_id)
     if current_issue.project_id != project.id:

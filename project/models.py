@@ -112,6 +112,14 @@ class Issue(models.Model):
 
 
 @python_2_unicode_compatible
+class IssueComment(models.Model):
+    text = models.CharField(max_length=255, verbose_name=_('Text'))
+    issue = models.ForeignKey(Issue, verbose_name=_('Issue'))
+    author = models.ForeignKey('employee.Employee', verbose_name=_('Author'))
+    date_created = models.DateTimeField(default=timezone.now, verbose_name=_('Date created'))
+
+
+@python_2_unicode_compatible
 class ProjectTeam(models.Model):
     project = models.ForeignKey(Project, verbose_name=_('Project'))
     title = models.CharField(max_length=255, verbose_name=_('Title'))
