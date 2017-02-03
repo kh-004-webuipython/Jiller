@@ -41,21 +41,42 @@ class Sprint(models.Model):
     order = models.PositiveIntegerField(verbose_name=_('Order'), null=True,
                                         blank=True)
     status = models.CharField(verbose_name=_('Status'),
-                              choices=SPRINT_STATUS_CHOICES, null=True,
-                              blank=True, max_length=255)
+                              choices=SPRINT_STATUS_CHOICES, default=NEW,
+                              max_length=255)
 
     def __str__(self):
         return self.title
+
+    def save(self, *args, **kwargs):
+        active_sprint = Sprint.objects.filter(project_id=self.project,
+                                              status='active')
+        # disable 2 active sprints in project at time exclude self
+        if self.status == 'active' and len(active_sprint) == 1:
+            if active_sprint[0].project_id != self.project:
+                raise ValidationError(
+                    "Another active sprint already exists in this project")
+            else:
+                super(Sprint, self).save(*args, **kwargs)
+        else:
+            # check for self saving, and if is it - just save current order
+            if len(Sprint.objects.filter(pk=self.id)):
+                super(Sprint, self).save(*args, **kwargs)
+            else:
+                self.order = len(Sprint.objects.filter(
+                    project_id=self.project)) + 1
+                super(Sprint, self).save(*args, **kwargs)
 
 
 class Issue(models.Model):
     NEW = 'new'
     IN_PROGRESS = 'in progress'
     RESOLVED = 'resolved'
+    CLOSED = 'closed'
     ISSUE_STATUS_CHOICES = (
         (NEW, _('New')),
         (IN_PROGRESS, _('In Progress')),
-        (RESOLVED, _('Resolved'))
+        (RESOLVED, _('Resolved')),
+        (CLOSED, _('Closed'))
     )
     root = models.ForeignKey('self', null=True, blank=True)
     project = models.ForeignKey(Project, verbose_name=_('Project'))
@@ -63,7 +84,8 @@ class Issue(models.Model):
                                null=True, blank=True)
     author = models.ForeignKey('employee.Employee', verbose_name=_('Author'),
                                related_name='author_issue_set')
-    employee = models.ForeignKey('employee.Employee', verbose_name=_('Employee'),
+    employee = models.ForeignKey('employee.Employee',
+                                 verbose_name=_('Employee'),
                                  related_name='employee_issue_set', null=True,
                                  blank=True)
     title = models.CharField(verbose_name=_('Title'), max_length=255)
@@ -71,7 +93,7 @@ class Issue(models.Model):
                                    blank=True)
     status = models.CharField(verbose_name=_('Status'),
                               choices=ISSUE_STATUS_CHOICES, default=NEW,
-                              null=True, blank=True, max_length=255)
+                              max_length=255)
     estimation = models.PositiveIntegerField(verbose_name=_('Estimation'),
                                              validators=[
                                                  MaxValueValidator(240)],
@@ -82,16 +104,17 @@ class Issue(models.Model):
 
     def save(self, *args, **kwargs):
         if self.sprint and self.sprint.project != self.project:
-            return ValidationError("Sprint is incorrect")
+            raise ValidationError("Sprint is incorrect")
         super(Issue, self).save(*args, **kwargs)
 
 
 class ProjectTeam(models.Model):
     project = models.ForeignKey(Project, verbose_name=_('Project'))
     title = models.CharField(max_length=255, verbose_name=_('Title'))
-    employees = models.ManyToManyField('employee.Employee', verbose_name=_('Employees'))
+    employees = models.ManyToManyField('employee.Employee',
+                                       verbose_name=_('Employees'))
+
+
 
     def __str__(self):
         return self.title
-
-

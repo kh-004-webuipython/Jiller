@@ -10,6 +10,13 @@ from .forms import ProjectForm, SprintCreateForm, CreateIssueForm, \
     EditIssueForm
 from .models import Project, ProjectTeam, Issue, Sprint
 
+from employee.models import Employee
+
+from django.utils.decorators import method_decorator
+from .decorators import delete_project, \
+    edit_project_detail, create_project, create_sprint
+from waffle.decorators import waffle_flag
+
 
 class ProjectListView(ListView):
     model = Project
@@ -31,6 +38,7 @@ def sprints_list(request, project_id):
                                                          'sprints': sprints})
 
 
+@waffle_flag('create_issue', 'project:list')
 def issue_create_view(request, project_id):
     if request.method == "POST":
         form = CreateIssueForm(request.POST)
@@ -46,6 +54,7 @@ def issue_create_view(request, project_id):
                                                              pk=project_id)})
 
 
+@waffle_flag('edit_issue', 'project:list')
 def issue_edit_view(request, project_id, issue_id):
     current_issue = get_object_or_404(Issue, pk=issue_id, project=project_id)
     if request.method == "POST":
@@ -63,12 +72,15 @@ def issue_edit_view(request, project_id, issue_id):
 
 def team_view(request, project_id):
     current_project = get_object_or_404(Project, pk=project_id)
+    user_list = Employee.objects.all()
+
     try:
         team_list = ProjectTeam.objects.filter(project=current_project)
     except ProjectTeam.DoesNotExist:
         raise Http404("No team on project")
     return render(request, 'project/team.html', {'team_list': team_list,
-                                                 'project': current_project})
+                                                 'project': current_project,
+                                                 'user_list': user_list})
 
 
 def backlog(request, project_id):
@@ -88,14 +100,14 @@ def issue(request, project_id, issue_id):
     project = get_object_or_404(Project, pk=project_id)
     if current_issue.project_id != project.id:
         raise Http404("Issue does not exist")
-    return render(request, 'project/issue.html', {
+    return render(request, 'project/issue_detail.html', {
         'issue': current_issue, 'project': project
     })
 
 
 class SprintView(DetailView):
     model = Sprint
-    template_name = 'project/sprint.html'
+    template_name = 'project/sprint_detail.html'
     query_pk_and_slug = True
     pk_url_kwarg = 'sprint_id'
     slug_field = 'project'
@@ -119,73 +131,106 @@ class SprintView(DetailView):
 class ProjectCreateView(CreateView):
     model = Project
     form_class = ProjectForm
+    query_pk_and_slug = True
+    pk_url_kwarg = 'project_id'
     template_name = 'project/project_create_form.html'
 
     def get_success_url(self):
         return reverse('project:detail',
-                       kwargs={'pk': self.object.id})
+                       kwargs={'project_id': self.object.id})
+
+    @method_decorator(create_project)
+    def dispatch(self, *args, **kwargs):
+        return super(ProjectCreateView, self).dispatch(*args, **kwargs)
 
 
 class ProjectDetailView(DetailView):
     model = Project
+    query_pk_and_slug = True
+    pk_url_kwarg = 'project_id'
     template_name = 'project/project_detail.html'
 
 
 class ProjectUpdateView(UpdateView):
     model = Project
     form_class = ProjectForm
+    query_pk_and_slug = True
+    pk_url_kwarg = 'project_id'
     template_name = 'project/project_update_form.html'
 
     def get_success_url(self):
         return reverse('project:detail',
-                       kwargs={'pk': self.object.id})
+                       kwargs={'project_id': self.object.id})
+
+    @method_decorator(edit_project_detail)
+    def dispatch(self, *args, **kwargs):
+        return super(ProjectUpdateView, self).dispatch(*args, **kwargs)
 
 
 class ProjectDeleteView(DeleteView):
     model = Project
+    query_pk_and_slug = True
+    pk_url_kwarg = 'project_id'
 
     def get_success_url(self):
         return reverse('project:list')
 
     def delete(self, request, *args, **kwargs):
-        project = Project.objects.get(id=kwargs['pk'])
+        project = Project.objects.get(id=kwargs['project_id'])
 
         project.is_active = False
         project.save()
         return HttpResponseRedirect(
             reverse('project:list'))
 
+    @method_decorator(delete_project)
+    def dispatch(self, *args, **kwargs):
+        return super(ProjectDeleteView, self).dispatch(*args, **kwargs)
+
 
 class SprintCreate(CreateView):
     model = Sprint
     form_class = SprintCreateForm
+    query_pk_and_slug = True
+    pk_url_kwarg = 'project_id'
     template_name_suffix = '_create_form'
 
     def get_initial(self):
         return {
-            'project': self.kwargs['pk'],
+            'project': self.kwargs['project_id'],
             'start_date': datetime.datetime.now(),
             'status': Sprint.NEW
         }
 
     def get_context_data(self, **kwargs):
         context = super(SprintCreate, self).get_context_data(**kwargs)
-        context['project'] = Project.objects.get(id=self.kwargs['pk'])
+        context['project'] = Project.objects.get(id=self.kwargs['project_id'])
         return context
 
     def get_success_url(self):
         return reverse('project:sprint_detail', args=(self.object.project_id,
                                                       self.object.id))
 
+    @method_decorator(create_sprint)
+    def dispatch(self, *args, **kwargs):
+        return super(SprintCreate, self).dispatch(*args, **kwargs)
+
 
 class ActiveSprintView(DetailView):
     model = Sprint
+    query_pk_and_slug = True
+    pk_url_kwarg = 'project_id'
     template_name = 'project/sprint_active.html'
 
     def get_object(self, queryset=None):
         try:
             return super(ActiveSprintView, self).get_object(queryset)
         except:
+            try:
+                Project.objects.get(pk=self.kwargs['project_id'])
+            except:
+                raise Http404("Project does not exist")
+        else:
             return None
 
     def get_context_data(self, **kwargs):
@@ -193,32 +238,28 @@ class ActiveSprintView(DetailView):
             **kwargs)
 
         try:
-            Sprint.objects.get(project_id=self.kwargs['pk'],
+            Sprint.objects.get(project_id=self.kwargs['project_id'],
                                status='active')
         except Sprint.DoesNotExist:
-            context['project'] = Project.objects.get(id=self.kwargs['pk'])
+            context['project'] = Project.objects.get(id=self.kwargs['project_id'])
             context['no_active_sprint'] = True
             return context
-        except Sprint.MultipleObjectsReturned:
-            context['project'] = Project.objects.get(id=self.kwargs['pk'])
-            context['to_much_active_sprint'] = True
-            return context
         else:
-            active_sprint = Sprint.objects.get(project_id=self.kwargs['pk'],
+            active_sprint = Sprint.objects.get(project_id=self.kwargs['project_id'],
                                                status='active')
             context['active_sprint'] = active_sprint
             issues_from_active_sprint = Issue.objects.filter(
-                project_id=self.kwargs['pk'], sprint_id=active_sprint.id)
-            context['new_issues'] = issues_from_active_sprint.filter(
-                status="new")
+                project_id=self.kwargs['project_id'], sprint_id=active_sprint.id)
+            context['new_issues'] = issues_from_active_sprint.filter(status="new")
             context['in_progress_issues'] = issues_from_active_sprint.filter(
                 status="in progress")
             context['resolved_issues'] = issues_from_active_sprint.filter(
                 status="resolved")
-            context['project'] = Project.objects.get(id=self.kwargs['pk'])
+            context['project'] = Project.objects.get(id=self.kwargs['project_id'])
             return context
 
 
+@waffle_flag('push_issue', 'project:list')
 def push_issue_in_active_sprint(request, project_id, issue_id, slug):
     current_issue = get_object_or_404(Issue, pk=issue_id)
     sprint = get_object_or_404(Sprint, pk=current_issue.sprint_id)
@@ -237,17 +278,61 @@ def push_issue_in_active_sprint(request, project_id, issue_id, slug):
         elif current_issue.status == "in progress":
             current_issue.status = "new"
             current_issue.save()
-    return HttpResponseRedirect(
-        reverse('project:sprint_active', args=(project_id)))
+    return HttpResponseRedirect(reverse('project:sprint_active',
+                                        args=(project_id)))
 
-# This view for delete sprint. Hidden until create field is_active in
-# Sprint model
-#
-# class SprintDelete(DeleteView):
-#    model = Sprint
-#    def delete(self, **kwargs):
-#        sprint = Sprint.objects.get(id=self.kwargs['pk'])
-#        sprint.is_active = False
-#        sprint.save()
-#        return HttpResponseRedirect(
-#            reverse('project:sprints_list'))
+
+class SprintStatusUpdate(UpdateView):
+    model = Sprint
+    template_name = 'project/sprint_update_form.html'
+    pk_url_kwarg = 'sprint_id'
+    slug_field = 'project'
+    slug_url_kwarg = 'project_id'
+    fields = ['status']
+
+    def get_context_data(self, **kwargs):
+        context = super(SprintStatusUpdate, self).get_context_data(**kwargs)
+        context['project'] = Project.objects.get(id=self.kwargs['project_id'])
+        return context
+
+    def get_success_url(self, **kwargs):
+        return reverse('project:sprint_active',
+                       kwargs={'project_id': self.object.project_id})
+
+
+
+
+def change_user_in_team(request, project_id, user_id, team_id):
+    if request.method == 'POST':
+        if 'add' in request.POST:
+            team = get_object_or_404(ProjectTeam, pk=team_id)
+            team.employees.add(user_id)
+
+            print 1, request.POST, team
+        if 'remove' in request.POST:
+            team = get_object_or_404(ProjectTeam, pk=team_id)
+            team.employees.remove(user_id)
+            print 2, request.POST
+        return redirect('project:team', project_id)
+    return redirect('project:team', project_id)
+
+
+
+
+
+
+
+
+
+
+"""
+class SprintDelete(DeleteView):
+    model = Sprint
+
+    def delete(self, **kwargs):
+        sprint = Sprint.objects.get(id=self.kwargs['pk'])
+        sprint.is_active = False
+        sprint.save()
+        return HttpResponseRedirect(
+            reverse('project:sprints_list'))
+"""

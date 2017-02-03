@@ -38,4 +38,84 @@
       <p>no team on project</p>
     {% endif %}
   </ul>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  <div>
+
+    <table class=" table-bordered ">
+      <tr>
+        <td>login</td>
+        <td>name</td>
+        <td>role</td>
+        <td>remove from team</td>
+      </tr>
+
+      {% for team in team_list %}
+        {% for employee in team.employees.all %}
+          <tr>
+            <td class="col-lg-1">
+              {{ employee.username }}
+            </td>
+            <td class="col-lg-3">
+              <strong><a
+                  href="{% url 'employee:detail' employee.id %}">
+                {{ employee.first_name }} {{ employee.last_name }}</a></strong>
+
+            </td>
+            <td class="col-lg-1">
+              <li><strong>
+                {{ employee.role }}</strong>
+              </li>
+            </td>
+            <td>rm</td>
+          </tr>
+
+
+      <table class="table-bordered  col-lg-5">
+        <tr>
+          <td> login</td>
+          <td> name</td>
+          <td> role on project</td>
+          <td> add to team</td>
+        </tr>
+        {% for user in user_list %}
+
+          <tr>
+            <td class="col-lg-1">{{ user.username }}</td>
+            <td class="col-lg-1">{{ user.first_name }} {{ user.last_name }}</td>
+            <td class="col-lg-1">{{ user.role }}</td>
+            <td class="col-lg-1">
+
+              <form
+                  action="{% url 'project:change_user_in_team' project.id user.id team.id%}"
+                  method="post">
+                {% csrf_token %}
+                <input type="submit" name="add" value="add"/>
+              </form>
+
+
+            </td>
+          </tr>
+        {% endfor %}
+      </table>
+    </table>
+
+{% endfor %}
+      {% endfor %}
+  </div>
+
+
 {% endblock %}
