@@ -199,24 +199,39 @@ class SprintCreate(CreateView):
     pk_url_kwarg = 'project_id'
     template_name_suffix = '_create_form'
 
+    def get_form_kwargs(self, *args, **kwargs):
+        kwargs = super(SprintCreate, self).get_form_kwargs()
+        kwargs.pop('instance', None)
+        kwargs['project'] = self.project
+        return kwargs
+
     def get_initial(self):
-        return {
-            'project': self.kwargs['project_id'],
-            'start_date': datetime.datetime.now(),
-            'status': Sprint.NEW
-        }
+        return {'status': Sprint.NEW}
+
+    def form_valid(self, form):
+        sprint = form.save(commit=False)
+        sprint.project = self.project
+        sprint.start_date = datetime.datetime.now()
+        sprint.save()
+        issue = form.cleaned_data['issue']
+        issue.update(sprint=sprint)
+        self.object = sprint
+        return redirect(self.get_success_url())
 
     def get_context_data(self, **kwargs):
+        project = Project.objects.get(id=self.kwargs['project_id'])
         context = super(SprintCreate, self).get_context_data(**kwargs)
-        context['project'] = Project.objects.get(id=self.kwargs['project_id'])
+        context['project'] = self.project
+        context['issue_list'] = project.issue_set.filter(sprint=None)
         return context
 
     def get_success_url(self):
-        return reverse('project:sprint_detail', args=(self.object.project_id,
+        return reverse('project:sprint_detail', args=(self.object.project.id,
                                                       self.object.id))
 
     @method_decorator(create_sprint)
     def dispatch(self, *args, **kwargs):
+        self.project = get_object_or_404(Project, pk=self.kwargs['project_id'])
         return super(SprintCreate, self).dispatch(*args, **kwargs)
 
 
