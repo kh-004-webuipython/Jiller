@@ -48,5 +48,7 @@ urlpatterns = [
     # team
     url(r'^(?P<project_id>\d+)/team/$', views.team_view, name='team'),
 
+    # AJAX
+    url(r'^issue_order/$', views.issue_order, name='issue_order'),
 
 ]

@@ -303,6 +303,14 @@ class SprintStatusUpdate(UpdateView):
                        kwargs={'project_id': self.object.project_id})
 
 
+def issue_order(request):
+    if request.is_ajax():
+        message = "Yes, AJAX!"
+    else:
+        message = "Not Ajax"
+    return HttpResponse(message)
+
+
 """
 class SprintDelete(DeleteView):
     model = Sprint

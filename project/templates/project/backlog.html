@@ -46,7 +46,7 @@
         </thead>
         <tbody id="sortable">
         {% for issue in issues %}
-          <tr class="sortable-row">
+          <tr class="sortable-row" data-id="{{ issue.id }}" data-order="{{ issue.order }}">
             <td>{{ issue.id }}</td>
             <td>{{ issue.author }}</td>
             <td><a href="{% url 'project:issue_detail' project.id issue.id %}">

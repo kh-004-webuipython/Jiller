@@ -102,6 +102,7 @@ class Issue(models.Model):
                                              validators=[
                                                  MaxValueValidator(240)],
                                              null=True, blank=True)
+    order = models.PositiveIntegerField(verbose_name=_('Order'), default=0)
 
     def __str__(self):
         return self.title
