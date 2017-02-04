@@ -1,11 +1,14 @@
 from __future__ import unicode_literals
-from django.utils.encoding import python_2_unicode_compatible
 
+from datetime import datetime
+
+from django.utils.encoding import python_2_unicode_compatible
 from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
 from django.db import models
 from django.core.exceptions import ValidationError
 from django.core.validators import MaxValueValidator
+from sorl.thumbnail.shortcuts import get_thumbnail
 
 
 @python_2_unicode_compatible
@@ -40,7 +43,6 @@ class Sprint(models.Model):
     )
     title = models.CharField(verbose_name=_('Title'), max_length=255)
     project = models.ForeignKey(Project, verbose_name=_('Project'))
-    team = models.ForeignKey('ProjectTeam')
     start_date = models.DateField(verbose_name=_('Start date'), null=True,
                                   blank=True)
     end_date = models.DateField(verbose_name=_('End date'), null=True,
@@ -114,6 +116,26 @@ class Issue(models.Model):
         if self.sprint and self.sprint.project != self.project:
             raise ValidationError("Sprint is incorrect")
         super(Issue, self).save(*args, **kwargs)
+
+
+@python_2_unicode_compatible
+class IssueComment(models.Model):
+    text = models.CharField(max_length=255, verbose_name=_('Text'))
+    issue = models.ForeignKey(Issue, verbose_name=_('Issue'))
+    author = models.ForeignKey('employee.Employee', verbose_name=_('Author'))
+    date_created = models.DateTimeField(default=timezone.now, verbose_name=_('Date created'))
+
+    def __str__(self):
+        return self.title
+
+    def get_pretty_date_created(self):
+        return datetime.strftime(self.date_created, "%d.%m.%y %H:%M")
+
+    def get_cropped_photo(self, *args, **kwargs):
+        return get_thumbnail(self.photo, '40x40', crop='center')
+
+    class Meta:
+        ordering = ['-date_created']
 
 
 @python_2_unicode_compatible
