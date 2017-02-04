@@ -15,13 +15,13 @@
         </li>
         <li>
           <a data-toggle="tab" href="#logs">
-            <span class="badge badge-danger">{{ user.employee_issue_set.count }}</span>
+            <span class="badge badge-danger">{{ user.issuelog_set.count }}</span>
             Logs
           </a>
         </li>
         <li>
           <a data-toggle="tab" href="#issues">
-            <span class="badge badge-danger">{{ user.issuelog_set.count }}</span>
+            <span class="badge badge-danger">{{ user.employee_issue_set.count }}</span>
             Issue
           </a>
         </li>
@@ -136,12 +136,21 @@
               <tbody>
               {% for issue in user.employee_issue_set.all %}
                 <tr>
-                  <td><a href=".">{{ issue.author }}</a></td>
-                  <td><a href=".">{{ issue.title }}</a></td>
+                  <td><a href="{% url 'employee:detail' issue.author.id %}">{{ issue.author }}</a></td>
+                  <td><a href="{% url 'project:issue_detail' issue.project.id issue.id %}">{{ issue.title }}</a></td>
                   <td><span>{{ issue.status }}</span></td>
                   <td><span>{{ issue.estimation }}</span></td>
-                  <td><a href=".">{{ issue.project.title }}</a></td>
-                  <td><a href=".">{{ issue.sprint.title }}</a></td>
+                  <td><a href="{% url 'project:detail' issue.project.id %}">{{ issue.project.title }}</a></td>
+
+                  <td>
+                    {% if issue.sprint %}
+                      <a href="{% url 'project:sprint_detail' issue.project.id issue.sprint.id%}">
+                        {{ issue.sprint.title }}
+                      </a>
+                    {% else %}
+                      <span>None</span>
+                    {% endif %}</td>
+
                 </tr>
               {% endfor %}
               </tbody>
