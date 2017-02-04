@@ -3,7 +3,7 @@ import datetime
 from django import forms
 from django.utils.translation import ugettext_lazy as _
 
-from .models import Project, Sprint, Issue
+from .models import Project, Sprint, Issue, IssueComment
 
 
 class DateInput(forms.DateInput):
@@ -70,6 +70,16 @@ class SprintCreateForm(forms.ModelForm):
         widgets = {
             'end_date': DateInput(),
         }
+
+
+class IssueCommentCreateForm(forms.ModelForm):
+    class Meta:
+        model = IssueComment
+        fields = ['text']
+        widgets = {
+            'text': forms.TextInput(attrs={'class': 'form-control'})
+        }
+
 
 # class TeamForm(forms.ModelForm):
 #     class Meta:

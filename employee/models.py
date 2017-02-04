@@ -40,7 +40,7 @@ class Employee(AbstractUser):
         return False
 
     def get_pretty_date_joined(self):
-        return datetime.strftime(self.date_joined, "%d/%m/%y")
+        return datetime.strftime(self.date_joined, "%d.%m.%y")
 
     def get_cropped_photo(self, *args, **kwargs):
         return get_thumbnail(self.photo, '136x150', crop='center')

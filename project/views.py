@@ -6,6 +6,7 @@ from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.views.generic import DetailView, ListView
 from django.urls import reverse
 
+from project.forms import IssueCommentCreateForm
 from .forms import ProjectForm, SprintCreateForm, CreateIssueForm, \
     EditIssueForm
 from .models import Project, ProjectTeam, Issue, Sprint
@@ -92,9 +93,20 @@ def backlog(request, project_id):
                                                     'issues': issues})
 
 
-def issue(request, project_id, issue_id):
+def issue_detail_view(request, project_id, issue_id):
     current_issue = get_object_or_404(Issue, pk=issue_id)
     project = get_object_or_404(Project, pk=project_id)
+
+    if request.method == 'POST':
+        form = IssueCommentCreateForm(request.POST)
+        if form.is_valid():
+            comment = form.save(commit=False)
+            comment.author = request.user
+            comment.issue = current_issue
+            comment.save()
+            return redirect(reverse('project:issue_detail', args=(project.id,
+                                                                  current_issue.id)))
+
     if current_issue.project_id != project.id:
         raise Http404("Issue does not exist")
     context = {
@@ -105,6 +117,7 @@ def issue(request, project_id, issue_id):
     child_issues = Issue.objects.filter(root=current_issue.id)
     if child_issues:
         context['child_issues'] = child_issues
+    context['form'] = IssueCommentCreateForm()
     return render(request, 'project/issue_detail.html', context)
 
 
