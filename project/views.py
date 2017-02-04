@@ -320,17 +320,19 @@ class SprintStatusUpdate(UpdateView):
 
 
 def issue_order(request):
-    data = json.loads(request.POST.get('data'))
-    keys = data.keys()
+    if request.method == 'POST':
+        data = json.loads(request.POST.get('data'))
+        keys = data.keys()
 
-    if data:
-        for key in keys:
-            issue = Issue.objects.get(id=int(key))
-            if issue:
-                issue.order = int(data[key])
-                issue.save()
-
-    return HttpResponse()
+        if data:
+            for key in keys:
+                issue = Issue.objects.get(id=int(key))
+                if issue:
+                    issue.order = int(data[key])
+                    issue.save()
+        return HttpResponse()
+    else:
+        return HttpResponseRedirect(reverse('project:list'))
 
 
 """
