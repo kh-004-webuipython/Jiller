@@ -1,6 +1,14 @@
 {% extends 'base.html' %}
+{% load static %}
 {% load waffle_tags %}
 {% load i18n %}
+
+{% block styles %}
+{{ block.super }}
+
+  <link rel="stylesheet" type="text/css"
+        href="http://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css"/>
+{% endblock %}
 
 {% block breadcrumbs %}
   {{ block.super }}
@@ -36,9 +44,9 @@
           {% flag "edit_issue" %}<th></th>{% endflag %}
         </tr>
         </thead>
-        <tbody>
+        <tbody id="sortable">
         {% for issue in issues %}
-          <tr>
+          <tr class="sortable-row">
             <td>{{ issue.id }}</td>
             <td>{{ issue.author }}</td>
             <td><a href="{% url 'project:issue_detail' project.id issue.id %}">
@@ -56,4 +64,10 @@
   {% else %}
     <h3>No issues.</h3>
   {% endif %}
+
+  {% block scripts %}
+    {{ block.super }}
+      <script src="http://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
+      <script src="{% static 'js/main.js' %}"></script>
+  {% endblock %}
 {% endblock %}

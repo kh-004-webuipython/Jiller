@@ -1,4 +1,5 @@
 from __future__ import unicode_literals
+from django.utils.encoding import python_2_unicode_compatible
 
 from datetime import date, datetime
 
@@ -10,6 +11,7 @@ from django.core.validators import MaxValueValidator
 from sorl.thumbnail import get_thumbnail
 
 
+@python_2_unicode_compatible
 class Employee(AbstractUser):
     DEVELOPER = 'developer'
     PRODUCT_OWNER = 'product owner'
@@ -44,6 +46,7 @@ class Employee(AbstractUser):
         return get_thumbnail(self.photo, '136x150', crop='center')
 
 
+@python_2_unicode_compatible
 class IssueLog(models.Model):
     issue = models.ForeignKey('project.Issue', verbose_name=_('Issue'))
     user = models.ForeignKey(Employee, verbose_name=_('Employee'))

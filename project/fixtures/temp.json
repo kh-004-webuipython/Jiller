@@ -261,5 +261,96 @@
     "groups": [3],
     "user_permissions": []
   }
+},
+{
+  "model": "project.project",
+  "pk": 1,
+  "fields": {
+    "title": "First project",
+    "description": "First project",
+    "start_date": "2017-01-30",
+    "end_date": null,
+    "is_active": true
+  }
+},
+{
+  "model": "project.project",
+  "pk": 2,
+  "fields": {
+    "title": "Second project",
+    "description": "Second project",
+    "start_date": "2017-01-30",
+    "end_date": null,
+    "is_active": true
+  }
+},
+{
+  "model": "project.projectteam",
+  "pk": 1,
+  "fields": {
+    "project": 1,
+    "title": "team1",
+    "employees": [
+      2,
+      3,
+      4
+    ]
+  }
+},
+{
+  "model": "project.sprint",
+  "pk": 1,
+  "fields": {
+    "title": "First sprint",
+    "project": 1,
+    "team": 1,
+    "start_date": "2017-01-30",
+    "end_date": "2017-01-11",
+    "order": null,
+    "status": "active"
+  }
+},
+{
+  "model": "project.sprint",
+  "pk": 2,
+  "fields": {
+    "title": "second sprint",
+    "project": 1,
+    "team": 1,
+    "start_date": null,
+    "end_date": null,
+    "order": null,
+    "status": "new"
+  }
+},
+{
+  "model": "project.issue",
+  "pk": 1,
+  "fields": {
+    "root": null,
+    "project": 1,
+    "sprint": null,
+    "author": 1,
+    "employee": null,
+    "title": "First issue",
+    "description": "First issue",
+    "status": "new",
+    "estimation": null
+  }
+},
+{
+  "model": "project.issue",
+  "pk": 2,
+  "fields": {
+    "root": null,
+    "project": 1,
+    "sprint": 1,
+    "author": 1,
+    "employee": null,
+    "title": "second issue",
+    "description": "second issue",
+    "status": "in progress",
+    "estimation": null
+  }
 }
 ]
