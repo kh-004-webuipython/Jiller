@@ -21,7 +21,10 @@ class ProjectListView(ListView):
     template_name = 'project/projects.html'
 
     def get_queryset(self):
-        return Project.objects.filter(is_active=True).order_by('-start_date')
+        user = self.request.user
+        projects = Project.objects.filter(is_active=True).order_by(
+            '-start_date').filter(projectteam__employees__id__exact=user.id)
+        return projects
 
 
 def sprints_list(request, project_id):
@@ -47,7 +50,7 @@ def issue_create_view(request, project_id):
     else:
         initial = {'project': project_id, 'author': request.user.id}
         if request.GET.get('root', False):
-            initial['root']=request.GET['root']
+            initial['root'] = request.GET['root']
         form = CreateIssueForm(initial=initial)
     return render(request, 'project/create_issue.html', {'form': form,
                                                          'project': Project.objects.get(
@@ -244,21 +247,26 @@ class ActiveSprintView(DetailView):
             Sprint.objects.get(project_id=self.kwargs['project_id'],
                                status='active')
         except Sprint.DoesNotExist:
-            context['project'] = Project.objects.get(id=self.kwargs['project_id'])
+            context['project'] = Project.objects.get(
+                id=self.kwargs['project_id'])
             context['no_active_sprint'] = True
             return context
         else:
-            active_sprint = Sprint.objects.get(project_id=self.kwargs['project_id'],
-                                               status='active')
+            active_sprint = Sprint.objects.get(
+                project_id=self.kwargs['project_id'],
+                status='active')
             context['active_sprint'] = active_sprint
             issues_from_active_sprint = Issue.objects.filter(
-                project_id=self.kwargs['project_id'], sprint_id=active_sprint.id)
-            context['new_issues'] = issues_from_active_sprint.filter(status="new")
+                project_id=self.kwargs['project_id'],
+                sprint_id=active_sprint.id)
+            context['new_issues'] = issues_from_active_sprint.filter(
+                status="new")
             context['in_progress_issues'] = issues_from_active_sprint.filter(
                 status="in progress")
             context['resolved_issues'] = issues_from_active_sprint.filter(
                 status="resolved")
-            context['project'] = Project.objects.get(id=self.kwargs['project_id'])
+            context['project'] = Project.objects.get(
+                id=self.kwargs['project_id'])
             return context
 
 

@@ -23,6 +23,10 @@ class Project(models.Model):
     def __str__(self):
         return self.title
 
+class ProjectModelManager(models.Manager):
+    def get_queryset(self):
+        pass# return super(DahlBookManager, self).get_queryset().filter(author='Roald Dahl')
+
 
 @python_2_unicode_compatible
 class Sprint(models.Model):
