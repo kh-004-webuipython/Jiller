@@ -12,10 +12,7 @@ def home_page(request):
 
 
 def profile(request):
-    current_user = request.user
-    return render(request, 'general/profile.html', {
-        'user': current_user
-    })
+    return render(request, 'general/profile.html')
 
 
 def login_form_view(request):
