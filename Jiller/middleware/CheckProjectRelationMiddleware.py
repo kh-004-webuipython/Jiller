@@ -32,8 +32,8 @@ class CheckProjectRelation(object):
             response = self.get_response(request)
             return response
 
-        if request.method == 'GET':
-            resolved = resolve(request.path)
+        resolved = resolve(request.path)
+        if resolved.kwargs.get('project_id', False):
             if self.is_user_attached_to_project(request.user.id, resolved.kwargs['project_id']):
                 response = self.get_response(request)
                 return response
