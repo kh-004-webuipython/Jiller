@@ -11,13 +11,22 @@ class LoginForm(forms.Form):
 
 
 class RegistrationForm(forms.ModelForm):
-    password_confirmation = forms.CharField(label='Confirm Password', max_length=255, widget=PasswordInput)
-    email_confirmation = forms.EmailField(label='Confirm Email', max_length=255, required=False)
+    DEVELOPER = 'developer'
+    PRODUCT_OWNER = 'product owner'
+    SCRUM_MASTER = 'scrum master'
+    EMPLOYEE_ROLES_CHOICES = (
+        (DEVELOPER, _('Developer')),
+        (PRODUCT_OWNER, _('Product Owner')),
+        (SCRUM_MASTER, _('Scrum Master'))
+    )
+    password_confirmation = forms.CharField(label=_('Confirm Password'), max_length=255, widget=PasswordInput)
+    email_confirmation = forms.EmailField(label=_('Confirm Email'), max_length=255, required=False)
+    role = forms.ChoiceField(label=_('Role'), choices=EMPLOYEE_ROLES_CHOICES)
 
     class Meta:
         model = Employee
-        fields = ['username', 'password', 'password_confirmation', 'email', 'email_confirmation', 'last_name',
-                  'first_name', 'role']
+        fields = ['username', 'password', 'password_confirmation', 'email', 'email_confirmation', 'first_name',
+                  'last_name', 'role']
         widgets = {
             'password': forms.PasswordInput,
         }
@@ -39,6 +48,5 @@ class RegistrationForm(forms.ModelForm):
         if user is not None:
             self.add_error('email', _('User with this email already exists'))
         role = cleaned_data.get('role')
-        if role not in (Employee.DEVELOPER, Employee.PRODUCT_OWNER, Employee.SCRUM_MASTER):
+        if role not in (RegistrationForm.DEVELOPER, RegistrationForm.PRODUCT_OWNER, RegistrationForm.SCRUM_MASTER):
             self.add_error('role', _('Wrong user role'))
-
