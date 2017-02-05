@@ -21,7 +21,7 @@ class ProjectTable(tables.Table):
     class Meta:
         model = Project
         attrs = {'class': 'table table-bordered table-striped table-hover'}
-        exclude = ('id')
+        exclude = ('id', 'is_active')
 
 
 class SprintsListTable(tables.Table):
