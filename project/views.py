@@ -1,6 +1,6 @@
 import datetime
 
-from django.http import HttpResponseRedirect, Http404
+from django.http import HttpResponseRedirect, Http404, HttpResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.views.generic import DetailView, ListView
@@ -15,6 +15,7 @@ from django.utils.decorators import method_decorator
 from .decorators import delete_project, \
     edit_project_detail, create_project, create_sprint
 from waffle.decorators import waffle_flag
+import json
 
 
 class ProjectListView(ListView):
@@ -337,6 +338,22 @@ class SprintStatusUpdate(UpdateView):
     def get_success_url(self, **kwargs):
         return reverse('project:sprint_active',
                        kwargs={'project_id': self.object.project_id})
+
+
+def issue_order(request):
+    if request.method == 'POST':
+        data = json.loads(request.POST.get('data'))
+        keys = data.keys()
+
+        if data:
+            for key in keys:
+                issue = Issue.objects.get(id=int(key))
+                if issue:
+                    issue.order = int(data[key])
+                    issue.save()
+        return HttpResponse()
+    else:
+        return HttpResponseRedirect(reverse('project:list'))
 
 
 """

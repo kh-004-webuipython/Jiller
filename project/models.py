@@ -88,6 +88,14 @@ class Issue(models.Model):
         (RESOLVED, _('Resolved')),
         (CLOSED, _('Closed'))
     )
+    HIGH = -1
+    MEDIUM = -2
+    LOW = -3
+    ISSUE_PRIORITY = (
+        (HIGH, _('High')),
+        (MEDIUM, _('Medium')),
+        (LOW, _('Low'))
+    )
     root = models.ForeignKey('self', null=True, blank=True)
     project = models.ForeignKey(Project, verbose_name=_('Project'))
     sprint = models.ForeignKey(Sprint, verbose_name=_('Sprint'),
@@ -108,11 +116,24 @@ class Issue(models.Model):
                                              validators=[
                                                  MaxValueValidator(240)],
                                              null=True, blank=True)
+    order = models.PositiveIntegerField(verbose_name=_('Priority'), default=0,
+                                        choices=ISSUE_PRIORITY)
+
+    def calculate_issue_priority(self):
+        if self.order == Issue.HIGH:
+            self.order = 0
+        elif self.order == Issue.MEDIUM:
+            self.order = Issue.objects.filter(project=self.project).\
+                             filter(sprint__isnull=True).count() / 2
+        elif self.order == Issue.LOW:
+            self.order = Issue.objects.filter(project=self.project). \
+                filter(sprint__isnull=True).count()
 
     def __str__(self):
         return self.title
 
     def save(self, *args, **kwargs):
+        self.calculate_issue_priority()
         if self.sprint and self.sprint.project != self.project:
             raise ValidationError("Sprint is incorrect")
         super(Issue, self).save(*args, **kwargs)

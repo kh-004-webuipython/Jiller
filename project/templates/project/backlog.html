@@ -3,12 +3,16 @@
 {% load waffle_tags %}
 {% load i18n %}
 
+
 {% block styles %}
 {{ block.super }}
+  {% flag "prioritize_issue" %}
 
   <link rel="stylesheet" type="text/css"
-        href="http://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css"/>
+        href="{% static 'css/jquery-ui.css' %}"/>
+  {% endflag %}
 {% endblock %}
+
 
 {% block breadcrumbs %}
   {{ block.super }}
@@ -22,6 +26,7 @@
     <span>{% trans 'Backlog' %}</span>
   </li>
 {% endblock %}
+
 {% block content %}
   {% include 'project/project_navbar.html' with backlog=True %}
   <h2 class="inline">Backlog | Project - {{ project.title }}</h2>
@@ -30,6 +35,10 @@
   <a href="{% url 'project:issue_create' project.id %}"
      class="btn btn-primary pull-right"
      role="button">Create issue</a>
+  {% endflag %}
+
+  {% flag "prioritize_issue" %}
+  <div id="error-message"></div>
   {% endflag %}
 
   {% if issues %}
@@ -45,8 +54,8 @@
         </tr>
         </thead>
         <tbody id="sortable">
-        {% for issue in issues %}
-          <tr class="sortable-row">
+        {% for issue in issues|dictsort:'order' %}
+          <tr class="sortable-row" data-id="{{ issue.id }}" data-order="{{ issue.order }}">
             <td>{{ issue.id }}</td>
             <td>{{ issue.author }}</td>
             <td><a href="{% url 'project:issue_detail' project.id issue.id %}">
@@ -67,7 +76,9 @@
 
   {% block scripts %}
     {{ block.super }}
-      <script src="http://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
-      <script src="{% static 'js/main.js' %}"></script>
-  {% endblock %}
+      {% flag "prioritize_issue" %}
+        <script src="{% static 'js/jquery-ui.min.js' %}"></script>
+        <script src="{% static 'project/js/prioritize_issue.js' %}"></script>
+      {% endflag %}
+  {% endblock scripts %}
 {% endblock %}
