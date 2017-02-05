@@ -10,6 +10,10 @@ urlpatterns = [
     url(r'^employee/', include('employee.urls', namespace='employee')),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
+urlpatterns += [
+    url(r'^', include('waffle.urls')),
+]
+
 try:
     import debug_toolbar
     urlpatterns += [

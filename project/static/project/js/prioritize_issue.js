@@ -1,4 +1,11 @@
 $(function() {
+    $('#sortable td').each(function(){
+        $(this).css('width', $(this).outerWidth() +'px');
+    });
+
+    if(waffle.flag_is_active('prioritize_issue'))
+        console.log('whoao');
+
     function getCookie(name) {
         var cookieValue = null;
 
@@ -24,7 +31,6 @@ $(function() {
     }
 
     $( "#sortable" ).sortable({
-        items: 'tr.sortable-row',
         containment: "parent",
         delay: 200,
         opacity: 0.6,
