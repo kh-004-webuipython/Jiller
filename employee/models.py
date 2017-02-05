@@ -1,4 +1,6 @@
 from __future__ import unicode_literals
+from django.utils.encoding import python_2_unicode_compatible
+
 from django.core.exceptions import ValidationError
 from datetime import date, datetime
 
@@ -11,18 +13,8 @@ from django.db.models.signals import pre_delete
 from django.dispatch import receiver
 
 
+@python_2_unicode_compatible
 class Employee(AbstractUser):
-    DEVELOPER = 'developer'
-    PRODUCT_OWNER = 'product owner'
-    SCRUM_MASTER = 'scrum master'
-    EMPLOYEE_ROLES_CHOICES = (
-        (DEVELOPER, _('Developer')),
-        (PRODUCT_OWNER, _('Product Owner')),
-        (SCRUM_MASTER, _('Scrum Master'))
-    )
-
-    role = models.CharField(max_length=255, choices=EMPLOYEE_ROLES_CHOICES,
-                            verbose_name=_('Role'))
     date_birth = models.DateField(verbose_name=_('Date birth'), null=True,
                                   blank=True)
     photo = models.ImageField(upload_to='avatars/', null=True, blank=True)
@@ -43,7 +35,7 @@ class Employee(AbstractUser):
         return False
 
     def get_pretty_date_joined(self):
-        return datetime.strftime(self.date_joined, "%d/%m/%y")
+        return datetime.strftime(self.date_joined, "%d.%m.%y")
 
     def get_cropped_photo(self, *args, **kwargs):
         return get_thumbnail(self.photo, '136x150', crop='center')
@@ -63,7 +55,7 @@ def delete_user_without_team(instance, **kwargs):
         raise ValidationError(
             "This user can not be deleted, it has next team(s):" + team_list)
 
-
+@python_2_unicode_compatible
 class IssueLog(models.Model):
     issue = models.ForeignKey('project.Issue', verbose_name=_('Issue'))
     user = models.ForeignKey(Employee, verbose_name=_('Employee'))
