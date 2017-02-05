@@ -33,7 +33,7 @@
       </tr>
       <tr class="text-center">
         <td>Teammate name</td>
-        <td>role in team</td>
+        <td>Role in team</td>
         {% if user.pm_role_access %}
           <td>remove from team</td>
         {% endif %}
@@ -41,34 +41,34 @@
       {% for employee in team.employees.all %}
         {# do not render PMs in teams #}
         {% if not employee.pm_role_access %}
-        <tr class="text-center">
-          <td class="col-lg-4">
-            <strong><a
-                href="{% url 'employee:detail' employee.id %}">
-              {{ employee.first_name }} {{ employee.last_name }}</a></strong>
-          </td>
-          <td class="col-lg-1">
-            {{ employee.groups.all.0 }}
-          </td>
-          {% if user.pm_role_access %}
-          <td class="col-lg-1">
-            <form
-                action="{% url 'project:change_user_in_team' project.id employee.id team.id %}"
-                method="post">
+          <tr class="text-center">
+            <td class="col-lg-4">
+              <strong><a
+                  href="{% url 'employee:detail' employee.id %}">
+                {{ employee.first_name }} {{ employee.last_name }}</a></strong>
+            </td>
+            <td class="col-lg-1">
+              {{ employee.groups.all.0 }}
+            </td>
+            {% if user.pm_role_access %}
+              <td class="col-lg-1">
+              <form
+                  action="{% url 'project:change_user_in_team' project.id employee.id team.id %}"
+                  method="post">
               {% csrf_token %}
 
-                <button type="submit" name="remove" value="remove"><span
-                    class="glyphicon glyphicon-remove"></span></button>
-              {% endif %}
+              <button type="submit" name="remove" value="remove"><span
+                  class="glyphicon glyphicon-remove"></span></button>
+            {% endif %}
             </form>
-          </td>
-        </tr>
-      {% endif %}
+            </td>
+          </tr>
+        {% endif %}
       {% endfor %}
       {% if user.pm_role_access %}
         <table class="table-bordered col-lg-6">
           <tr>
-            <td colspan=4 class="text-center"> Free team employees in company
+            <td colspan=4 class="text-center"> Available employees in company
             </td>
           </tr>
           <tr class="text-center">
@@ -81,7 +81,8 @@
               <tr class="text-center">
                 <td class="col-lg-4"><strong><a
                     href="{% url 'employee:detail' cur_user.id %}">
-                  {{ cur_user.first_name }} {{ cur_user.last_name }}</a></strong></td>
+                  {{ cur_user.first_name }} {{ cur_user.last_name }}</a></strong>
+                </td>
                 <td class="col-lg-1">{{ cur_user.groups.all.0 }}</td>
                 <td class="col-lg-1">
                   <form

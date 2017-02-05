@@ -147,6 +147,8 @@ class SprintView(DetailView):
             issues_from_this_sprint.filter(status="in progress")
         context['resolved_issues'] = \
             issues_from_this_sprint.filter(status="resolved")
+        context['closed_issues'] = issues_from_this_sprint.filter(
+            status="closed")
         context['project'] = Project.objects.get(id=cur_proj)
         return context
 

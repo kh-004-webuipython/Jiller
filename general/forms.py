@@ -28,8 +28,7 @@ class RegistrationForm(forms.ModelForm):
     class Meta:
         model = Employee
         fields = ['username', 'password', 'password_confirmation', 'email',
-                  'first_name',
-                  'last_name', 'role']
+                  'first_name', 'last_name', 'role']
         widgets = {
             'password': forms.PasswordInput,
         }
@@ -39,7 +38,6 @@ class RegistrationForm(forms.ModelForm):
         password = cleaned_data.get('password')
         confirm_password = cleaned_data.get('password_confirmation')
         email = cleaned_data.get('email')
-        confirm_email = cleaned_data.get('email_confirmation')
         if password != confirm_password:
             self.add_error('password',
                            _('Password do not equal confirm password'))
