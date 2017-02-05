@@ -13,17 +13,6 @@ from sorl.thumbnail import get_thumbnail
 
 @python_2_unicode_compatible
 class Employee(AbstractUser):
-    DEVELOPER = 'developer'
-    PRODUCT_OWNER = 'product owner'
-    SCRUM_MASTER = 'scrum master'
-    EMPLOYEE_ROLES_CHOICES = (
-        (DEVELOPER, _('Developer')),
-        (PRODUCT_OWNER, _('Product Owner')),
-        (SCRUM_MASTER, _('Scrum Master'))
-    )
-
-    role = models.CharField(max_length=255, choices=EMPLOYEE_ROLES_CHOICES,
-                            verbose_name=_('Role'))
     date_birth = models.DateField(verbose_name=_('Date birth'), null=True,
                                   blank=True)
     photo = models.ImageField(upload_to='avatars/', null=True, blank=True)
