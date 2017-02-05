@@ -24,8 +24,9 @@ class ProjectListView(ListView):
 
     def get_queryset(self):
         user = self.request.user
-        projects = Project.objects.filter(is_active=True).order_by(
-            '-start_date').filter(projectteam__employees__id__exact=user.id)
+        projects = Project.objects.get_user_projects(
+            self.request.user).order_by(
+            '-start_date')
         return projects
 
 

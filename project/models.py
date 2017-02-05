@@ -11,6 +11,12 @@ from django.core.validators import MaxValueValidator
 from sorl.thumbnail.shortcuts import get_thumbnail
 
 
+class ProjectModelManager(models.Manager):
+    def get_user_projects(self, user):
+        return super(ProjectModelManager, self).get_queryset().filter(
+            is_active=True).filter(projectteam__employees__id__exact=user.id)
+
+
 @python_2_unicode_compatible
 class Project(models.Model):
     title = models.CharField(verbose_name=_('Title'), max_length=255)
@@ -26,9 +32,7 @@ class Project(models.Model):
     def __str__(self):
         return self.title
 
-class ProjectModelManager(models.Manager):
-    def get_queryset(self):
-        pass# return super(DahlBookManager, self).get_queryset().filter(author='Roald Dahl')
+    objects = ProjectModelManager()
 
 
 @python_2_unicode_compatible
@@ -123,7 +127,7 @@ class Issue(models.Model):
         if self.order == Issue.HIGH:
             self.order = 0
         elif self.order == Issue.MEDIUM:
-            self.order = Issue.objects.filter(project=self.project).\
+            self.order = Issue.objects.filter(project=self.project). \
                              filter(sprint__isnull=True).count() / 2
         elif self.order == Issue.LOW:
             self.order = Issue.objects.filter(project=self.project). \
@@ -144,7 +148,8 @@ class IssueComment(models.Model):
     text = models.CharField(max_length=255, verbose_name=_('Text'))
     issue = models.ForeignKey(Issue, verbose_name=_('Issue'))
     author = models.ForeignKey('employee.Employee', verbose_name=_('Author'))
-    date_created = models.DateTimeField(default=timezone.now, verbose_name=_('Date created'))
+    date_created = models.DateTimeField(default=timezone.now,
+                                        verbose_name=_('Date created'))
 
     def __str__(self):
         return self.title
