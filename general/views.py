@@ -1,5 +1,6 @@
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.models import Group
 from django.utils.translation import ugettext_lazy as _
 from django.shortcuts import render, redirect
 
@@ -41,10 +42,10 @@ def registration_form_view(request):
             first_name = form.cleaned_data['first_name']
             email = form.cleaned_data['email']
             role = form.cleaned_data['role']
-            Employee.objects.create_user(username, email, password,
+            employee = Employee.objects.create_user(username, email, password,
                                          last_name=last_name,
-                                         first_name=first_name,
-                                         role=role)
+                                         first_name=first_name)
+            employee.groups.add(Group.objects.get(name=role))
             return redirect('general:login')
     else:
         form = RegistrationForm()

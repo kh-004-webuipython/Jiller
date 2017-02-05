@@ -341,6 +341,7 @@ class SprintStatusUpdate(UpdateView):
                        kwargs={'project_id': self.object.project_id})
 
 
+@waffle_flag('prioritize_issue', 'project:detail')
 def issue_order(request):
     if request.method == 'POST':
         data = json.loads(request.POST.get('data'))
