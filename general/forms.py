@@ -7,7 +7,8 @@ from employee.models import Employee
 
 class LoginForm(forms.Form):
     username = forms.CharField(label='Username', max_length=255)
-    password = forms.CharField(label='Password', max_length=255, widget=PasswordInput)
+    password = forms.CharField(label='Password', max_length=255,
+                               widget=PasswordInput)
 
 
 class RegistrationForm(forms.ModelForm):
@@ -19,12 +20,15 @@ class RegistrationForm(forms.ModelForm):
         (PRODUCT_OWNER, _('Product Owner')),
         (SCRUM_MASTER, _('Scrum Master'))
     )
-    password_confirmation = forms.CharField(label=_('Confirm Password'), max_length=255, widget=PasswordInput)
+    password_confirmation = forms.CharField(label=_('Confirm Password'),
+                                            max_length=255,
+                                            widget=PasswordInput)
     role = forms.ChoiceField(label=_('Role'), choices=EMPLOYEE_ROLES_CHOICES)
 
     class Meta:
         model = Employee
-        fields = ['username', 'password', 'password_confirmation', 'email', 'first_name',
+        fields = ['username', 'password', 'password_confirmation', 'email',
+                  'first_name',
                   'last_name', 'role']
         widgets = {
             'password': forms.PasswordInput,
@@ -37,14 +41,18 @@ class RegistrationForm(forms.ModelForm):
         email = cleaned_data.get('email')
         confirm_email = cleaned_data.get('email_confirmation')
         if password != confirm_password:
-            self.add_error('password', _('Password do not equal confirm password'))
-        user = Employee.objects.filter(username=cleaned_data['username']).first()
+            self.add_error('password',
+                           _('Password do not equal confirm password'))
+        user = Employee.objects.filter(
+            username=cleaned_data['username']).first()
         if user is not None:
-            self.add_error('username', _('User with this username already exists'))
+            self.add_error('username',
+                           _('User with this username already exists'))
         user = Employee.objects.filter(email=email).first()
         if user is not None:
             self.add_error('email', _('User with this email already exists'))
         role = cleaned_data.get('role')
-        if role not in (RegistrationForm.DEVELOPER, RegistrationForm.PRODUCT_OWNER, RegistrationForm.SCRUM_MASTER):
+        if role not in (
+        RegistrationForm.DEVELOPER, RegistrationForm.PRODUCT_OWNER,
+        RegistrationForm.SCRUM_MASTER):
             self.add_error('role', _('Wrong user role'))
-
