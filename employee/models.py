@@ -4,6 +4,7 @@ from django.utils.encoding import python_2_unicode_compatible
 from datetime import date, datetime
 
 from django.contrib.auth.models import AbstractUser
+from simple_email_confirmation.models import SimpleEmailConfirmationUserMixin
 from django.utils.translation import ugettext_lazy as _
 from django.db import models
 from django.core.validators import MaxValueValidator
@@ -12,7 +13,7 @@ from sorl.thumbnail import get_thumbnail
 
 
 @python_2_unicode_compatible
-class Employee(AbstractUser):
+class Employee(SimpleEmailConfirmationUserMixin, AbstractUser):
     DEVELOPER = 'developer'
     PRODUCT_OWNER = 'product owner'
     SCRUM_MASTER = 'scrum master'

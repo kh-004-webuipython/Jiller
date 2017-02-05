@@ -77,7 +77,6 @@
   {% block scripts %}
     {{ block.super }}
       {% flag "prioritize_issue" %}
-        <script src="{% url 'wafflejs' %}"></script>
         <script src="{% static 'js/jquery-ui.min.js' %}"></script>
         <script src="{% static 'project/js/prioritize_issue.js' %}"></script>
       {% endflag %}

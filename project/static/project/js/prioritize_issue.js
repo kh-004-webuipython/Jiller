@@ -71,7 +71,7 @@ $(function() {
                     var element = $('#error-message');
                     element.empty();
                     element.append('<h2 class="alert alert-warning">' +
-                        'Issue message wasn\'t changed.</h2>');
+                        'Issue priority wasn\'t changed.</h2>');
                 }
             });
         }
