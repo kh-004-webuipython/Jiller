@@ -54,10 +54,13 @@
                   <div class="col-xs-12 col-sm-2">
                     <div class="text-center">
                       <a href="{% url 'employee:detail' employee.id %}">
-                        <img class="thumbnail inline no-margin-bottom" src="
-                          {% if employee.photo %}{{ employee.get_cropped_photo }}
-                          {% else %}{{ employee.email|gravatar_url }}
-                          {% endif %}"/>
+                        <img class="thumbnail inline no-margin-bottom"
+                          {% if employee.photo %}
+                           src="{{ employee.get_cropped_photo.url }}"
+                          {% else %}
+                           src="{{ employee.email|gravatar_url:150 }}"
+                          {% endif %}
+                        />
                       </a>
                       <br/>
                       <div class="width-80 label label-info label-xlg arrowed-in arrowed-in-right">
@@ -140,3 +143,4 @@
   <script src="{% static 'js/table.js' %}"></script>
 
 {% endblock %}
+

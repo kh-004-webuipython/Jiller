@@ -12,10 +12,7 @@ def home_page(request):
 
 
 def profile(request):
-    current_user = request.user
-    return render(request, 'general/profile.html', {
-        'user': current_user
-    })
+    return render(request, 'general/profile.html')
 
 
 def login_form_view(request):
@@ -46,7 +43,8 @@ def registration_form_view(request):
             role = form.cleaned_data['role']
             Employee.objects.create_user(username, email, password,
                                          last_name=last_name,
-                                         first_name=first_name, role=role)
+                                         first_name=first_name,
+                                         role=role)
             return redirect('general:login')
     else:
         form = RegistrationForm()
