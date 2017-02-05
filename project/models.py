@@ -8,13 +8,20 @@ from django.utils.translation import ugettext_lazy as _
 from django.db import models
 from django.core.exceptions import ValidationError
 from django.core.validators import MaxValueValidator
+from django.contrib.auth.models import Group
 from sorl.thumbnail.shortcuts import get_thumbnail
 
 
 class ProjectModelManager(models.Manager):
     def get_user_projects(self, user):
-        return super(ProjectModelManager, self).get_queryset().filter(
-            is_active=True).filter(projectteam__employees__id__exact=user.id)
+        user_projects = super(ProjectModelManager, self).get_queryset().filter(
+            is_active=True)
+        group = Group.objects.get(name='scrum')
+        if group in user.groups.all():
+            return user_projects
+        else:
+            return user_projects.filter(
+                projectteam__employees__id__exact=user.id)
 
 
 @python_2_unicode_compatible

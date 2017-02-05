@@ -23,7 +23,6 @@ class ProjectListView(ListView):
     template_name = 'project/projects.html'
 
     def get_queryset(self):
-        user = self.request.user
         projects = Project.objects.get_user_projects(
             self.request.user).order_by(
             '-start_date')
@@ -55,7 +54,7 @@ def issue_create_view(request, project_id):
         if request.GET.get('root', False):
             initial['root'] = request.GET['root']
         form = CreateIssueForm(initial=initial)
-    return render(request, 'project/create_issue.html', {'form': form,
+    return render(request, 'project/issue_create.html', {'form': form,
                                                          'project': Project.objects.get(
                                                              pk=project_id)})
 
@@ -71,7 +70,7 @@ def issue_edit_view(request, project_id, issue_id):
             return redirect('project:backlog', project_id)
     else:
         form = EditIssueForm(instance=current_issue)
-    return render(request, 'project/edit_issue.html',
+    return render(request, 'project/issue_edit.html',
                   {'form': form, 'project': Project.objects.get(pk=project_id),
                    'issue': Issue.objects.get(pk=issue_id)})
 

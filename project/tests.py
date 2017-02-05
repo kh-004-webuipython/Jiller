@@ -108,7 +108,7 @@ class IssueEditViewTests(LoginRequiredBase):
         response = self.client.post(
             reverse('project:issue_edit', args=[self.project.pk,
                                                 self.issue.pk]))
-        self.assertTemplateUsed(response, 'project/edit_issue.html')
+        self.assertTemplateUsed(response, 'project/issue_edit.html')
 
     def test_issue_edit_view_can_get_object(self):
         """
@@ -145,7 +145,7 @@ class IssueCreateViewTests(LoginRequiredBase):
         """
         response = self.client.post(
             reverse('project:issue_create', args=[self.project.pk]))
-        self.assertTemplateUsed(response, 'project/create_issue.html')
+        self.assertTemplateUsed(response, 'project/issue_create.html')
 
 
 class ProjectsListViewTests(LoginRequiredBase):
