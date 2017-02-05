@@ -18,104 +18,77 @@
 {% endblock %}
 
 {% block content %}
+  {% if not team_list %}
+    <a class="btn btn-info pull-right"
+       href="{% url 'project:team_create' project.id %}">Create new team</a>
+  {% endif %}
   {% include 'project/project_navbar.html' with team=True %}
-  <h2>Team list</h2>
-  <ul>
-    {% if team_list %}
-      {% for team in team_list %}
-        {% if team.employees %}
-          {% for employee in team.employees.all %}
-            <li><strong><a
-                href="{% url 'employee:detail' employee.id %}">
-              {{ employee.first_name }} {{ employee.last_name }}</a></strong>
-            </li>
-          {% endfor %}
-        {% else %}
-          <p>no team on project</p>
-        {% endif %}
-      {% endfor %}
-    {% else %}
-      <p>no team on project</p>
-    {% endif %}
-  </ul>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  <div>
-
-    <table class=" table-bordered ">
-      <tr>
-        <td>login</td>
-        <td>name</td>
-        <td>role</td>
+  <div class="container-fluid">
+    {% for team in team_list %}
+      <table class=" table-bordered col-lg-6">
+      <tr class="text-center">
+        <td colspan=3> Current team</td>
+      </tr>
+      <tr class="text-center">
+        <td>Teammate name</td>
+        <td>role in team</td>
         <td>remove from team</td>
       </tr>
-
-      {% for team in team_list %}
-        {% for employee in team.employees.all %}
-          <tr>
-            <td class="col-lg-1">
-              {{ employee.username }}
-            </td>
-            <td class="col-lg-3">
+      {% for employee in team.employees.all %}
+        {% if not employee.pm_role_access %}
+          <tr class="text-center">
+            <td class="col-lg-4">
               <strong><a
                   href="{% url 'employee:detail' employee.id %}">
                 {{ employee.first_name }} {{ employee.last_name }}</a></strong>
-
             </td>
             <td class="col-lg-1">
-              <li><strong>
-                {{ employee.role }}</strong>
-              </li>
+              {{ employee.role }}
             </td>
-            <td>rm</td>
-          </tr>
-
-
-      <table class="table-bordered  col-lg-5">
-        <tr>
-          <td> login</td>
-          <td> name</td>
-          <td> role on project</td>
-          <td> add to team</td>
-        </tr>
-        {% for user in user_list %}
-
-          <tr>
-            <td class="col-lg-1">{{ user.username }}</td>
-            <td class="col-lg-1">{{ user.first_name }} {{ user.last_name }}</td>
-            <td class="col-lg-1">{{ user.role }}</td>
             <td class="col-lg-1">
-
               <form
-                  action="{% url 'project:change_user_in_team' project.id user.id team.id%}"
+                  action="{% url 'project:change_user_in_team' project.id employee.id team.id %}"
                   method="post">
                 {% csrf_token %}
-                <input type="submit" name="add" value="add"/>
+                <button type="submit" name="remove" value="remove"><span
+                    class="glyphicon glyphicon-remove"></span></button>
               </form>
-
-
             </td>
           </tr>
+        {% endif %}
+      {% endfor %}
+      <table class="table-bordered col-lg-6">
+        <tr>
+          <td colspan=4 class="text-center"> Free team employees in company
+          </td>
+        </tr>
+        <tr class="text-center">
+          <td> Name</td>
+          <td> Role on projects</td>
+          <td> Add</td>
+        </tr>
+        {% for user in user_list %}
+          {% if user not in  team.employees.all %}
+            <tr class="text-center">
+              <td class="col-lg-4"><strong><a
+                  href="{% url 'employee:detail' user.id %}">
+                {{ user.first_name }} {{ user.last_name }}</a></strong></td>
+              <td class="col-lg-1">{{ user.role }}</td>
+              <td class="col-lg-1">
+                <form
+                    action="{% url 'project:change_user_in_team' project.id user.id team.id %}"
+                    method="post">
+                  {% csrf_token %}
+                  <button type="submit" name="add" value="add"><span
+                      class="glyphicon glyphicon-ok"></span></button>
+                </form>
+              </td>
+            </tr>
+          {% endif %}
+        {% empty %}
         {% endfor %}
       </table>
+    {% endfor %}
     </table>
-
-{% endfor %}
-      {% endfor %}
   </div>
-
-
 {% endblock %}

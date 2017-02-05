@@ -7,7 +7,7 @@ from django.views.generic import DetailView, ListView
 from django.urls import reverse
 
 from .forms import ProjectForm, SprintCreateForm, CreateIssueForm, \
-    EditIssueForm, TeamForm
+    EditIssueForm, CreateTeamForm
 from .models import Project, ProjectTeam, Issue, Sprint
 
 from employee.models import Employee
@@ -72,7 +72,8 @@ def issue_edit_view(request, project_id, issue_id):
 
 def team_view(request, project_id):
     current_project = get_object_or_404(Project, pk=project_id)
-    user_list = Employee.objects.all()
+    # hide PMs on "global" team board
+    user_list = Employee.objects.all().filter(pm_role_access=False)
 
     try:
         team_list = ProjectTeam.objects.filter(project=current_project)
@@ -241,21 +242,26 @@ class ActiveSprintView(DetailView):
             Sprint.objects.get(project_id=self.kwargs['project_id'],
                                status='active')
         except Sprint.DoesNotExist:
-            context['project'] = Project.objects.get(id=self.kwargs['project_id'])
+            context['project'] = Project.objects.get(
+                id=self.kwargs['project_id'])
             context['no_active_sprint'] = True
             return context
         else:
-            active_sprint = Sprint.objects.get(project_id=self.kwargs['project_id'],
-                                               status='active')
+            active_sprint = Sprint.objects.get(
+                project_id=self.kwargs['project_id'],
+                status='active')
             context['active_sprint'] = active_sprint
             issues_from_active_sprint = Issue.objects.filter(
-                project_id=self.kwargs['project_id'], sprint_id=active_sprint.id)
-            context['new_issues'] = issues_from_active_sprint.filter(status="new")
+                project_id=self.kwargs['project_id'],
+                sprint_id=active_sprint.id)
+            context['new_issues'] = issues_from_active_sprint.filter(
+                status="new")
             context['in_progress_issues'] = issues_from_active_sprint.filter(
                 status="in progress")
             context['resolved_issues'] = issues_from_active_sprint.filter(
                 status="resolved")
-            context['project'] = Project.objects.get(id=self.kwargs['project_id'])
+            context['project'] = Project.objects.get(
+                id=self.kwargs['project_id'])
             return context
 
 
@@ -300,41 +306,34 @@ class SprintStatusUpdate(UpdateView):
                        kwargs={'project_id': self.object.project_id})
 
 
-
-
 def change_user_in_team(request, project_id, user_id, team_id):
     if request.method == 'POST':
+        user = Employee.objects.get(pk=user_id)
         if 'add' in request.POST:
             team = get_object_or_404(ProjectTeam, pk=team_id)
-            team.employees.add(user_id)
-
-            print 1, request.POST, team
+            team.employees.add(user)
         if 'remove' in request.POST:
             team = get_object_or_404(ProjectTeam, pk=team_id)
-            team.employees.remove(user_id)
-            print 2, request.POST
+            team.employees.remove(user)
         return redirect('project:team', project_id)
     return redirect('project:team', project_id)
 
 
-def team_create_view(request, project_id):
-    project = Project.objects.get(pk = project_id)
+def team_create(request, project_id):
+    project = Project.objects.get(pk=project_id)
     if request.method == "POST":
-        form = TeamForm(request.POST)
+        form = CreateTeamForm(request.POST)
         if form.is_valid():
-            new_issue = form.save(commit=False)
-            new_issue.save()
-            return redirect('project:detail', project_id)
+            new_team = form.save(commit=False)
+            new_team.project = project
+            new_team.save()
+            new_team.employees.add(request.user.id)
+            return redirect('project:team', project_id)
     else:
-        form = CreateIssueForm(
+        form = CreateTeamForm(
             initial={'project': project_id, 'author': request.user.id})
-    print Project.objects.get(pk=project_id)
     return render(request, 'project/team_create.html', {'form': form,
                                                         'project': project})
-
-
-
-
 
 
 """

@@ -11,7 +11,7 @@ class DateInput(forms.DateInput):
 class ProjectForm(forms.ModelForm):
     class Meta:
         model = Project
-        fields = ['title', 'description', 'start_date','end_date']
+        fields = ['title', 'description', 'start_date', 'end_date']
         widgets = {
             'start_date': DateInput(),
             'end_date': DateInput(),
@@ -22,7 +22,8 @@ class ProjectForm(forms.ModelForm):
         start_date = cleaned_data.get('start_date')
         end_date = cleaned_data.get('end_date')
         if start_date > end_date:
-            self.add_error('end_date', _('End date cant\'t be earlies than start date'))
+            self.add_error('end_date',
+                           _('End date cant\'t be earlies than start date'))
 
 
 class IssueForm(forms.ModelForm):
@@ -47,7 +48,16 @@ class EditIssueForm(IssueForm):
 class TeamForm(forms.ModelForm):
     class Meta:
         model = ProjectTeam
-        fields = '__all__'
+        fields = ['title']
+
+
+class CreateTeamForm(TeamForm):
+    def clean_title(self):
+        cleaned_data = super(TeamForm, self).clean()
+        title = cleaned_data.get('title')
+        if ProjectTeam.objects.filter(title=title):
+            raise forms.ValidationError('This title is already use')
+        return title
 
 
 class SprintCreateForm(forms.ModelForm):

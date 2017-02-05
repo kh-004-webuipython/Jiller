@@ -6,6 +6,8 @@ from django.db import models
 from django.core.exceptions import ValidationError
 from django.core.validators import MaxValueValidator
 
+from employee.models import Employee
+
 
 class Project(models.Model):
     title = models.CharField(verbose_name=_('Title'), max_length=255)
@@ -114,7 +116,6 @@ class ProjectTeam(models.Model):
     employees = models.ManyToManyField('employee.Employee',
                                        verbose_name=_('Employees'))
 
-
-
     def __str__(self):
         return self.title
+
