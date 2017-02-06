@@ -11,7 +11,8 @@ from django_tables2 import SingleTableView, RequestConfig
 
 def employee_index_view(request):
     table = EmployeeTable(Employee.objects.all())
-    RequestConfig(request).configure(table)
+
+    RequestConfig(request, paginate={'per_page': 10}).configure(table)
     return render(request, 'employee/list.html', {'table': table})
 
 

@@ -20,8 +20,9 @@
 
 {% block content %}
   {% include 'project/project_navbar.html' with team=True %}
-  <h2>Team list</h2>
-    {% render_table table %}
+    {% if table %}
+      {% render_table table "base_table.html" %}
+    {% endif %}
 {% endblock %}
 
 

@@ -55,3 +55,8 @@ class BacklogTable(tables.Table):
         fields = ['title', 'description', 'root', 'author', 'status', 'order']
 
 
+class ProjectTeamTable(tables.Table):
+    class Meta:
+        model = Issue
+        attrs = {"class": "table table-bordered table-striped table-hover"}
+

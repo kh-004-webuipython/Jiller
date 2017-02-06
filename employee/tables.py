@@ -4,12 +4,13 @@ from .models import Employee
 
 
 class EmployeeTable(tables.Table):
-    details = tables.Column()
-    username = tables.Column()
-    role = tables.Column()
-    loged = tables.BooleanColumn()
+    id = tables.Column()
+    name = tables.LinkColumn('employee:detail', kwargs={"employee_id": A('id')})
+    role = tables.Column(attrs={'td': {'width': '10%'}})
+    loged = tables.BooleanColumn(attrs={'td': {'width': '10%'}})
 
     class Meta:
         model = Employee
         attrs = {"class": "table table-bordered table-striped table-hover"}
-        fields = ['details', 'username', 'role', 'loged']
+        exclude = ('id')
+        fields = ['name', 'role', 'loged']

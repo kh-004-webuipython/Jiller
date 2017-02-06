@@ -56,41 +56,12 @@
 {% with table.page.paginator.count as total %}
 {% with table.page.object_list|length as count %}
 
-
 {% block pagination.allpages %}
   {% for p in table.paginator.page_range %}
     <a href="{% querystring table.prefixed_page_field=p %}">{{ p }}</a>
   {% endfor %}
 {% endblock pagination.allpages %}
 
-<!--
-{% block pagination %}
-<ul class="pagination">
-    {% if table.page.has_previous %}
-        {% block pagination.previous %}
-            <li class="previous">
-                <a href="{% querystring table.prefixed_page_field=table.page.previous_page_number %}">{% trans "Previous" %}</a>
-            </li>
-        {% endblock pagination.previous %}
-    {% endif %}
-
-    {% if table.page.has_previous or table.page.has_next %}
-        {% block pagination.cardinality %}
-            <li class="cardinality">
-                {% blocktrans with table.page.number as current and table.paginator.num_pages as total %}Page {{ current }} of {{ total }}{% endblocktrans %}
-            </li>
-        {% endblock pagination.cardinality %}
-    {% endif %}
-
-    {% if table.page.has_next %}
-        {% block pagination.next %}
-            <li class="next">
-                <a href="{% querystring table.prefixed_page_field=table.page.next_page_number %}">{% trans "Next" %}</a>
-            </li>
-        {% endblock pagination.next %}
-    {% endif %}
-</ul>
-{% endblock pagination %}-->
 {% endwith %}
 {% endwith %}
 {% endif %}
