@@ -42,3 +42,6 @@ a#createprojectbtn {
     margin-bottom: 10px;
 }
 
+.ui-sortable-helper {
+    display: table!important;
+}

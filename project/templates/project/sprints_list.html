@@ -20,5 +20,7 @@
 {% block content %}
   {% include 'project/project_navbar.html' with sprint_list=True%}
 
-  {% render_table table "base_table.html" %}
+  {% if table %}
+    {% render_table table "base_table.html" %}
+  {% endif %}
 {% endblock %}

@@ -63,7 +63,7 @@
                           {% if employee.photo %}
                            src="{{ employee.get_cropped_photo.url }}"
                           {% else %}
-                           src="{{ employee.email|gravatar_url }}"
+                           src="{{ employee.email|gravatar_url:150 }}"
                           {% endif %}
                         />
                       </a>

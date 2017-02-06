@@ -17,6 +17,9 @@
   <a class="btn btn-primary pull-right" id="createprojectbtn" href="{% url 'project:create' %}">Create project</a>
 {% endflag %}
   <div class="page-header"><h1>Project list</h1></div>
-  {% render_table table "base_table.html" %}
+
+  {% if table %}
+    {% render_table table "base_table.html" %}
+  {% endif %}
 
 {% endblock %}
