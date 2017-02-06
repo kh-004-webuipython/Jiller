@@ -6,3 +6,4 @@ local_settings.py
 venv
 htmlcov
 .coverage
+/public
