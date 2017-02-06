@@ -14,8 +14,9 @@ from django.utils.decorators import method_decorator
 from .decorators import delete_project, \
     edit_project_detail, create_project, create_sprint
 from waffle.decorators import waffle_flag
-from .tables import ProjectTeamTable, ProjectTable, SprintsListTable
-from django_tables2 import SingleTableView
+from .tables import ProjectTable, SprintsListTable
+from employee.tables import EmployeeTable
+from django_tables2 import SingleTableView, RequestConfig
 
 
 class ProjectListView(SingleTableView):
@@ -32,27 +33,40 @@ class ProjectListView(SingleTableView):
         return Project.objects.filter(is_active=True).order_by('-start_date')
 
 
-# def sprints_list(request, project_id):
-#     try:
-#         project = Project.objects.get(pk=project_id)
-#     except Project.DoesNotExist:
-#         raise Http404("Project does not exist")
-#     sprints = Sprint.objects.filter(project=project_id) \
-#         .exclude(status=Sprint.ACTIVE)
+def sprints_list(request, project_id):
+    try:
+        project = Project.objects.get(pk=project_id)
+    except Project.DoesNotExist:
+        raise Http404("Project does not exist")
+    sprints = Sprint.objects.filter(project=project_id) \
+        .exclude(status=Sprint.ACTIVE)
+
+    table = SprintsListTable(sprints)
+    table_pagination = {
+        'per_page': 10
+    }
+    RequestConfig(request).configure(table)
+    return render(request, 'project/sprints_list.html', {'project': project,
+                                                         'table': table})
+
+# class SprintsListView(SingleTableView):
+#     model = Sprint
+#     table_class = SprintsListTable
+#     template_name = 'project/sprints_list.html'
+#     table_pagination = True
+#     query_pk_and_slug = True
+#     pk_url_kwarg = 'project_id'
 #
-#     return render(request, 'project/sprints_list.html', {'project': project,
-#                                                          'sprints': sprints})
-
-class SprintsListView(SingleTableView):
-    model = Sprint
-    table_class = SprintsListTable
-    template_name = 'project/sprints_list.html'
-    table_pagination = True
-    query_pk_and_slug = True
-    pk_url_kwarg = 'project_id'
-
-    def get_queryset(self):
-        return Sprint.objects.filter(project=self.kwargs['project_id'])
+#     table_pagination = {
+#         'per_page': 10
+#     }
+#
+#     def get_context_data(self, **kwargs):
+#         context = super(SprintsListView, self).get_context_data(**kwargs)
+#         cur_proj = self.kwargs['project_id']
+#         sprints_from_this_project = Sprint.objects.filter(project_id=cur_proj)
+#         context['project'] = Project.objects.get(id=cur_proj)
+#         return context
 
 
 @waffle_flag('create_issue', 'project:list')
@@ -87,14 +101,33 @@ def issue_edit_view(request, project_id, issue_id):
                    'issue': Issue.objects.get(pk=issue_id)})
 
 
-def team_view(request, project_id):
-    current_project = get_object_or_404(Project, pk=project_id)
-    try:
-        teams_list = ProjectTeamTable(ProjectTeam.objects.filter(project=current_project))
-    except ProjectTeam.DoesNotExist:
-        raise Http404("No team on project")
-    return render(request, 'project/team.html', {'tables': teams_list,
-                                                 'project': current_project})
+# def team_view(request, project_id):
+#     current_project = get_object_or_404(Project, pk=project_id)
+#     try:
+#         teams_list = ProjectTeamTable(ProjectTeam.objects.filter(project=current_project))
+#     except ProjectTeam.DoesNotExist:
+#         raise Http404("No team on project")
+#     return render(request, 'project/team.html', {'tables': teams_list,
+#                                                  'project': current_project})
+
+class TeamListView(SingleTableView):
+    model = ProjectTeam
+    table_class = EmployeeTable
+    template_name = 'employee/list.html'
+    table_pagination = True
+    query_pk_and_slug = True
+    pk_url_kwarg = 'project_id'
+
+    table_pagination = {
+        'per_page': 10
+    }
+
+    def get_context_data(self, **kwargs):
+        context = super(SprintsListView, self).get_context_data(**kwargs)
+        cur_proj = self.kwargs['project_id']
+        sprints_from_this_project = Sprint.objects.filter(project_id=cur_proj)
+        context['project'] = Project.objects.get(id=cur_proj)
+        return context
 
 
 def backlog(request, project_id):

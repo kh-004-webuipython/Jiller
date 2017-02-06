@@ -2,7 +2,7 @@
     overflow: auto;
     margin: 0;
     padding: 5px;
-    border: 1px solid #F4782E;
+    /*border: 1px solid #F4782E;*/
     list-style: none;
 }
 .table-container ul.pagination > li > a {
