@@ -18,33 +18,36 @@
 {% endblock %}
 
 {% block content %}
+      <a href="{% url 'project:sprint_create' project.id %}"
+       class="btn btn-primary pull-right">Create new sprint</a>
   {% include 'project/project_navbar.html' with sprint_detail=True %}
 
 
   {% if no_active_sprint %}
-    <h4>There is no active sprint yet</h4>
+
+    <div class="page-header"><h1>There is no active sprint yet</h1></div>
   {% endif %}
 
   {% if not no_active_sprint %}
-  <div class="table-responsive">
-    <table class="table table-bordered">
-      <thead>
-      <tr>
-        <th>Sprint Title</th>
-        <th>Start date</th>
-        <th>End date</th>
-      </tr>
-      </thead>
-      <tbody>
-      <tr>
-        <td>{{ active_sprint.title }}</td>
-        <td>{{ active_sprint.start_date|date:"d/m/Y" }}</td>
-        <td>{{ active_sprint.end_date|date:"d/m/Y" }}</td>
-      </tr>
-      </tbody>
-    </table>
-  </div>
-  <br><br>
+    <div class="table-responsive">
+      <table class="table table-bordered">
+        <thead>
+        <tr>
+          <th>Sprint Title</th>
+          <th>Start date</th>
+          <th>End date</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+          <td>{{ active_sprint.title }}</td>
+          <td>{{ active_sprint.start_date|date:"d/m/Y" }}</td>
+          <td>{{ active_sprint.end_date|date:"d/m/Y" }}</td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+    <br><br>
 
     <div class="text-center table-responsive">
       <p class="text-center"><strong>Dashboard</strong></p>
@@ -63,11 +66,11 @@
 {% url 'project:issue_detail' new_iss.project_id new_iss.id %}">
                   {{ new_iss.title }}</a>
                 {% flag "push_issue" %}
-                <a href="
+                  <a href="
 {% url 'project:issue_push' new_iss.project_id new_iss.id 'right' %}">
               <span style="float: right"
                     class="glyphicon glyphicon-circle-arrow-right"></span>
-                </a>{% endflag %}
+                  </a>{% endflag %}
             </tr>
           {% endfor %}
           </tbody>
@@ -85,20 +88,20 @@
             <tr>
               <td class="text-center">
                 {% flag "push_issue" %}
-                <a href="
+                  <a href="
 {% url 'project:issue_push' progress.project_id progress.id 'left' %}">
               <span style="float: left"
                     class="glyphicon glyphicon-circle-arrow-left"></span>
-                </a>{% endflag %}
+                  </a>{% endflag %}
                 <a href="
 {% url 'project:issue_detail' progress.project_id progress.id %}">
                   {{ progress.title }}</a>
                 {% flag "push_issue" %}
-                <a href="
+                  <a href="
 {% url 'project:issue_push' progress.project_id progress.id 'right' %}">
               <span style="float: right"
                     class="glyphicon glyphicon-circle-arrow-right"></span>
-                </a>{% endflag %}
+                  </a>{% endflag %}
               </td>
             </tr>
           {% endfor %}
@@ -117,11 +120,11 @@
             <tr>
               <td class="text-center">
                 {% flag "push_issue" %}
-                <a href="
+                  <a href="
 {% url 'project:issue_push' resolved.project_id resolved.id 'left' %}">
               <span style="float: left"
                     class="glyphicon glyphicon-circle-arrow-left"></span>
-                </a>{% endflag %}
+                  </a>{% endflag %}
                 <a href="
 {% url 'project:issue_detail' resolved.project_id resolved.id %}">
                   {{ resolved.title }}</a></td>

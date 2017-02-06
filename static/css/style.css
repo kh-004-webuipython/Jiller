@@ -38,10 +38,18 @@ a#createprojectbtn {
     margin-bottom: 8px;
 }
 
-.navbar-margin-bottom{
+.navbar-margin-bottom {
     margin-bottom: 10px;
 }
 
 .ui-sortable-helper {
-    display: table!important;
+    display: table !important;
+}
+
+button.team-event {
+    border: none;
+    background: white;
+}
+button.team-event:focus{
+    outline: none
 }
