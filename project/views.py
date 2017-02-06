@@ -15,7 +15,7 @@ from django.utils.decorators import method_decorator
 from .decorators import delete_project, \
     edit_project_detail, create_project, create_sprint
 from waffle.decorators import waffle_flag
-from .tables import ProjectTable, SprintsListTable
+from .tables import ProjectTable, SprintsListTable, BacklogTable
 from employee.tables import EmployeeTable
 from django_tables2 import SingleTableView, RequestConfig
 import json
@@ -44,13 +44,12 @@ def sprints_list(request, project_id):
         .exclude(status=Sprint.ACTIVE)
 
     table = SprintsListTable(sprints)
-    print (project)
     table_pagination = {
         'per_page': 10
     }
     RequestConfig(request).configure(table)
     return render(request, 'project/sprints_list.html', {'project': project,
-                                                         'sprints': sprints})
+                                                         'table': table})
 
 
 @waffle_flag('create_issue', 'project:list')
@@ -124,8 +123,13 @@ def backlog(request, project_id):
     issues = Issue.objects.filter(project=project_id) \
         .filter(sprint__isnull=True)
 
+    table = BacklogTable(issues)
+    table_pagination = {
+        'per_page': 10
+    }
+    RequestConfig(request).configure(table)
     return render(request, 'project/backlog.html', {'project': project,
-                                                    'issues': issues})
+                                                    'table': table})
 
 
 def issue_detail_view(request, project_id, issue_id):

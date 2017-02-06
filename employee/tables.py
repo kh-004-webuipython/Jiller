@@ -4,7 +4,7 @@ from .models import Employee
 
 
 class EmployeeTable(tables.Table):
-    details = tables.LinkColumn('#', attrs={'tr': {'class': 'center'}})
+    details = tables.Column()
     name = tables.Column()
     role = tables.Column()
     loged = tables.BooleanColumn()
