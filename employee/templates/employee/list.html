@@ -12,6 +12,12 @@
 {% endblock %}
 
 {% block content %}
+    {% if table %}
+      {% render_table table "employee_table.html" %}
+    {% endif %}
+{% endblock %}
+
+<!--{% block content_ %}
   <div class="row">
     <div class="col-xs-12">
       <table id="simple-table" class="table table-bordered table-hover">
@@ -135,9 +141,10 @@
         {% endfor %}
         </tbody>
       </table>
-    </div><!-- /.span -->
-  </div><!-- /.row -->
-{% endblock %}
+    </div>&lt;!&ndash; /.span &ndash;&gt;
+  </div>&lt;!&ndash; /.row &ndash;&gt;
+{% endblock %}-->
+
 {% block extrascripts %}
 
   <script src="{% static 'js/table.js' %}"></script>

@@ -4,15 +4,15 @@ from .tables import EmployeeTable
 from django_tables2 import SingleTableView, RequestConfig
 
 
-def employee_index_view(request):
-    employee_list = Employee.objects.all()
-    return render(request, 'employee/list.html', {'employee_list': employee_list})
-
-#
 # def employee_index_view(request):
-#     table = EmployeeTable(Employee.objects.all())
-#     RequestConfig(request, paginate={'per_page': 10}).configure(table)
-#     return render(request, 'employee/list.html', {'table': table})
+#     employee_list = Employee.objects.all()
+#     return render(request, 'employee/list.html', {'employee_list': employee_list})
+
+
+def employee_index_view(request):
+    table = EmployeeTable(Employee.objects.all())
+    RequestConfig(request, paginate={'per_page': 10}).configure(table)
+    return render(request, 'employee/list.html', {'table': table})
 
 
 def employee_detail_view(request, employee_id):
