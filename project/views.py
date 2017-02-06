@@ -119,27 +119,19 @@ class IssueDeleteView(DeleteView):
     model = Issue
     query_pk_and_slug = True
     pk_url_kwarg = 'issue_id'
-    # project_id = self.request.POST.get('album_id')
-
-
 
     def get_success_url(self):
         return reverse('project:backlog',
                        kwargs={'project_id': self.object.project_id})
 
-# def issue_delete_view(request, project_id, issue_id):
-#     current_issue = get_object_or_404(Issue, pk=issue_id, project=project_id)
-#     if request.method == "POST":
-#         form = IssueForm(request.POST, instance=current_issue)
-#         if form.is_valid():
-#             current_issue = form.save(commit=False)
-#             current_issue.save()
-#             return redirect('project:backlog', project_id)
-#     else:
-#         form = EditIssueForm(instance=current_issue)
-#     return render(request, 'project/issue_edit.html',
-#                   {'form': form, 'project': Project.objects.get(pk=project_id),
-#                    'issue': Issue.objects.get(pk=issue_id)})
+    def get_context_data(self, **kwargs):
+        context = super(IssueDeleteView, self).get_context_data(**kwargs)
+        currrent_project = self.kwargs['project_id']
+        current_issue = self.kwargs['issue_id']
+        context['project'] = Project.objects.get(id=currrent_project)
+        context['issue'] = Issue.objects.get(id=current_issue)
+        return context
+
 
 
 class SprintView(DetailView):

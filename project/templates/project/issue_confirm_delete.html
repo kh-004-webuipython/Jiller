@@ -5,28 +5,28 @@
 {% block title %}Delete project{% endblock %}
 {% block breadcrumbs %}
   {{ block.super }}
-{#  <li>#}
-{#    <a href="{% url 'project:list' %}">Projects</a>#}
-{#  </li>#}
-{#  <li>#}
-{#    <a href="{% url 'project:detail' project.id %}">{{ project.title }}</a>#}
-{#  </li>#}
-{#  {% if issue.sprint %}#}
-{##}
-{#    <li>#}
-{#      <a href="{% url 'project:sprint_active' project.id %}">{{ issue.sprint.title }}</a>#}
-{#    </li>#}
-{#  {% else %}#}
-{#    <li>#}
-{#      <a href="{% url 'project:backlog' project.id %}">Backlog</a>#}
-{#    </li>#}
-{#  {% endif %}#}
-{#  <li>#}
-{#    <a href="{% url 'project:issue_detail' project.id issue.id %}">{{ issue.title }}</a>#}
-{#  </li>#}
-{#  <li>#}
-{#    <span>{% trans 'Delete' %}</span>#}
-{#  </li>#}
+  <li>
+    <a href="{% url 'project:list' %}">Projects</a>
+  </li>
+  <li>
+    <a href="{% url 'project:detail' project.id %}">{{ project.title }}</a>
+  </li>
+  {% if issue.sprint %}
+
+    <li>
+      <a href="{% url 'project:sprint_active' project.id %}">{{ issue.sprint.title }}</a>
+    </li>
+  {% else %}
+    <li>
+      <a href="{% url 'project:backlog' project.id %}">Backlog</a>
+    </li>
+  {% endif %}
+  <li>
+    <a href="{% url 'project:issue_detail' project.id issue.id %}">{{ issue.title }}</a>
+  </li>
+  <li>
+    <span>{% trans 'Delete' %}</span>
+  </li>
 {% endblock %}
 {% block content %}
 
