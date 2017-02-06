@@ -214,7 +214,6 @@
       "is_staff": true,
       "is_active": true,
       "date_joined": "2017-01-27T19:40:41Z",
-      "role": "",
       "date_birth": null,
       "photo": "",
       "groups": [
@@ -237,7 +236,6 @@
       "is_staff": false,
       "is_active": true,
       "date_joined": "2017-01-27T20:53:28Z",
-      "role": "developer",
       "date_birth": null,
       "photo": "",
       "groups": [
@@ -260,7 +258,6 @@
       "is_staff": false,
       "is_active": true,
       "date_joined": "2017-01-27T21:14:20Z",
-      "role": "scrum master",
       "date_birth": null,
       "photo": "",
       "groups": [
@@ -283,7 +280,6 @@
       "is_staff": false,
       "is_active": true,
       "date_joined": "2017-01-30T16:45:39.517Z",
-      "role": "product owner",
       "date_birth": null,
       "photo": "",
       "groups": [
