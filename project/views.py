@@ -123,13 +123,8 @@ def backlog(request, project_id):
     issues = Issue.objects.filter(project=project_id) \
         .filter(sprint__isnull=True)
 
-    table = BacklogTable(issues)
-    table_pagination = {
-        'per_page': 10
-    }
-    RequestConfig(request).configure(table)
     return render(request, 'project/backlog.html', {'project': project,
-                                                    'table': table})
+                                                    'issues': issues})
 
 
 def issue_detail_view(request, project_id, issue_id):

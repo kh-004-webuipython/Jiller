@@ -42,10 +42,7 @@
   <div id="error-message"></div>
   {% endflag %}
 
-  {% if table %}
-    {% render_table table "base_table.html" %}
-  {% endif %}
-<!--  {% if issues %}
+{% if issues %}
     <div class="table-responsive">
       <table class="table table-hover">
         <thead>
@@ -76,7 +73,7 @@
     </div>
   {% else %}
     <h3>No issues.</h3>
-  {% endif %}-->
+  {% endif %}
 
   {% block scripts %}
     {{ block.super }}
