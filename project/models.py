@@ -10,6 +10,8 @@ from django.core.exceptions import ValidationError
 from django.core.validators import MaxValueValidator
 from sorl.thumbnail.shortcuts import get_thumbnail
 
+from employee.models import Employee
+
 
 @python_2_unicode_compatible
 class Project(models.Model):
@@ -164,3 +166,4 @@ class ProjectTeam(models.Model):
 
     def __str__(self):
         return self.title
+
