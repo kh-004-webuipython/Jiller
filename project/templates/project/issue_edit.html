@@ -29,7 +29,8 @@
   </li>
 {% endblock %}
 {% block content %}
-  {% include 'project/project_navbar.html' with sprint_detail=True %}
+  {% include 'project/project_navbar.html' with backlog=True %}
+  <h3>Edit issue:</h3>
   <form role="form" action="" class="form-horizontal" method="post">
     {% for field in form %}
       <div class="form-group {% if field.errors %} has-error {% endif %}">
@@ -56,7 +57,12 @@
       <div class="col-sm-offset-3 col-sm-9">
         <button type="submit" class="btn btn-success">Submit</button>
         <button class="btn ">Cancel</button>
-        <a class = "btn btn-danger" href="{% url 'project:issue_delete' project.id issue.id%}"> Delete </a>
+        {#or request.user.group.name == 'pm'#}
+        {% if user.id == issue.author.id or user.is_superuser == True %}
+          <a class="btn btn-danger"
+             href="{% url 'project:issue_delete' project.id issue.id %}">
+            Delete </a>
+        {% endif %}
       </div>
     </div>
   </form>
