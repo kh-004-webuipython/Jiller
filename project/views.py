@@ -77,7 +77,7 @@ def issue_edit_view(request, project_id, issue_id):
 def team_view(request, project_id):
     current_project = get_object_or_404(Project, pk=project_id)
     # hide PMs on "global" team board
-    user_list = Employee.objects.all().filter(pm_role_access=False)
+    user_list = Employee.objects.filter(pm_role_access=False)
 
     try:
         team_list = ProjectTeam.objects.filter(project=current_project)
@@ -376,7 +376,7 @@ def change_user_in_team(request, project_id, user_id, team_id):
 
 
 def team_create(request, project_id):
-    project = Project.objects.get(pk=project_id)
+    project = get_object_or_404(Project, pk=project_id)
     if request.method == "POST":
         form = CreateTeamForm(request.POST)
         if form.is_valid():
@@ -386,8 +386,7 @@ def team_create(request, project_id):
             new_team.employees.add(request.user.id)
             return redirect('project:team', project_id)
     else:
-        form = CreateTeamForm(
-            initial={'project': project_id, 'author': request.user.id})
+        form = CreateTeamForm()
     return render(request, 'project/team_create.html', {'form': form,
                                                         'project': project})
 
