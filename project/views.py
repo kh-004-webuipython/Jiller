@@ -46,9 +46,7 @@ def sprints_list(request, project_id):
         .exclude(status=Sprint.ACTIVE)
 
     table = SprintsListTable(sprints)
-    table.paginate(page=request.GET.get('page', 1), per_page=10)
-
-    RequestConfig(request).configure(table)
+    RequestConfig(request, paginate={'per_page': 10}).configure(table)
     return render(request, 'project/sprints_list.html', {'project': project,
                                                          'table': table})
 
@@ -101,9 +99,7 @@ def team_view(request, project_id):
                 employee_list.append(employee)
 
     table = EmployeeTable(employee_list)
-    table.paginate(page=request.GET.get('page', 1), per_page=10)
-
-    RequestConfig(request).configure(table)
+    RequestConfig(request, paginate={'per_page': 10}).configure(table)
     return render(request, 'project/team.html', {'table': table,
                                                  'project': current_project})
 
