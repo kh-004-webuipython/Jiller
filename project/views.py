@@ -8,8 +8,10 @@ from django.urls import reverse
 
 from project.forms import IssueCommentCreateForm
 from .forms import ProjectForm, SprintCreateForm, CreateIssueForm, \
-    EditIssueForm
+    EditIssueForm, CreateTeamForm
 from .models import Project, ProjectTeam, Issue, Sprint
+
+from employee.models import Employee
 
 from django.utils.decorators import method_decorator
 from .decorators import delete_project, \
@@ -74,12 +76,16 @@ def issue_edit_view(request, project_id, issue_id):
 
 def team_view(request, project_id):
     current_project = get_object_or_404(Project, pk=project_id)
+    # hide PMs on "global" team board
+    user_list = Employee.objects.filter(pm_role_access=False)
+
     try:
         team_list = ProjectTeam.objects.filter(project=current_project)
     except ProjectTeam.DoesNotExist:
         raise Http404("No team on project")
     return render(request, 'project/team.html', {'team_list': team_list,
-                                                 'project': current_project})
+                                                 'project': current_project,
+                                                 'user_list': user_list})
 
 
 def backlog(request, project_id):
@@ -141,6 +147,8 @@ class SprintView(DetailView):
             issues_from_this_sprint.filter(status="in progress")
         context['resolved_issues'] = \
             issues_from_this_sprint.filter(status="resolved")
+        context['closed_issues'] = issues_from_this_sprint.filter(
+            status="closed")
         context['project'] = Project.objects.get(id=cur_proj)
         return context
 
@@ -273,21 +281,26 @@ class ActiveSprintView(DetailView):
             Sprint.objects.get(project_id=self.kwargs['project_id'],
                                status='active')
         except Sprint.DoesNotExist:
-            context['project'] = Project.objects.get(id=self.kwargs['project_id'])
+            context['project'] = Project.objects.get(
+                id=self.kwargs['project_id'])
             context['no_active_sprint'] = True
             return context
         else:
-            active_sprint = Sprint.objects.get(project_id=self.kwargs['project_id'],
-                                               status='active')
+            active_sprint = Sprint.objects.get(
+                project_id=self.kwargs['project_id'],
+                status='active')
             context['active_sprint'] = active_sprint
             issues_from_active_sprint = Issue.objects.filter(
-                project_id=self.kwargs['project_id'], sprint_id=active_sprint.id)
-            context['new_issues'] = issues_from_active_sprint.filter(status="new")
+                project_id=self.kwargs['project_id'],
+                sprint_id=active_sprint.id)
+            context['new_issues'] = issues_from_active_sprint.filter(
+                status="new")
             context['in_progress_issues'] = issues_from_active_sprint.filter(
                 status="in progress")
             context['resolved_issues'] = issues_from_active_sprint.filter(
                 status="resolved")
-            context['project'] = Project.objects.get(id=self.kwargs['project_id'])
+            context['project'] = Project.objects.get(
+                id=self.kwargs['project_id'])
             return context
 
 
@@ -349,6 +362,35 @@ def issue_order(request):
         return HttpResponse()
     else:
         return HttpResponseRedirect(reverse('project:list'))
+
+
+def change_user_in_team(request, project_id, user_id, team_id):
+    if request.method == 'POST':
+        user = Employee.objects.get(pk=user_id)
+        if 'add' in request.POST:
+            team = get_object_or_404(ProjectTeam, pk=team_id)
+            team.employees.add(user)
+        if 'remove' in request.POST:
+            team = get_object_or_404(ProjectTeam, pk=team_id)
+            team.employees.remove(user)
+        return redirect('project:team', project_id)
+    return redirect('project:team', project_id)
+
+
+def team_create(request, project_id):
+    project = get_object_or_404(Project, pk=project_id)
+    if request.method == "POST":
+        form = CreateTeamForm(request.POST)
+        if form.is_valid():
+            new_team = form.save(commit=False)
+            new_team.project = project
+            new_team.save()
+            new_team.employees.add(request.user.id)
+            return redirect('project:team', project_id)
+    else:
+        form = CreateTeamForm()
+    return render(request, 'project/team_create.html', {'form': form,
+                                                        'project': project})
 
 
 """

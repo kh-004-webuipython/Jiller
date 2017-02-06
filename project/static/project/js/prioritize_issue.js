@@ -3,6 +3,10 @@ $(function() {
         $(this).css('width', $(this).outerWidth() +'px');
     });
 
+    $('table th').each(function(){
+        $(this).css('width', $(this).outerWidth() +'px');
+    });
+
     var csrftoken = getCookie('csrftoken');
 
     $( "#sortable" ).sortable({

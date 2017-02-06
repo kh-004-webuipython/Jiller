@@ -3,7 +3,7 @@ import datetime
 from django import forms
 from django.utils.translation import ugettext_lazy as _
 
-from .models import Project, Sprint, Issue, IssueComment
+from .models import Project, Sprint, Issue, ProjectTeam, IssueComment
 
 
 class DateInput(forms.DateInput):
@@ -23,8 +23,9 @@ class ProjectForm(forms.ModelForm):
         cleaned_data = super(ProjectForm, self).clean()
         start_date = cleaned_data.get('start_date')
         end_date = cleaned_data.get('end_date')
-        if start_date > end_date:
-            self.add_error('end_date', _('End date cant\'t be earlies than start date'))
+        if end_date and start_date > end_date:
+            self.add_error('end_date',
+                           _('End date cant\'t be earlies than start date'))
 
 
 class IssueForm(forms.ModelForm):
@@ -42,17 +43,32 @@ class CreateIssueForm(IssueForm):
         return title
 
 
+class CreateTeamForm(forms.ModelForm):
+    class Meta:
+        model = ProjectTeam
+        fields = ['title']
+    def clean_title(self):
+        cleaned_data = super(CreateTeamForm, self).clean()
+        title = cleaned_data.get('title')
+        if ProjectTeam.objects.filter(title=title):
+            raise forms.ValidationError('This title is already use')
+        return title
+
+
 class SprintCreateForm(forms.ModelForm):
-    issue = forms.ModelMultipleChoiceField(queryset=Issue.objects.all(), required=False)
+    issue = forms.ModelMultipleChoiceField(queryset=Issue.objects.all(),
+                                           required=False)
 
     def __init__(self, *args, **kwargs):
         self.project = kwargs.pop('project', None)
         super(SprintCreateForm, self).__init__(*args, **kwargs)
         if self.project:
-            self.fields['issue'].queryset = self.project.issue_set.filter(sprint=None)
+            self.fields['issue'].queryset = self.project.issue_set.filter(
+                sprint=None)
 
     def clean_status(self):
-        if self.cleaned_data['status'] == Sprint.ACTIVE and self.project.sprint_set.filter(
+        if self.cleaned_data[
+            'status'] == Sprint.ACTIVE and self.project.sprint_set.filter(
                 status=Sprint.ACTIVE).exists():
             raise forms.ValidationError(
                 "You are already have an active sprint."
@@ -62,7 +78,8 @@ class SprintCreateForm(forms.ModelForm):
     def clean_end_date(self):
         end_date = self.cleaned_data.get('end_date')
         if end_date and datetime.date.today() > end_date:
-            self.add_error('end_date', _('End date cant\'t be earlier than start date'))
+            self.add_error('end_date',
+                           _('End date cant\'t be earlier than start date'))
 
     class Meta:
         model = Sprint
@@ -89,8 +106,3 @@ class IssueCommentCreateForm(forms.ModelForm):
 
 class EditIssueForm(IssueForm):
     pass
-
-
-
-
-
