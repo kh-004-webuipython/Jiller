@@ -1,5 +1,6 @@
 import datetime
 
+from django.db.models import Q
 from django.http import HttpResponseRedirect, Http404, HttpResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
@@ -47,7 +48,7 @@ def backlog(request, project_id):
     except Project.DoesNotExist:
         raise Http404("Project does not exist")
     issues = Issue.objects.filter(project=project_id) \
-        .filter(sprint__isnull=True)
+        .filter(sprint__isnull=True).filter(~Q(status = 'deleted'))
 
     return render(request, 'project/backlog.html', {'project': project,
                                                     'issues': issues})
@@ -132,6 +133,13 @@ class IssueDeleteView(DeleteView):
         context['issue'] = Issue.objects.get(id=current_issue)
         return context
 
+    def delete(self, request, *args, **kwargs):
+        project = Project.objects.get(id=kwargs['project_id'])
+        issue = Issue.objects.get(id=kwargs['issue_id'])
+        issue.status = 'deleted';
+        issue.save()
+        return HttpResponseRedirect(reverse('project:backlog',
+                                            kwargs={'project_id': project.id}))
 
 
 class SprintView(DetailView):
@@ -241,7 +249,8 @@ class SprintCreate(CreateView):
         issue = form.cleaned_data['issue']
         issue.update(sprint=sprint)
         self.object = sprint
-        return redirect(reverse('project:sprint_active', args=(self.object.project.id, )))
+        return redirect(
+            reverse('project:sprint_active', args=(self.object.project.id,)))
 
     def get_context_data(self, **kwargs):
         project = Project.objects.get(id=self.kwargs['project_id'])

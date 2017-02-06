@@ -92,11 +92,13 @@ class Issue(models.Model):
     IN_PROGRESS = 'in progress'
     RESOLVED = 'resolved'
     CLOSED = 'closed'
+    DELETED = 'deleted'
     ISSUE_STATUS_CHOICES = (
         (NEW, _('New')),
         (IN_PROGRESS, _('In Progress')),
         (RESOLVED, _('Resolved')),
-        (CLOSED, _('Closed'))
+        (CLOSED, _('Closed')),
+        (DELETED, _('Deleted'))
     )
     HIGH = -1
     MEDIUM = -2
