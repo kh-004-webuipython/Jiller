@@ -23,7 +23,7 @@ class ProjectForm(forms.ModelForm):
         cleaned_data = super(ProjectForm, self).clean()
         start_date = cleaned_data.get('start_date')
         end_date = cleaned_data.get('end_date')
-        if start_date > end_date:
+        if end_date and start_date > end_date:
             self.add_error('end_date',
                            _('End date cant\'t be earlies than start date'))
 
@@ -43,15 +43,12 @@ class CreateIssueForm(IssueForm):
         return title
 
 
-class TeamForm(forms.ModelForm):
+class CreateTeamForm(forms.ModelForm):
     class Meta:
         model = ProjectTeam
         fields = ['title']
-
-
-class CreateTeamForm(TeamForm):
     def clean_title(self):
-        cleaned_data = super(TeamForm, self).clean()
+        cleaned_data = super(CreateTeamForm, self).clean()
         title = cleaned_data.get('title')
         if ProjectTeam.objects.filter(title=title):
             raise forms.ValidationError('This title is already use')
