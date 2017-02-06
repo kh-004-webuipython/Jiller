@@ -5,11 +5,11 @@ from .models import Employee
 
 class EmployeeTable(tables.Table):
     details = tables.Column()
-    name = tables.Column()
+    username = tables.Column()
     role = tables.Column()
     loged = tables.BooleanColumn()
 
     class Meta:
         model = Employee
         attrs = {"class": "table table-bordered table-striped table-hover"}
-        fields = ['details', 'name', 'role', 'loged']
+        fields = ['details', 'username', 'role', 'loged']
