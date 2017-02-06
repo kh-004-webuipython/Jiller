@@ -74,11 +74,11 @@
     <h3>No issues.</h3>
   {% endif %}
 
-  {% block scripts %}
-    {{ block.super }}
+  {% block extrascripts %}
       {% flag "prioritize_issue" %}
         <script src="{% static 'js/jquery-ui.min.js' %}"></script>
+        <script src="{% static 'js/main.js' %}"></script>
         <script src="{% static 'project/js/prioritize_issue.js' %}"></script>
       {% endflag %}
-  {% endblock scripts %}
+  {% endblock %}
 {% endblock %}
