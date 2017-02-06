@@ -9,8 +9,10 @@ from django.urls import reverse
 
 from project.forms import IssueCommentCreateForm
 from .forms import ProjectForm, SprintCreateForm, CreateIssueForm, \
-    EditIssueForm, IssueForm
+    EditIssueForm, CreateTeamForm
 from .models import Project, ProjectTeam, Issue, Sprint
+
+from employee.models import Employee
 
 from django.utils.decorators import method_decorator
 from .decorators import delete_project, \
@@ -161,6 +163,8 @@ class SprintView(DetailView):
             issues_from_this_sprint.filter(status="in progress")
         context['resolved_issues'] = \
             issues_from_this_sprint.filter(status="resolved")
+        context['closed_issues'] = issues_from_this_sprint.filter(
+            status="closed")
         context['project'] = Project.objects.get(id=cur_proj)
         return context
 
@@ -383,6 +387,35 @@ def team_view(request, project_id):
         raise Http404("No team on project")
     return render(request, 'project/team.html', {'team_list': team_list,
                                                  'project': current_project})
+
+
+def change_user_in_team(request, project_id, user_id, team_id):
+    if request.method == 'POST':
+        user = Employee.objects.get(pk=user_id)
+        if 'add' in request.POST:
+            team = get_object_or_404(ProjectTeam, pk=team_id)
+            team.employees.add(user)
+        if 'remove' in request.POST:
+            team = get_object_or_404(ProjectTeam, pk=team_id)
+            team.employees.remove(user)
+        return redirect('project:team', project_id)
+    return redirect('project:team', project_id)
+
+
+def team_create(request, project_id):
+    project = get_object_or_404(Project, pk=project_id)
+    if request.method == "POST":
+        form = CreateTeamForm(request.POST)
+        if form.is_valid():
+            new_team = form.save(commit=False)
+            new_team.project = project
+            new_team.save()
+            new_team.employees.add(request.user.id)
+            return redirect('project:team', project_id)
+    else:
+        form = CreateTeamForm()
+    return render(request, 'project/team_create.html', {'form': form,
+                                                        'project': project})
 
 
 """

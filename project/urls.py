@@ -49,6 +49,10 @@ urlpatterns = [
 
     # team
     url(r'^(?P<project_id>\d+)/team/$', views.team_view, name='team'),
+    url(r'^(?P<project_id>\d+)/team/create/$', views.team_create,
+        name='team_create'),
+    url(r'^(?P<project_id>\d+)/(?P<user_id>\d+)/(?P<team_id>\d+)/change/$',
+        views.change_user_in_team, name='change_user_in_team'),
 
     # processing AJAX
     url(r'^issue_order/$', views.issue_order, name='issue_order'),

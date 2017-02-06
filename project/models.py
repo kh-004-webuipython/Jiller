@@ -11,6 +11,8 @@ from django.core.validators import MaxValueValidator
 from django.contrib.auth.models import Group
 from sorl.thumbnail.shortcuts import get_thumbnail
 
+from employee.models import Employee
+
 
 class ProjectModelManager(models.Manager):
     def get_user_projects(self, user):
@@ -181,3 +183,4 @@ class ProjectTeam(models.Model):
 
     def __str__(self):
         return self.title
+
