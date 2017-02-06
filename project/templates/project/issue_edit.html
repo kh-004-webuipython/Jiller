@@ -57,7 +57,8 @@
       <div class="col-sm-offset-3 col-sm-9">
         <button type="submit" class="btn btn-success">Submit</button>
         <button class="btn ">Cancel</button>
-        {% if request.user.id == issue.author.id%}
+        {#or request.user.group.name == 'pm'#}
+        {% if request.user.id == issue.author.id or request.user.is_superuser == True %}
           <a class="btn btn-danger"
              href="{% url 'project:issue_delete' project.id issue.id %}">
             Delete </a>
