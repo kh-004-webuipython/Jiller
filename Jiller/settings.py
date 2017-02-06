@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     'sorl.thumbnail',
     'django_nose',
     'waffle',
+    'simple_email_confirmation',
 ]
 
 MIDDLEWARE_CLASSES = (
@@ -149,6 +150,8 @@ LOGIN_URL = 'general:login'
 LOGIN_EXEMPT_URLS = (
  r'^login/$',
  r'^registration/$',
+ r'^confirmation/(?P<username>[a-zA-Z0-9]+)/(?P<key>[a-zA-Z0-9]+)/$',
+ r'^sender/(?P<username>[a-zA-Z0-9]+)/$'
 )
 
 
