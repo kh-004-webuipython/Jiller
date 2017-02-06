@@ -50,7 +50,6 @@
           <th>Author</th>
           <th>Title</th>
           <th>Status</th>
-          <th>Priority</th>
           <th>Estimation</th>
           {% flag "edit_issue" %}
             <th></th>{% endflag %}
@@ -63,7 +62,6 @@
             <td><a href="{% url 'project:issue_detail' project.id issue.id %}">
               {{ issue.title }}</a></td>
             <td>{{ issue.status }}</td>
-            <td>{{ issue.order }}</td>
             <td>{{ issue.estimation }}</td>
             {% flag "edit_issue" %}
               <td><a href="{% url 'project:issue_edit' project.id issue.id %}">
