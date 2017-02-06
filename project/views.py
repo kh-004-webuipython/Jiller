@@ -237,7 +237,7 @@ class SprintCreate(CreateView):
         issue = form.cleaned_data['issue']
         issue.update(sprint=sprint)
         self.object = sprint
-        return redirect(self.get_success_url())
+        return redirect(reverse('project:sprint_active', args=(self.object.project.id, )))
 
     def get_context_data(self, **kwargs):
         project = Project.objects.get(id=self.kwargs['project_id'])
