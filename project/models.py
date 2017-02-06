@@ -16,8 +16,7 @@ class ProjectModelManager(models.Manager):
     def get_user_projects(self, user):
         user_projects = super(ProjectModelManager, self).get_queryset().filter(
             is_active=True)
-        group = Group.objects.get(name='scrum')
-        if group in user.groups.all():
+        if user.is_superuser:
             return user_projects
         else:
             return user_projects.filter(

@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load i18n %}
+
+{% block title %}Delete project{% endblock %}
+{% block breadcrumbs %}
+  {{ block.super }}
+{#  <li>#}
+{#    <a href="{% url 'project:list' %}">Projects</a>#}
+{#  </li>#}
+{#  <li>#}
+{#    <a href="{% url 'project:detail' project.id %}">{{ project.title }}</a>#}
+{#  </li>#}
+{#  {% if issue.sprint %}#}
+{##}
+{#    <li>#}
+{#      <a href="{% url 'project:sprint_active' project.id %}">{{ issue.sprint.title }}</a>#}
+{#    </li>#}
+{#  {% else %}#}
+{#    <li>#}
+{#      <a href="{% url 'project:backlog' project.id %}">Backlog</a>#}
+{#    </li>#}
+{#  {% endif %}#}
+{#  <li>#}
+{#    <a href="{% url 'project:issue_detail' project.id issue.id %}">{{ issue.title }}</a>#}
+{#  </li>#}
+{#  <li>#}
+{#    <span>{% trans 'Delete' %}</span>#}
+{#  </li>#}
+{% endblock %}
+{% block content %}
+
+  {% include 'project/project_navbar.html' with sprint_detail=True %}
+
+  <form role="form" action="" class="form-horizontal" method="post">
+    <div class="col-sm-12 ">
+      <p class="text-danger text-left">Are you sure you want to delete issue
+        "{{ object }}"?</p>
+    </div>
+
+    {% csrf_token %}
+    <div class="col-sm-6">
+      <button type="submit" class="btn btn-danger center-block">Yes</button>
+      <a class="btn btn-delete"
+         href="{% url 'project:issue_detail' project.id issue.id %}"> No </a>
+    </div>
+
+  </form>
+{% endblock %}
