@@ -1,30 +1,15 @@
 $(function() {
-    function getCookie(name) {
-        var cookieValue = null;
+    $('#sortable td').each(function(){
+        $(this).css('width', $(this).outerWidth() +'px');
+    });
 
-        if (document.cookie && document.cookie != '') {
-            var cookies = document.cookie.split(';');
-            for (var i = 0; i < cookies.length; i++) {
-                var cookie = jQuery.trim(cookies[i]);
-                // Does this cookie string begin with the name we want?
-                if (cookie.substring(0, name.length + 1) == (name + '=')) {
-                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                    break;
-                }
-            }
-        }
-        return cookieValue;
-    }
+    $('table th').each(function(){
+        $(this).css('width', $(this).outerWidth() +'px');
+    });
 
     var csrftoken = getCookie('csrftoken');
 
-    function csrfSafeMethod(method) {
-        // these HTTP methods do not require CSRF protection
-        return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
-    }
-
     $( "#sortable" ).sortable({
-        items: 'tr.sortable-row',
         containment: "parent",
         delay: 200,
         opacity: 0.6,
@@ -65,7 +50,7 @@ $(function() {
                     var element = $('#error-message');
                     element.empty();
                     element.append('<h2 class="alert alert-warning">' +
-                        'Issue message wasn\'t changed.</h2>');
+                        'Issue priority wasn\'t changed.</h2>');
                 }
             });
         }

@@ -5,6 +5,7 @@ from django.core.exceptions import ValidationError
 from datetime import date, datetime
 
 from django.contrib.auth.models import AbstractUser
+from simple_email_confirmation.models import SimpleEmailConfirmationUserMixin
 from django.utils.translation import ugettext_lazy as _
 from django.db import models
 from django.core.validators import MaxValueValidator
@@ -14,7 +15,7 @@ from django.dispatch import receiver
 
 
 @python_2_unicode_compatible
-class Employee(AbstractUser):
+class Employee(SimpleEmailConfirmationUserMixin, AbstractUser):
     date_birth = models.DateField(verbose_name=_('Date birth'), null=True,
                                   blank=True)
     photo = models.ImageField(upload_to='avatars/', null=True, blank=True)

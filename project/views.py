@@ -353,10 +353,12 @@ def issue_order(request):
 
         if data:
             for key in keys:
-                issue = Issue.objects.get(id=int(key))
-                if issue:
-                    issue.order = int(data[key])
-                    issue.save()
+                try:
+                    issue = Issue.objects.get(id=int(key))
+                except Issue.DoesNotExist:
+                    raise Http404("Issue does not exist")
+                issue.order = int(data[key])
+                issue.save()
         return HttpResponse()
     else:
         return HttpResponseRedirect(reverse('project:list'))
