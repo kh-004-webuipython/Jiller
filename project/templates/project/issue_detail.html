@@ -138,76 +138,77 @@
     </div>
   </div>
   <div class="col-sm-4">
-    {% if root_issue %}
-      <div class="row">
-        <div class="col-sm-12">
-          <div class="panel panel-primary">
-            <div class="panel-heading">
-              <h3 class="panel-title">Parent issue</h3>
-            </div>
-            <div class="panel-body">
-              <table class="table">
-                <thead>
+  {% if root_issue %}
+    <div class="row">
+    <div class="col-sm-12">
+    <div class="widget-box widget-color-blue2">
+      <div class="widget-header">
+        <h4 class="widget-title bigger lighter">Parent issue</h4>
+      </div>
+      <div class="widget-body">
+        <div class="widget-main no-padding">
+          <table class="table table-striped table-bordered table-hover">
+            <thead class="thin-border-bottom">
+            <tr>
+              <th>#</th>
+              <th>Title</th>
+              <th>Status</th>
+              <th>Estimation</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+              <td>1</td>
+              <td>
+                <a href="{% url 'project:issue_detail' project.id root_issue.id %}">
+                  {{ root_issue.title }}</a>
+              </td>
+              <td>{{ root_issue.status }}</td>
+              <td>{{ root_issue.estimation }}</td>
+            </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  {% endif %}
+{% if child_issues %}
+  <div class="row">
+    <div class="col-sm-12">
+      <div class="widget-box widget-color-blue2">
+        <div class="widget-header">
+          <h4 class="widget-title bigger lighter">Child Issues</h4>
+        </div>
+        <div class="widget-body">
+          <div class="widget-main no-padding">
+            <table class="table table-striped table-bordered table-hover">
+              <thead class="thin-border-bottom">
+              <tr>
+                <th>#</th>
+                <th>Title</th>
+                <th>Status</th>
+                <th>Estimation</th>
+              </tr>
+              </thead>
+              <tbody>
+              {% for child in child_issues %}
                 <tr>
-                  <th>#</th>
-                  <th>Title</th>
-                  <th>Estimation</th>
-                </tr>
-                </thead>
-                <tbody>
-                <tr>
-                  <td>1</td>
+                  <td>{{ forloop.counter }}</td>
                   <td>
-                    <a href="{% url 'project:issue_detail' project.id root_issue.id %}">
-                      {{ root_issue.title }}</a>
+                    <a href="{% url 'project:issue_detail' project.id child.id %}">{{ child.title }} </a>
                   </td>
-                  <td>{{ root_issue.estimation }}</td>
+                  <td>{{ child.status }}</td>
+                  <td>{{ child.estimation }}</td>
                 </tr>
-                </tbody>
-              </table>
-              {#                                    <a href="{% url 'project:issue_detail' project.id root_issue.id %}">#}
-              {#                                        <h4>{{ root_issue.title }}</h4></a>#}
-            </div>
+              {% endfor %}
+              </tbody>
+            </table>
           </div>
         </div>
       </div>
-    {% endif %}
-    {% if child_issues %}
-      <div class="row">
-        <div class="col-sm-12">
-          <div class="panel panel-primary">
-            <div class="panel-heading">
-              <h3 class="panel-title">Child Issues</h3>
-            </div>
-            <div class="panel-body">
-              <table class="table">
-                <thead>
-                <tr>
-                  <th>#</th>
-                  <th>Title</th>
-                  <th>Status</th>
-                  <th>Estimation</th>
-                </tr>
-                </thead>
-                <tbody>
-                {% for child in child_issues %}
-                  <tr>
-                    <td>{{ forloop.counter }}</td>
-                    <td>
-                      <a href="{% url 'project:issue_detail' project.id child.id %}">{{ child.title }} </a>
-                    </td>
-                    <td>{{ child.status }}</td>
-                    <td>{{ child.estimation }}</td>
-                  </tr>
-                {% endfor %}
-                </tbody>
-              </table>
-
-            </div>
-          </div>
-        </div>
-      </div>
-    {% endif %}
+    </div>
   </div>
+{% endif %}
+</div>
 {% endblock %}
 
