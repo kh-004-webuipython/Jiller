@@ -113,8 +113,8 @@ def team_view(request, project_id):
                                                groups__name='project manager')
 
 
-    members = ProjectTeam.objects.filter(project_id=current_project)
-    return render(request, 'project/team.html', {'teams': members,
+    teams = ProjectTeam.objects.filter(project_id=current_project)
+    return render(request, 'project/team.html', {'teams': teams,
                                                  'pm': project_managers,
                                                  'project': current_project,
                                                  'user_list': user_list})

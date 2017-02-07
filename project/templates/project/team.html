@@ -20,11 +20,12 @@
 {% endblock %}
 
 {% block content %}
-{#    TODO remeber to add user to team #}
-  {% flag 'create_team' %}
+  {% if not teams %}
+    {% flag 'create_team' %}
     <a class="btn btn-info pull-right"
        href="{% url 'project:team_create' project.id %}">Create new team</a>
   {% endflag %}
+  {% endif %}
   {% include 'project/project_navbar.html' with team=True %}
 
   {% if pm %}
@@ -59,6 +60,7 @@
     {% for team in teams %}
       {% for employee in team.employees.all %}
         {# do not render PMs in teams #}
+        {% if employee not in pm %}
           <tr class="text-center">
             <td class="col-lg-4">
               <strong><a
@@ -81,6 +83,7 @@
             </form>
             </td>
           </tr>
+        {% endif %}
       {% endfor %}
       {% flag 'update_team' %}
 

@@ -18,8 +18,10 @@
 {% endblock %}
 
 {% block content %}
+  {% flag 'create_sprint' %}
       <a href="{% url 'project:sprint_create' project.id %}"
        class="btn btn-primary pull-right">Create new sprint</a>
+  {% endflag %}
   {% include 'project/project_navbar.html' with sprint_detail=True %}
 
 
@@ -71,7 +73,7 @@
                         method="post">
                     {% csrf_token %}
                     <button type="submit" name="right"><span
-                        class="glyphicon glyphicon-circle-arrow-right"></span>
+                        class="glyphicon glyphicon-circle-arrow-right team-event"></span>
                     </button>
                   </form>
                 {% endflag %}
