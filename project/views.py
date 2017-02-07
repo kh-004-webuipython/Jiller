@@ -1,5 +1,6 @@
 import datetime
 
+from django.db.models import Q
 from django.http import HttpResponseRedirect, Http404, HttpResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
@@ -10,6 +11,8 @@ from project.forms import IssueCommentCreateForm
 from .forms import ProjectForm, SprintCreateForm, CreateIssueForm, \
     EditIssueForm, CreateTeamForm
 from .models import Project, ProjectTeam, Issue, Sprint
+
+from employee.models import Employee
 
 from django.utils.decorators import method_decorator
 from .decorators import delete_project, \
@@ -33,7 +36,10 @@ class ProjectListView(SingleTableView):
     }
 
     def get_queryset(self):
-        return Project.objects.filter(is_active=True).order_by('-start_date')
+        projects = Project.objects.get_user_projects(
+            self.request.user).order_by(
+            '-start_date')
+        return projects
 
 
 def sprints_list(request, project_id):
@@ -44,10 +50,20 @@ def sprints_list(request, project_id):
     sprints = Sprint.objects.filter(project=project_id) \
         .exclude(status=Sprint.ACTIVE)
 
-    table = SprintsListTable(sprints)
-    RequestConfig(request, paginate={'per_page': 10}).configure(table)
     return render(request, 'project/sprints_list.html', {'project': project,
                                                          'sprints': sprints})
+
+
+def backlog(request, project_id):
+    try:
+        project = Project.objects.get(pk=project_id)
+    except Project.DoesNotExist:
+        raise Http404("Project does not exist")
+    issues = Issue.objects.filter(project=project_id) \
+        .filter(sprint__isnull=True).filter(~Q(status = 'deleted'))
+
+    return render(request, 'project/backlog.html', {'project': project,
+                                                    'issues': issues})
 
 
 @waffle_flag('create_issue', 'project:list')
@@ -162,6 +178,32 @@ def issue_detail_view(request, project_id, issue_id):
     return render(request, 'project/issue_detail.html', context)
 
 
+class IssueDeleteView(DeleteView):
+    model = Issue
+    query_pk_and_slug = True
+    pk_url_kwarg = 'issue_id'
+
+    def get_success_url(self):
+        return reverse('project:backlog',
+                       kwargs={'project_id': self.object.project_id})
+
+    def get_context_data(self, **kwargs):
+        context = super(IssueDeleteView, self).get_context_data(**kwargs)
+        currrent_project = self.kwargs['project_id']
+        current_issue = self.kwargs['issue_id']
+        context['project'] = Project.objects.get(id=currrent_project)
+        context['issue'] = Issue.objects.get(id=current_issue)
+        return context
+
+    def delete(self, request, *args, **kwargs):
+        project = Project.objects.get(id=kwargs['project_id'])
+        issue = Issue.objects.get(id=kwargs['issue_id'])
+        issue.status = 'deleted';
+        issue.save()
+        return HttpResponseRedirect(reverse('project:backlog',
+                                            kwargs={'project_id': project.id}))
+
+
 class SprintView(DetailView):
     model = Sprint
     template_name = 'project/sprint_detail.html'
@@ -271,7 +313,8 @@ class SprintCreate(CreateView):
         issue = form.cleaned_data['issue']
         issue.update(sprint=sprint)
         self.object = sprint
-        return redirect(reverse('project:sprint_active', args=(self.object.project.id, )))
+        return redirect(
+            reverse('project:sprint_active', args=(self.object.project.id,)))
 
     def get_context_data(self, **kwargs):
         project = Project.objects.get(id=self.kwargs['project_id'])

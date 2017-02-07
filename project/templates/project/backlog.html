@@ -6,11 +6,11 @@
 
 
 {% block styles %}
-{{ block.super }}
+  {{ block.super }}
   {% flag "prioritize_issue" %}
 
-  <link rel="stylesheet" type="text/css"
-        href="{% static 'css/jquery-ui.css' %}"/>
+    <link rel="stylesheet" type="text/css"
+          href="{% static 'css/jquery-ui.css' %}"/>
   {% endflag %}
 {% endblock %}
 
@@ -30,16 +30,16 @@
 
 {% block content %}
   {% include 'project/project_navbar.html' with backlog=True %}
-  <h2 class="inline">Backlog | Project - {{ project.title }}</h2>
+  <h2 class="inline">Backlog </h2>
 
   {% flag "create_issue" %}
-  <a href="{% url 'project:issue_create' project.id %}"
-     class="btn btn-primary pull-right"
-     role="button">Create issue</a>
+    <a href="{% url 'project:issue_create' project.id %}"
+       class="btn btn-primary pull-right"
+       role="button">Create issue</a>
   {% endflag %}
 
   {% flag "prioritize_issue" %}
-  <div id="error-message"></div>
+    <div id="error-message"></div>
   {% endflag %}
 
 {% if issues %}
@@ -47,24 +47,26 @@
       <table class="table table-hover">
         <thead>
         <tr>
-          <th>Id</th>
+
           <th>Author</th>
           <th>Title</th>
           <th>Status</th>
-          {% flag "edit_issue" %}<th></th>{% endflag %}
+          <th>Estimation</th>
+          {% flag "edit_issue" %}
+            <th></th>{% endflag %}
         </tr>
         </thead>
         <tbody id="sortable">
         {% for issue in issues|dictsort:'order' %}
           <tr data-id="{{ issue.id }}" data-order="{{ issue.order }}">
-            <td>{{ issue.id }}</td>
             <td>{{ issue.author }}</td>
             <td><a href="{% url 'project:issue_detail' project.id issue.id %}">
               {{ issue.title }}</a></td>
             <td>{{ issue.status }}</td>
+            <td>{{ issue.estimation }}</td>
             {% flag "edit_issue" %}
-            <td><a href="{% url 'project:issue_edit' project.id issue.id %}">
-              <span class="glyphicon glyphicon-pencil"></span></a></td>
+              <td><a href="{% url 'project:issue_edit' project.id issue.id %}">
+                <span class="glyphicon glyphicon-pencil"></span></a></td>
             {% endflag %}
           </tr>
         {% endfor %}
@@ -76,10 +78,10 @@
   {% endif %}
 
   {% block extrascripts %}
-      {% flag "prioritize_issue" %}
-        <script src="{% static 'js/jquery-ui.min.js' %}"></script>
-        <script src="{% static 'js/main.js' %}"></script>
-        <script src="{% static 'project/js/prioritize_issue.js' %}"></script>
-      {% endflag %}
+    {% flag "prioritize_issue" %}
+      <script src="{% static 'js/jquery-ui.min.js' %}"></script>
+      <script src="{% static 'js/main.js' %}"></script>
+      <script src="{% static 'project/js/prioritize_issue.js' %}"></script>
+    {% endflag %}
   {% endblock %}
 {% endblock %}
