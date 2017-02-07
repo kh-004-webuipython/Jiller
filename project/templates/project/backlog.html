@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load render_table from django_tables2 %}
 {% load static %}
 {% load waffle_tags %}
 {% load i18n %}
@@ -39,7 +40,7 @@
     <div id="error-message"></div>
   {% endflag %}
 
-  {% if issues %}
+{% if issues %}
     <div class="table-responsive">
       <table class="table  table-bordered table-hover">
         <thead>

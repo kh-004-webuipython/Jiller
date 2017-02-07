@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load render_table from django_tables2 %}
 {% load i18n %}
 
 {% block title %}Sprints List{% endblock %}
@@ -18,52 +19,8 @@
 
 {% block content %}
   {% include 'project/project_navbar.html' with sprint_list=True%}
+  {% if table %}
+    {% render_table table "base_table.html" %}
 
-  {% if sprints %}
-  <div class="table-responsive">
-  <table class="table  table-bordered table-hover">
-    <thead>
-      <tr>
-        <th>Id</th>
-        <th>Title</th>
-        <th>Status</th>
-        <th>Start date</th>
-        <th>End date</th>
-        <th>Order</th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for sprint in sprints %}
-      <tr>
-        <td>{{ sprint.id }}</td>
-        <td><a href="{% url 'project:sprint_detail' project.id sprint.id %}">
-            {{ sprint.title }}</a></td>
-        <td>
-        {% if sprint.status %} {{ sprint.status }}
-        {% else %}-
-        {% endif %}
-        </td>
-        <td>
-        {% if sprint.start_date %} {{ sprint.start_date }}
-        {% else %}-
-        {% endif %}
-        </td>
-        <td>
-        {% if sprint.end_date %} {{ sprint.end_date }}
-        {% else %}-
-        {% endif %}
-        </td>
-        <td>
-        {% if sprint.order %} {{ sprint.order }}
-        {% else %}-
-        {% endif %}
-        </td>
-      </tr>
-      {% endfor %}
-    </tbody>
-  </table>
-  </div>
-  {% else %}
-    <h3>No sprints.</h3>
   {% endif %}
 {% endblock %}

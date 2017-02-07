@@ -205,7 +205,7 @@
     "pk": 1,
     "fields": {
       "password": "pbkdf2_sha256$30000$80UGAYiTkmUH$rgg/i5Ya+Tpup6k1t5vQMjrBML2uTYY0AirJQYx0Z44=",
-      "last_login": "2017-01-30T16:29:12.707Z",
+      "last_login": null,
       "is_superuser": true,
       "username": "admin",
       "first_name": "",
@@ -213,7 +213,7 @@
       "email": "colonialist@ukr.net",
       "is_staff": true,
       "is_active": true,
-      "date_joined": "2017-01-27T19:40:41Z",
+      "date_joined": "2017-01-27T20:53:28Z",
       "date_birth": null,
       "photo": "",
       "groups": [
@@ -249,7 +249,7 @@
     "pk": 3,
     "fields": {
       "password": "pbkdf2_sha256$30000$80UGAYiTkmUH$rgg/i5Ya+Tpup6k1t5vQMjrBML2uTYY0AirJQYx0Z44=",
-      "last_login": "2017-01-30T16:26:15.082Z",
+      "last_login": null,
       "is_superuser": false,
       "username": "scrum_master",
       "first_name": "",
@@ -287,6 +287,53 @@
       ],
       "user_permissions": []
     }
+  },
+
+
+
+  {
+  "model": "simple_email_confirmation.emailaddress",
+  "pk": 1,
+  "fields": {
+    "user": 1,
+    "email": "colonialist@ukr.net",
+    "key": "wJeR0mkBsGzF",
+    "set_at": "2017-02-05T13:31:53.991Z",
+    "confirmed_at": "2017-02-05T13:32:43.555Z"
   }
+},
+{
+  "model": "simple_email_confirmation.emailaddress",
+  "pk": 2,
+  "fields": {
+    "user": 2,
+    "email": "colonialist@ukr.net",
+    "key": "cBMhN8GtPoVX",
+    "set_at": "2017-02-05T13:31:54.014Z",
+    "confirmed_at": "2017-02-05T13:32:43.555Z"
+  }
+},
+{
+  "model": "simple_email_confirmation.emailaddress",
+  "pk": 3,
+  "fields": {
+    "user": 3,
+    "email": "colonialist@ukr.net",
+    "key": "vbIVqd6w4xcP",
+    "set_at": "2017-02-05T13:31:54.030Z",
+    "confirmed_at": "2017-02-05T13:32:43.555Z"
+  }
+},
+{
+  "model": "simple_email_confirmation.emailaddress",
+  "pk": 4,
+  "fields": {
+    "user": 4,
+    "email": "colonialist@ukr.net",
+    "key": "JC3WcA9C918S",
+    "set_at": "2017-02-05T13:31:54.051Z",
+    "confirmed_at": "2017-02-05T13:32:43.555Z"
+  }
+}
 ]
 
