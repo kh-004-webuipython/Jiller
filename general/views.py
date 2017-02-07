@@ -51,7 +51,8 @@ def registration_form_view(request):
             employee = Employee.objects.create_user(username, email, password,
                                                     last_name=last_name,
                                                     first_name=first_name)
-            employee.groups.add(Group.objects.get(name=role))
+            if role != RegistrationForm.PROJECT_MANAGER:
+                employee.groups.add(Group.objects.get(name=role))
             return HttpResponseRedirect(reverse('general:sender',
                                                 kwargs={'username': username}))
     else:
