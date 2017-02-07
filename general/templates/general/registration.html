@@ -1,55 +1,54 @@
+{% extends 'base_auth.html' %}
 {% load static %}
 
-{% block styles %}
-<link rel="stylesheet" href='{% static 'css/bootstrap.css' %}'
-type='text/css'/>
-<link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}"/>
-{% endblock %}
+{% block title %}Registration{% endblock %}
 
 {% block content %}
-
-<div class="container">
-    <div class="row">
-        <div class="col-sm-6 col-sm-offset-3">
-            <div class="panel panel-primary">
-                <div class="panel-heading">
-                    <h2 class="panel-title">Registration Form</h2>
-                </div>
-                <div class="panel-body">
-
-                    <form action="{% url 'general:registration'%}" method="post">
-                        {% csrf_token %}
-                        {% for field in form %}
-                        <div class="form-group row {% if field.errors %} has-error {% endif %}">
-                            <label class="col-sm-4 control-label no-padding-right">{{ field.label_tag }}</label>
-                            <div class="col-sm-8">
-                                {{ field }}
-                                <div class="help-block col-xs-12 col-sm-reset inline">
-                                    {% if field.errors %}
-                                    <ul>
-                                        {% for error in field.errors %}
-                                        <li>
-                                            {{ error }}
-                                        </li>
-                                        {% endfor %}
-                                        {% endif %}
-                                    </ul>
-                                </div>
-                            </div>
-                        </div>
-                        {% endfor %}
-                        <div class="row">
-                            <div class="col-md-4">
-                                <a href="{% url 'general:login' %}" class="center-block"><b><</b> Back</a>
-                            </div>
-                            <div class="col-md-3">
-                                <input type="submit" class="btn btn-md btn-primary btn-block" value="Register">
-                            </div>
-                        </div>
-                    </form>
-                </div>
+  <div class="signup-box visible widget-box no-border">
+    <div class="widget-body">
+      <div class="widget-main">
+        <h4 class="header text-center blue lighter bigger">
+          New User Registration
+        </h4>
+        <div class="space-6"></div>
+        <form action="{% url 'general:registration' %}" method="post">{% csrf_token %}
+          <fieldset>
+            {% for field in form %}
+                <label class="block clearfix">
+              <span class="block input-icon {% if field.errors %} has-error {% endif %} input-icon-right">
+                {{ field }}
+              </span>
+                </label>
+                {% if field.errors %}
+                  <ul>
+                  {% for error in field.errors %}
+                    <li class="red">
+                      {{ error }}
+                    </li>
+                  {% endfor %}
+                {% endif %}
+              </ul>
+            {% endfor %}
+            <div class="space-10"></div>
+            <div class="clearfix">
+              <a href="{% url 'general:registration' %}" class="width-30 pull-left btn btn-sm">
+                <i class="ace-icon fa fa-refresh"></i>
+                <span class="bigger-110">Reset</span>
+              </a>
+              <button type="submit" class="width-65 pull-right btn btn-sm btn-success">
+                <span class="bigger-110">Register</span>
+                <i class="ace-icon fa fa-arrow-right icon-on-right"></i>
+              </button>
             </div>
-        </div>
-
-
-        {% endblock %}
+          </fieldset>
+        </form>
+      </div>
+      <div class="toolbar center">
+        <a href="{% url 'general:login' %}" class="back-to-login-link">
+          <i class="ace-icon fa fa-arrow-left"></i>
+          Back to login
+        </a>
+      </div>
+    </div><!-- /.widget-body -->
+  </div>
+{% endblock %}
