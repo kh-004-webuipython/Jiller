@@ -19,8 +19,7 @@ from .tables import ProjectTable, SprintsListTable
 from django_tables2 import SingleTableView, RequestConfig
 import json
 from employee.models import Employee
-from employee.tables import EmployeeTable
-
+from employee.tables import ProjectTeamEmployeeTable, ProjectTeamEmployeeAddTable
 
 
 class ProjectListView(SingleTableView):
@@ -95,19 +94,32 @@ def team_view(request, project_id):
     except ProjectTeam.DoesNotExist:
         raise Http404("No team on project")
 
-    employee_list = []
-    for team in teams_list:
-        if team.employees:
-            for employee in team.employees.all():
-                employee_list.append(employee)
-
-    table = EmployeeTable(employee_list)
-    RequestConfig(request, paginate={'per_page': 10}).configure(table)
-    return render(request, 'project/team.html', {'table': table,
-                                                 'project': current_project})
     return render(request, 'project/team.html', {'team_list': team_list,
                                                  'project': current_project,
                                                  'user_list': user_list})
+
+# def team_view(request, project_id):
+#     current_project = get_object_or_404(Project, pk=project_id)
+#     # hide PMs on "global" team board
+#     user_list = Employee.objects.filter(pm_role_access=False)
+#     table_add = ProjectTeamEmployeeAddTable(user_list)
+#     try:
+#         teams_list = ProjectTeam.objects.filter(project=current_project)
+#     except ProjectTeam.DoesNotExist:
+#         raise Http404("No team on project")
+#
+#     employee_list = []
+#     for team in teams_list:
+#         if team.employees:
+#             for employee in team.employees.all():
+#                 employee_list.append(employee)
+#
+#     table_cur = ProjectTeamEmployeeTable(employee_list)
+#     RequestConfig(request, paginate={'per_page': (9 - len(employee_list))}).configure(table_add)
+#     return render(request, 'project/team.html', {'table_cur': table_cur,
+#                                                  'table_add': table_add,
+#                                                  'project': current_project,
+#                                                  'team': teams_list})
 
 
 def backlog(request, project_id):

@@ -25,7 +25,18 @@
         {% block table.tbody.row %}
         <tr {{ row.attrs.as_html }}>
             {% for column, cell in row.items %}
-                <td {{ column.attrs.td.as_html }}>{% if column.localize == None %}{{ cell }}{% else %}{% if column.localize %}{{ cell|localize }}{% else %}{{ cell|unlocalize }}{% endif %}{% endif %}</td>
+                <td {{ column.attrs.td.as_html }}>
+                    {% if column.name == 'remove'%}
+                    <p>{{ record.field[''] }}</p>
+                    {% else %}
+                        {% if column.localize == None %}{{ cell }}
+                        {% else %}
+                            {% if column.localize %}{{ cell|localize }}
+                            {% else %}{{ cell|unlocalize }}
+                            {% endif %}
+                        {% endif %}
+                    {% endif %}
+                </td>
             {% endfor %}
         </tr>
         {% endblock table.tbody.row %}
