@@ -7,7 +7,7 @@ from django.urls import reverse
 from employee.models import Employee
 from project.forms import ProjectForm
 from .models import Project, Issue, Sprint, ProjectTeam
-from .forms import EditIssueForm, CreateIssueForm, IssueForm
+from .forms import IssueForm
 from django.shortcuts import get_object_or_404
 from django.utils.translation import ugettext_lazy as _
 
@@ -15,7 +15,7 @@ from django.utils.translation import ugettext_lazy as _
 class LoginRequiredBase(TestCase):
     def __init__(self, *args, **kwargs):
         super(LoginRequiredBase, self).__init__(*args, **kwargs)
-        self.user_role_init = Employee.DEVELOPER
+        # self.user_role_init = Employee.DEVELOPER
 
     def setUp(self):
         self.client = Client()
@@ -24,7 +24,7 @@ class LoginRequiredBase(TestCase):
                                                  'johnpassword',
                                                  first_name='Miss',
                                                  last_name='Mister',
-                                                 role=self.user_role_init,
+                                                 # role=self.user_role_init,
                                                  is_staff=True)
         self.client.login(username='john', password='johnpassword')
         call_command('loaddata', 'project/fixtures/test.json', verbosity=1)
@@ -177,7 +177,7 @@ class BacklogViewTests(LoginRequiredBase):
         project = Project.objects.create(title='title',
                                          start_date=datetime.date(
                                              2017, 12, 14))
-        employee = Employee.objects.create(role=Employee.DEVELOPER)
+        employee = Employee.objects.create()
         Issue.objects.create(project=project,
                              author=employee, title='title')
         response = self.client.get(reverse('project:backlog',
@@ -189,7 +189,7 @@ class BacklogViewTests(LoginRequiredBase):
         project = Project.objects.create(title='title',
                                          start_date=datetime.date(
                                              2017, 12, 14))
-        employee = Employee.objects.create(role=Employee.DEVELOPER)
+        employee = Employee.objects.create()
         team = ProjectTeam.objects.create(project=project, title='title')
         sprint = Sprint.objects.create(title='title', project=project,
                                        team=team)
