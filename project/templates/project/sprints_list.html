@@ -18,11 +18,10 @@
 
 {% block content %}
   {% include 'project/project_navbar.html' with sprint_list=True%}
-  <h2>Sprints list | Project - {{ project.title }}</h2>
 
   {% if sprints %}
   <div class="table-responsive">
-  <table class="table table-hover">
+  <table class="table  table-bordered table-hover">
     <thead>
       <tr>
         <th>Id</th>

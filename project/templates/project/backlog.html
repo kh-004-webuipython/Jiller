@@ -28,14 +28,12 @@
 {% endblock %}
 
 {% block content %}
-  {% include 'project/project_navbar.html' with backlog=True %}
-  <h2 class="inline">Backlog </h2>
-
   {% flag "create_issue" %}
     <a href="{% url 'project:issue_create' project.id %}"
        class="btn btn-primary pull-right"
        role="button">Create issue</a>
   {% endflag %}
+  {% include 'project/project_navbar.html' with backlog=True %}
 
   {% flag "prioritize_issue" %}
     <div id="error-message"></div>
@@ -43,13 +41,14 @@
 
   {% if issues %}
     <div class="table-responsive">
-      <table class="table table-hover">
+      <table class="table  table-bordered table-hover">
         <thead>
         <tr>
-
+          <th>Id</th>
           <th>Author</th>
           <th>Title</th>
           <th>Status</th>
+
           <th>Estimation</th>
           {% flag "edit_issue" %}
             <th></th>{% endflag %}
@@ -58,11 +57,11 @@
         <tbody id="sortable">
         {% for issue in issues|dictsort:'order' %}
           <tr data-id="{{ issue.id }}" data-order="{{ issue.order }}">
+            <td>{{ issue.id }}</td>
             <td>{{ issue.author }}</td>
             <td><a href="{% url 'project:issue_detail' project.id issue.id %}">
               {{ issue.title }}</a></td>
             <td>{{ issue.status }}</td>
-            <td>{{ issue.estimation }}</td>
             {% flag "edit_issue" %}
               <td><a href="{% url 'project:issue_edit' project.id issue.id %}">
                 <span class="glyphicon glyphicon-pencil"></span></a></td>
