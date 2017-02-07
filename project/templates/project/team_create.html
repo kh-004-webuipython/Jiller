@@ -1,35 +1,19 @@
 {% extends 'base.html' %}
 {% load i18n %}
 
-{% block title %}Edit issue{% endblock %}
-
+{% block title %}Create team{% endblock %}
 {% block breadcrumbs %}
   {{ block.super }}
   <li>
-    <a href="{% url 'project:list' %}">Projects</a>
+    <a href="{% url 'project:team' project.id %}">Team</a>
   </li>
   <li>
-    <a href="{% url 'project:detail' project.id %}">{{ project.title }}</a>
-  </li>
-  {% if issue.sprint %}
-
-    <li>
-      <a href="{% url 'project:sprint_active' project.id %}">{{ issue.sprint.title }}</a>
-    </li>
-  {% else %}
-    <li>
-      <a href="{% url 'project:backlog' project.id %}">Backlog</a>
-    </li>
-  {% endif %}
-  <li>
-    <a href="{% url 'project:issue_detail' project.id issue.id %}">{{ issue.title }}</a>
-  </li>
-  <li>
-    <span>{% trans 'Edit' %}</span>
+    <span>{% trans 'Create team' %}</span>
   </li>
 {% endblock %}
+
 {% block content %}
-  {% include 'project/project_navbar.html' with sprint_detail=True %}
+  <h3 class="col-sm-offset-3">Create team</h3>
   <form role="form" action="" class="form-horizontal" method="post">
     {% for field in form %}
       <div class="form-group {% if field.errors %} has-error {% endif %}">
@@ -55,12 +39,9 @@
     <div class="clearfix">
       <div class="col-sm-offset-3 col-sm-9">
         <button type="submit" class="btn btn-success">Submit</button>
-        <button class="btn ">Cancel</button>
+        <a class="btn btn-base"
+           href="{% url 'project:team' project.id %}"> Cancel </a>
       </div>
     </div>
   </form>
 {% endblock %}
-
-
-
-

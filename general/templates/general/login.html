@@ -35,7 +35,8 @@ type='text/css'/>
                         <div class="col-md-12"></div>
                         {% for message in messages %}
                         <div class="col-md-12">
-                            <p><strong>{{ message }}</strong></p>
+                            <p><strong {% if message.tags %} class="{{ message.tags }}"
+                            {% endif %}>{{ message }}</strong></p>
                         </div>
                         {% endfor %}
 
