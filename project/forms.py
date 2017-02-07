@@ -29,9 +29,15 @@ class ProjectForm(forms.ModelForm):
 
 
 class IssueForm(forms.ModelForm):
+    def __init__(self, project, *args, **kwargs):
+        super(IssueForm, self).__init__(*args, **kwargs)
+        self.fields['sprint'].queryset = Sprint.objects.filter(
+            project=project.id)
+
     class Meta:
         model = Issue
-        fields = '__all__'
+        fields = ['root', 'sprint', 'employee', 'title', 'description',
+                  'status', 'estimation', 'order']
 
 
 class CreateIssueForm(IssueForm):
@@ -47,6 +53,7 @@ class CreateTeamForm(forms.ModelForm):
     class Meta:
         model = ProjectTeam
         fields = ['title']
+
     def clean_title(self):
         cleaned_data = super(CreateTeamForm, self).clean()
         title = cleaned_data.get('title')
@@ -69,7 +76,7 @@ class SprintCreateForm(forms.ModelForm):
     def clean_status(self):
         if self.cleaned_data[
             'status'] == Sprint.ACTIVE and self.project.sprint_set.filter(
-                status=Sprint.ACTIVE).exists():
+            status=Sprint.ACTIVE).exists():
             raise forms.ValidationError(
                 "You are already have an active sprint."
             )
@@ -97,12 +104,7 @@ class IssueCommentCreateForm(forms.ModelForm):
             'text': forms.TextInput(attrs={'class': 'form-control'})
         }
 
-
 # class TeamForm(forms.ModelForm):
 #     class Meta:
 #         model = ProjectTeam
 #         fields = '__all__'
-
-
-class EditIssueForm(IssueForm):
-    pass

@@ -7,9 +7,8 @@ from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.views.generic import DetailView, ListView
 from django.urls import reverse
 
-from project.forms import IssueCommentCreateForm
-from .forms import ProjectForm, SprintCreateForm, CreateIssueForm, \
-    EditIssueForm, CreateTeamForm
+from project.forms import IssueCommentCreateForm, IssueForm, CreateIssueForm
+from .forms import ProjectForm, SprintCreateForm, CreateTeamForm
 from .models import Project, ProjectTeam, Issue, Sprint
 
 from employee.models import Employee
@@ -18,12 +17,22 @@ from django.utils.decorators import method_decorator
 from .decorators import delete_project, \
     edit_project_detail, create_project, create_sprint
 from waffle.decorators import waffle_flag
+from .tables import ProjectTable, SprintsListTable
+from django_tables2 import SingleTableView, RequestConfig
 import json
+from employee.models import Employee
+from employee.tables import ProjectTeamEmployeeTable, ProjectTeamEmployeeAddTable
 
 
-class ProjectListView(ListView):
+class ProjectListView(SingleTableView):
     model = Project
+    table_class = ProjectTable
     template_name = 'project/projects.html'
+    table_pagination = True
+
+    table_pagination = {
+        'per_page': 10
+    }
 
     def get_queryset(self):
         projects = Project.objects.get_user_projects(
@@ -50,7 +59,7 @@ def backlog(request, project_id):
     except Project.DoesNotExist:
         raise Http404("Project does not exist")
     issues = Issue.objects.filter(project=project_id) \
-        .filter(sprint__isnull=True).filter(~Q(status = 'deleted'))
+        .filter(sprint__isnull=True).filter(~Q(status='deleted'))
 
     return render(request, 'project/backlog.html', {'project': project,
                                                     'issues': issues})
@@ -58,17 +67,20 @@ def backlog(request, project_id):
 
 @waffle_flag('create_issue', 'project:list')
 def issue_create_view(request, project_id):
+    current_project = get_object_or_404(Project, pk=project_id)
     if request.method == "POST":
-        form = CreateIssueForm(request.POST)
+        form = CreateIssueForm(project=current_project,data = request.POST)
         if form.is_valid():
             new_issue = form.save(commit=False)
+            new_issue.project = Project.objects.get(id=project_id)
+            new_issue.author = Employee.objects.get(id=request.user.id)
             new_issue.save()
             return redirect('project:backlog', project_id)
     else:
         initial = {'project': project_id, 'author': request.user.id}
         if request.GET.get('root', False):
             initial['root'] = request.GET['root']
-        form = CreateIssueForm(initial=initial)
+        form = CreateIssueForm(project=current_project, initial=initial)
     return render(request, 'project/issue_create.html', {'form': form,
                                                          'project': Project.objects.get(
                                                              pk=project_id)})
@@ -76,18 +88,58 @@ def issue_create_view(request, project_id):
 
 @waffle_flag('edit_issue', 'project:list')
 def issue_edit_view(request, project_id, issue_id):
+    current_project = get_object_or_404(Project, pk=project_id)
     current_issue = get_object_or_404(Issue, pk=issue_id, project=project_id)
     if request.method == "POST":
-        form = EditIssueForm(request.POST, instance=current_issue)
+        form = IssueForm(project=current_project, data=request.POST,
+                         instance=current_issue)
         if form.is_valid():
             current_issue = form.save(commit=False)
             current_issue.save()
             return redirect('project:backlog', project_id)
     else:
-        form = EditIssueForm(instance=current_issue)
+        form = IssueForm(project=current_project, instance=current_issue)
     return render(request, 'project/issue_edit.html',
                   {'form': form, 'project': Project.objects.get(pk=project_id),
                    'issue': Issue.objects.get(pk=issue_id)})
+
+
+def team_view(request, project_id):
+    current_project = get_object_or_404(Project, pk=project_id)
+    # hide PMs on "global" team board
+    user_list = Employee.objects.filter(pm_role_access=False)
+
+    try:
+        team_list = ProjectTeam.objects.filter(project=current_project)
+    except ProjectTeam.DoesNotExist:
+        raise Http404("No team on project")
+
+    return render(request, 'project/team.html', {'team_list': team_list,
+                                                 'project': current_project,
+                                                 'user_list': user_list})
+
+# def team_view(request, project_id):
+#     current_project = get_object_or_404(Project, pk=project_id)
+#     # hide PMs on "global" team board
+#     user_list = Employee.objects.filter(pm_role_access=False)
+#     table_add = ProjectTeamEmployeeAddTable(user_list)
+#     try:
+#         teams_list = ProjectTeam.objects.filter(project=current_project)
+#     except ProjectTeam.DoesNotExist:
+#         raise Http404("No team on project")
+#
+#     employee_list = []
+#     for team in teams_list:
+#         if team.employees:
+#             for employee in team.employees.all():
+#                 employee_list.append(employee)
+#
+#     table_cur = ProjectTeamEmployeeTable(employee_list)
+#     RequestConfig(request, paginate={'per_page': (9 - len(employee_list))}).configure(table_add)
+#     return render(request, 'project/team.html', {'table_cur': table_cur,
+#                                                  'table_add': table_add,
+#                                                  'project': current_project,
+#                                                  'team': teams_list})
 
 
 def issue_detail_view(request, project_id, issue_id):
@@ -379,16 +431,6 @@ def issue_order(request):
         return HttpResponse()
     else:
         return HttpResponseRedirect(reverse('project:list'))
-
-
-def team_view(request, project_id):
-    current_project = get_object_or_404(Project, pk=project_id)
-    try:
-        team_list = ProjectTeam.objects.filter(project=current_project)
-    except ProjectTeam.DoesNotExist:
-        raise Http404("No team on project")
-    return render(request, 'project/team.html', {'team_list': team_list,
-                                                 'project': current_project})
 
 
 def change_user_in_team(request, project_id, user_id, team_id):

@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load render_table from django_tables2 %}
 {% load i18n %}
 {% load static %}
 {% load gravatar %}
@@ -11,6 +12,12 @@
 {% endblock %}
 
 {% block content %}
+    {% if table %}
+      {% render_table table "employee_table.html" %}
+    {% endif %}
+{% endblock %}
+
+<!--{% block content_ %}
   <div class="row">
     <div class="col-xs-12">
       <table id="simple-table" class="table table-bordered table-hover">
@@ -19,14 +26,12 @@
           <th>{% trans 'Details' %}</th>
           <th>{% trans 'Name' %}</th>
           <th>{% trans 'Role' %}</th>
-          <th>{% trans 'Loged' %}</th>
-          <th>{% trans 'Is active' %}</th>
         </tr>
         </thead>
         <tbody>
         {% for employee in employee_list %}
           <tr>
-            <td class="center">
+            <td width="50" class="center">
               <div class="action-buttons">
                 <a href="#" class="green bigger-140 show-details-btn" title="Show Details">
                   <i class="ace-icon fa fa-angle-double-down"></i>
@@ -37,15 +42,7 @@
             <td>
               <a href="{% url 'employee:detail' employee.id %}">{{ employee.get_full_name }}</a>
             </td>
-            <td><span>{{ employee.role }}</span></td>
-            <td><span>123</span></td>
-            <td>
-              {% if employee.is_active %}
-                <i class="ace-icon fa fa-check bigger-110 green"></i>
-              {% else %}
-                <i class="ace-icon fa fa-times bigger-110 red"></i>
-              {% endif %}
-            </td>
+            <td><span>{{ employee.groups.first }}</span></td>
           </tr>
           <tr class="detail-row">
             <td colspan="8">
@@ -55,11 +52,11 @@
                     <div class="text-center">
                       <a href="{% url 'employee:detail' employee.id %}">
                         <img class="thumbnail inline no-margin-bottom"
-                          {% if employee.photo %}
-                           src="{{ employee.get_cropped_photo.url }}"
-                          {% else %}
-                           src="{{ employee.email|gravatar_url:150 }}"
-                          {% endif %}
+                            {% if employee.photo %}
+                             src="{{ employee.get_cropped_photo.url }}"
+                            {% else %}
+                             src="{{ employee.email|gravatar_url:150 }}"
+                            {% endif %}
                         />
                       </a>
                       <br/>
@@ -134,9 +131,9 @@
         {% endfor %}
         </tbody>
       </table>
-    </div><!-- /.span -->
-  </div><!-- /.row -->
-{% endblock %}
+    </div>&lt;!&ndash; /.span &ndash;&gt;
+  </div>&lt;!&ndash; /.row &ndash;&gt;
+{% endblock %}-->
 
 {% block extrascripts %}
 
