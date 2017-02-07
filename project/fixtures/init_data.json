@@ -371,7 +371,7 @@
       "username": "projectmanager",
       "first_name": "ProjectManagerName",
       "last_name": "ProjectManagerLastName",
-      "email": "test@ukr.net",
+      "email": "norfolknorfolks@gmail.com",
       "is_staff": false,
       "is_active": true,
       "date_joined": "2017-01-30T16:45:39.517Z",
@@ -499,8 +499,8 @@
   "pk": 5,
   "fields": {
     "user": 5,
-    "email": "kh004webuipython@gmail.com",
-    "key": "fbt9MfL9KxCa",
+    "email": "norfolknorfolks@gmail.com",
+    "key": "gz974V21elBc",
     "set_at": "2017-02-05T13:31:54.061Z",
     "confirmed_at": "2017-02-05T13:32:43.555Z"
   }
