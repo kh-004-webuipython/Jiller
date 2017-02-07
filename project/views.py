@@ -79,7 +79,7 @@ def issue_create_view(request, project_id):
         if request.GET.get('root', False):
             initial['root'] = request.GET['root']
         form = CreateIssueForm(initial=initial)
-    return render(request, 'project/create_issue.html', {'form': form,
+    return render(request, 'project/issue_create.html', {'form': form,
                                                          'project': Project.objects.get(
                                                              pk=project_id)})
 
@@ -95,7 +95,7 @@ def issue_edit_view(request, project_id, issue_id):
             return redirect('project:backlog', project_id)
     else:
         form = EditIssueForm(instance=current_issue)
-    return render(request, 'project/edit_issue.html',
+    return render(request, 'project/issue_edit.html',
                   {'form': form, 'project': Project.objects.get(pk=project_id),
                    'issue': Issue.objects.get(pk=issue_id)})
 
@@ -136,18 +136,6 @@ def team_view(request, project_id):
 #                                                  'table_add': table_add,
 #                                                  'project': current_project,
 #                                                  'team': teams_list})
-
-
-def backlog(request, project_id):
-    try:
-        project = Project.objects.get(pk=project_id)
-    except Project.DoesNotExist:
-        raise Http404("Project does not exist")
-    issues = Issue.objects.filter(project=project_id) \
-        .filter(sprint__isnull=True)
-
-    return render(request, 'project/backlog.html', {'project': project,
-                                                    'issues': issues})
 
 
 def issue_detail_view(request, project_id, issue_id):
