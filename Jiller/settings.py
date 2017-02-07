@@ -47,6 +47,8 @@ INSTALLED_APPS = [
     'sorl.thumbnail',
     'django_nose',
     'waffle',
+    'simple_email_confirmation',
+    'django_tables2',
 ]
 
 MIDDLEWARE_CLASSES = (
@@ -82,6 +84,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'django.template.context_processors.request',
             ],
         },
     },
@@ -149,6 +152,8 @@ LOGIN_URL = 'general:login'
 LOGIN_EXEMPT_URLS = (
  r'^login/$',
  r'^registration/$',
+ r'^confirmation/(?P<username>[a-zA-Z0-9]+)/(?P<key>[a-zA-Z0-9]+)/$',
+ r'^sender/(?P<username>[a-zA-Z0-9]+)/$'
 )
 
 

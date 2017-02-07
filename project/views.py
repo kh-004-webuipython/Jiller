@@ -1,5 +1,6 @@
 import datetime
 
+from django.db.models import Q
 from django.http import HttpResponseRedirect, Http404, HttpResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
@@ -17,15 +18,28 @@ from django.utils.decorators import method_decorator
 from .decorators import delete_project, \
     edit_project_detail, create_project, create_sprint
 from waffle.decorators import waffle_flag
+from .tables import ProjectTable, SprintsListTable
+from django_tables2 import SingleTableView, RequestConfig
 import json
+from employee.models import Employee
+from employee.tables import ProjectTeamEmployeeTable, ProjectTeamEmployeeAddTable
 
 
-class ProjectListView(ListView):
+class ProjectListView(SingleTableView):
     model = Project
+    table_class = ProjectTable
     template_name = 'project/projects.html'
+    table_pagination = True
+
+    table_pagination = {
+        'per_page': 10
+    }
 
     def get_queryset(self):
-        return Project.objects.filter(is_active=True).order_by('-start_date')
+        projects = Project.objects.get_user_projects(
+            self.request.user).order_by(
+            '-start_date')
+        return projects
 
 
 def sprints_list(request, project_id):
@@ -38,6 +52,18 @@ def sprints_list(request, project_id):
 
     return render(request, 'project/sprints_list.html', {'project': project,
                                                          'sprints': sprints})
+
+
+def backlog(request, project_id):
+    try:
+        project = Project.objects.get(pk=project_id)
+    except Project.DoesNotExist:
+        raise Http404("Project does not exist")
+    issues = Issue.objects.filter(project=project_id) \
+        .filter(sprint__isnull=True).filter(~Q(status = 'deleted'))
+
+    return render(request, 'project/backlog.html', {'project': project,
+                                                    'issues': issues})
 
 
 @waffle_flag('create_issue', 'project:list')
@@ -53,9 +79,9 @@ def issue_create_view(request, project_id):
         if request.GET.get('root', False):
             initial['root'] = request.GET['root']
         form = CreateIssueForm(initial=initial)
-    return render(request, 'project/create_issue.html',
-                  {'form': form,
-                   'project': Project.objects.get(pk=project_id)})
+    return render(request, 'project/issue_create.html', {'form': form,
+                                                         'project': Project.objects.get(
+                                                             pk=project_id)})
 
 
 @waffle_flag('edit_issue', 'project:list')
@@ -69,7 +95,7 @@ def issue_edit_view(request, project_id, issue_id):
             return redirect('project:backlog', project_id)
     else:
         form = EditIssueForm(instance=current_issue)
-    return render(request, 'project/edit_issue.html',
+    return render(request, 'project/issue_edit.html',
                   {'form': form, 'project': Project.objects.get(pk=project_id),
                    'issue': Issue.objects.get(pk=issue_id)})
 
@@ -89,17 +115,28 @@ def team_view(request, project_id):
                                                  'project': current_project,
                                                  'user_list': user_list})
 
-
-def backlog(request, project_id):
-    try:
-        project = Project.objects.get(pk=project_id)
-    except Project.DoesNotExist:
-        raise Http404("Project does not exist")
-    issues = Issue.objects.filter(project=project_id) \
-        .filter(sprint__isnull=True)
-
-    return render(request, 'project/backlog.html', {'project': project,
-                                                    'issues': issues})
+# def team_view(request, project_id):
+#     current_project = get_object_or_404(Project, pk=project_id)
+#     # hide PMs on "global" team board
+#     user_list = Employee.objects.filter(pm_role_access=False)
+#     table_add = ProjectTeamEmployeeAddTable(user_list)
+#     try:
+#         teams_list = ProjectTeam.objects.filter(project=current_project)
+#     except ProjectTeam.DoesNotExist:
+#         raise Http404("No team on project")
+#
+#     employee_list = []
+#     for team in teams_list:
+#         if team.employees:
+#             for employee in team.employees.all():
+#                 employee_list.append(employee)
+#
+#     table_cur = ProjectTeamEmployeeTable(employee_list)
+#     RequestConfig(request, paginate={'per_page': (9 - len(employee_list))}).configure(table_add)
+#     return render(request, 'project/team.html', {'table_cur': table_cur,
+#                                                  'table_add': table_add,
+#                                                  'project': current_project,
+#                                                  'team': teams_list})
 
 
 def issue_detail_view(request, project_id, issue_id):
@@ -128,6 +165,32 @@ def issue_detail_view(request, project_id, issue_id):
         context['child_issues'] = child_issues
     context['form'] = IssueCommentCreateForm()
     return render(request, 'project/issue_detail.html', context)
+
+
+class IssueDeleteView(DeleteView):
+    model = Issue
+    query_pk_and_slug = True
+    pk_url_kwarg = 'issue_id'
+
+    def get_success_url(self):
+        return reverse('project:backlog',
+                       kwargs={'project_id': self.object.project_id})
+
+    def get_context_data(self, **kwargs):
+        context = super(IssueDeleteView, self).get_context_data(**kwargs)
+        currrent_project = self.kwargs['project_id']
+        current_issue = self.kwargs['issue_id']
+        context['project'] = Project.objects.get(id=currrent_project)
+        context['issue'] = Issue.objects.get(id=current_issue)
+        return context
+
+    def delete(self, request, *args, **kwargs):
+        project = Project.objects.get(id=kwargs['project_id'])
+        issue = Issue.objects.get(id=kwargs['issue_id'])
+        issue.status = 'deleted';
+        issue.save()
+        return HttpResponseRedirect(reverse('project:backlog',
+                                            kwargs={'project_id': project.id}))
 
 
 class SprintView(DetailView):
@@ -364,10 +427,12 @@ def issue_order(request):
 
         if data:
             for key in keys:
-                issue = Issue.objects.get(id=int(key))
-                if issue:
-                    issue.order = int(data[key])
-                    issue.save()
+                try:
+                    issue = Issue.objects.get(id=int(key))
+                except Issue.DoesNotExist:
+                    raise Http404("Issue does not exist")
+                issue.order = int(data[key])
+                issue.save()
         return HttpResponse()
     else:
         return HttpResponseRedirect(reverse('project:list'))

@@ -30,9 +30,10 @@ class RegistrationForm(forms.ModelForm):
     class Meta:
         model = Employee
         fields = ['username', 'password', 'password_confirmation', 'email',
-                  'first_name', 'last_name', 'role']
+                  'first_name', 'last_name', 'role', 'date_birth', 'photo']
         widgets = {
             'password': forms.PasswordInput,
+            'date_birth': forms.DateInput(attrs={'type':'date'}),
         }
 
     def clean(self):

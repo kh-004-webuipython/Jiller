@@ -8,9 +8,21 @@ from django.utils.translation import ugettext_lazy as _
 from django.db import models
 from django.core.exceptions import ValidationError
 from django.core.validators import MaxValueValidator
+from django.contrib.auth.models import Group
 from sorl.thumbnail.shortcuts import get_thumbnail
 
 from employee.models import Employee
+
+
+class ProjectModelManager(models.Manager):
+    def get_user_projects(self, user):
+        user_projects = super(ProjectModelManager, self).get_queryset().filter(
+            is_active=True)
+        if user.is_superuser:
+            return user_projects
+        else:
+            return user_projects.filter(
+                projectteam__employees__id__exact=user.id)
 
 
 @python_2_unicode_compatible
@@ -27,6 +39,8 @@ class Project(models.Model):
 
     def __str__(self):
         return self.title
+
+    objects = ProjectModelManager()
 
 
 @python_2_unicode_compatible
@@ -80,11 +94,13 @@ class Issue(models.Model):
     IN_PROGRESS = 'in progress'
     RESOLVED = 'resolved'
     CLOSED = 'closed'
+    DELETED = 'deleted'
     ISSUE_STATUS_CHOICES = (
         (NEW, _('New')),
         (IN_PROGRESS, _('In Progress')),
         (RESOLVED, _('Resolved')),
-        (CLOSED, _('Closed'))
+        (CLOSED, _('Closed')),
+        (DELETED, _('Deleted'))
     )
     HIGH = -1
     MEDIUM = -2
@@ -121,7 +137,7 @@ class Issue(models.Model):
         if self.order == Issue.HIGH:
             self.order = 0
         elif self.order == Issue.MEDIUM:
-            self.order = Issue.objects.filter(project=self.project).\
+            self.order = Issue.objects.filter(project=self.project). \
                              filter(sprint__isnull=True).count() / 2
         elif self.order == Issue.LOW:
             self.order = Issue.objects.filter(project=self.project). \
@@ -129,6 +145,11 @@ class Issue(models.Model):
 
     def __str__(self):
         return self.title
+
+    def child(self):
+        if self.issue_set.exists():
+            return self.issue_set.all()
+        return False
 
     def save(self, *args, **kwargs):
         self.calculate_issue_priority()
@@ -142,7 +163,8 @@ class IssueComment(models.Model):
     text = models.CharField(max_length=255, verbose_name=_('Text'))
     issue = models.ForeignKey(Issue, verbose_name=_('Issue'))
     author = models.ForeignKey('employee.Employee', verbose_name=_('Author'))
-    date_created = models.DateTimeField(default=timezone.now, verbose_name=_('Date created'))
+    date_created = models.DateTimeField(default=timezone.now,
+                                        verbose_name=_('Date created'))
 
     def __str__(self):
         return self.title

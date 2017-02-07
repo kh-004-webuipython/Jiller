@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load render_table from django_tables2 %}
 {% load static %}
 {% load i18n %}
 
@@ -20,7 +21,7 @@
 {% block content %}
   {% if not teams and user.pm_role_access %}
     <a class="btn btn-info pull-right"
-       href="{% url 'project:team_create' project.id %}">Edit team</a>
+       href="{% url 'project:team_create' project.id %}">Create new team</a>
   {% endif %}
   {% include 'project/project_navbar.html' with team=True %}
 
@@ -32,6 +33,13 @@
     <h4 class="text-center">There are more than one Project Manager in the
       project!!!</h4><br>
   {% endif %}
+
+  <!--  {% if table_cur %}
+    {% render_table table_cur "base_table_team.html" %}
+  {% endif %}
+  {% if table_add %}
+    {% render_table table_add "base_table_team.html" %}
+  {% endif %}-->
 
   <div class="container-fluid">
     {# table of current project members #}
@@ -66,8 +74,8 @@
                   method="post">
               {% csrf_token %}
 
-              <button type="submit" name="remove" value="remove"><span
-                  class="glyphicon glyphicon-remove"></span></button>
+              <button type="submit" name="remove" class="team-event"><i
+                  class="ace-icon fa fa-times bigger-130 red"></i></button>
             {% endif %}
             </form>
             </td>
@@ -100,13 +108,12 @@
                       action="{% url 'project:change_user_in_team' project.id cur_user.id team.id %}"
                       method="post">
                     {% csrf_token %}
-                    <button type="submit" name="add" value="add"><span
-                        class="glyphicon glyphicon-ok"></span></button>
+                    <button type="submit" name="add" class="team-event"><i
+                        class="ace-icon fa bigger-130 fa-check green"></i></button>
                   </form>
                 </td>
               </tr>
             {% endif %}
-
           {% endfor %}
         </table>
       {% endif %}

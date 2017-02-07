@@ -18,11 +18,14 @@
 {% endblock %}
 
 {% block content %}
+      <a href="{% url 'project:sprint_create' project.id %}"
+       class="btn btn-primary pull-right">Create new sprint</a>
   {% include 'project/project_navbar.html' with sprint_detail=True %}
 
 
   {% if no_active_sprint %}
-    <h4>There is no active sprint yet</h4>
+
+    <div class="page-header"><h1>There is no active sprint yet</h1></div>
   {% endif %}
 
   {% if not no_active_sprint %}

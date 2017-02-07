@@ -1,0 +1,41 @@
+{% load static %}
+
+{% block styles %}
+<link rel="stylesheet" href='{% static 'css/bootstrap.css' %}'
+type='text/css'/>
+<link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}"/>
+{% endblock %}
+
+{% block content %}
+
+
+<div class="container">
+    <div class="row">
+        <div class="col-xs-12 col-sm-4 col-sm-offset-4">
+            <div class="panel panel-primary">
+                <div class="panel-heading">
+                    <h3 class="panel-title">Email confirmation</h3>
+                </div>
+                <div class="panel-body">
+                        <div class="form-group">
+                            <h3>Your email has not been confirmed.</h3>
+                        </div>
+                        <div class="col-md-12"></div>
+                        {% for message in messages %}
+                        <div class="col-md-12">
+                            <p><strong {% if message.tags %} class="{{ message.tags }}"
+                            {% endif %}>{{ message }}</strong></p>
+                        </div>
+                        {% endfor %}
+
+                        <div class="register-link">
+                            <a href="{% url 'general:sender' user.username %}"
+                               class="center-block">Require again</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
