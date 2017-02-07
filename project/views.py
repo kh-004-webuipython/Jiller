@@ -17,12 +17,22 @@ from django.utils.decorators import method_decorator
 from .decorators import delete_project, \
     edit_project_detail, create_project, create_sprint
 from waffle.decorators import waffle_flag
+from .tables import ProjectTable, SprintsListTable
+from django_tables2 import SingleTableView, RequestConfig
 import json
+from employee.models import Employee
+from employee.tables import ProjectTeamEmployeeTable, ProjectTeamEmployeeAddTable
 
 
-class ProjectListView(ListView):
+class ProjectListView(SingleTableView):
     model = Project
+    table_class = ProjectTable
     template_name = 'project/projects.html'
+    table_pagination = True
+
+    table_pagination = {
+        'per_page': 10
+    }
 
     def get_queryset(self):
         projects = Project.objects.get_user_projects(
@@ -92,6 +102,44 @@ def issue_edit_view(request, project_id, issue_id):
     return render(request, 'project/issue_edit.html',
                   {'form': form, 'project': Project.objects.get(pk=project_id),
                    'issue': Issue.objects.get(pk=issue_id)})
+
+
+def team_view(request, project_id):
+    current_project = get_object_or_404(Project, pk=project_id)
+    # hide PMs on "global" team board
+    user_list = Employee.objects.filter(pm_role_access=False)
+
+    try:
+        team_list = ProjectTeam.objects.filter(project=current_project)
+    except ProjectTeam.DoesNotExist:
+        raise Http404("No team on project")
+
+    return render(request, 'project/team.html', {'team_list': team_list,
+                                                 'project': current_project,
+                                                 'user_list': user_list})
+
+# def team_view(request, project_id):
+#     current_project = get_object_or_404(Project, pk=project_id)
+#     # hide PMs on "global" team board
+#     user_list = Employee.objects.filter(pm_role_access=False)
+#     table_add = ProjectTeamEmployeeAddTable(user_list)
+#     try:
+#         teams_list = ProjectTeam.objects.filter(project=current_project)
+#     except ProjectTeam.DoesNotExist:
+#         raise Http404("No team on project")
+#
+#     employee_list = []
+#     for team in teams_list:
+#         if team.employees:
+#             for employee in team.employees.all():
+#                 employee_list.append(employee)
+#
+#     table_cur = ProjectTeamEmployeeTable(employee_list)
+#     RequestConfig(request, paginate={'per_page': (9 - len(employee_list))}).configure(table_add)
+#     return render(request, 'project/team.html', {'table_cur': table_cur,
+#                                                  'table_add': table_add,
+#                                                  'project': current_project,
+#                                                  'team': teams_list})
 
 
 def issue_detail_view(request, project_id, issue_id):
@@ -383,16 +431,6 @@ def issue_order(request):
         return HttpResponse()
     else:
         return HttpResponseRedirect(reverse('project:list'))
-
-
-def team_view(request, project_id):
-    current_project = get_object_or_404(Project, pk=project_id)
-    try:
-        team_list = ProjectTeam.objects.filter(project=current_project)
-    except ProjectTeam.DoesNotExist:
-        raise Http404("No team on project")
-    return render(request, 'project/team.html', {'team_list': team_list,
-                                                 'project': current_project})
 
 
 def change_user_in_team(request, project_id, user_id, team_id):
