@@ -51,6 +51,15 @@ button.team-event {
     background: white;
 }
 
+button.active-sprint-event {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    outline: none;
+    border: 0;
+    background: transparent;
+}
+
 button.team-event:focus {
     outline: none
 }
