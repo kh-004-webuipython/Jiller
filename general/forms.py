@@ -5,13 +5,24 @@ from django.utils.translation import ugettext_lazy as _
 from employee.models import Employee
 
 
-class LoginForm(forms.Form):
+class AuthFormMixin(object):
+    def __init__(self, *args, **kwargs):
+        super(AuthFormMixin, self).__init__(*args, **kwargs)
+        for field_name, field in self.fields.items():
+            if field_name == 'date_birth':
+                field.widget.attrs.update(
+                    {'class': 'form-control date-picker', 'data-date-format': 'yyyy-mm-dd',
+                     'placeholder': field.label})
+            else:
+                field.widget.attrs.update({'class': 'form-control', 'placeholder': field.label})
+
+
+class LoginForm(AuthFormMixin, forms.Form):
     username = forms.CharField(label='Username', max_length=255)
-    password = forms.CharField(label='Password', max_length=255,
-                               widget=PasswordInput)
+    password = forms.CharField(label='Password', max_length=255, )
 
 
-class RegistrationForm(forms.ModelForm):
+class RegistrationForm(AuthFormMixin, forms.ModelForm):
     DEVELOPER = 'developer'
     PRODUCT_OWNER = 'product owner'
     SCRUM_MASTER = 'scrum master'
@@ -26,6 +37,7 @@ class RegistrationForm(forms.ModelForm):
                                             max_length=255,
                                             widget=PasswordInput)
     role = forms.ChoiceField(label=_('Role'), choices=EMPLOYEE_ROLES_CHOICES)
+    date_birth = forms.DateField(label=_('Date birth'), required=False)
 
     class Meta:
         model = Employee
@@ -33,7 +45,6 @@ class RegistrationForm(forms.ModelForm):
                   'first_name', 'last_name', 'role', 'date_birth', 'photo']
         widgets = {
             'password': forms.PasswordInput,
-            'date_birth': forms.DateInput(attrs={'type':'date'}),
         }
 
     def clean(self):
