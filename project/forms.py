@@ -23,6 +23,7 @@ class ProjectForm(forms.ModelForm):
         cleaned_data = super(ProjectForm, self).clean()
         start_date = cleaned_data.get('start_date')
         end_date = cleaned_data.get('end_date')
+
         if end_date and start_date > end_date:
             self.add_error('end_date',
                            _('End date cant\'t be earlies than start date'))
@@ -103,8 +104,3 @@ class IssueCommentCreateForm(forms.ModelForm):
         widgets = {
             'text': forms.TextInput(attrs={'class': 'form-control'})
         }
-
-# class TeamForm(forms.ModelForm):
-#     class Meta:
-#         model = ProjectTeam
-#         fields = '__all__'

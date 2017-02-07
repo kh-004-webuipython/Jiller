@@ -18,8 +18,10 @@
 {% endblock %}
 
 {% block content %}
+  {% flag 'create_sprint' %}
       <a href="{% url 'project:sprint_create' project.id %}"
        class="btn btn-primary pull-right">Create new sprint</a>
+  {% endflag %}
   {% include 'project/project_navbar.html' with sprint_detail=True %}
 
 
@@ -50,7 +52,7 @@
     <br><br>
 
     <div class="text-center table-responsive">
-      <p class="text-center"><strong>Dashboard</strong></p>
+      <p><strong>Dashboard</strong></p>
       <div class="col-md-4">
         <table class="table table-striped table-bordered">
           <thead>
@@ -61,16 +63,20 @@
           <tbody>
           {% for new_iss in new_issues %}
             <tr>
-              <td class="text-center">
-                <a href="
+              <td>
+                <a class="align-middle" href="
 {% url 'project:issue_detail' new_iss.project_id new_iss.id %}">
                   {{ new_iss.title }}</a>
                 {% flag "push_issue" %}
-                  <a href="
-{% url 'project:issue_push' new_iss.project_id new_iss.id 'right' %}">
-              <span style="float: right"
-                    class="glyphicon glyphicon-circle-arrow-right"></span>
-                  </a>{% endflag %}
+                  <form style="float: right"
+                        action="{% url 'project:issue_push' new_iss.project_id new_iss.id %}"
+                        method="post">
+                    {% csrf_token %}
+                    <button type="submit" name="right"><span
+                        class="glyphicon glyphicon-circle-arrow-right team-event"></span>
+                    </button>
+                  </form>
+                {% endflag %}
             </tr>
           {% endfor %}
           </tbody>
@@ -86,22 +92,30 @@
           <tbody>
           {% for progress in in_progress_issues %}
             <tr>
-              <td class="text-center">
+              <td>
                 {% flag "push_issue" %}
-                  <a href="
-{% url 'project:issue_push' progress.project_id progress.id 'left' %}">
-              <span style="float: left"
-                    class="glyphicon glyphicon-circle-arrow-left"></span>
-                  </a>{% endflag %}
-                <a href="
+                  <form style="float: left"
+                        action="{% url 'project:issue_push' progress.project_id progress.id %}"
+                        method="post">
+                    {% csrf_token %}
+                    <button type="submit" name="left"><span
+                        class="glyphicon glyphicon-circle-arrow-left"></span>
+                    </button>
+                  </form>
+                {% endflag %}
+                <a class="align-middle" href="
 {% url 'project:issue_detail' progress.project_id progress.id %}">
                   {{ progress.title }}</a>
                 {% flag "push_issue" %}
-                  <a href="
-{% url 'project:issue_push' progress.project_id progress.id 'right' %}">
-              <span style="float: right"
-                    class="glyphicon glyphicon-circle-arrow-right"></span>
-                  </a>{% endflag %}
+                  <form style="float: right"
+                        action="{% url 'project:issue_push' progress.project_id progress.id %}"
+                        method="post">
+                    {% csrf_token %}
+                    <button type="submit" name="right"><span
+                        class="glyphicon glyphicon-circle-arrow-right"></span>
+                    </button>
+                  </form>
+                {% endflag %}
               </td>
             </tr>
           {% endfor %}
@@ -118,14 +132,18 @@
           <tbody>
           {% for resolved in resolved_issues %}
             <tr>
-              <td class="text-center">
+              <td>
                 {% flag "push_issue" %}
-                  <a href="
-{% url 'project:issue_push' resolved.project_id resolved.id 'left' %}">
-              <span style="float: left"
-                    class="glyphicon glyphicon-circle-arrow-left"></span>
-                  </a>{% endflag %}
-                <a href="
+                  <form style="float: left"
+                        action="{% url 'project:issue_push' resolved.project_id resolved.id %}"
+                        method="post">
+                    {% csrf_token %}
+                    <button type="submit" name="left"><span
+                        class="glyphicon glyphicon-circle-arrow-left"></span>
+                    </button>
+                  </form>
+                {% endflag %}
+                <a class="align-middle" href="
 {% url 'project:issue_detail' resolved.project_id resolved.id %}">
                   {{ resolved.title }}</a></td>
             </tr>
