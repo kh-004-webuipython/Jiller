@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load render_table from django_tables2 %}
 {% load static %}
 {% load i18n %}
 
@@ -24,6 +25,13 @@
        href="{% url 'project:team_create' project.id %}">Create new team</a>
   {% endif %}
   {% include 'project/project_navbar.html' with team=True %}
+
+<!--  {% if table_cur %}
+    {% render_table table_cur "base_table_team.html" %}
+  {% endif %}
+  {% if table_add %}
+    {% render_table table_add "base_table_team.html" %}
+  {% endif %}-->
 
   <div class="container-fluid">
     {% for team in team_list %}
@@ -103,3 +111,6 @@
     </table>
   </div>
 {% endblock %}
+
+
+

@@ -204,10 +204,10 @@
     "model": "employee.employee",
     "pk": 1,
     "fields": {
-      "password": "pbkdf2_sha256$30000$80UGAYiTkmUH$rgg/i5Ya+Tpup6k1t5vQMjrBML2uTYY0AirJQYx0Z44=",
+      "password": "123456789",
       "last_login": "2017-01-30T16:29:12.707Z",
       "is_superuser": true,
-      "username": "admin",
+      "username": "eva",
       "first_name": "",
       "last_name": "",
       "email": "colonialist@ukr.net",
