@@ -1,11 +1,13 @@
 import smtplib
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
+from django.shortcuts import reverse
 
 
-def sender(email, username, key):
-    li = ['http://127.0.0.1:8000/confirmation', username, key]
-    confirmation_link = "/".join(li)
+def sender(request, email, username, key):
+    confirmation_link = request.build_absolute_uri(
+        reverse('general:confirmation', kwargs={'username': username,
+                                                'key': key}))
     fromaddr = 'webui.python@gmail.com'
     toaddr = email
 

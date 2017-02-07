@@ -84,7 +84,7 @@ def email_confirmation(request, username, key):
 
 def send_to(request, username):
     user = Employee.objects.filter(username=username).first()
-    sender(user.email, username, user.confirmation_key)
+    sender(request, user.email, username, user.confirmation_key)
     messages.add_message(request, messages.INFO,
                          _("Confirmation code has been sent to your email."))
     return redirect('general:login')
