@@ -11,7 +11,7 @@ class LoginViewTests(TestCase):
         self.login_page = reverse('general:login')
         self.client = Client()
         self.user = Employee.objects.create_user('john', 'lennon@thebeatles.com', 'johnpassword', first_name='Miss',
-                                                 last_name='Mister', role='developer')
+                                                 last_name='Mister')
 
     def test_for_correct_data(self):
         response = self.client.get(self.login_page)
@@ -52,14 +52,13 @@ class RegistrationViewTests(TestCase):
         self.email = 'simple_email1@gmail.com'
         self.first_name = 'Ivan'
         self.last_name = 'Ivanov'
-        self.role = Employee.DEVELOPER
 
     def get_standard_post(self):
         return {'username': self.username, 'password': self.password,
                 'password_confirmation': self.password,
                 'email': self.email,
                 'email_confirmation': self.email,
-                'last_name': self.last_name, 'first_name': self.first_name, 'role': self.role}
+                'last_name': self.last_name, 'first_name': self.first_name}
 
     def check_if_form_still_contain_info_after_error(self, response, expect_result):
         self.assertContains(response, expect_result['username'])
@@ -83,7 +82,6 @@ class RegistrationViewTests(TestCase):
         self.assertEqual(user.username, self.username)
         self.assertEqual(user.last_name, self.last_name)
         self.assertEqual(user.first_name, self.first_name)
-        self.assertEqual(user.role, self.role)
         self.assertEqual(user.email, self.email)
 
     def test_with_wrong_email_confirmation(self):
@@ -111,7 +109,7 @@ class RegistrationViewTests(TestCase):
     def test_username_already_exist(self):
         post_data = self.get_standard_post()
         Employee.objects.create_user(post_data['username'], 'lennon@thebeatles.com', 'johnpassword', first_name='Miss',
-                                     last_name='Mister', role=post_data['role'])
+                                     last_name='Mister')
 
         response = self.client.get(self.registration_page_url)
         self.assertEqual(response.status_code, 200)
@@ -123,7 +121,7 @@ class RegistrationViewTests(TestCase):
     def test_email_already_exist(self):
         post_data = self.get_standard_post()
         Employee.objects.create_user('john', post_data['email'], 'johnpassword', first_name='Miss',
-                                     last_name='Mister', role=post_data['role'])
+                                     last_name='Mister')
         response = self.client.get(self.registration_page_url)
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, _("Registration Form"))
@@ -131,16 +129,16 @@ class RegistrationViewTests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, _('User with this email already exists'))
 
-    def test_wrong_user_role(self):
-        post_data = self.get_standard_post()
-        post_data['role'] += '1'
-        response = self.client.get(self.registration_page_url)
-        self.assertEqual(response.status_code, 200)
-        self.assertContains(response, _("Registration Form"))
-        response = self.client.post(self.registration_page_url, post_data)
-        self.assertEqual(response.status_code, 200)
-        self.check_if_form_still_contain_info_after_error(response, post_data)
-        self.assertContains(response, _('Wrong user role'))
+    # def test_wrong_user_role(self):
+    #     post_data = self.get_standard_post()
+    #     post_data['role'] += '1'
+    #     response = self.client.get(self.registration_page_url)
+    #     self.assertEqual(response.status_code, 200)
+    #     self.assertContains(response, _("Registration Form"))
+    #     response = self.client.post(self.registration_page_url, post_data)
+    #     self.assertEqual(response.status_code, 200)
+    #     self.check_if_form_still_contain_info_after_error(response, post_data)
+    #     self.assertContains(response, _('Wrong user role'))
 
 
 class ProfileViewTests(LoginRequiredBase):
@@ -150,6 +148,6 @@ class ProfileViewTests(LoginRequiredBase):
 
     def test_profile_view_with_incorrect_user(self):
         self.user = Employee.objects.create_user('mark', 'webber@redbull.com', 'markpassword', first_name='Kiss',
-                                                 last_name='Dismiss', role=self.user_role_init)
+                                                 last_name='Dismiss')
         response = self.client.get(reverse('general:profile'))
         self.assertNotContains(response, 'Kiss')
