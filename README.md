@@ -32,7 +32,7 @@ if your migrations ain't up to date: $ python manage.py makemigrations
 
 $ python manage.py migrate
 
-$ python manage.py loaddata workflow/fixtures/init_data.json
+$ python manage.py loaddata project/fixtures/init_data.json
 
 (You get 4 users: admin, developer, scrum_master, product_owner
 password for all: test)
