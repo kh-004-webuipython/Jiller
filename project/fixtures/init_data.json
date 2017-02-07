@@ -183,7 +183,7 @@
     "model": "waffle.flag",
     "pk": 9,
     "fields": {
-      "name": "remove_and_add_user_in_team",
+      "name": "update_team",
       "everyone": null,
       "percent": null,
       "testing": false,
@@ -227,7 +227,7 @@
     "model": "waffle.flag",
     "pk": 11,
     "fields": {
-      "name": "CUD_team",
+      "name": "create_team",
       "everyone": null,
       "percent": null,
       "testing": false,
@@ -286,7 +286,6 @@
       "email": "colonialist@ukr.net",
       "is_staff": true,
       "is_active": true,
-      "pm_role_access": true,
       "date_joined": "2017-01-27T20:53:28Z",
       "date_birth": null,
       "photo": "",
@@ -375,7 +374,6 @@
       "email": "test@ukr.net",
       "is_staff": false,
       "is_active": true,
-      "pm_role_access": true,
       "date_joined": "2017-01-30T16:45:39.517Z",
       "date_birth": null,
       "photo": "",

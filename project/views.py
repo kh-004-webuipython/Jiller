@@ -107,10 +107,10 @@ def issue_edit_view(request, project_id, issue_id):
 def team_view(request, project_id):
     current_project = get_object_or_404(Project, pk=project_id)
     # hide PMs on "global" team board
-    user_list = Employee.objects.filter(pm_role_access=False)
+    user_list = Employee.objects.exclude(groups__name='project manager')
     # filter needs for possibility to add two PMs, when we need change 1st PM
     project_managers = Employee.objects.filter(projectteam__project=project_id,
-                                               pm_role_access=True)
+                                               groups__name='project manager')
 
 
     members = ProjectTeam.objects.filter(project_id=current_project)

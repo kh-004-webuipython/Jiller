@@ -1,4 +1,5 @@
 import json
+import waffle
 
 from django.http import HttpResponseForbidden
 from django.urls import resolve
@@ -32,11 +33,8 @@ class CheckProjectRelation(object):
             response = self.get_response(request)
             return response
 
-        if request.user.pm_role_access and path == 'project/create/':
+        if waffle.flag_is_active(request, 'create_team') and path == 'project/create/':
             return self.get_response(request)
-
-            response = self.get_response(request)
-            return response
 
 
         resolved = resolve(request.path)
