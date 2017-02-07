@@ -19,8 +19,8 @@
 
 {% block content %}
   {% include 'project/project_navbar.html' with sprint_list=True%}
-
   {% if table %}
     {% render_table table "base_table.html" %}
+
   {% endif %}
 {% endblock %}

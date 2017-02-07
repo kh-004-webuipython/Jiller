@@ -65,8 +65,8 @@
                   method="post">
               {% csrf_token %}
 
-              <button type="submit" name="remove" value="remove"><span
-                  class="glyphicon glyphicon-remove"></span></button>
+              <button type="submit" name="remove" value="remove" class="team-event"><i
+                  class="ace-icon fa fa-times bigger-130 red"></i></button>
             {% endif %}
             </form>
             </td>
@@ -97,8 +97,8 @@
                       action="{% url 'project:change_user_in_team' project.id cur_user.id team.id %}"
                       method="post">
                     {% csrf_token %}
-                    <button type="submit" name="add" value="add"><span
-                        class="glyphicon glyphicon-ok"></span></button>
+                    <button type="submit" name="add" value="add" class="team-event"><i
+                        class="ace-icon fa bigger-130 fa-check green"></i></button>
                   </form>
                 </td>
               </tr>

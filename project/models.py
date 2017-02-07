@@ -146,6 +146,11 @@ class Issue(models.Model):
     def __str__(self):
         return self.title
 
+    def child(self):
+        if self.issue_set.exists():
+            return self.issue_set.all()
+        return False
+
     def save(self, *args, **kwargs):
         self.calculate_issue_priority()
         if self.sprint and self.sprint.project != self.project:
