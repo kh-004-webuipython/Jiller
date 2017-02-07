@@ -50,6 +50,13 @@ button.team-event {
     border: none;
     background: white;
 }
-button.team-event:focus{
+
+button.team-event:focus {
     outline: none
+}
+
+div.project-detail {
+    padding: 0;
+    float: left;
+    margin: 7px 0 7px 7px;
 }

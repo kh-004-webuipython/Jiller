@@ -1,6 +1,7 @@
 {% extends 'base.html' %}
 {% load waffle_tags %}
 {% load i18n %}
+{% load static %}
 {% load gravatar %}
 
 {% block title %}Issue detail{% endblock %}
@@ -40,135 +41,47 @@
     {% endflag %}
   </div>
   {% include 'project/project_navbar.html' with sprint_detail=True %}
-  <div class="container-fluid">
-    <div class="row">
-      <div class="col-sm-8">
-        <div class="row">
-          <div class="col-md-4">
-            <h4>Title:</h4>
-          </div>
-          <div class="col-md-8">
-            <h4>{{ issue.title }}</h4>
-          </div>
-        </div>
-        <div class="row">
-          <div class="col-md-4">
-            <h4>Status:</h4>
-          </div>
-          <div class="col-md-8">
-            <h4>{{ issue.status }}</h4>
-          </div>
-        </div>
-        <div class="row">
-          <div class="col-md-4">
-            <h4>Estimation:</h4>
-          </div>
-          <div class="col-md-8">
-            <h4>{{ issue.estimation }}</h4>
-          </div>
-        </div>
-        <div class="row">
-          <div class="col-md-4">
-            <h4>Author:</h4>
-          </div>
-          <div class="col-md-8">
-            <a href="{% url 'employee:detail' issue.author.id %}"><h4>{{ issue.author }}</h4></a>
-          </div>
-        </div>
-        <div class="row">
-          <div class="col-md-4">
-            <h4>Employee:</h4>
-          </div>
-          <div class="col-md-8">
-            <a href="{% if issue.employee %}{% url 'employee:detail' issue.employee.id %}{% endif %}">
-              <h4>{{ issue.employee }}</h4></a>
-          </div>
-        </div>
-        <div class="row">
-          <div class="col-md-4">
-            <h4>Description:</h4>
-          </div>
-          <div class="col-md-8">
-            <h4 style="word-wrap: break-word;">{{ issue.description }}</h4>
-          </div>
+  <div class="col-sm-8">
+    <div class="profile-user-info profile-user-info-striped">
+      <div class="profile-info-row">
+        <div class="profile-info-name"> Title</div>
+        <div class="profile-info-value">
+          <span>{{ issue.title }}</span>
         </div>
       </div>
-      <div class="col-sm-4">
-        {% if root_issue %}
-          <div class="row">
-            <div class="col-sm-12">
-              <div class="panel panel-primary">
-                <div class="panel-heading">
-                  <h3 class="panel-title">Parent issue</h3>
-                </div>
-                <div class="panel-body">
-                  <table class="table">
-                    <thead>
-                    <tr>
-                      <th>#</th>
-                      <th>Title</th>
-                      <th>Estimation</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <tr>
-                      <td>1</td>
-                      <td>
-                        <a href="{% url 'project:issue_detail' project.id root_issue.id %}">
-                          {{ root_issue.title }}</a>
-                      </td>
-                      <td>{{ root_issue.estimation }}</td>
-                    </tr>
-                    </tbody>
-                  </table>
-                  {#                                    <a href="{% url 'project:issue_detail' project.id root_issue.id %}">#}
-                  {#                                        <h4>{{ root_issue.title }}</h4></a>#}
-                </div>
-              </div>
-            </div>
+      <div class="profile-info-row">
+        <div class="profile-info-name"> Status</div>
+        <div class="profile-info-value">
+          <span>{{ issue.status }}</span>
+        </div>
+      </div>
+      <div class="profile-info-row">
+        <div class="profile-info-name">Estimation</div>
+        <div class="profile-info-value">
+          <span>{{ issue.estimation }}</span>
+        </div>
+      </div>
+      <div class="profile-info-row">
+        <div class="profile-info-name">Author</div>
+        <div class="profile-info-value">
+          <span>{{ issue.author }}</span>
+        </div>
+      </div>
+      {% if issue.employee %}
+        <div class="profile-info-row">
+          <div class="profile-info-name">Employee</div>
+          <div class="profile-info-value">
+            <span>{{ issue.employee }}</span>
           </div>
-        {% endif %}
-        {% if child_issues %}
-          <div class="row">
-            <div class="col-sm-12">
-              <div class="panel panel-primary">
-                <div class="panel-heading">
-                  <h3 class="panel-title">Child Issues</h3>
-                </div>
-                <div class="panel-body">
-                  <table class="table">
-                    <thead>
-                    <tr>
-                      <th>#</th>
-                      <th>Title</th>
-                      <th>Status</th>
-                      <th>Estimation</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    {% for child in child_issues %}
-                      <tr>
-                        <td>{{ forloop.counter }}</td>
-                        <td>
-                          <a href="{% url 'project:issue_detail' project.id child.id %}">{{ child.title }} </a>
-                        </td>
-                        <td>{{ child.status }}</td>
-                        <td>{{ child.estimation }}</td>
-                      </tr>
-                    {% endfor %}
-                    </tbody>
-                  </table>
-
-                </div>
-              </div>
-            </div>
-          </div>
-        {% endif %}
+        </div>
+      {% endif %}
+      <div class="profile-info-row">
+        <div class="profile-info-name">Description</div>
+        <div class="profile-info-value">
+          <span>{{ issue.description }}</span>
+        </div>
       </div>
     </div>
-  </div>
-  <div class="col-sm-7">
-    {#    <div class="page-header"></div>#}
     <form method="post" action='{% url 'project:issue_detail' project.id issue.id %}'>
       <div class="form-actions">
         <div class="input-group">
@@ -188,10 +101,10 @@
           <div class="itemdiv commentdiv">
             <div class="user">
               <img {% if comment.author.photo %}
-                   src="{{ comment.author.get_cropped_photo.url }}"
-                  {% else %}
-                   src="{{ comment.author.email|gravatar_url:40 }}"
-                  {% endif %}/>
+                src="{{ comment.author.get_cropped_photo.url }}"
+              {% else %}
+                src="{{ comment.author.email|gravatar_url:40 }}"
+              {% endif %}/>
             </div>
             <div class="body">
               <div class="name">
@@ -224,4 +137,77 @@
       </div>
     </div>
   </div>
+  <div class="col-sm-4">
+    {% if root_issue %}
+      <div class="row">
+        <div class="col-sm-12">
+          <div class="panel panel-primary">
+            <div class="panel-heading">
+              <h3 class="panel-title">Parent issue</h3>
+            </div>
+            <div class="panel-body">
+              <table class="table">
+                <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Title</th>
+                  <th>Estimation</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                  <td>1</td>
+                  <td>
+                    <a href="{% url 'project:issue_detail' project.id root_issue.id %}">
+                      {{ root_issue.title }}</a>
+                  </td>
+                  <td>{{ root_issue.estimation }}</td>
+                </tr>
+                </tbody>
+              </table>
+              {#                                    <a href="{% url 'project:issue_detail' project.id root_issue.id %}">#}
+              {#                                        <h4>{{ root_issue.title }}</h4></a>#}
+            </div>
+          </div>
+        </div>
+      </div>
+    {% endif %}
+    {% if child_issues %}
+      <div class="row">
+        <div class="col-sm-12">
+          <div class="panel panel-primary">
+            <div class="panel-heading">
+              <h3 class="panel-title">Child Issues</h3>
+            </div>
+            <div class="panel-body">
+              <table class="table">
+                <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Title</th>
+                  <th>Status</th>
+                  <th>Estimation</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for child in child_issues %}
+                  <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td>
+                      <a href="{% url 'project:issue_detail' project.id child.id %}">{{ child.title }} </a>
+                    </td>
+                    <td>{{ child.status }}</td>
+                    <td>{{ child.estimation }}</td>
+                  </tr>
+                {% endfor %}
+                </tbody>
+              </table>
+
+            </div>
+          </div>
+        </div>
+      </div>
+    {% endif %}
+  </div>
 {% endblock %}
+
