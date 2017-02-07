@@ -55,5 +55,5 @@ class RegistrationForm(forms.ModelForm):
         role = cleaned_data.get('role')
         if role not in (
         RegistrationForm.DEVELOPER, RegistrationForm.PRODUCT_OWNER,
-        RegistrationForm.SCRUM_MASTER, RegistrationForm.PROJECT_MASTER):
+        RegistrationForm.SCRUM_MASTER, RegistrationForm.PROJECT_MANAGER):
             self.add_error('role', _('Wrong user role'))
