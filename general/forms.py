@@ -15,10 +15,12 @@ class RegistrationForm(forms.ModelForm):
     DEVELOPER = 'developer'
     PRODUCT_OWNER = 'product owner'
     SCRUM_MASTER = 'scrum master'
+    PROJECT_MANAGER = 'project manager'
     EMPLOYEE_ROLES_CHOICES = (
         (DEVELOPER, _('Developer')),
         (PRODUCT_OWNER, _('Product Owner')),
-        (SCRUM_MASTER, _('Scrum Master'))
+        (SCRUM_MASTER, _('Scrum Master')),
+        (PROJECT_MANAGER, _('Project Manager'))
     )
     password_confirmation = forms.CharField(label=_('Confirm Password'),
                                             max_length=255,
@@ -52,5 +54,5 @@ class RegistrationForm(forms.ModelForm):
         role = cleaned_data.get('role')
         if role not in (
         RegistrationForm.DEVELOPER, RegistrationForm.PRODUCT_OWNER,
-        RegistrationForm.SCRUM_MASTER):
+        RegistrationForm.SCRUM_MASTER, RegistrationForm.PROJECT_MASTER):
             self.add_error('role', _('Wrong user role'))

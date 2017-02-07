@@ -16,7 +16,7 @@
       "created": "2017-01-30T15:10:08.958Z",
       "modified": "2017-01-30T15:10:08.958Z",
       "groups": [
-        3
+        3,4
       ],
       "users": []
     }
@@ -61,7 +61,7 @@
       "created": "2017-01-30T15:10:08.993Z",
       "modified": "2017-01-30T15:10:08.993Z",
       "groups": [
-        2
+        4
       ],
       "users": []
     }
@@ -152,7 +152,7 @@
       "created": "2017-01-30T16:12:35Z",
       "modified": "2017-01-30T16:13:03.933Z",
       "groups": [
-        3
+        3,4
       ],
       "users": []
     }
@@ -180,6 +180,72 @@
     }
   },
   {
+    "model": "waffle.flag",
+    "pk": 9,
+    "fields": {
+      "name": "remove_and_add_user_in_team",
+      "everyone": null,
+      "percent": null,
+      "testing": false,
+      "superusers": true,
+      "staff": true,
+      "authenticated": false,
+      "languages": "",
+      "rollout": false,
+      "note": "",
+      "created": "2017-01-30T16:12:35Z",
+      "modified": "2017-01-30T16:13:03.933Z",
+      "groups": [
+        4
+      ],
+      "users": []
+    }
+  },
+  {
+    "model": "waffle.flag",
+    "pk": 10,
+    "fields": {
+      "name": "company_employees_view",
+      "everyone": null,
+      "percent": null,
+      "testing": false,
+      "superusers": true,
+      "staff": true,
+      "authenticated": false,
+      "languages": "",
+      "rollout": false,
+      "note": "",
+      "created": "2017-01-30T16:12:35Z",
+      "modified": "2017-01-30T16:13:03.933Z",
+      "groups": [
+        4
+      ],
+      "users": []
+    }
+  },
+  {
+    "model": "waffle.flag",
+    "pk": 11,
+    "fields": {
+      "name": "CUD_team",
+      "everyone": null,
+      "percent": null,
+      "testing": false,
+      "superusers": true,
+      "staff": true,
+      "authenticated": false,
+      "languages": "",
+      "rollout": false,
+      "note": "",
+      "created": "2017-01-30T16:12:35Z",
+      "modified": "2017-01-30T16:13:03.933Z",
+      "groups": [
+        4
+      ],
+      "users": []
+    }
+  },
+  {
     "pk": 1,
     "model": "auth.Group",
     "fields": {
@@ -198,6 +264,13 @@
     "model": "auth.Group",
     "fields": {
       "name": "product owner"
+    }
+  },
+  {
+    "pk": 4,
+    "model": "auth.Group",
+    "fields": {
+      "name": "project manager"
     }
   },
   {
@@ -284,6 +357,95 @@
       "photo": "",
       "groups": [
         3
+      ],
+      "user_permissions": []
+    }
+  },
+  {
+    "model": "employee.employee",
+    "pk": 5,
+    "fields": {
+      "password": "pbkdf2_sha256$30000$80UGAYiTkmUH$rgg/i5Ya+Tpup6k1t5vQMjrBML2uTYY0AirJQYx0Z44=",
+      "last_login": null,
+      "is_superuser": false,
+      "username": "project_manager",
+      "first_name": "test",
+      "last_name": "test",
+      "email": "test@ukr.net",
+      "is_staff": false,
+      "pm_role_access": true,
+      "is_active": true,
+      "date_joined": "2017-01-30T16:45:39.517Z",
+      "date_birth": null,
+      "photo": "",
+      "groups": [
+        4
+      ],
+      "user_permissions": []
+    }
+  },
+    {
+    "model": "employee.employee",
+    "pk": 6,
+    "fields": {
+      "password": "pbkdf2_sha256$30000$80UGAYiTkmUH$rgg/i5Ya+Tpup6k1t5vQMjrBML2uTYY0AirJQYx0Z44=",
+      "last_login": null,
+      "is_superuser": false,
+      "username": "developer#2",
+      "first_name": "fist_name_developer#2",
+      "last_name": "last_name_developer#2",
+      "email": "",
+      "is_staff": false,
+      "is_active": true,
+      "date_joined": "2017-01-27T20:53:28Z",
+      "date_birth": null,
+      "photo": "",
+      "groups": [
+        1
+      ],
+      "user_permissions": []
+    }
+  },
+    {
+    "model": "employee.employee",
+    "pk": 7,
+    "fields": {
+      "password": "pbkdf2_sha256$30000$80UGAYiTkmUH$rgg/i5Ya+Tpup6k1t5vQMjrBML2uTYY0AirJQYx0Z44=",
+      "last_login": null,
+      "is_superuser": false,
+      "username": "developer#3",
+      "first_name": "fist_name_developer#3",
+      "last_name": "last_name_developer#3",
+      "email": "",
+      "is_staff": false,
+      "is_active": true,
+      "date_joined": "2017-01-27T20:53:28Z",
+      "date_birth": null,
+      "photo": "",
+      "groups": [
+        1
+      ],
+      "user_permissions": []
+    }
+  },
+    {
+    "model": "employee.employee",
+    "pk": 8,
+    "fields": {
+      "password": "pbkdf2_sha256$30000$80UGAYiTkmUH$rgg/i5Ya+Tpup6k1t5vQMjrBML2uTYY0AirJQYx0Z44=",
+      "last_login": null,
+      "is_superuser": false,
+      "username": "developer#4",
+      "first_name": "fist_name_developer#4",
+      "last_name": "last_name_developer#4",
+      "email": "",
+      "is_staff": false,
+      "is_active": true,
+      "date_joined": "2017-01-27T20:53:28Z",
+      "date_birth": null,
+      "photo": "",
+      "groups": [
+        1
       ],
       "user_permissions": []
     }

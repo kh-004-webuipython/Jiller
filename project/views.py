@@ -53,9 +53,9 @@ def issue_create_view(request, project_id):
         if request.GET.get('root', False):
             initial['root'] = request.GET['root']
         form = CreateIssueForm(initial=initial)
-    return render(request, 'project/create_issue.html', {'form': form,
-                                                         'project': Project.objects.get(
-                                                             pk=project_id)})
+    return render(request, 'project/create_issue.html',
+                  {'form': form,
+                   'project': Project.objects.get(pk=project_id)})
 
 
 @waffle_flag('edit_issue', 'project:list')
@@ -78,12 +78,14 @@ def team_view(request, project_id):
     current_project = get_object_or_404(Project, pk=project_id)
     # hide PMs on "global" team board
     user_list = Employee.objects.filter(pm_role_access=False)
+    # filter needs for possibility to add two PMs, when we need change 1st PM
+    project_managers = Employee.objects.filter(projectteam__project=project_id,
+                                               pm_role_access=True)
 
-    try:
-        team_list = ProjectTeam.objects.filter(project=current_project)
-    except ProjectTeam.DoesNotExist:
-        raise Http404("No team on project")
-    return render(request, 'project/team.html', {'team_list': team_list,
+
+    members = ProjectTeam.objects.filter(project_id=current_project)
+    return render(request, 'project/team.html', {'teams': members,
+                                                 'pm': project_managers,
                                                  'project': current_project,
                                                  'user_list': user_list})
 
@@ -111,8 +113,8 @@ def issue_detail_view(request, project_id, issue_id):
             comment.author = request.user
             comment.issue = current_issue
             comment.save()
-            return redirect(reverse('project:issue_detail', args=(project.id,
-                                                                  current_issue.id)))
+            return redirect(reverse('project:issue_detail',
+                                    args=(project.id, current_issue.id)))
 
     if current_issue.project_id != project.id:
         raise Http404("Issue does not exist")
@@ -159,6 +161,14 @@ class ProjectCreateView(CreateView):
     query_pk_and_slug = True
     pk_url_kwarg = 'project_id'
     template_name = 'project/project_create_form.html'
+
+    def form_valid(self, form, *args, **kwargs):
+        project = form.save(commit=False)
+        project.save()
+        if not ProjectTeam.objects.filter(project=project):
+            team = ProjectTeam.objects.create(project=project, title=project.title)
+            team.employees.add(self.request.user)
+        return super(ProjectCreateView, self).form_valid(form, *args, **kwargs)
 
     def get_success_url(self):
         return reverse('project:detail',
@@ -237,7 +247,8 @@ class SprintCreate(CreateView):
         issue = form.cleaned_data['issue']
         issue.update(sprint=sprint)
         self.object = sprint
-        return redirect(reverse('project:sprint_active', args=(self.object.project.id, )))
+        return redirect(
+            reverse('project:sprint_active', args=(self.object.project.id,)))
 
     def get_context_data(self, **kwargs):
         project = Project.objects.get(id=self.kwargs['project_id'])
@@ -270,8 +281,7 @@ class ActiveSprintView(DetailView):
                 Project.objects.get(pk=self.kwargs['project_id'])
             except:
                 raise Http404("Project does not exist")
-        else:
-            return None
+
 
     def get_context_data(self, **kwargs):
         context = super(ActiveSprintView, self).get_context_data(
@@ -305,26 +315,27 @@ class ActiveSprintView(DetailView):
 
 
 @waffle_flag('push_issue', 'project:list')
-def push_issue_in_active_sprint(request, project_id, issue_id, slug):
+def push_issue_in_active_sprint(request, project_id, issue_id):
     current_issue = get_object_or_404(Issue, pk=issue_id)
     sprint = get_object_or_404(Sprint, pk=current_issue.sprint_id)
 
-    if slug == 'right' and sprint.status == 'active':
-        if current_issue.status == "new":
-            current_issue.status = "in progress"
-            current_issue.save()
-        elif current_issue.status == "in progress":
-            current_issue.status = "resolved"
-            current_issue.save()
-    elif slug == 'left' and sprint.status == 'active':
-        if current_issue.status == "resolved":
-            current_issue.status = "in progress"
-            current_issue.save()
-        elif current_issue.status == "in progress":
-            current_issue.status = "new"
-            current_issue.save()
-    return HttpResponseRedirect(reverse('project:sprint_active',
-                                        args=(project_id)))
+    if request.method == 'POST':
+        if 'right' in request.POST and sprint.status == 'active':
+            if current_issue.status == "new":
+                current_issue.status = "in progress"
+                current_issue.save()
+            elif current_issue.status == "in progress":
+                current_issue.status = "resolved"
+                current_issue.save()
+        elif 'left' in request.POST and sprint.status == 'active':
+            if current_issue.status == "resolved":
+                current_issue.status = "in progress"
+                current_issue.save()
+            elif current_issue.status == "in progress":
+                current_issue.status = "new"
+                current_issue.save()
+        return redirect('project:sprint_active', project_id)
+    return redirect('project:sprint_active', project_id)
 
 
 class SprintStatusUpdate(UpdateView):

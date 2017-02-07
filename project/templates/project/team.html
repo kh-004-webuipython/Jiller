@@ -18,26 +18,35 @@
 {% endblock %}
 
 {% block content %}
-
-  {% if not team_list and user.pm_role_access %}
+  {% if not teams and user.pm_role_access %}
     <a class="btn btn-info pull-right"
-       href="{% url 'project:team_create' project.id %}">Create new team</a>
+       href="{% url 'project:team_create' project.id %}">Edit team</a>
   {% endif %}
   {% include 'project/project_navbar.html' with team=True %}
 
+  {% if pm %}
+  {% if pm|length_is:'1' %}
+      <h4 class="text-center">Project manager of the project is
+        <strong>{{ pm.first.first_name }} {{ pm.first.last_name }}</strong></h4><br>
+  {% else %}
+    <h4 class="text-center">There are more than one Project Manager in the
+      project!!!</h4><br>
+  {% endif %}
+
   <div class="container-fluid">
-    {% for team in team_list %}
-      <table class=" table-bordered col-lg-6">
+    {# table of current project members #}
+    <table class=" table-bordered col-lg-6">
       <tr class="text-center">
-        <td colspan=3> Current team</td>
+        <td colspan=3> Current project members</td>
       </tr>
       <tr class="text-center">
         <td>Teammate name</td>
-        <td>Role in team</td>
+        <td>Role on project</td>
         {% if user.pm_role_access %}
-          <td>remove from team</td>
+          <td>Remove</td>
         {% endif %}
       </tr>
+    {% for team in teams %}
       {% for employee in team.employees.all %}
         {# do not render PMs in teams #}
         {% if not employee.pm_role_access %}
@@ -66,6 +75,8 @@
         {% endif %}
       {% endfor %}
       {% if user.pm_role_access %}
+
+        {# table of company members #}
         <table class="table-bordered col-lg-6">
           <tr>
             <td colspan=4 class="text-center"> Available employees in company
@@ -95,11 +106,12 @@
                 </td>
               </tr>
             {% endif %}
-          {% empty %}
+
           {% endfor %}
         </table>
       {% endif %}
-    {% endfor %}
     </table>
+    {% endfor %}
+  {% endif %}
   </div>
 {% endblock %}
