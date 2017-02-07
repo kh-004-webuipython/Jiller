@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load render_table from django_tables2 %}
 {% load i18n %}
 {% load static %}
 {% load gravatar %}
@@ -11,6 +12,12 @@
 {% endblock %}
 
 {% block content %}
+    {% if table %}
+      {% render_table table "employee_table.html" %}
+    {% endif %}
+{% endblock %}
+
+<!--{% block content_ %}
   <div class="row">
     <div class="col-xs-12">
       <table id="simple-table" class="table table-bordered table-hover">
@@ -124,9 +131,9 @@
         {% endfor %}
         </tbody>
       </table>
-    </div><!-- /.span -->
-  </div><!-- /.row -->
-{% endblock %}
+    </div>&lt;!&ndash; /.span &ndash;&gt;
+  </div>&lt;!&ndash; /.row &ndash;&gt;
+{% endblock %}-->
 
 {% block extrascripts %}
 

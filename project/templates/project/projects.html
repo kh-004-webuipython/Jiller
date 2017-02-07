@@ -1,4 +1,6 @@
 {% extends 'base.html' %}
+{% load render_table from django_tables2 %}
+
 {% load i18n %}
 {% load waffle_tags %}
 
@@ -16,37 +18,8 @@
 {% endflag %}
   <div class="page-header"><h1>Project list</h1></div>
 
+  {% if table %}
+    {% render_table table "base_table.html" %}
+  {% endif %}
 
-  <table class="table table-bordered table-hover">
-      <thead>
-      <tr>
-        <th>Project title</th>
-        <th>Start date</th>
-        <th>End date</th>
-      </tr>
-      </thead>
-  <tbody>
-  {% for project in project_list %}
-
-      <tr>
-          <td>
-              <a href="{% url 'project:detail' project.id%}">{{ project.title }}</a>
-          </td>
-          <td>
-              {{ project.start_date|date:"d.m.Y" }}
-          </td>
-          <td>
-              {{ project.end_date|date:"d.m.Y" }}
-          </td>
-      </tr>
-
-  {% empty %}
-      <tr>
-          <td colspan="3">
-              There is no projects yet.
-          </td>
-      </tr>
-  {% endfor %}
-  </tbody>
-  </table>
 {% endblock %}
