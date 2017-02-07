@@ -7,9 +7,8 @@ from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.views.generic import DetailView, ListView
 from django.urls import reverse
 
-from project.forms import IssueCommentCreateForm
-from .forms import ProjectForm, SprintCreateForm, CreateIssueForm, \
-    EditIssueForm, CreateTeamForm
+from project.forms import IssueCommentCreateForm, IssueForm, CreateIssueForm
+from .forms import ProjectForm, SprintCreateForm, CreateTeamForm
 from .models import Project, ProjectTeam, Issue, Sprint
 
 from employee.models import Employee
@@ -50,7 +49,7 @@ def backlog(request, project_id):
     except Project.DoesNotExist:
         raise Http404("Project does not exist")
     issues = Issue.objects.filter(project=project_id) \
-        .filter(sprint__isnull=True).filter(~Q(status = 'deleted'))
+        .filter(sprint__isnull=True).filter(~Q(status='deleted'))
 
     return render(request, 'project/backlog.html', {'project': project,
                                                     'issues': issues})
@@ -58,17 +57,20 @@ def backlog(request, project_id):
 
 @waffle_flag('create_issue', 'project:list')
 def issue_create_view(request, project_id):
+    current_project = get_object_or_404(Project, pk=project_id)
     if request.method == "POST":
-        form = CreateIssueForm(request.POST)
+        form = CreateIssueForm(project=current_project,data = request.POST)
         if form.is_valid():
             new_issue = form.save(commit=False)
+            new_issue.project = Project.objects.get(id=project_id)
+            new_issue.author = Employee.objects.get(id=request.user.id)
             new_issue.save()
             return redirect('project:backlog', project_id)
     else:
         initial = {'project': project_id, 'author': request.user.id}
         if request.GET.get('root', False):
             initial['root'] = request.GET['root']
-        form = CreateIssueForm(initial=initial)
+        form = CreateIssueForm(project=current_project, initial=initial)
     return render(request, 'project/issue_create.html', {'form': form,
                                                          'project': Project.objects.get(
                                                              pk=project_id)})
@@ -76,15 +78,17 @@ def issue_create_view(request, project_id):
 
 @waffle_flag('edit_issue', 'project:list')
 def issue_edit_view(request, project_id, issue_id):
+    current_project = get_object_or_404(Project, pk=project_id)
     current_issue = get_object_or_404(Issue, pk=issue_id, project=project_id)
     if request.method == "POST":
-        form = EditIssueForm(request.POST, instance=current_issue)
+        form = IssueForm(project=current_project, data=request.POST,
+                         instance=current_issue)
         if form.is_valid():
             current_issue = form.save(commit=False)
             current_issue.save()
             return redirect('project:backlog', project_id)
     else:
-        form = EditIssueForm(instance=current_issue)
+        form = IssueForm(project=current_project, instance=current_issue)
     return render(request, 'project/issue_edit.html',
                   {'form': form, 'project': Project.objects.get(pk=project_id),
                    'issue': Issue.objects.get(pk=issue_id)})
