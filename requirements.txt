@@ -7,3 +7,4 @@ sorl-thumbnail==12.3
 coverage==4.3.4
 django-waffle==0.11.1
 pytz==2016.10
+django-simple-email-confirmation==0.21

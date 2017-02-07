@@ -56,7 +56,7 @@
         </thead>
         <tbody id="sortable">
         {% for issue in issues|dictsort:'order' %}
-          <tr class="sortable-row" data-id="{{ issue.id }}" data-order="{{ issue.order }}">
+          <tr data-id="{{ issue.id }}" data-order="{{ issue.order }}">
             <td>{{ issue.id }}</td>
             <td>{{ issue.author }}</td>
             <td><a href="{% url 'project:issue_detail' project.id issue.id %}">
@@ -75,11 +75,11 @@
     <h3>No issues.</h3>
   {% endif %}
 
-  {% block scripts %}
-    {{ block.super }}
+  {% block extrascripts %}
       {% flag "prioritize_issue" %}
         <script src="{% static 'js/jquery-ui.min.js' %}"></script>
+        <script src="{% static 'js/main.js' %}"></script>
         <script src="{% static 'project/js/prioritize_issue.js' %}"></script>
       {% endflag %}
-  {% endblock scripts %}
+  {% endblock %}
 {% endblock %}
