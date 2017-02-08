@@ -101,43 +101,20 @@ def issue_edit_view(request, project_id, issue_id):
                   {'form': form, 'project': Project.objects.get(pk=project_id),
                    'issue': Issue.objects.get(pk=issue_id)})
 
-#
-# def team_view(request, project_id):
-#     current_project = get_object_or_404(Project, pk=project_id)
-#     # hide PMs on "global" team board
-#     user_list = Employee.objects.filter(pm_role_access=False)
-#
-#     try:
-#         team_list = ProjectTeam.objects.filter(project=current_project)
-#     except ProjectTeam.DoesNotExist:
-#         raise Http404("No team on project")
-#
-#     return render(request, 'project/team.html', {'team_list': team_list,
-#                                                  'project': current_project,
-#                                                  'user_list': user_list})
 
 def team_view(request, project_id):
     current_project = get_object_or_404(Project, pk=project_id)
     # hide PMs on "global" team board
     user_list = Employee.objects.filter(pm_role_access=False)
-    table_add = ProjectTeamEmployeeAddTable(user_list)
+
     try:
-        teams_list = ProjectTeam.objects.filter(project=current_project)
+        team_list = ProjectTeam.objects.filter(project=current_project)
     except ProjectTeam.DoesNotExist:
         raise Http404("No team on project")
 
-    employee_list = []
-    for team in teams_list:
-        if team.employees:
-            for employee in team.employees.all():
-                employee_list.append(employee)
-
-    table_cur = ProjectTeamEmployeeTable(employee_list)
-    RequestConfig(request, paginate={'per_page': 10}).configure(table_add)
-    return render(request, 'project/team.html', {'table_cur': table_cur,
-                                                 'table_add': table_add,
+    return render(request, 'project/team.html', {'team_list': team_list,
                                                  'project': current_project,
-                                                 'team': teams_list})
+                                                 'user_list': user_list})
 
 
 def issue_detail_view(request, project_id, issue_id):
