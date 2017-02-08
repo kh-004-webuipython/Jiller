@@ -19,17 +19,19 @@ class AuthFormMixin(object):
 
 class LoginForm(AuthFormMixin, forms.Form):
     username = forms.CharField(label='Username', max_length=255)
-    password = forms.CharField(label='Password', max_length=255, )
+    password = forms.CharField(label='Password', max_length=255, widget=forms.PasswordInput)
 
 
 class RegistrationForm(AuthFormMixin, forms.ModelForm):
     DEVELOPER = 'developer'
     PRODUCT_OWNER = 'product owner'
     SCRUM_MASTER = 'scrum master'
+    PROJECT_MANAGER = 'project manager'
     EMPLOYEE_ROLES_CHOICES = (
         (DEVELOPER, _('Developer')),
         (PRODUCT_OWNER, _('Product Owner')),
-        (SCRUM_MASTER, _('Scrum Master'))
+        (SCRUM_MASTER, _('Scrum Master')),
+        (PROJECT_MANAGER, _('Project Manager'))
     )
     password_confirmation = forms.CharField(label=_('Confirm Password'),
                                             max_length=255,
@@ -63,6 +65,6 @@ class RegistrationForm(AuthFormMixin, forms.ModelForm):
             self.add_error('email', _('User with this email already exists'))
         role = cleaned_data.get('role')
         if role not in (
-                RegistrationForm.DEVELOPER, RegistrationForm.PRODUCT_OWNER,
-                RegistrationForm.SCRUM_MASTER):
+        RegistrationForm.DEVELOPER, RegistrationForm.PRODUCT_OWNER,
+        RegistrationForm.SCRUM_MASTER, RegistrationForm.PROJECT_MANAGER):
             self.add_error('role', _('Wrong user role'))
