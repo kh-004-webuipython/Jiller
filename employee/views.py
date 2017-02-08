@@ -2,16 +2,12 @@ from django.shortcuts import render, get_object_or_404
 from .models import Employee
 from .tables import EmployeeTable
 from django_tables2 import SingleTableView, RequestConfig
-
-
-# def employee_index_view(request):
-#     employee_list = Employee.objects.all()
-#     return render(request, 'employee/list.html', {'employee_list': employee_list})
+from django.conf import settings
 
 
 def employee_index_view(request):
     table = EmployeeTable(Employee.objects.all())
-    RequestConfig(request, paginate={'per_page': 10}).configure(table)
+    RequestConfig(request, paginate={'per_page': settings.PAGINATION_PER_PAGE}).configure(table)
     return render(request, 'employee/list.html', {'table': table})
 
 
