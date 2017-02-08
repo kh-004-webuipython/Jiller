@@ -25,106 +25,25 @@
     {% flag 'create_team' %}
     <a class="btn btn-info pull-right"
        href="{% url 'project:team_create' project.id %}">Create new team</a>
-  {% endflag %}
+    {% endflag %}
   {% endif %}
+
   {% include 'project/project_navbar.html' with team=True %}
 
   {% if pm %}
-  {% if pm|length_is:'1' %}
-      <h4 class="text-center">Project manager of the project is
-        <strong>{{ pm.first.first_name }} {{ pm.first.last_name }}</strong></h4><br>
-  {% else %}
-    <h4 class="text-center">There are more than one Project Manager in the
-      project!!!</h4><br>
+    {% if pm|length_is:'1' %}
+        <h4 class="text-center">Project manager of the project is
+          <strong>{{ pm.first.first_name }} {{ pm.first.last_name }}</strong></h4><br>
+    {% else %}
+      <h4 class="text-center">There are more than one Project Manager in the
+        project!!!</h4><br>
+    {% endif %}
   {% endif %}
 
-  <!--  {% if table_cur %}
-    {% render_table table_cur "base_table_team.html" %}
+   {% if table %}
+    {% render_table table "base_table.html" %}
   {% endif %}
-  {% if table_add %}
-    {% render_table table_add "base_table_team.html" %}
-  {% endif %}-->
 
-  <div class="container-fluid">
-    {# table of current project members #}
-    <table class=" table-bordered col-lg-6">
-      <tr class="text-center">
-        <td colspan=3> Current project members</td>
-      </tr>
-      <tr class="text-center">
-        <td>Teammate name</td>
-        <td>Role on project</td>
-        {% flag 'update_team' %}
-          <td>Remove</td>
-        {% endflag %}
-      </tr>
-    {% for team in teams %}
-      {% for employee in team.employees.all %}
-        {# do not render PMs in teams #}
-        {% if employee not in pm %}
-          <tr class="text-center">
-            <td class="col-lg-4">
-              <strong><a
-                  href="{% url 'employee:detail' employee.id %}">
-                {{ employee.first_name }} {{ employee.last_name }}</a></strong>
-            </td>
-            <td class="col-lg-1">
-              {{ employee.groups.all.0 }}
-            </td>
-            {% flag 'update_team' %}
-              <td class="col-lg-1">
-              <form
-                  action="{% url 'project:change_user_in_team' project.id employee.id team.id %}"
-                  method="post">
-              {% csrf_token %}
-
-              <button type="submit" name="remove" class="team-event"><i
-                  class="ace-icon fa fa-times bigger-130 red"></i></button>
-            {% endflag %}
-            </form>
-            </td>
-          </tr>
-        {% endif %}
-      {% endfor %}
-      {% flag 'update_team' %}
-
-        {# table of company members #}
-        <table class="table-bordered col-lg-6">
-          <tr>
-            <td colspan=4 class="text-center"> Available employees in company
-            </td>
-          </tr>
-          <tr class="text-center">
-            <td> Name</td>
-            <td> Role on projects</td>
-            <td> Add</td>
-          </tr>
-          {% for cur_user in user_list %}
-            {% if cur_user not in  team.employees.all %}
-              <tr class="text-center">
-                <td class="col-lg-4"><strong><a
-                    href="{% url 'employee:detail' cur_user.id %}">
-                  {{ cur_user.first_name }} {{ cur_user.last_name }}</a></strong>
-                </td>
-                <td class="col-lg-1">{{ cur_user.groups.all.0 }}</td>
-                <td class="col-lg-1">
-                  <form
-                      action="{% url 'project:change_user_in_team' project.id cur_user.id team.id %}"
-                      method="post">
-                    {% csrf_token %}
-                    <button type="submit" name="add" class="team-event"><i
-                        class="ace-icon fa bigger-130 fa-check green"></i></button>
-                  </form>
-                </td>
-              </tr>
-            {% endif %}
-          {% endfor %}
-        </table>
-      {% endflag %}
-    </table>
-    {% endfor %}
-  {% endif %}
-  </div>
 {% endblock %}
 
 

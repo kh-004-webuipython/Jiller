@@ -21,7 +21,7 @@ from .tables import ProjectTable, SprintsListTable
 from django_tables2 import SingleTableView, RequestConfig
 import json
 from employee.models import Employee
-from employee.tables import ProjectTeamEmployeeTable, ProjectTeamEmployeeAddTable
+from employee.tables import ProjectTeamTable
 
 
 class ProjectListView(SingleTableView):
@@ -53,7 +53,7 @@ def sprints_list(request, project_id):
     RequestConfig(request, paginate={'per_page': settings.PAGINATION_PER_PAGE}). \
         configure(table)
     return render(request, 'project/sprints_list.html', {'project': project,
-                                                         'sprints': sprints})
+                                                         'table': table})
 
 
 def backlog(request, project_id):
@@ -107,6 +107,20 @@ def issue_edit_view(request, project_id, issue_id):
                    'issue': Issue.objects.get(pk=issue_id)})
 
 
+# def team_view(request, project_id):
+#     current_project = get_object_or_404(Project, pk=project_id)
+#     # hide PMs on "global" team board
+#     user_list = Employee.objects.exclude(groups__name='project manager')
+#     # filter needs for possibility to add two PMs, when we need change 1st PM
+#     project_managers = Employee.objects.filter(projectteam__project=project_id,
+#                                                groups__name='project manager')
+#
+#     teams = ProjectTeam.objects.filter(project_id=current_project)
+#     return render(request, 'project/team.html', {'teams': teams,
+#                                                  'pm': project_managers,
+#                                                  'project': current_project,
+#                                                  'user_list': user_list})
+
 def team_view(request, project_id):
     current_project = get_object_or_404(Project, pk=project_id)
     # hide PMs on "global" team board
@@ -115,11 +129,24 @@ def team_view(request, project_id):
     project_managers = Employee.objects.filter(projectteam__project=project_id,
                                                groups__name='project manager')
 
+    table_add = ProjectTeamTable(user_list)
     teams = ProjectTeam.objects.filter(project_id=current_project)
-    return render(request, 'project/team.html', {'teams': teams,
-                                                 'pm': project_managers,
+
+    employee_list = []
+    for team in teams:
+        if team.employees:
+            for employee in team.employees.all():
+                employee_list.append(employee)
+
+    table = ProjectTeamTable(teams)
+    table_cur = ProjectTeamTable(employee_list)
+
+    RequestConfig(request, paginate={'per_page': 10}).configure(table)
+    return render(request, 'project/team.html', {'table_cur': table_cur,
+                                                 'table_add': table_add,
                                                  'project': current_project,
-                                                 'user_list': user_list})
+                                                 'team': teams,
+                                                 'table': table})
 
 
 def issue_detail_view(request, project_id, issue_id):

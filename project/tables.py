@@ -55,5 +55,21 @@ class BacklogTable(tables.Table):
         fields = ['title', 'description', 'root', 'author', 'status', 'order']
 
 
+class ProjectTeamTable(tables.Table):
+    id = tables.Column()
+    project = tables.Column()
+    title = tables.Column()
+    members = tables.Column()
+    # name = tables.LinkColumn('employee:detail', kwargs={"employee_id": A('id')})
+    # role = tables.Column(attrs={'td': {'align': 'center', 'width': '10%'}})
+    # move = tables.Column(attrs={'td': {'align': 'center', 'width': '10%'}})
+
+    class Meta:
+        model = ProjectTeam
+        attrs = {"class": "table table-bordered table-striped table-hover table-cur"}
+        exclude = ('id')
+        fields = ['title', 'project', 'members']
+
+
 
 

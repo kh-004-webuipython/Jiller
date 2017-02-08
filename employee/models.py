@@ -12,7 +12,7 @@ from django.core.validators import MaxValueValidator
 from sorl.thumbnail import get_thumbnail
 from django.db.models.signals import pre_delete
 from django.dispatch import receiver
-
+from project.models import ProjectTeam
 
 @python_2_unicode_compatible
 class Employee(SimpleEmailConfirmationUserMixin, AbstractUser):
@@ -40,6 +40,11 @@ class Employee(SimpleEmailConfirmationUserMixin, AbstractUser):
     @property
     def name(self):
         return '{} {}'.format(self.last_name, self.first_name)
+
+    @property
+    def members(self):
+        return ('heloo')
+            #projectteam__project=project_id))
 
 
 # check for for PM teams before delete
