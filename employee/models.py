@@ -20,10 +20,6 @@ class Employee(SimpleEmailConfirmationUserMixin, AbstractUser):
                                   blank=True)
     photo = models.ImageField(upload_to='avatars/', null=True, blank=True)
 
-    pm_role_access = models.BooleanField(verbose_name=_('PM role access'),
-                                         null=False,
-                                         default=False)
-
     def __str__(self):
         return self.username
 
@@ -59,6 +55,7 @@ def delete_user_without_team(instance, **kwargs):
         team_list = team_list[:len(team_list) - 2]
         raise ValidationError(
             "This user can not be deleted, it has next team(s):" + team_list)
+
 
 @python_2_unicode_compatible
 class IssueLog(models.Model):
