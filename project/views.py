@@ -117,6 +117,7 @@ def team_view(request, project_id):
                                                  'user_list': user_list})
 
 
+
 def issue_detail_view(request, project_id, issue_id):
     current_issue = get_object_or_404(Issue, pk=issue_id)
     project = get_object_or_404(Project, pk=project_id)
