@@ -39,7 +39,7 @@ class Employee(SimpleEmailConfirmationUserMixin, AbstractUser):
 
     @property
     def name(self):
-        return '{} {}'.format(self.first_name, self.last_name)
+        return '{} {}'.format(self.last_name, self.first_name)
 
 
 # check for for PM teams before delete
