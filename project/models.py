@@ -100,7 +100,6 @@ class Issue(models.Model):
         (IN_PROGRESS, _('In Progress')),
         (RESOLVED, _('Resolved')),
         (CLOSED, _('Closed')),
-        (DELETED, _('Deleted'))
     )
     HIGH = -1
     MEDIUM = -2
