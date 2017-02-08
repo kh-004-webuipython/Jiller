@@ -34,6 +34,9 @@ class IssueForm(forms.ModelForm):
         super(IssueForm, self).__init__(*args, **kwargs)
         self.fields['sprint'].queryset = Sprint.objects.filter(
             project=project.id)
+        self.fields['root'].queryset = Issue.objects.filter(
+            project=project.id).filter(status=('new' or 'in progress'))
+
 
     class Meta:
         model = Issue
