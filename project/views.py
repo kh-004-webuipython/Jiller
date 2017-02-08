@@ -86,8 +86,7 @@ def issue_create_view(request, project_id):
             initial['root'] = request.GET['root']
             form = CreateIssueForm(project=current_project, initial=initial)
     return render(request, 'project/issue_create.html', {'form': form,
-                                                         'project': Project.objects.get(
-                                                             pk=current_project.id)})
+                                                         'project': current_project})
 
 
 @waffle_flag('edit_issue', 'project:list')
@@ -108,7 +107,7 @@ def issue_edit_view(request, project_id, issue_id):
         form = IssueForm(project=current_project, instance=current_issue)
     return render(request, 'project/issue_edit.html',
                   {'form': form,
-                   'project': Project.objects.get(pk=current_project.id),
+                   'project': current_project,
                    'issue': Issue.objects.get(pk=current_issue.id)})
 
 
