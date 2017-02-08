@@ -1,5 +1,5 @@
 import datetime
-
+from django.conf import settings
 from django.db.models import Q
 from django.http import HttpResponseRedirect, Http404, HttpResponse
 from django.shortcuts import render, redirect, get_object_or_404
@@ -32,7 +32,7 @@ class ProjectListView(SingleTableView):
     table_pagination = True
 
     table_pagination = {
-        'per_page': 10
+        'per_page': settings.PAGINATION_PER_PAGE
     }
 
     def get_queryset(self):
@@ -51,7 +51,8 @@ def sprints_list(request, project_id):
         .exclude(status=Sprint.ACTIVE)
 
     table = SprintsListTable(sprints)
-    RequestConfig(request, paginate={'per_page': 10}).configure(table)
+    RequestConfig(request, paginate={'per_page': settings.PAGINATION_PER_PAGE}). \
+        configure(table)
     return render(request, 'project/sprints_list.html', {'project': project,
                                                          'table': table})
 
