@@ -1,5 +1,5 @@
 import datetime
-
+from django.conf import settings
 from django.db.models import Q
 from django.http import HttpResponseRedirect, Http404, HttpResponse
 from django.shortcuts import render, redirect, get_object_or_404
@@ -21,7 +21,8 @@ from .tables import ProjectTable, SprintsListTable
 from django_tables2 import SingleTableView, RequestConfig
 import json
 from employee.models import Employee
-from employee.tables import ProjectTeamEmployeeTable, ProjectTeamEmployeeAddTable
+from employee.tables import ProjectTeamEmployeeTable, \
+    ProjectTeamEmployeeAddTable
 
 
 class ProjectListView(SingleTableView):
@@ -31,7 +32,7 @@ class ProjectListView(SingleTableView):
     table_pagination = True
 
     table_pagination = {
-        'per_page': 10
+        'per_page': settings.PAGINATION_PER_PAGE
     }
 
     def get_queryset(self):
@@ -49,8 +50,11 @@ def sprints_list(request, project_id):
     sprints = Sprint.objects.filter(project=project_id) \
         .exclude(status=Sprint.ACTIVE)
 
+    table = SprintsListTable(sprints)
+    RequestConfig(request, paginate={'per_page': settings.PAGINATION_PER_PAGE}). \
+        configure(table)
     return render(request, 'project/sprints_list.html', {'project': project,
-                                                         'sprints': sprints})
+                                                         'table': table})
 
 
 def backlog(request, project_id):
@@ -68,40 +72,44 @@ def backlog(request, project_id):
 @waffle_flag('create_issue', 'project:list')
 def issue_create_view(request, project_id):
     current_project = get_object_or_404(Project, pk=project_id)
+    form = CreateIssueForm(project=current_project)
     if request.method == "POST":
-        form = CreateIssueForm(project=current_project,data = request.POST)
+        form = CreateIssueForm(project=current_project, data=request.POST)
         if form.is_valid():
             new_issue = form.save(commit=False)
-            new_issue.project = Project.objects.get(id=project_id)
+            new_issue.project = current_project
             new_issue.author = Employee.objects.get(id=request.user.id)
             new_issue.save()
-            return redirect('project:backlog', project_id)
+            return redirect('project:backlog', current_project.id)
     else:
-        initial = {'project': project_id, 'author': request.user.id}
+        initial = {}
         if request.GET.get('root', False):
             initial['root'] = request.GET['root']
-        form = CreateIssueForm(project=current_project, initial=initial)
+            form = CreateIssueForm(project=current_project, initial=initial)
     return render(request, 'project/issue_create.html', {'form': form,
-                                                         'project': Project.objects.get(
-                                                             pk=project_id)})
+                                                         'project': current_project})
 
 
 @waffle_flag('edit_issue', 'project:list')
 def issue_edit_view(request, project_id, issue_id):
     current_project = get_object_or_404(Project, pk=project_id)
-    current_issue = get_object_or_404(Issue, pk=issue_id, project=project_id)
+    current_issue = get_object_or_404(Issue, pk=issue_id,
+                                      project=current_project.id)
     if request.method == "POST":
         form = IssueForm(project=current_project, data=request.POST,
                          instance=current_issue)
         if form.is_valid():
             current_issue = form.save(commit=False)
+            current_issue.project = current_project
+            current_issue.author = request.user
             current_issue.save()
-            return redirect('project:backlog', project_id)
+            return redirect('project:backlog', current_project.id)
     else:
         form = IssueForm(project=current_project, instance=current_issue)
     return render(request, 'project/issue_edit.html',
-                  {'form': form, 'project': Project.objects.get(pk=project_id),
-                   'issue': Issue.objects.get(pk=issue_id)})
+                  {'form': form,
+                   'project': current_project,
+                   'issue': Issue.objects.get(pk=current_issue.id)})
 
 
 def team_view(request, project_id):
@@ -112,35 +120,11 @@ def team_view(request, project_id):
     project_managers = Employee.objects.filter(projectteam__project=project_id,
                                                groups__name='project manager')
 
-
     teams = ProjectTeam.objects.filter(project_id=current_project)
     return render(request, 'project/team.html', {'teams': teams,
                                                  'pm': project_managers,
                                                  'project': current_project,
                                                  'user_list': user_list})
-
-# def team_view(request, project_id):
-#     current_project = get_object_or_404(Project, pk=project_id)
-#     # hide PMs on "global" team board
-#     user_list = Employee.objects.filter(pm_role_access=False)
-#     table_add = ProjectTeamEmployeeAddTable(user_list)
-#     try:
-#         teams_list = ProjectTeam.objects.filter(project=current_project)
-#     except ProjectTeam.DoesNotExist:
-#         raise Http404("No team on project")
-#
-#     employee_list = []
-#     for team in teams_list:
-#         if team.employees:
-#             for employee in team.employees.all():
-#                 employee_list.append(employee)
-#
-#     table_cur = ProjectTeamEmployeeTable(employee_list)
-#     RequestConfig(request, paginate={'per_page': (9 - len(employee_list))}).configure(table_add)
-#     return render(request, 'project/team.html', {'table_cur': table_cur,
-#                                                  'table_add': table_add,
-#                                                  'project': current_project,
-#                                                  'team': teams_list})
 
 
 def issue_detail_view(request, project_id, issue_id):
@@ -233,7 +217,8 @@ class ProjectCreateView(CreateView):
         project = form.save(commit=False)
         project.save()
         if not ProjectTeam.objects.filter(project=project):
-            team = ProjectTeam.objects.create(project=project, title=project.title)
+            team = ProjectTeam.objects.create(project=project,
+                                              title=project.title)
             team.employees.add(self.request.user)
         return super(ProjectCreateView, self).form_valid(form, *args, **kwargs)
 
@@ -348,7 +333,6 @@ class ActiveSprintView(DetailView):
                 Project.objects.get(pk=self.kwargs['project_id'])
             except:
                 raise Http404("Project does not exist")
-
 
     def get_context_data(self, **kwargs):
         context = super(ActiveSprintView, self).get_context_data(

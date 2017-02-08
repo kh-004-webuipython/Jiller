@@ -7,7 +7,7 @@ from django.utils.safestring import mark_safe
 
 class EmployeeTable(tables.Table):
     id = tables.Column()
-    name = tables.LinkColumn('employee:detail', kwargs={"employee_id": A('id')})
+    name = tables.LinkColumn('employee:detail', kwargs={"employee_id": A('id')}, order_by=('last_name'))
     username = tables.Column()
     email = tables.Column()
     date_joined = tables.DateColumn(attrs={'td': {'align': 'center', 'width': '10%'}})
