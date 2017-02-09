@@ -1,28 +1,24 @@
+import json
 import datetime
 from django.conf import settings
 from django.db.models import Q
 from django.http import HttpResponseRedirect, Http404, HttpResponse
+from django.http.response import JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
-from django.views.generic import DetailView, ListView
-from django.urls import reverse
-
-from project.forms import IssueCommentCreateForm, IssueForm, CreateIssueForm
-from .forms import ProjectForm, SprintCreateForm, CreateTeamForm
-from .models import Project, ProjectTeam, Issue, Sprint
-
-from employee.models import Employee
-
+from django.views.generic import DetailView
 from django.utils.decorators import method_decorator
+from django.urls import reverse
+from django_tables2 import SingleTableView, RequestConfig
+from waffle.decorators import waffle_flag
+
+from .forms import ProjectForm, SprintCreateForm, CreateTeamForm, \
+    IssueCommentCreateForm, IssueForm, CreateIssueForm, IssueLogForm
+from .models import Project, ProjectTeam, Issue, Sprint
+from .tables import ProjectTable, SprintsListTable
 from .decorators import delete_project, \
     edit_project_detail, create_project, create_sprint
-from waffle.decorators import waffle_flag
-from .tables import ProjectTable, SprintsListTable
-from django_tables2 import SingleTableView, RequestConfig
-import json
-from employee.models import Employee
-from employee.tables import ProjectTeamEmployeeTable, \
-    ProjectTeamEmployeeAddTable
+from employee.models import Employee, IssueLog
 
 
 class ProjectListView(SingleTableView):
@@ -132,14 +128,26 @@ def issue_detail_view(request, project_id, issue_id):
     project = get_object_or_404(Project, pk=project_id)
 
     if request.method == 'POST':
-        form = IssueCommentCreateForm(request.POST)
-        if form.is_valid():
-            comment = form.save(commit=False)
-            comment.author = request.user
-            comment.issue = current_issue
-            comment.save()
-            return redirect(reverse('project:issue_detail',
-                                    args=(project.id, current_issue.id)))
+        if 'comment' in request.POST:
+            form = IssueCommentCreateForm(request.POST)
+            if form.is_valid():
+                comment = form.save(commit=False)
+                comment.author = request.user
+                comment.issue = current_issue
+                comment.save()
+                return redirect(reverse('project:issue_detail',
+                                        args=(project.id, current_issue.id)))
+
+        if 'log' in request.POST:
+            form = IssueLogForm(request.POST)
+            log_cost = float(request.POST.get('cost')) + current_issue.get_logs_sum()
+            if form.is_valid() and log_cost <= current_issue.estimation:
+                log = form.save(commit=False)
+                log.issue = current_issue
+                log.user = request.user
+                log.save()
+                return JsonResponse({'success': True, 'errors': None}, status=201)
+            return JsonResponse({'success': False, 'error': 'Your log is greater than issue estimation'}, status=400)
 
     if current_issue.project_id != project.id:
         raise Http404("Issue does not exist")
@@ -151,7 +159,8 @@ def issue_detail_view(request, project_id, issue_id):
     child_issues = Issue.objects.filter(root=current_issue.id)
     if child_issues:
         context['child_issues'] = child_issues
-    context['form'] = IssueCommentCreateForm()
+    context['comment_form'] = IssueCommentCreateForm()
+    context['log_form'] = IssueLogForm()
     return render(request, 'project/issue_detail.html', context)
 
 

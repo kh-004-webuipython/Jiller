@@ -3,6 +3,8 @@ import datetime
 from django import forms
 from django.utils.translation import ugettext_lazy as _
 
+from employee.models import IssueLog
+from general.forms import FormControlMixin
 from .models import Project, Sprint, Issue, ProjectTeam, IssueComment
 
 
@@ -36,7 +38,6 @@ class IssueForm(forms.ModelForm):
             project=project.id)
         self.fields['root'].queryset = Issue.objects.filter(
             project=project.id).filter(status=('new' or 'in progress'))
-
 
     class Meta:
         model = Issue
@@ -78,9 +79,8 @@ class SprintCreateForm(forms.ModelForm):
                 sprint=None)
 
     def clean_status(self):
-        if self.cleaned_data[
-            'status'] == Sprint.ACTIVE and self.project.sprint_set.filter(
-            status=Sprint.ACTIVE).exists():
+        if self.cleaned_data['status'] == Sprint.ACTIVE and self.project.sprint_set.filter(
+                status=Sprint.ACTIVE).exists():
             raise forms.ValidationError(
                 "You are already have an active sprint."
             )
@@ -91,6 +91,7 @@ class SprintCreateForm(forms.ModelForm):
         if end_date and datetime.date.today() > end_date:
             self.add_error('end_date',
                            _('End date cant\'t be earlier than start date'))
+        return end_date
 
     class Meta:
         model = Sprint
@@ -107,3 +108,9 @@ class IssueCommentCreateForm(forms.ModelForm):
         widgets = {
             'text': forms.TextInput(attrs={'class': 'form-control'})
         }
+
+
+class IssueLogForm(FormControlMixin, forms.ModelForm):
+    class Meta:
+        model = IssueLog
+        fields = ['cost', 'note']
