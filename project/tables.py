@@ -1,6 +1,7 @@
 import django_tables2 as tables
 from django_tables2.utils import A
 from .models import ProjectTeam, Project, Sprint, Issue
+from employee.models import Employee
 
 
 class ProjectTable(tables.Table):
@@ -59,7 +60,9 @@ class ProjectTeamTable(tables.Table):
     id = tables.Column()
     project = tables.Column()
     title = tables.Column()
-    members = tables.Column()
+    employees = tables.Column(accessor='employeemodel.name')
+
+    # members = tables.Column()
     # name = tables.LinkColumn('employee:detail', kwargs={"employee_id": A('id')})
     # role = tables.Column(attrs={'td': {'align': 'center', 'width': '10%'}})
     # move = tables.Column(attrs={'td': {'align': 'center', 'width': '10%'}})
@@ -67,8 +70,8 @@ class ProjectTeamTable(tables.Table):
     class Meta:
         model = ProjectTeam
         attrs = {"class": "table table-bordered table-striped table-hover table-cur"}
-        exclude = ('id')
-        fields = ['title', 'project', 'members']
+        #exclude = ('id')
+        #fields = ['title', 'project', 'members']
 
 
 
