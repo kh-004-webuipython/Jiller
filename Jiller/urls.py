@@ -19,6 +19,7 @@ except ImportError:
     pass
 
 
+handler400 = 'general.views.handler400'
 handler404 = 'general.views.handler404'
 handler403 = 'general.views.handler403'
 handler500 = 'general.views.handler500'
