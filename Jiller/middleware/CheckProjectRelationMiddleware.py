@@ -1,5 +1,6 @@
 import json
 import waffle
+from django.http import Http404
 
 from django.http import HttpResponseForbidden
 from django.urls import resolve
@@ -16,6 +17,8 @@ class CheckProjectRelation(object):
 
     def is_user_attached_to_project(self, user_id, project_id):
         project_team = ProjectTeam.objects.filter(project_id=project_id)
+        if not project_team:
+            raise Http404()
         for team in project_team:
             try:
                 ProjectTeam.objects.get(
@@ -35,7 +38,6 @@ class CheckProjectRelation(object):
 
         if waffle.flag_is_active(request, 'create_team') and path == 'project/create/':
             return self.get_response(request)
-
 
         resolved = resolve(request.path)
         if resolved.kwargs.get('project_id', False):
