@@ -7,7 +7,7 @@ from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.views.generic import DetailView, ListView
 from django.urls import reverse
 
-from project.forms import IssueCommentCreateForm, IssueForm, CreateIssueForm
+from project.forms import IssueCommentCreateForm, IssueForm, CreateIssueForm, IssueFormForEditing
 from .forms import ProjectForm, SprintCreateForm, CreateTeamForm
 from .models import Project, ProjectTeam, Issue, Sprint
 
@@ -96,7 +96,7 @@ def issue_edit_view(request, project_id, issue_id):
     current_issue = get_object_or_404(Issue, pk=issue_id,
                                       project=current_project.id)
     if request.method == "POST":
-        form = IssueForm(project=current_project, data=request.POST,
+        form = IssueFormForEditing(project=current_project, data=request.POST,
                          instance=current_issue)
         if form.is_valid():
             current_issue = form.save(commit=False)
@@ -105,7 +105,7 @@ def issue_edit_view(request, project_id, issue_id):
             current_issue.save()
             return redirect('project:backlog', current_project.id)
     else:
-        form = IssueForm(project=current_project, instance=current_issue)
+        form = IssueFormForEditing(project=current_project, instance=current_issue)
     return render(request, 'project/issue_edit.html',
                   {'form': form,
                    'project': current_project,
