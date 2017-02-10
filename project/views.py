@@ -140,10 +140,11 @@ def team_view(request, project_id):
 
     if team.employees != 'None':
         for employee in team.employees.all():
-            e_list.append({'id_team': team.id, 'id': employee.id,
-                           'project': team.project, 'title': team.title,
-                           'get_full_name': employee.get_full_name(),
-                           'role': employee.groups.get()})
+            if employee.groups != 'project manager':
+                e_list.append({'id_team': team.id, 'id': employee.id,
+                               'project': team.project, 'title': team.title,
+                               'get_full_name': employee.get_full_name(),
+                               'role': employee.groups.get()})
 
     for user in user_list:
         u_list.append({'id': user.id, 'get_full_name': user.get_full_name(),
