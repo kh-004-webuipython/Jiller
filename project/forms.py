@@ -46,11 +46,20 @@ class IssueForm(forms.ModelForm):
         sprint = cleaned_data.get('sprint')
         if not sprint and status != Issue.NEW:
             raise forms.ValidationError(
-                'The issue unrelated to sprint have to be NEW')
+                'The issue unrelated to sprint has to be NEW')
         if sprint and status == Issue.NEW:
             raise forms.ValidationError(
-                'The issue related to sprint have not to be NEW')
+                'The issue related to sprint has not to be NEW')
         return status
+
+    def clean_estimation(self):
+        cleaned_data = super(IssueForm, self).clean()
+        estimation = cleaned_data.get('estimation')
+        sprint = cleaned_data.get('sprint')
+        if sprint and not estimation:
+            raise forms.ValidationError(
+                'The issue related to sprint has to be estimated')
+        return estimation
 
     class Meta:
         model = Issue
