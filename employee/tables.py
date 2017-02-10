@@ -1,9 +1,6 @@
 import django_tables2 as tables
 from django_tables2.utils import A
-from django.utils.html import format_html
 from .models import Employee
-from django.utils.safestring import mark_safe
-from project.models import ProjectTeam
 
 
 class EmployeeTable(tables.Table):
