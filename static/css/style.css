@@ -52,11 +52,8 @@ button.team-event {
 }
 
 button.active-sprint-event {
-    -webkit-appearance: none;
-    -moz-appearance: none;
-    appearance: none;
     outline: none;
-    border: 0;
+    border: 0 !important;
     background: transparent;
 }
 
