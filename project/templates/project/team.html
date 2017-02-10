@@ -40,8 +40,12 @@
     {% endif %}
   {% endif %}
 
-   {% if table %}
-    {% render_table table "base_table.html" %}
+   {% if table_cur %}
+    {% render_table table_cur "base_table.html" %}
+  {% endif %}
+
+   {% if table_add %}
+    {% render_table table_add "base_table.html" %}
   {% endif %}
 
 {% endblock %}

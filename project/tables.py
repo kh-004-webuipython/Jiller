@@ -1,7 +1,7 @@
 import django_tables2 as tables
 from django_tables2.utils import A
 from .models import ProjectTeam, Project, Sprint, Issue
-from employee.models import Employee
+from employee.tables import EmployeeTable
 
 
 class ProjectTable(tables.Table):
@@ -60,19 +60,23 @@ class ProjectTeamTable(tables.Table):
     id = tables.Column()
     project = tables.Column()
     title = tables.Column()
-    employees = tables.Column(accessor='employeemodel.name')
-
-    # members = tables.Column()
-    # name = tables.LinkColumn('employee:detail', kwargs={"employee_id": A('id')})
-    # role = tables.Column(attrs={'td': {'align': 'center', 'width': '10%'}})
-    # move = tables.Column(attrs={'td': {'align': 'center', 'width': '10%'}})
+    id = tables.Column()
 
     class Meta:
         model = ProjectTeam
+        exclude = ('title', 'project', 'id_team', 'id', 'email', 'date_joined', 'is_active')
+        fields = ['get_full_name']
+
+
+class CurrentTeamTable(ProjectTeamTable):
+    get_full_name = tables.LinkColumn('employee:detail', kwargs={"employee_id": A('id')},\
+                                      order_by=('last_name'), verbose_name='Current employees')
+    class Meta:
         attrs = {"class": "table table-bordered table-striped table-hover table-cur"}
-        #exclude = ('id')
-        #fields = ['title', 'project', 'members']
 
 
-
-
+class AddTeamTable(ProjectTeamTable):
+    get_full_name = tables.LinkColumn('employee:detail', kwargs={"employee_id": A('id')},\
+                                      order_by=('last_name'), verbose_name='Free employees')
+    class Meta:
+        attrs = {"class": "table table-bordered table-striped table-hover table-add"}

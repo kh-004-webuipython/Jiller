@@ -8,8 +8,8 @@ from project.models import ProjectTeam
 
 class EmployeeTable(tables.Table):
     id = tables.Column()
-    get_full_name = tables.LinkColumn('employee:detail', kwargs={"employee_id": A('id')}, order_by=('last_name'), verbose_name='Name')
-    #username = tables.Column()
+    get_full_name = tables.LinkColumn('employee:detail', kwargs={"employee_id": A('id')},\
+                                      order_by=('last_name'), verbose_name='Name')
     email = tables.Column()
     date_joined = tables.DateColumn(attrs={'td': {'align': 'center', 'width': '10%'}})
     is_active = tables.BooleanColumn(attrs={'td': {'align': 'center', 'width': '10%'}})

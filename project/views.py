@@ -6,7 +6,6 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.views.generic import DetailView, ListView
 from django.urls import reverse
-#from django.db.models.query.RawQuerySet
 
 from project.forms import IssueCommentCreateForm, IssueForm, CreateIssueForm
 from .forms import ProjectForm, SprintCreateForm, CreateTeamForm
@@ -18,11 +17,11 @@ from django.utils.decorators import method_decorator
 from .decorators import delete_project, \
     edit_project_detail, create_project, create_sprint
 from waffle.decorators import waffle_flag
-from .tables import ProjectTable, SprintsListTable, ProjectTeamTable
+from .tables import ProjectTable, SprintsListTable, CurrentTeamTable, AddTeamTable
 from django_tables2 import SingleTableView, RequestConfig
 import json
 from employee.models import Employee
-from employee.tables import EmployeeTable
+
 
 
 class ProjectListView(SingleTableView):
@@ -126,7 +125,9 @@ def team_view(request, project_id):
     current_project = get_object_or_404(Project, pk=project_id)
 
     # hide PMs on "global" team board
-    user_list = Employee.objects.exclude(groups__name='project manager')
+    user_list = Employee.objects.exclude(groups__name='project manager').\
+                                 exclude(projectteam__project=project_id). \
+                                 exclude(groups__name='product owner')
 
     # filter needs for possibility to add two PMs, when we need change 1st PM
     project_managers = Employee.objects.filter(projectteam__project=project_id,
@@ -134,31 +135,22 @@ def team_view(request, project_id):
 
     teams = ProjectTeam.objects.filter(project_id=current_project)
 
-    employee_list = []
+    e_list = []
     for team in teams:
         if team.employees:
             for employee in team.employees.all():
-                employee_list.append(employee)
+                e_list.append({'id_team': team.id, 'id': employee.id,
+                               'project': team.project, 'title': team.title,
+                               'get_full_name': employee.get_full_name()})
 
-    team_params_list = []
-    for empl in employee_list:
-        team_params_list.append(ProjectTeam.objects.get(employees=empl, project_id=current_project))
-
-    table = ProjectTeamTable(teams)
-
-    # table = raw('SELECT Employee.id, Employee.name, Employee.role, \
-    #                 ProjectTeam.id, ProjectTeam.title \
-    #                 FROM Employee, ProjectTeam WHERE ProjectTeam.Employees=Employee.id')
-
-    #table = [employee_list, team_params_list]
-    # table_cur = ProjectTeamTable(employee_list)
-
-    #RequestConfig(request, paginate={'per_page': 10}).configure(table)
+    table_cur = CurrentTeamTable(e_list)
+    table_add = AddTeamTable(user_list)
+    RequestConfig(request, paginate={'per_page': settings.PAGINATION_PER_PAGE}).configure(table_cur)
     return render(request, 'project/team.html', {'teams': teams,
                                                  'pm': project_managers,
                                                  'project': current_project,
-                                                 'user_list': user_list,
-                                                 'table': table})
+                                                 'table_add': table_add,
+                                                 'table_cur': table_cur})
 
 
 def issue_detail_view(request, project_id, issue_id):
