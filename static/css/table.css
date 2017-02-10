@@ -31,17 +31,18 @@
     color: red;
 }
 
-.table-big {
+.table tr{
+    valign: top;
 }
 
-.table-cur {
+.table-sm {
     width: 100%;
+    margin: 10;
 }
 
-.table-add {
-    width: 100%;
+.table {
+    cellpadding: 60;
 }
-
 .table-container {
     cellspacing: 0;
     cellpadding: 5;

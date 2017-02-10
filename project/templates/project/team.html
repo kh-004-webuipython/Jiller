@@ -30,44 +30,52 @@
 
   {% include 'project/project_navbar.html' with team=True %}
 
-  {% if pm %}
   <p>
   <div class="col-sm-4 project-detail" >
     <div style="margin:0" class="profile-user-info profile-user-info-striped">
       <div class="profile-info-row">
         <div class="profile-info-name">Project manager</div>
-        {% if pm|length_is:'1' %}
-          <div class="profile-info-value">
-            <span>{{ pm.first.first_name }} {{ pm.first.last_name }}</span>
-          </div>
-        {% else %}
-          <span>There are more than one Project Manager in the project!!!</span>
-            {% endif %}
-        {% endif %}
+          {% if pm|length_is:'1' %}
+            <div class="profile-info-value">
+              <span>{{ pm.first.first_name }} {{ pm.first.last_name }}</span>
+            </div>
+          {% elif pm|length_is:'0' %}
+            <div class="profile-info-value">
+              <span>There is no project manager</span>
+            </div>
+          {% else %}
+            <div class="profile-info-value">
+              <span>There are more than one project manager</span>
+            </div>
+          {% endif %}
+        </div>
       </div>
     </div>
-</div>
+  </div>
+  </p>
 
-  <table class="table">
-    <tr valign="top">
-      <td width="48%">
-        <div>
-          {% if table_cur %}
-            {% render_table table_cur "base_table_team.html" %}
-          {% endif %}
-        </div>
-      </td>
-      <td width="4%">
-      </td>
-      <td width="48%">
-        <div>
-          {% if table_add %}
-            {% render_table table_add "base_table_team.html" %}
-          {% endif %}
-        </div>
-      </td>
-    </tr>
-  </table>
+  <div class="col-sm-11 profile-info-row" >
+    <table class="table">
+      <tr>
+        <td width="48%">
+          <div>
+            {% if table_cur %}
+              {% render_table table_cur "base_table_team.html" %}
+            {% endif %}
+          </div>
+        </td>
+        <td width="4%">
+        </td>
+        <td width="48%">
+          <div>
+            {% if table_add %}
+              {% render_table table_add "base_table_team.html" %}
+            {% endif %}
+          </div>
+        </td>
+      </tr>
+    </table>
+  </div>
 {% endblock %}
 
 

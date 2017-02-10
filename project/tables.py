@@ -69,18 +69,20 @@ class ProjectTeamTable(tables.Table):
         fields = ['get_full_name', 'role']
 
 
+
 class CurrentTeamTable(ProjectTeamTable):
     get_full_name = tables.LinkColumn('employee:detail', kwargs={"employee_id": A('id')},\
                                       order_by=('last_name'), verbose_name='Current employees')
-    sub = tables.Column(attrs={'td': {'width': '10%'}})
+    sub = tables.Column(attrs={'td': {'width': '10%'}}, verbose_name='Del')
 
     class Meta:
-        attrs = {"class": "table table-bordered table-striped table-hover table-cur"}
+        attrs = {"class": "table table-bordered table-striped table-hover table-sm"}
 
 
 class AddTeamTable(ProjectTeamTable):
     get_full_name = tables.LinkColumn('employee:detail', kwargs={"employee_id": A('id')},\
                                       order_by=('last_name'), verbose_name='Free employees')
     add = tables.Column(attrs={'td': {'width': '10%'}})
+
     class Meta:
-        attrs = {"class": "table table-bordered table-striped table-hover table-add"}
+        attrs = {"class": "table table-bordered table-striped table-hover table-sm"}

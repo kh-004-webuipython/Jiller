@@ -140,7 +140,7 @@ def team_view(request, project_id):
 
     if team.employees != 'None':
         for employee in team.employees.all():
-            if employee.groups != 'project manager':
+            if employee not in project_managers:
                 e_list.append({'id_team': team.id, 'id': employee.id,
                                'project': team.project, 'title': team.title,
                                'get_full_name': employee.get_full_name(),
@@ -153,6 +153,7 @@ def team_view(request, project_id):
     table_cur = CurrentTeamTable(e_list)
     table_add = AddTeamTable(u_list)
     RequestConfig(request, paginate={'per_page': settings.PAGINATION_PER_PAGE}).configure(table_add)
+    RequestConfig(request, paginate={'per_page': settings.PAGINATION_PER_PAGE}).configure(table_cur)
     return render(request, 'project/team.html', {'team': team,
                                                  'pm': project_managers,
                                                  'project': current_project,
