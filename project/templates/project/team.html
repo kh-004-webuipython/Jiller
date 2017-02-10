@@ -39,15 +39,26 @@
         project!!!</h4><br>
     {% endif %}
   {% endif %}
-
-   {% if table_cur %}
-    {% render_table table_cur "base_table.html" %}
-  {% endif %}
-
-   {% if table_add %}
-    {% render_table table_add "base_table.html" %}
-  {% endif %}
-
+  <table class="table">
+    <tr valign="top">
+      <td width="48%">
+        <div>
+          {% if table_cur %}
+            {% render_table table_cur "base_table_team.html" %}
+          {% endif %}
+        </div>
+      </td>
+      <td width="4%">
+      </td>
+      <td width="48%">
+        <div>
+          {% if table_add %}
+            {% render_table table_add "base_table_team.html" %}
+          {% endif %}
+        </div>
+      </td>
+    </tr>
+  </table>
 {% endblock %}
 
 

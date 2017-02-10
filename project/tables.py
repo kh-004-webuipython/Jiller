@@ -57,11 +57,11 @@ class BacklogTable(tables.Table):
 
 
 class ProjectTeamTable(tables.Table):
-    id = tables.Column()
+    id_team = tables.Column()
     project = tables.Column()
     title = tables.Column()
     id = tables.Column()
-    role = tables.Column(attrs={'td': {'width': '30%'}})
+    role = tables.Column(attrs={'td': {'width': '20%'}})
 
     class Meta:
         model = ProjectTeam
@@ -72,6 +72,8 @@ class ProjectTeamTable(tables.Table):
 class CurrentTeamTable(ProjectTeamTable):
     get_full_name = tables.LinkColumn('employee:detail', kwargs={"employee_id": A('id')},\
                                       order_by=('last_name'), verbose_name='Current employees')
+    sub = tables.Column(attrs={'td': {'width': '10%'}})
+
     class Meta:
         attrs = {"class": "table table-bordered table-striped table-hover table-cur"}
 
@@ -79,5 +81,6 @@ class CurrentTeamTable(ProjectTeamTable):
 class AddTeamTable(ProjectTeamTable):
     get_full_name = tables.LinkColumn('employee:detail', kwargs={"employee_id": A('id')},\
                                       order_by=('last_name'), verbose_name='Free employees')
+    add = tables.Column(attrs={'td': {'width': '10%'}})
     class Meta:
         attrs = {"class": "table table-bordered table-striped table-hover table-add"}

@@ -31,11 +31,19 @@
     color: red;
 }
 
+.table-big {
+}
+
 .table-cur {
-    width: 50%;
+    width: 100%;
 }
 
 .table-add {
-    width: 50%;
+    width: 100%;
+}
+
+.table-container {
+    cellspacing: 0;
+    cellpadding: 5;
 }
 

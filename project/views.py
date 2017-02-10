@@ -23,7 +23,6 @@ import json
 from employee.models import Employee
 
 
-
 class ProjectListView(SingleTableView):
     model = Project
     table_class = ProjectTable
@@ -133,17 +132,18 @@ def team_view(request, project_id):
     project_managers = Employee.objects.filter(projectteam__project=project_id,
                                                groups__name='project manager')
 
-    teams = ProjectTeam.objects.filter(project_id=current_project)
+    # for one project it could be only one team
+    team = ProjectTeam.objects.get(project_id=current_project)
 
     e_list = []
     u_list = []
-    for team in teams:
-        if team.employees:
-            for employee in team.employees.all():
-                e_list.append({'id_team': team.id, 'id': employee.id,
-                               'project': team.project, 'title': team.title,
-                               'get_full_name': employee.get_full_name(),
-                               'role': employee.groups.get()})
+
+    if team.employees != 'None':
+        for employee in team.employees.all():
+            e_list.append({'id_team': team.id, 'id': employee.id,
+                           'project': team.project, 'title': team.title,
+                           'get_full_name': employee.get_full_name(),
+                           'role': employee.groups.get()})
 
     for user in user_list:
         u_list.append({'id': user.id, 'get_full_name': user.get_full_name(),
@@ -151,8 +151,8 @@ def team_view(request, project_id):
 
     table_cur = CurrentTeamTable(e_list)
     table_add = AddTeamTable(u_list)
-    RequestConfig(request, paginate={'per_page': settings.PAGINATION_PER_PAGE}).configure(table_cur)
-    return render(request, 'project/team.html', {'teams': teams,
+    RequestConfig(request, paginate={'per_page': settings.PAGINATION_PER_PAGE}).configure(table_add)
+    return render(request, 'project/team.html', {'team': team,
                                                  'pm': project_managers,
                                                  'project': current_project,
                                                  'table_add': table_add,
