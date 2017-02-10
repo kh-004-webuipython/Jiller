@@ -2,6 +2,7 @@ from __future__ import unicode_literals
 
 from datetime import datetime
 
+from django.db.models.aggregates import Sum
 from django.utils.encoding import python_2_unicode_compatible
 from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
@@ -149,6 +150,12 @@ class Issue(models.Model):
         if self.issue_set.exists():
             return self.issue_set.all()
         return False
+
+    def get_logs_sum(self):
+        return self.issuelog_set.aggregate(Sum('cost'))['cost__sum'] or 0
+
+    def completion_rate(self):
+        return round((self.get_logs_sum() * 100) / self.estimation, 2)
 
     def save(self, *args, **kwargs):
         self.calculate_issue_priority()
