@@ -37,10 +37,6 @@ class Employee(SimpleEmailConfirmationUserMixin, AbstractUser):
     def get_cropped_photo(self, *args, **kwargs):
         return get_thumbnail(self.photo, '136x150', crop='center')
 
-    @property
-    def name(self):
-        return '{} {}'.format(self.last_name, self.first_name)
-
 
 # check for for PM teams before delete
 @receiver(pre_delete, sender=Employee)

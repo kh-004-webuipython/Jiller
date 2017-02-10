@@ -9,8 +9,9 @@ from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.views.generic import DetailView
 from django.utils.decorators import method_decorator
 from django.urls import reverse
-from django_tables2 import SingleTableView, RequestConfig
+
 from waffle.decorators import waffle_flag
+from django_tables2 import SingleTableView, RequestConfig
 
 from .forms import ProjectForm, SprintCreateForm, CreateTeamForm, \
     IssueCommentCreateForm, IssueForm, CreateIssueForm, IssueLogForm
@@ -18,7 +19,7 @@ from .models import Project, ProjectTeam, Issue, Sprint
 from .tables import ProjectTable, SprintsListTable
 from .decorators import delete_project, \
     edit_project_detail, create_project, create_sprint
-from employee.models import Employee, IssueLog
+from employee.models import Employee
 
 
 class ProjectListView(SingleTableView):

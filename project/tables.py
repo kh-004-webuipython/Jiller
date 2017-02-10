@@ -7,15 +7,14 @@ class ProjectTable(tables.Table):
     id = tables.Column()
     title = tables.LinkColumn('project:detail', kwargs={"project_id": A('id')},
                               attrs={'td': {'width': '30%'}})
-    description = tables.Column()
-    start_date = tables.DateColumn(attrs={'td': {'align': 'center', 'width': '10%'}})
-    end_date = tables.DateColumn(attrs={'td': {'align': 'center', 'width': '10%'}})
+    start_date = tables.DateColumn(attrs={'td': {'align': 'center', 'width': '2%'}})
+    end_date = tables.DateColumn(attrs={'td': {'align': 'center', 'width': '2%'}})
     is_active = tables.BooleanColumn(attrs={'td': {'align': 'center', 'width': '10%'}})
 
     class Meta:
         model = Project
         attrs = {'class': 'table table-bordered table-striped table-hover'}
-        exclude = ('id', 'is_active')
+        exclude = ('id', 'is_active', 'description')
 
 
 class SprintsListTable(tables.Table):
