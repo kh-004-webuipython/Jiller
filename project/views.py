@@ -139,7 +139,7 @@ def issue_detail_view(request, project_id, issue_id):
                 return redirect(reverse('project:issue_detail',
                                         args=(project.id, current_issue.id)))
 
-        if 'log' in request.POST and 'cost' in request.POST:
+        if 'log' in request.POST:
             form = IssueLogForm(request.POST, issue=current_issue)
             if form.is_valid():
                 log = form.save(commit=False)
