@@ -21,8 +21,6 @@ from .tables import ProjectTable, SprintsListTable
 from django_tables2 import SingleTableView, RequestConfig
 import json
 from employee.models import Employee
-from employee.tables import ProjectTeamEmployeeTable, \
-    ProjectTeamEmployeeAddTable
 
 
 class ProjectListView(SingleTableView):
