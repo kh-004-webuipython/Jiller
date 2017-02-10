@@ -61,11 +61,12 @@ class ProjectTeamTable(tables.Table):
     project = tables.Column()
     title = tables.Column()
     id = tables.Column()
+    role = tables.Column(attrs={'td': {'width': '30%'}})
 
     class Meta:
         model = ProjectTeam
         exclude = ('title', 'project', 'id_team', 'id', 'email', 'date_joined', 'is_active')
-        fields = ['get_full_name']
+        fields = ['get_full_name', 'role']
 
 
 class CurrentTeamTable(ProjectTeamTable):
