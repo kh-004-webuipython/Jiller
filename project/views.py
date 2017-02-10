@@ -455,6 +455,39 @@ def team_create(request, project_id):
                                                         'project': project})
 
 
+def workload_manager(request, project_id):
+    project = get_object_or_404(Project, pk=project_id)
+    issues = Issue.objects.filter(project=project_id)\
+        .filter(sprint__status=Sprint.ACTIVE)
+    sprint = Sprint.objects.get(pk=project_id, status=Sprint.ACTIVE)
+    duration = sprint.end_date - sprint.start_date
+    items = []
+    if issues:
+        for issue in issues:
+            if not items:
+                items.append({'employee': issue.employee,
+                              'issues': [issue]})
+            else:
+                lacmus = True
+                for item in items:
+                    if item['employee'] == issue.employee:
+                        item['issues'].append(issue)
+                        lacmus = False
+                        break
+                if lacmus:
+                    items.append({'employee': issue.employee,
+                                  'issues': [issue]})
+    for item in items:
+        sum = 0
+        for issue in item['issues']:
+            sum += issue.estimation
+        change = duration.days % 7 if duration.days % 7 < 6 else 5
+        item['workload'] = sum * 100 / ((duration.days / 7) * 40 + change * 8)
+
+    return render(request, 'project/workload_manager.html', {'items': items,
+                                                             'project': project})
+
+
 """
 class SprintDelete(DeleteView):
     model = Sprint

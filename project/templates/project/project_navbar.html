@@ -28,6 +28,11 @@
         Team
       </a>
     </li>
+    <li {% if workload %}class="active" {% endif %}>
+      <a href="{% url 'project:workload_manager' project.id %}">
+        Workload
+      </a>
+    </li>
   </ul>
 </div>
 <div class="clearfix navbar-margin-bottom"></div>

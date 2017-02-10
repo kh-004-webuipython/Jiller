@@ -66,3 +66,33 @@ div.project-detail {
     float: left;
     margin: 7px 0 7px 7px;
 }
+
+.progress {
+    width: 100%;
+    height: 2px;
+}
+
+.progress-wrap {
+    margin: 0 0;
+    overflow: hidden;
+    position: relative;
+}
+
+.progress-wrap .progress-bar {
+    background: #ddd;
+    left: 0;
+    position: absolute;
+    top: 0;
+}
+
+.background-red {
+    background: #FF464B;
+}
+
+.background-green {
+    background: #7cfb00;
+}
+
+.background-yellow {
+    background: #ffca2c;
+}

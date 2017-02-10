@@ -36,6 +36,8 @@ urlpatterns = [
         views.ActiveSprintView.as_view(), name='sprint_active'),
     url(r'^(?P<project_id>\d+)/(?P<issue_id>\d+)/push/$',
         views.push_issue_in_active_sprint, name='issue_push'),
+    url(r'^(?P<project_id>\d+)/workload_manager',
+        views.workload_manager, name='workload_manager'),
 
     # issue
     url(r'^(?P<project_id>\d+)/issue/create/$',

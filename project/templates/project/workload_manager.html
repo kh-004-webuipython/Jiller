@@ -1,0 +1,75 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load waffle_tags %}
+{% load i18n %}
+
+
+{% block extrastyles %}
+  <link rel="stylesheet" href="{% static 'css/ace-fonts.css' %}"
+        type='text/css'/>
+  <link rel="stylesheet" type="text/css"
+        href="{% static 'css/jquery-ui.css' %}"/>
+  <link rel="stylesheet" type="text/css"
+        href="{% static 'css/style.css' %}"/>
+{% endblock %}
+
+
+{% block breadcrumbs %}
+  {{ block.super }}
+  <li>
+    <a href="{% url 'project:list' %}">Projects</a>
+  </li>
+  <li>
+    <a href="{% url 'project:detail' project.id %}">{{ project.title }}</a>
+  </li>
+  <li>
+    <span>{% trans 'Workload manager' %}</span>
+  </li>
+{% endblock %}
+
+{% block content %}
+  {% include 'project/project_navbar.html' with workload=True %}
+
+  {% flag "prioritize_issue" %}
+    <div id="error-message"></div>
+  {% endflag %}
+
+{% if items %}
+
+  <div class="row">
+    {% for item in items %}
+      <div class="col-md-3">
+          <ul class="list-group">
+            <li class="blue lighter bigger-120 list-group-item">
+              <span class="glyphicon glyphicon-user"></span>{{ item.employee }}
+              <span class="badge">{{ item.workload }}%</span></li>
+          <div class="background-{% if item.workload < 90 %}yellow
+            {% elif item.workload > 105 %}red {% else %}green
+            {% endif %}progress-wrap progress"
+              data-progress-percent="{{ item.workload }}">
+            <div class="progress-bar progress"></div>
+          </div>
+          {% for issue in item.issues|dictsort:'order' %}
+            <li class="list-group-item">{{ issue.title }}
+                <span class="badge">{{ issue.estimation }}</span></li>
+          {% endfor %}
+          </ul>
+      </div>
+    {% if forloop.counter|divisibleby:4 %}
+      </div><div class="row">
+    {% endif %}
+  {% endfor %}
+</div>
+
+{% else %}
+  <h3>No items.</h3>
+{% endif %}
+
+  {% block extrascripts %}
+{#    {% flag "prioritize_issue" %}#}
+      <script src="{% static 'js/jquery-ui.min.js' %}"></script>
+      <script src="{% static 'js/main.js' %}"></script>
+      <script src="{% static 'project/js/workload_manager.js' %}"></script>
+{#    {% endflag %}#}
+  {% endblock %}
+{% endblock %}
