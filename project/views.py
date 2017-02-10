@@ -138,16 +138,15 @@ def issue_detail_view(request, project_id, issue_id):
                 return redirect(reverse('project:issue_detail',
                                         args=(project.id, current_issue.id)))
 
-        if 'log' in request.POST:
-            form = IssueLogForm(request.POST)
-            log_cost = float(request.POST.get('cost')) + current_issue.get_logs_sum()
-            if form.is_valid() and log_cost <= current_issue.estimation:
+        if 'log' in request.POST and 'cost' in request.POST:
+            form = IssueLogForm(request.POST, issue=current_issue)
+            if form.is_valid():
                 log = form.save(commit=False)
                 log.issue = current_issue
                 log.user = request.user
                 log.save()
                 return JsonResponse({'success': True, 'errors': None}, status=201)
-            return JsonResponse({'success': False, 'error': 'Your log is greater than issue estimation'}, status=400)
+            return JsonResponse({'success': False, 'error': form.errors}, status=400)
 
     if current_issue.project_id != project.id:
         raise Http404("Issue does not exist")

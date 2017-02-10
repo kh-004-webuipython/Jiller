@@ -111,6 +111,18 @@ class IssueCommentCreateForm(forms.ModelForm):
 
 
 class IssueLogForm(FormControlMixin, forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        self.issue = kwargs.pop('issue', None)
+        super(IssueLogForm, self).__init__(*args, **kwargs)
+
+    def clean_cost(self):
+        cost = self.cleaned_data['cost']
+        if cost < 0:
+            raise forms.ValidationError(_('Issue log can not be less than 0'))
+        if cost + self.issue.get_logs_sum() > self.issue.estimation:
+            raise forms.ValidationError(_('Your log is greater than issue estimation'))
+        return cost
+
     class Meta:
         model = IssueLog
         fields = ['cost', 'note']

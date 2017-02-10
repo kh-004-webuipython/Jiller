@@ -1,5 +1,6 @@
 from django.core.urlresolvers import reverse
 
+from project.models import Project, Issue
 from .models import Employee
 from project.tests import LoginRequiredBase
 
@@ -20,3 +21,24 @@ class EmployeeTest(LoginRequiredBase):
         response = self.client.get(view_url)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(employee.id, response.context['employee'].id)
+
+
+class IssueLogCreateTest(LoginRequiredBase):
+    def setUp(self):
+        super(IssueLogCreateTest, self).setUp()
+        self.project = Project.objects.create(title="Project test")
+        self.issue = Issue.objects.create(project=self.project,
+                                          author=self.user, estimation=10, title='title')
+        self.view_url = reverse('project:issue_detail', args=[self.project.id, self.issue.id])
+
+    def test_issue_log_create_invalid_data(self):
+        data = {'log': '1', 'cost': '11', 'note': ''}
+        response = self.client.post(self.view_url, data, format='json')
+        self.assertEqual(response.status_code, 400)
+        data = {'log': '1', 'cost': '5', 'note': ''}
+        response = self.client.post(self.view_url, data, format='json')
+        self.assertEqual(response.status_code, 201)
+        data = {'log': '1', 'cost': '-1', 'note': ''}
+        response = self.client.post(self.view_url, data, format='json')
+        self.assertEqual(response.status_code, 400)
+

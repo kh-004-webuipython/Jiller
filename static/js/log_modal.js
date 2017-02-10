@@ -14,9 +14,8 @@ jQuery(function ($) {
                     $('.modal-body').append('<h3>' + $('#log-modal').attr('data-success-title') + '</h3>');
                 },
                 400: function (data) {
-                    console.log(data.responseJSON.errors);
                     $('#log-modal-form').addClass('has-error');
-                    $('div.help-block').append("<span class='error-block'>" + data.responseJSON.error + "</span>")
+                    $('div.help-block').append("<span class='error-block'>" + data.responseJSON.error.cost + "</span>")
                 }
             }
         })
