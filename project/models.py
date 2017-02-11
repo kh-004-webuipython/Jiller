@@ -83,7 +83,7 @@ class Sprint(models.Model):
 
         if self.status not in (Sprint.ACTIVE, Sprint.NEW):
             sprint_unfinished_issues = Issue.objects.filter(sprint=self.id).exclude(
-                issue__status__in=(Issue.CLOSED, Issue.RESOLVED, Issue.DELETED))
+                status__in=(Issue.CLOSED, Issue.RESOLVED, Issue.DELETED))
             for issue in sprint_unfinished_issues:
                 issue.sprint = None
                 issue.status = Issue.NEW
@@ -134,7 +134,8 @@ class Issue(models.Model):
                                              validators=[
                                                  MaxValueValidator(240)],
                                              null=True, blank=True)
-    order = models.PositiveIntegerField(verbose_name=_('Priority'), default=0)
+    order = models.PositiveIntegerField(verbose_name=_('Priority'), default=0,
+                                        choices=ISSUE_PRIORITY)
 
     def calculate_issue_priority(self):
         if self.order == Issue.HIGH:
