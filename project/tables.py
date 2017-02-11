@@ -71,7 +71,7 @@ class ProjectTeamTable(tables.Table):
 
 class CurrentTeamTable(ProjectTeamTable):
     get_full_name = tables.LinkColumn('employee:detail', kwargs={"employee_id": A('id')},\
-                                      order_by=('last_name'), verbose_name='Current employees')
+                                      order_by=('get_full_name'), verbose_name='Current employees')
     sub = tables.Column(attrs={'td': {'width': '10%'}}, verbose_name='Del')
 
     class Meta:
@@ -80,7 +80,7 @@ class CurrentTeamTable(ProjectTeamTable):
 
 class AddTeamTable(ProjectTeamTable):
     get_full_name = tables.LinkColumn('employee:detail', kwargs={"employee_id": A('id')},\
-                                      order_by=('last_name'), verbose_name='Free employees')
+                                      order_by=('get_full_name'), verbose_name='Free employees')
     add = tables.Column(attrs={'td': {'width': '10%'}})
 
     class Meta:
