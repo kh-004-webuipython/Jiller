@@ -98,5 +98,13 @@ div.project-detail {
 }
 
 .contant-box {
-    min-height: 40px;
+    min-height: 2px;
+}
+
+.background-blue {
+    background: rgba(150, 205, 141, 0.8);
+}
+
+.no-underline:hover {
+    text-decoration: none;
 }

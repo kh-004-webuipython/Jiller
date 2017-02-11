@@ -456,33 +456,39 @@ def team_create(request, project_id):
 
 
 def workload_manager(request, project_id):
+    if request.method == 'POST':
+        data = json.loads(request.POST.get('data'))
+
+        if data:
+            employee_id = data['employee']
+            employee = Employee.objects.get(pk=employee_id)
+            issue = Issue.objects.get(pk=data['issue'])
+            issue.employee = employee
+            issue.save()
+
     project = get_object_or_404(Project, pk=project_id)
-    issues = Issue.objects.filter(project=project_id)\
-        .filter(sprint__status=Sprint.ACTIVE)
+    try:
+        employees = ProjectTeam.objects.filter(project=project)[0]\
+            .employees.filter(groups__pk__in=[1, 2])
+    except ProjectTeam.DoesNotExist:
+        raise Http404("ProjectTeam does not exist")
+    items = []
+    for employee in employees:
+        issues = Issue.objects.filter(project=project_id) \
+            .filter(sprint__status=Sprint.ACTIVE, employee=employee)
+        items.append({'employee': employee, 'issues': issues})
+
     sprint = Sprint.objects.get(pk=project_id, status=Sprint.ACTIVE)
     duration = sprint.end_date - sprint.start_date
-    items = []
-    if issues:
-        for issue in issues:
-            if not items:
-                items.append({'employee': issue.employee,
-                              'issues': [issue]})
-            else:
-                lacmus = True
-                for item in items:
-                    if item['employee'] == issue.employee:
-                        item['issues'].append(issue)
-                        lacmus = False
-                        break
-                if lacmus:
-                    items.append({'employee': issue.employee,
-                                  'issues': [issue]})
+    change = duration.days % 7 if duration.days % 7 < 6 else 5
+    work_hours = duration.days / 7 * 40 + change * 8
     for item in items:
         sum = 0
         for issue in item['issues']:
             sum += issue.estimation
-        change = duration.days % 7 if duration.days % 7 < 6 else 5
-        item['workload'] = sum * 100 / ((duration.days / 7) * 40 + change * 8)
+
+        item['workload'] = sum * 100 / work_hours
+        item['free'] = work_hours - sum
 
     return render(request, 'project/workload_manager.html', {'items': items,
                                                              'project': project})

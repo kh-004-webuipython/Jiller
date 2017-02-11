@@ -36,12 +36,15 @@
 
 {% if items %}
 
+    <div id="replace">
   <div class="row">
     {% for item in items %}
       <div class="col-md-3">
           <ul class="list-group">
             <li class="blue lighter bigger-120 list-group-item">
-              <span class="glyphicon glyphicon-user"></span>{{ item.employee }}
+              <span class="glyphicon glyphicon-user"></span>&nbsp
+                <a class="no-underline" href="{% url 'employee:detail' item.employee.id %}">
+                    {{ item.employee }}</a>
               <span class="badge">{{ item.workload }}%</span></li>
             <div class="background-{% if item.workload < 90 %}yellow
               {% elif item.workload > 105 %}red {% else %}green
@@ -49,12 +52,16 @@
                data-progress-percent="{{ item.workload }}">
               <div class="progress-bar progress"></div>
             </div>
-            <div class="sortable contant-box">
+            <div data-employee="{{ item.employee.id }}" class="sortable contant-box">
             {% for issue in item.issues|dictsort:'order' %}
-              <li class="list-group-item">{{ issue.title }}
+              <li data-issue="{{ issue.id }}" class="list-group-item">
+                  <a class="no-underline" href="{% url 'project:issue_detail' project.id issue.id %}">
+                      {{ issue.title }}</a>
                   <span class="badge">{{ issue.estimation }}</span></li>
             {% endfor %}
             </div>
+            <li class="list-group-item white background-blue bigger-110">Free hours
+                  <span class="badge">{{ item.free }}</span></li>
           </ul>
       </div>
     {% if forloop.counter|divisibleby:4 %}
@@ -62,6 +69,7 @@
     {% endif %}
   {% endfor %}
 </div>
+    </div>
 
 {% else %}
   <h3>No items.</h3>
