@@ -54,6 +54,7 @@ class IssueFormTests(LoginRequiredBase):
         self.issue = Issue.objects.create(project=self.project,
                                           author=self.employee)
         self.sprint = Sprint.objects.create(title='title', project=self.project)
+        self.team = ProjectTeam.objects.create(project=self.project, title='title')
 
     def test_form_is_valid_with_empty_fields(self):
         """
@@ -88,6 +89,30 @@ class IssueFormTests(LoginRequiredBase):
                      }
         form = IssueForm(project=self.project, data=form_data)
         self.assertEqual(form.is_valid(), True)
+
+    def test_form_is_not_valid_with_no_sprint_and_status_distinct_new(self):
+        form_data = {'root': self.issue, 'employee': self.user,
+                     'title': 'new issue', 'description': 'description',
+                     'status': Issue.RESOLVED, 'estimation': 2
+                     }
+        form = IssueForm(project=self.project, data=form_data)
+        self.assertEqual(form.is_valid(), False)
+
+    def test_form_is_not_valid_with_sprint_and_status_new(self):
+        form_data = {'root': self.issue, 'employee': self.user,
+                     'title': 'new issue', 'description': 'description',
+                     'status': Issue.NEW, 'estimation': 2, 'sprint': self.sprint
+                     }
+        form = IssueForm(project=self.project, data=form_data)
+        self.assertEqual(form.is_valid(), False)
+
+    def test_form_is_not_valid_with_sprint_and_no_estimation(self):
+        form_data = {'root': self.issue, 'employee': self.user,
+                     'title': 'new issue', 'description': 'description',
+                     'status': Issue.IN_PROGRESS, 'sprint': self.sprint
+                     }
+        form = IssueForm(project=self.project, data=form_data)
+        self.assertEqual(form.is_valid(), False)
 
 
 class IssueEditViewTests(LoginRequiredBase):
