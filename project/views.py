@@ -49,7 +49,8 @@ def sprints_list(request, project_id):
         .exclude(status=Sprint.ACTIVE)
 
     table = SprintsListTable(sprints)
-    RequestConfig(request, paginate={'per_page': settings.PAGINATION_PER_PAGE}). \
+    RequestConfig(request,
+                  paginate={'per_page': settings.PAGINATION_PER_PAGE}). \
         configure(table)
     return render(request, 'project/sprints_list.html', {'project': project,
                                                          'table': table})
@@ -365,20 +366,22 @@ class ActiveSprintView(DetailView):
 
 @waffle_flag('push_issue', 'project:list')
 def push_issue_in_active_sprint(request):
-
     if request.method == 'POST':
         if 'table' in request.POST and 'id' in request.POST:
             table = str(request.POST.get('table', None))
             row = int(request.POST.get('id', None))
             current_issue = get_object_or_404(Issue, pk=row)
             sprint = get_object_or_404(Sprint, pk=current_issue.sprint_id)
-            if sprint.status == 'active' and table == Issue.IN_PROGRESS or \
-                            table == Issue.NEW or table == Issue.RESOLVED:
+            if sprint.status == 'active' and (table == Issue.IN_PROGRESS or
+                                                      table == Issue.NEW or
+                                                      table == Issue.RESOLVED):
                 current_issue.status = table
                 current_issue.save()
-            return HttpResponse()
+                print sprint.status, sprint.id
+                return HttpResponse()
+            raise Http404("Wrong request")
     else:
-        return Http404
+        raise Http404("Wrong request")
 
 
 class SprintStatusUpdate(UpdateView):

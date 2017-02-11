@@ -57,25 +57,44 @@ document.addEventListener("DOMContentLoaded", function () {
             function (table) {
                 if (table != dragSrcRow.offsetParent) {
                     if (table.contains(e.target)) {
-                        // Post request
-                        var xhr = new XMLHttpRequest();
-                        var body = 'table=' + encodeURIComponent(table.dataset['issuetype']) +
-                            '&id=' + encodeURIComponent(dragSrcRow.dataset['id']);
-                        xhr.open("POST", '/project/issue_push/', true);
-                        xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-                        xhr.setRequestHeader("X-CSRFTOKEN", csrftoken);
-                        xhr.onreadystatechange = function() {
-                            if (xhr.readyState == 4 && xhr.status == 200) {
-                                window.location.reload();
-                            }
-                        };
-                        xhr.send(body);
+                        makePost(table);
                     }
 
                 }
             }
         );
-
         return false;
+    }
+
+    function makePost(table) {
+        var xhr = new XMLHttpRequest();
+        var body = 'table=' + encodeURIComponent(table.dataset['issuetype']) +
+            '&id=' + encodeURIComponent(dragSrcRow.dataset['id']);
+        xhr.open("POST", '/project/issue_push/', true);
+        xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+        xhr.setRequestHeader("X-CSRFTOKEN", csrftoken);
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState == 4 && xhr.status == 200) {
+                // make change in page on post 200
+                remakePage(table);
+            }
+        };
+        xhr.send(body);
+    }
+
+    function remakePage(table) {
+        var tableBody = table.getElementsByTagName('tbody')[0];
+        var rows = tableBody.children;
+        if (!rows.length) {
+            tableBody.append(dragSrcRow);
+        } else {
+            for (var i = 0; i < rows.length; i++) {
+                if (rows[i].dataset['id'] > dragSrcRow.dataset['id']) {
+                    tableBody.insertBefore(dragSrcRow, tableBody.children[i]);
+                    return
+                }
+            }
+            tableBody.append(dragSrcRow);
+        }
     }
 });

@@ -361,7 +361,7 @@
       "password": "pbkdf2_sha256$30000$80UGAYiTkmUH$rgg/i5Ya+Tpup6k1t5vQMjrBML2uTYY0AirJQYx0Z44=",
       "last_login": null,
       "is_superuser": false,
-      "username": "projectmanager",
+      "username": "project_manager",
       "first_name": "IvanProjectManager",
       "last_name": "Ivanov",
       "email": "test5@ukr.net",
