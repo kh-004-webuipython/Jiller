@@ -305,7 +305,7 @@ class SprintCreate(CreateView):
         project = Project.objects.get(id=self.kwargs['project_id'])
         context = super(SprintCreate, self).get_context_data(**kwargs)
         context['project'] = self.project
-        context['issue_list'] = project.issue_set.filter(sprint=None)
+        context['issue_list'] = project.issue_set.filter(sprint=None).order_by('order')
         return context
 
     def get_success_url(self):

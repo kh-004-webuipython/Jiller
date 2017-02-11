@@ -465,6 +465,58 @@ class ActiveSprintTests(LoginRequiredBase):
         response = self.client.get(url)
         self.assertEqual(response.status_code, 404)
 
+    def test_all_unfinished_issues_after_sprint_ends_move_to_backlog(self):
+        number_of_issues = 10
+        project = Project.objects.create(title='Test Project')
+        sprint = Sprint.objects.create(title='T_sprint', project_id=project.id, status='active')
+        for i in range(number_of_issues):
+            Issue.objects.create(title='Test Issue {}'.format(i), project=project, order=Issue.MEDIUM,
+                                 author=self.user)
+
+        issue_sprints = []
+        issue_resolved = []
+        issue_closed = []
+        issue_in_progress = []
+        issue_new = []
+        for i, issue in enumerate(Issue.objects.all().order_by('order')[number_of_issues / 2:]):
+            issue.sprint = sprint
+            if not i % 3:
+                issue.status = Issue.RESOLVED
+                issue_resolved.append(issue)
+            elif not i % 2 and i % 4:
+                issue.status = Issue.CLOSED
+                issue_closed.append(issue)
+            elif not i % 4:
+                issue.status = Issue.IN_PROGRESS
+                issue_in_progress.append(issue)
+            else:
+                issue_new.append(issue)
+            issue.save()
+            issue_sprints.append(issue)
+
+        sprint.status = Sprint.FINISHED
+        sprint.save()
+        sprint.refresh_from_db()
+        for issue in issue_sprints:
+            issue.refresh_from_db()
+        highest_backlog_issues = Issue.objects.filter(project=project.id, sprint=None).order_by('order')[
+                                 :2 + len(issue_new) + len(issue_in_progress)]
+        print(highest_backlog_issues)
+        for issue in issue_closed:
+            self.assertTrue(issue.sprint == sprint)
+            self.assertTrue(issue.status == Issue.CLOSED)
+        for issue in issue_resolved:
+            self.assertTrue(issue.sprint == sprint)
+            self.assertTrue(issue.status == Issue.RESOLVED)
+        for issue in issue_in_progress:
+            self.assertIsNone(issue.sprint)
+            self.assertTrue(issue.status == Issue.NEW)
+            self.assertTrue(issue in highest_backlog_issues)
+        for issue in issue_new:
+            self.assertIsNone(issue.sprint)
+            self.assertTrue(issue.status == Issue.NEW)
+            self.assertTrue(issue in highest_backlog_issues)
+
 
 class SprintDashboard(LoginRequiredBase):
     def setUp(self):
