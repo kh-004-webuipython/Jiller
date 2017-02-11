@@ -134,8 +134,7 @@ class Issue(models.Model):
                                              validators=[
                                                  MaxValueValidator(240)],
                                              null=True, blank=True)
-    order = models.PositiveIntegerField(verbose_name=_('Priority'), default=0,
-                                        choices=ISSUE_PRIORITY)
+    order = models.PositiveIntegerField(verbose_name=_('Priority'), default=0)
 
     def calculate_issue_priority(self):
         if self.order == Issue.HIGH:
