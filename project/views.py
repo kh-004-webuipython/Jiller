@@ -377,7 +377,6 @@ def push_issue_in_active_sprint(request):
                                                       table == Issue.RESOLVED):
                 current_issue.status = table
                 current_issue.save()
-                print sprint.status, sprint.id
                 return HttpResponse()
             raise Http404("Wrong request")
     else:
