@@ -53,6 +53,7 @@ class IssueFormTests(LoginRequiredBase):
         self.employee = Employee.objects.create()
         self.issue = Issue.objects.create(project=self.project,
                                           author=self.employee)
+        self.sprint = Sprint.objects.create(title='title', project=self.project)
 
     def test_form_is_valid_with_empty_fields(self):
         """
@@ -66,7 +67,7 @@ class IssueFormTests(LoginRequiredBase):
              method should return True if required fields are full
         """
         form_data = {'title': 'new issue'}
-        form = IssueForm(project=self.project,data=form_data)
+        form = IssueForm(project=self.project, data=form_data)
         self.assertEqual(form.is_valid(), True)
 
     def test_form_is_valid_with_not_null_some_required_fields(self):
@@ -74,18 +75,18 @@ class IssueFormTests(LoginRequiredBase):
              method should return False if some required fields are empty
         """
         form_data = {}
-        form = IssueForm(project=self.project,data=form_data)
+        form = IssueForm(project=self.project, data=form_data)
         self.assertEqual(form.is_valid(), False)
 
     def test_form_is_valid_with_all_fields_are_full(self):
         """
              method should return True if all fields are full right
         """
-        form_data = {'root': self.issue.pk,'employee': self.employee.pk,
+        form_data = {'root': self.issue.pk,  'employee': self.employee.pk,
                      'title': 'new issue', 'description': 'description',
                      'status': self.issue.status, 'estimation': 2
                      }
-        form = IssueForm(project=self.project,data=form_data)
+        form = IssueForm(project=self.project, data=form_data)
         self.assertEqual(form.is_valid(), True)
 
 
@@ -97,6 +98,8 @@ class IssueEditViewTests(LoginRequiredBase):
         self.employee = Employee.objects.create()
         self.issue = Issue.objects.create(project=self.project,
                                           author=self.employee, title='title')
+        self.team = ProjectTeam.objects.create(project=self.project, title='title')
+        self.team.employees.add(self.user)
 
     def test_issue_edit_view_use_right_template(self):
         """
@@ -106,6 +109,15 @@ class IssueEditViewTests(LoginRequiredBase):
             reverse('project:issue_edit', args=[self.project.pk,
                                                 self.issue.pk]))
         self.assertTemplateUsed(response, 'project/issue_edit.html')
+
+    def test_issue_edit_view_can_get_object(self):
+        """
+            method should be True and return title if it can get an object
+        """
+        issue = get_object_or_404(Issue, pk=self.issue.pk,
+                                  project=self.project.pk)
+        self.assertTrue(isinstance(issue, Issue))
+        self.assertEqual(issue.__str__(), issue.title)
 
     def test_issue_edit_view_can_get_object(self):
         """

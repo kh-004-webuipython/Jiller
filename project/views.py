@@ -76,7 +76,7 @@ def issue_create_view(request, project_id):
         if form.is_valid():
             new_issue = form.save(commit=False)
             new_issue.project = current_project
-            new_issue.author = Employee.objects.get(id=request.user.id)
+            new_issue.author = request.user
             new_issue.save()
             return redirect('project:backlog', current_project.id)
     else:
