@@ -305,7 +305,8 @@ class SprintCreate(CreateView):
         project = Project.objects.get(id=self.kwargs['project_id'])
         context = super(SprintCreate, self).get_context_data(**kwargs)
         context['project'] = self.project
-        context['issue_list'] = project.issue_set.filter(sprint=None).order_by('order')
+        context['issue_list'] = project.issue_set.filter(sprint=None).order_by(
+            'order')
         return context
 
     def get_success_url(self):
@@ -372,9 +373,9 @@ def push_issue_in_active_sprint(request):
             row = int(request.POST.get('id', None))
             current_issue = get_object_or_404(Issue, pk=row)
             sprint = get_object_or_404(Sprint, pk=current_issue.sprint_id)
-            if sprint.status == 'active' and (table == Issue.IN_PROGRESS or
-                                                      table == Issue.NEW or
-                                                      table == Issue.RESOLVED):
+            if sprint.status == Sprint.ACTIVE and table in [Issue.IN_PROGRESS,
+                                                            Issue.NEW,
+                                                            Issue.RESOLVED]:
                 current_issue.status = table
                 current_issue.save()
                 return HttpResponse()
