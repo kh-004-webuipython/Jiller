@@ -96,3 +96,7 @@ div.project-detail {
 .background-yellow {
     background: #ffca2c;
 }
+
+.contant-box {
+    min-height: 40px;
+}
