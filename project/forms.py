@@ -3,6 +3,8 @@ import datetime
 from django import forms
 from django.utils.translation import ugettext_lazy as _
 
+from project.tasks import send_assign_email_task
+
 from .models import Project, Sprint, Issue, ProjectTeam, IssueComment
 
 
@@ -37,11 +39,17 @@ class IssueForm(forms.ModelForm):
         self.fields['root'].queryset = Issue.objects.filter(
             project=project.id).filter(status=('new' or 'in progress'))
 
-
     class Meta:
         model = Issue
         fields = ['root', 'sprint', 'employee', 'title', 'description',
                   'status', 'estimation', 'order']
+
+    def send_email(self, user_id, issue_id):
+        # if self.cleaned_data['honeypot']:
+        #     return False
+        employee = self.cleaned_data['employee']
+        email = employee.email
+        send_assign_email_task.delay(email, user_id, issue_id)
 
 
 class CreateIssueForm(IssueForm):

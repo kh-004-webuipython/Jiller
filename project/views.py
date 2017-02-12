@@ -101,6 +101,7 @@ def issue_edit_view(request, project_id, issue_id):
             current_issue.project = current_project
             current_issue.author = request.user
             current_issue.save()
+            form.send_email(request.user.id, current_issue.id)
             return redirect('project:backlog', current_project.id)
     else:
         form = IssueForm(project=current_project, instance=current_issue)
