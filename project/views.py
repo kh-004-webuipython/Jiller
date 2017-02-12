@@ -364,27 +364,21 @@ class ActiveSprintView(DetailView):
 
 
 @waffle_flag('push_issue', 'project:list')
-def push_issue_in_active_sprint(request, project_id, issue_id):
-    current_issue = get_object_or_404(Issue, pk=issue_id)
-    sprint = get_object_or_404(Sprint, pk=current_issue.sprint_id)
+def push_issue_in_active_sprint(request):
 
     if request.method == 'POST':
-        if 'right' in request.POST and sprint.status == 'active':
-            if current_issue.status == "new":
-                current_issue.status = "in progress"
+        if 'table' in request.POST and 'id' in request.POST:
+            table = str(request.POST.get('table', None))
+            row = int(request.POST.get('id', None))
+            current_issue = get_object_or_404(Issue, pk=row)
+            sprint = get_object_or_404(Sprint, pk=current_issue.sprint_id)
+            if sprint.status == 'active' and table == Issue.IN_PROGRESS or \
+                            table == Issue.NEW or table == Issue.RESOLVED:
+                current_issue.status = table
                 current_issue.save()
-            elif current_issue.status == "in progress":
-                current_issue.status = "resolved"
-                current_issue.save()
-        elif 'left' in request.POST and sprint.status == 'active':
-            if current_issue.status == "resolved":
-                current_issue.status = "in progress"
-                current_issue.save()
-            elif current_issue.status == "in progress":
-                current_issue.status = "new"
-                current_issue.save()
-        return redirect('project:sprint_active', project_id)
-    return redirect('project:sprint_active', project_id)
+            return HttpResponse()
+    else:
+        return Http404
 
 
 class SprintStatusUpdate(UpdateView):
