@@ -36,9 +36,14 @@ class IssueForm(forms.ModelForm):
             project=project.id)
         self.fields['root'].queryset = Issue.objects.filter(
             project=project.id).filter(status=('new' or 'in progress'))
-        if user.groups == 3 :
-            self.fields['type'].choices = [('User story', ('User story')), ]
-
+        if user.groups.filter(name__icontains='product owner'):
+            self.fields['type'].choices = [('User story', 'User story'), ]
+        elif user.groups.filter(name__icontains='developer') :
+            self.fields['type'].choices = [('Task', 'Task'), ('Bug', 'Bug'), ]
+        elif user.groups.filter(name__icontains='project manager'):
+            self.fields['type'].choices = [('Task', 'Task'), ('Bug', 'Bug'), ]
+        elif user.groups.filter(name__icontains='scrum') :
+            self.fields['type'].choices = [('Task', 'Task'), ('Bug', 'Bug'), ]
     class Meta:
         model = Issue
         fields = ['root', 'type', 'sprint', 'employee', 'title', 'description',
