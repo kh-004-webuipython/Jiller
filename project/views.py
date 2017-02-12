@@ -121,10 +121,10 @@ def team_view(request, project_id):
     data.update({'pm': project_managers})
 
     # for one project it could be only one team
-    team = ProjectTeam.objects.get(project_id=current_project)
+    team = get_object_or_404(ProjectTeam, project_id=current_project)
     data.update({'team': team})
     e_list = []
-    if team.employees != 'None':
+    if team.employees.count() != 1:
         for employee in team.employees.all():
             if employee not in project_managers:
                 e_list.append({'id_team': team.id, 'id': employee.id,
