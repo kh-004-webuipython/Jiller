@@ -145,7 +145,7 @@ def issue_detail_view(request, project_id, issue_id):
     if current_issue.project_id != project.id:
         raise Http404("Issue does not exist")
     context = {
-        'issue': current_issue, 'project': project,
+        'issue': current_issue, 'project': project
     }
     if current_issue.root:
         context['root_issue'] = Issue.objects.get(pk=current_issue.root.id)
