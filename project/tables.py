@@ -35,7 +35,7 @@ class SprintsListTable(tables.Table):
         fields = ['title', 'team', 'start_date', 'end_date', 'status']
 
 
-class BacklogTable(tables.Table):
+class IssuesTable(tables.Table):
     id = tables.Column()
     root = tables.Column(attrs={'td': {'width': '10%'}})
     project = tables.Column()

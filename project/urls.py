@@ -46,6 +46,7 @@ urlpatterns = [
         views.issue_edit_view, name='issue_edit'),
     url(r'^(?P<project_id>[0-9]+)/issue/(?P<issue_id>[0-9]+)/delete/$', views.IssueDeleteView.as_view(),
         name='issue_delete'),
+    url(r'^(?P<project_id>[0-9]+)/issue/search/$', views.IssueSearchView.as_view(), name='issue_search'),
 
     # team
     url(r'^(?P<project_id>\d+)/team/$', views.team_view, name='team'),
