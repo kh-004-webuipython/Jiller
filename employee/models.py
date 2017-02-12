@@ -59,7 +59,7 @@ class IssueLog(models.Model):
     user = models.ForeignKey(Employee, verbose_name=_('Employee'))
     date_created = models.DateTimeField(verbose_name=_('Time'),
                                         default=timezone.now)
-    cost = models.FloatField(verbose_name=_('Cost'), validators=[MinValueValidator(0.0)])
+    cost = models.FloatField(verbose_name=_('Cost'), default=0, validators=[MinValueValidator(0.0)])
     note = models.TextField(verbose_name=_('Note'), null=True, blank=True)
 
     def __str__(self):
