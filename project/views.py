@@ -95,7 +95,7 @@ def issue_edit_view(request, project_id, issue_id):
                                       project=current_project.id)
     if request.method == "POST":
         form = IssueForm(project=current_project, data=request.POST,
-                         instance=current_issue)
+                         instance=current_issue, user=request.user)
         if form.is_valid():
             current_issue = form.save(commit=False)
             current_issue.project = current_project
@@ -103,7 +103,8 @@ def issue_edit_view(request, project_id, issue_id):
             current_issue.save()
             return redirect('project:backlog', current_project.id)
     else:
-        form = IssueForm(project=current_project, instance=current_issue)
+        form = IssueForm(project=current_project, instance=current_issue,
+                         user=request.user)
     return render(request, 'project/issue_edit.html',
                   {'form': form,
                    'project': current_project,
@@ -142,7 +143,7 @@ def issue_detail_view(request, project_id, issue_id):
     if current_issue.project_id != project.id:
         raise Http404("Issue does not exist")
     context = {
-        'issue': current_issue, 'project': project
+        'issue': current_issue, 'project': project, 'user': request.user
     }
     if current_issue.root:
         context['root_issue'] = Issue.objects.get(pk=current_issue.root.id)

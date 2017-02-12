@@ -30,7 +30,7 @@
 {% endblock %}
 {% block content %}
   {% include 'project/project_navbar.html' with backlog=True %}
-  <h3>Edit issue:</h3>
+  <h3>Edit issue:</h3> {{ user.groups }}
   <form role="form" action="" class="form-horizontal" method="post">
     {% for field in form %}
       <div class="form-group {% if field.errors %} has-error {% endif %}">
