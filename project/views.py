@@ -110,38 +110,20 @@ def issue_edit_view(request, project_id, issue_id):
                    'issue': Issue.objects.get(pk=current_issue.id)})
 
 
-# def team_view(request, project_id):
-#     current_project = get_object_or_404(Project, pk=project_id)
-#     # hide PMs on "global" team board
-#     user_list = Employee.objects.exclude(groups__name='project manager')
-#     # filter needs for possibility to add two PMs, when we need change 1st PM
-#     project_managers = Employee.objects.filter(projectteam__project=project_id,
-#                                                groups__name='project manager')
-#
-#     teams = ProjectTeam.objects.filter(project_id=current_project)
-#     return render(request, 'project/team.html', {'teams': teams,
-#                                                  'pm': project_managers,
-#                                                  'project': current_project,
-#                                                  'user_list': user_list})
-
 def team_view(request, project_id):
+    data = {}
     current_project = get_object_or_404(Project, pk=project_id)
-
-    # hide PMs on "global" team board
-    user_list = Employee.objects.exclude(groups__name='project manager').\
-                                 exclude(projectteam__project=project_id). \
-                                 exclude(groups__name='product owner')
+    data.update({'project': current_project})
 
     # filter needs for possibility to add two PMs, when we need change 1st PM
     project_managers = Employee.objects.filter(projectteam__project=project_id,
                                                groups__name='project manager')
+    data.update({'pm': project_managers})
 
     # for one project it could be only one team
     team = ProjectTeam.objects.get(project_id=current_project)
-
+    data.update({'team': team})
     e_list = []
-    u_list = []
-
     if team.employees != 'None':
         for employee in team.employees.all():
             if employee not in project_managers:
@@ -150,19 +132,32 @@ def team_view(request, project_id):
                                'get_full_name': employee.get_full_name(),
                                'role': employee.groups.get()})
 
-    for user in user_list:
-        u_list.append({'id': user.id, 'get_full_name': user.get_full_name(),
-                       'role': user.groups.get()})
+        table_cur = CurrentTeamTable(e_list)
+        data.update({'table_cur': table_cur})
+        RequestConfig(request, paginate={'per_page': settings.PAGINATION_PER_PAGE}).\
+                                         configure(table_cur)
 
-    table_cur = CurrentTeamTable(e_list)
-    table_add = AddTeamTable(u_list)
-    RequestConfig(request, paginate={'per_page': settings.PAGINATION_PER_PAGE}).configure(table_add)
-    RequestConfig(request, paginate={'per_page': settings.PAGINATION_PER_PAGE}).configure(table_cur)
-    return render(request, 'project/team.html', {'team': team,
-                                                 'pm': project_managers,
-                                                 'project': current_project,
-                                                 'table_add': table_add,
-                                                 'table_cur': table_cur})
+
+    # hide PMs on "global" team board
+    u_list = []
+    user_list = 'None'
+
+    if request.user.groups.filter(name='project manager').exists():
+        user_list = Employee.objects.exclude(groups__name='project manager').\
+                                     exclude(projectteam__project=project_id). \
+                                     exclude(groups__name='product owner')
+        for user in user_list:
+            u_list.append({'id': user.id, 'get_full_name': user.get_full_name(),
+                           'role': user.groups.get()})
+
+        table_add = AddTeamTable(u_list)
+        data.update({'table_add': table_add})
+        RequestConfig(request, paginate={'per_page': settings.PAGINATION_PER_PAGE}).\
+                                         configure(table_add)
+    else:
+        table_cur.exclude = ('sub')
+
+    return render(request, 'project/team.html', data)
 
 
 def issue_detail_view(request, project_id, issue_id):

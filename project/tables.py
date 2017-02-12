@@ -68,7 +68,6 @@ class ProjectTeamTable(tables.Table):
         fields = ['get_full_name', 'role']
 
 
-
 class CurrentTeamTable(ProjectTeamTable):
     get_full_name = tables.LinkColumn('employee:detail', kwargs={"employee_id": A('id')},\
                                       order_by=('get_full_name'), verbose_name='Current employees')
