@@ -7,7 +7,7 @@ from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.views.generic import DetailView, ListView
 from django.urls import reverse
 
-from project.forms import IssueCommentCreateForm, IssueForm, CreateIssueForm
+from project.forms import IssueCommentCreateForm, IssueForm, CreateIssueForm, IssueFormForEditing
 from .forms import ProjectForm, SprintCreateForm, CreateTeamForm
 from .models import Project, ProjectTeam, Issue, Sprint
 
@@ -21,8 +21,6 @@ from .tables import ProjectTable, SprintsListTable
 from django_tables2 import SingleTableView, RequestConfig
 import json
 from employee.models import Employee
-from employee.tables import ProjectTeamEmployeeTable, \
-    ProjectTeamEmployeeAddTable
 
 
 class ProjectListView(SingleTableView):
@@ -78,7 +76,7 @@ def issue_create_view(request, project_id):
         if form.is_valid():
             new_issue = form.save(commit=False)
             new_issue.project = current_project
-            new_issue.author = Employee.objects.get(id=request.user.id)
+            new_issue.author = request.user
             new_issue.save()
             return redirect('project:backlog', current_project.id)
     else:
@@ -96,7 +94,7 @@ def issue_edit_view(request, project_id, issue_id):
     current_issue = get_object_or_404(Issue, pk=issue_id,
                                       project=current_project.id)
     if request.method == "POST":
-        form = IssueForm(project=current_project, data=request.POST,
+        form = IssueFormForEditing(project=current_project, data=request.POST,
                          instance=current_issue)
         if form.is_valid():
             current_issue = form.save(commit=False)
@@ -105,7 +103,7 @@ def issue_edit_view(request, project_id, issue_id):
             current_issue.save()
             return redirect('project:backlog', current_project.id)
     else:
-        form = IssueForm(project=current_project, instance=current_issue)
+        form = IssueFormForEditing(project=current_project, instance=current_issue)
     return render(request, 'project/issue_edit.html',
                   {'form': form,
                    'project': current_project,
@@ -306,7 +304,7 @@ class SprintCreate(CreateView):
         project = Project.objects.get(id=self.kwargs['project_id'])
         context = super(SprintCreate, self).get_context_data(**kwargs)
         context['project'] = self.project
-        context['issue_list'] = project.issue_set.filter(sprint=None)
+        context['issue_list'] = project.issue_set.filter(sprint=None).order_by('order')
         return context
 
     def get_success_url(self):
