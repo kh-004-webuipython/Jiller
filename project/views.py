@@ -478,10 +478,11 @@ def workload_manager(request, project_id):
             .filter(sprint__status=Sprint.ACTIVE, employee=employee)
         items.append({'employee': employee, 'issues': issues})
 
-    sprint = Sprint.objects.get(pk=project_id, status=Sprint.ACTIVE)
-    duration = sprint.end_date - sprint.start_date
-    change = duration.days % 7 if duration.days % 7 < 6 else 5
-    work_hours = duration.days / 7 * 40 + change * 8
+    sprint = get_object_or_404(Sprint, pk=project_id, status=Sprint.ACTIVE)
+    if sprint:
+        duration = sprint.end_date - sprint.start_date
+        change = duration.days % 7 if duration.days % 7 < 6 else 5
+        work_hours = duration.days / 7 * 40 + change * 8
     for item in items:
         sum = 0
         for issue in item['issues']:

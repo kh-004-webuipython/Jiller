@@ -554,3 +554,39 @@ class SprintDashboard(LoginRequiredBase):
         changed_issue = Issue.objects.get(pk=iss_prog.id)
         self.assertEqual(changed_issue.status, 'new')
         self.assertEqual(len(Issue.objects.all()), 2)
+
+
+class WorkloadManagerTest(LoginRequiredBase):
+    def setUp(self):
+        super(WorkloadManagerTest, self).setUp()
+        self.project = Project.objects.create()
+        self.team = ProjectTeam.objects.create(project=self.project, title='title')
+        self.team.employees.add(self.user)
+
+    def test_workload_view_with_no_sprint(self):
+        response = self.client.get(reverse('project:workload_manager',
+                                           kwargs={'project_id': self.project.id}))
+        self.assertEqual(response.status_code, 404)
+
+    def test_workload_view_with_empty_items(self):
+        sprint = Sprint.objects.create(title='title', project=self.project,
+                                       start_date=datetime.date(2017, 12, 14),
+                                       end_date=datetime.date(2017, 12, 21),
+                                       status=Sprint.ACTIVE, )
+        response = self.client.get(reverse('project:workload_manager',
+                                           kwargs={'project_id': self.project.id}))
+        self.assertContains(response, "No items.", status_code=200)
+        self.assertQuerysetEqual(response.context['items'], [])
+
+    def test_workload_view_with_items(self):
+        sprint = Sprint.objects.create(title='title', project=self.project,
+                                       start_date=datetime.date(2017, 12, 14),
+                                       end_date=datetime.date(2017, 12, 21),
+                                       status=Sprint.ACTIVE, )
+        self.issue = Issue.objects.create(project=self.project,
+                                          author=self.user, sprint=sprint,
+                                          employee=self.user)
+        response = self.client.get(reverse('project:workload_manager',
+                                           kwargs={'project_id': self.project.id}))
+        self.assertContains(response, self.user.username, status_code=200)
+        self.assertQuerysetEqual(response.context['items'], [])
