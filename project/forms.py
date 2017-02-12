@@ -36,6 +36,9 @@ class IssueForm(forms.ModelForm):
             project=project.id)
         self.fields['root'].queryset = Issue.objects.filter(
             project=project.id).filter(status=('new' or 'in progress'))
+        self.fields['employee'].queryset = ProjectTeam.objects.filter(
+            project=project)[0].employees.filter(
+            groups__pk__in=[1, 2])
         if user.groups.filter(name__icontains='product owner'):
             self.fields['type'].choices = [('User story', 'User story'), ]
         elif user.groups.filter(name__icontains='developer') :
@@ -44,10 +47,39 @@ class IssueForm(forms.ModelForm):
             self.fields['type'].choices = [('Task', 'Task'), ('Bug', 'Bug'), ]
         elif user.groups.filter(name__icontains='scrum') :
             self.fields['type'].choices = [('Task', 'Task'), ('Bug', 'Bug'), ]
+
+
+    def clean_status(self):
+        cleaned_data = super(IssueForm, self).clean()
+        status = cleaned_data.get('status')
+        sprint = cleaned_data.get('sprint')
+        if not sprint and status != Issue.NEW:
+            raise forms.ValidationError(
+                'The issue unrelated to sprint has to be NEW')
+        if sprint and status == Issue.NEW:
+            raise forms.ValidationError(
+                'The issue related to sprint has not to be NEW')
+        return status
+
+    def clean_estimation(self):
+        cleaned_data = super(IssueForm, self).clean()
+        estimation = cleaned_data.get('estimation')
+        sprint = cleaned_data.get('sprint')
+        if sprint and not estimation:
+            raise forms.ValidationError(
+                'The issue related to sprint has to be estimated')
+        return estimation
+
     class Meta:
         model = Issue
         fields = ['root', 'type', 'sprint', 'employee', 'title', 'description',
                   'status', 'estimation', 'order']
+
+
+class IssueFormForEditing(IssueForm):
+    def __init__(self, *args, **kwargs):
+        super(IssueFormForEditing, self).__init__(*args, **kwargs)
+        self.fields.pop('order')
 
 
 class CreateIssueForm(IssueForm):
