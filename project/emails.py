@@ -15,7 +15,7 @@ def send_assign_email(email, user_id, issue_id):
     # message = str(user.first_name) + ' ' + str(
     #     user.last_name) + ' assigned you to issue : ' + issue.title
     user_name = str(user.first_name) + ' ' + str(user.last_name)
-    c = Context({'email': email, 'user': user_name, 'issue': issue.title})
+    c = Context({'email': email, 'user': user_name, 'issue': issue})
 
     email_subject = render_to_string(
         'email/feedback_email_subject.txt', c).replace('\n', '')

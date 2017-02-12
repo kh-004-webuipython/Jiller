@@ -63,17 +63,15 @@ class IssueForm(forms.ModelForm):
                 'The issue related to sprint has to be estimated')
         return estimation
 
+    def send_email(self, user_id, issue_id):
+        employee = self.cleaned_data['employee']
+        email = employee.email
+        send_assign_email_task.delay(email, user_id, issue_id)
+
     class Meta:
         model = Issue
         fields = ['root', 'sprint', 'employee', 'title', 'description',
                   'status', 'estimation', 'order']
-
-    def send_email(self, user_id, issue_id):
-        # if self.cleaned_data['honeypot']:
-        #     return False
-        employee = self.cleaned_data['employee']
-        email = employee.email
-        send_assign_email_task.delay(email, user_id, issue_id)
 
 
 class IssueFormForEditing(IssueForm):

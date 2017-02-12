@@ -78,6 +78,7 @@ def issue_create_view(request, project_id):
             new_issue.project = current_project
             new_issue.author = request.user
             new_issue.save()
+            form.send_email(request.user.id, new_issue.id)
             return redirect('project:backlog', current_project.id)
     else:
         initial = {}
