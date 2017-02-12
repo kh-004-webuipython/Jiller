@@ -70,9 +70,10 @@ def backlog(request, project_id):
 @waffle_flag('create_issue', 'project:list')
 def issue_create_view(request, project_id):
     current_project = get_object_or_404(Project, pk=project_id)
-    form = CreateIssueForm(project=current_project)
+    form = CreateIssueForm(project=current_project, user=request.user)
     if request.method == "POST":
-        form = CreateIssueForm(project=current_project, data=request.POST)
+        form = CreateIssueForm(project=current_project, data=request.POST,
+                               user=request.user)
         if form.is_valid():
             new_issue = form.save(commit=False)
             new_issue.project = current_project
@@ -83,7 +84,8 @@ def issue_create_view(request, project_id):
         initial = {}
         if request.GET.get('root', False):
             initial['root'] = request.GET['root']
-            form = CreateIssueForm(project=current_project, initial=initial)
+            form = CreateIssueForm(project=current_project, initial=initial,
+                                   user=request.user)
     return render(request, 'project/issue_create.html', {'form': form,
                                                          'project': current_project})
 
@@ -143,7 +145,7 @@ def issue_detail_view(request, project_id, issue_id):
     if current_issue.project_id != project.id:
         raise Http404("Issue does not exist")
     context = {
-        'issue': current_issue, 'project': project, 'user': request.user
+        'issue': current_issue, 'project': project,
     }
     if current_issue.root:
         context['root_issue'] = Issue.objects.get(pk=current_issue.root.id)
