@@ -89,3 +89,19 @@ def send_to(request, username):
     messages.add_message(request, messages.INFO,
                          _("Confirmation code has been sent to your email."))
     return redirect('general:login')
+
+
+def handler400(request):
+    return render(request, 'general/400.html')
+
+
+def handler403(request):
+    return render(request, 'general/403.html')
+
+
+def handler404(request):
+    return render(request, 'general/404.html')
+
+
+def handler500(request):
+    return render(request, 'general/500.html')
