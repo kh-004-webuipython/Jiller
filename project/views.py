@@ -1,7 +1,10 @@
 import json
 import datetime
+import pygal
+
 from django.conf import settings
 from django.db.models import Q
+from django.db.models.aggregates import Sum
 from django.http import HttpResponseRedirect, Http404, HttpResponse
 from django.http.response import JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
@@ -184,7 +187,7 @@ class IssueDeleteView(DeleteView):
     def delete(self, request, *args, **kwargs):
         project = Project.objects.get(id=kwargs['project_id'])
         issue = Issue.objects.get(id=kwargs['issue_id'])
-        issue.status = 'deleted';
+        issue.status = 'deleted'
         issue.save()
         return HttpResponseRedirect(reverse('project:backlog',
                                             kwargs={'project_id': project.id}))
@@ -334,6 +337,46 @@ class ActiveSprintView(DetailView):
     pk_url_kwarg = 'project_id'
     template_name = 'project/sprint_active.html'
 
+    def dispatch(self, *args, **kwargs):
+        self.project = get_object_or_404(Project, pk=self.kwargs['project_id'])
+        self.get_sprint = self.project.sprint_set.get(status=Sprint.ACTIVE)
+        return super(ActiveSprintView, self).dispatch(*args, **kwargs)
+
+    def get_chart_data(self, date):
+        return self.get_sprint.issue_set.filter(
+            issuelog__date_created__range=[self.get_sprint.start_date, date + datetime.timedelta(days=1)]).extra(
+            {'date_created': "date(date_created)"}).values('date_created').annotate(
+            sum=Sum('issuelog__cost')).order_by()
+
+    def chart(self):
+        def daterange(start_date, end_date):
+            for n in range(int((end_date - start_date).days)):
+                yield start_date + datetime.timedelta(n)
+        end_date = self.get_sprint.start_date + datetime.timedelta(days=self.get_sprint.duration)
+        today = datetime.date.today()
+        if today <= end_date:
+            data = self.get_chart_data(today)
+        else:
+            data = self.get_chart_data(end_date)
+        res = dict((x['date_created'], x['sum']) for x in data)
+        estimation_sum = self.object.calculate_estimation_sum()
+        total_date_range = [day for day in daterange(self.get_sprint.start_date, end_date)]
+        perfect_line = [None for _ in range(len(total_date_range) + 1)]
+        perfect_line[0] = estimation_sum
+        perfect_line[-1] = 0
+        chart_data = [estimation_sum]
+        for day in total_date_range:
+            if res.get(day.isoformat()):
+                estimation_sum -= res.get(day.isoformat())
+            if not day > today:
+                chart_data.append(estimation_sum)
+        total_date_range.insert(0, None)
+        line_chart = pygal.Line(height=400, include_x_axis=True, max_scale=4)
+        line_chart.x_labels = total_date_range
+        line_chart.add(None, chart_data)
+        line_chart.add(None, perfect_line)
+        return line_chart.render()
+
     def get_object(self, queryset=None):
         try:
             return super(ActiveSprintView, self).get_object(queryset)
@@ -371,6 +414,7 @@ class ActiveSprintView(DetailView):
                 status="resolved")
             context['project'] = Project.objects.get(
                 id=self.kwargs['project_id'])
+            context['chart'] = self.chart()
             return context
 
 

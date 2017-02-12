@@ -8,7 +8,6 @@ jQuery(function ($) {
             dataType: "json",
             statusCode: {
                 201: function (data) {
-                    console.log(data);
                     $('.modal-body').empty();
                     $('.modal-footer').empty();
                     $('.modal-body').append('<h3>' + $('#log-modal').attr('data-success-title') + '</h3>');

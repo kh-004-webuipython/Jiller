@@ -41,6 +41,11 @@ class Project(models.Model):
     def __str__(self):
         return self.title
 
+    def get_active_sprint(self):
+        if self.sprint_set.filter(status=Sprint.ACTIVE).exists():
+            return self.sprint_set.get(status=Sprint.ACTIVE)
+        return None
+
     objects = ProjectModelManager()
 
 
@@ -56,8 +61,7 @@ class Sprint(models.Model):
     )
     title = models.CharField(verbose_name=_('Title'), max_length=255)
     project = models.ForeignKey(Project, verbose_name=_('Project'))
-    start_date = models.DateField(verbose_name=_('Start date'), null=True,
-                                  blank=True)
+    start_date = models.DateField(verbose_name=_('Start date'), default=timezone.now)
     end_date = models.DateField(verbose_name=_('End date'), null=True,
                                 blank=True)
     order = models.PositiveIntegerField(verbose_name=_('Order'), null=True,
@@ -65,9 +69,13 @@ class Sprint(models.Model):
     status = models.CharField(verbose_name=_('Status'),
                               choices=SPRINT_STATUS_CHOICES, default=NEW,
                               max_length=255)
+    duration = models.PositiveIntegerField(verbose_name=_('Duration'))
 
     def __str__(self):
         return self.title
+
+    def calculate_estimation_sum(self):
+        return self.issue_set.aggregate(Sum('estimation'))['estimation__sum'] or 0
 
     def save(self, *args, **kwargs):
         active_sprint = Sprint.objects.filter(project_id=self.project,
