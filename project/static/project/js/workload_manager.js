@@ -5,32 +5,15 @@ $(function() {
         moveProgressBar();
     });
 
-    // SIGNATURE PROGRESS
-    function moveProgressBar() {
-        var items = document.querySelectorAll('.progress-wrap');
-        $.each(items, function(index, value) {
-            var getPercent = ($(value).data('progress-percent') / 100);
-            var getProgressWrapWidth = $('.progress-wrap').width();
-            var progressTotal = getPercent * getProgressWrapWidth;
-            var animationLength = 2500;
-
-            // on page load, animate percentage bar to data percentage length
-            // .stop() used to prevent animation queueing
-            $(value.firstElementChild).stop().animate({
-                left: progressTotal
-            }, animationLength);
-        })
-    }
-
     var csrftoken = getCookie('csrftoken');
     var project = $('div.page-header').data('project');
 
-    var sortable = document.querySelectorAll('.sortable');
+    sortable();
 
-    $.each(sortable, function(i, item) {
-        $(item).sortable({
+    function sortable() {
+        $('.sortable').sortable({
             delay: 200,
-            connectWith: "div",
+            connectWith: 'div',
             opacity: 0.6,
             cursor: 'move',
             tolerance: 'pointer',
@@ -54,7 +37,9 @@ $(function() {
                     url: '/project/' + project + '/workload_manager',
 
                     success : function(data){
-                        window.location.reload();
+                        $('#workload-template').html(data);
+                        moveProgressBar();
+                        sortable();
                     },
                     error: function (xhr, ajaxOptions, thrownError) {
                         var element = $('#error-message');
@@ -65,6 +50,23 @@ $(function() {
                 });
             }
         });
-    });
+    }
+
+    // SIGNATURE PROGRESS
+    function moveProgressBar() {
+        var items = document.querySelectorAll('.progress-wrap');
+        $.each(items, function(index, value) {
+            var getPercent = ($(value).data('progress-percent') / 100);
+            var getProgressWrapWidth = $('.progress-wrap').width();
+            var progressTotal = getPercent * getProgressWrapWidth;
+            var animationLength = 2000;
+
+            // on page load, animate percentage bar to data percentage length
+            // .stop() used to prevent animation queueing
+            $(value.firstElementChild).stop().animate({
+                left: progressTotal
+            }, animationLength);
+        })
+    }
 });
 

@@ -2,7 +2,7 @@ import datetime
 from django.conf import settings
 from django.db.models import Q
 from django.http import HttpResponseRedirect, Http404, HttpResponse
-from django.shortcuts import render, redirect, get_object_or_404
+from django.shortcuts import render, redirect, get_object_or_404, render
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.views.generic import DetailView, ListView
 from django.urls import reverse
@@ -21,6 +21,8 @@ from .tables import ProjectTable, SprintsListTable
 from django_tables2 import SingleTableView, RequestConfig
 import json
 from employee.models import Employee
+
+from django.template.loader import render_to_string
 
 
 class ProjectListView(SingleTableView):
@@ -488,6 +490,11 @@ def workload_manager(request, project_id):
 
         item['workload'] = sum * 100 / work_hours
         item['free'] = work_hours - sum
+
+    if request.is_ajax():
+        html = render_to_string('project/workload_template.html', {'items': items,
+                                                                   'project': project})
+        return HttpResponse(html)
 
     return render(request, 'project/workload_manager.html', {'items': items,
                                                              'project': project})
