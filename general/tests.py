@@ -151,3 +151,7 @@ class ProfileViewTests(LoginRequiredBase):
                                                  last_name='Dismiss')
         response = self.client.get(reverse('general:profile'))
         self.assertNotContains(response, 'Kiss')
+
+
+# class AssignEmailTests(LoginRequiredBase):
+#     def

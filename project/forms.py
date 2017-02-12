@@ -3,8 +3,7 @@ import datetime
 from django import forms
 from django.utils.translation import ugettext_lazy as _
 
-from project.tasks import send_assign_email_task
-
+from general.tasks import send_assign_email_task
 from .models import Project, Sprint, Issue, ProjectTeam, IssueComment
 
 
