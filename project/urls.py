@@ -57,4 +57,7 @@ urlpatterns = [
     # processing AJAX
     url(r'^issue_order/$', views.issue_order, name='issue_order'),
 
+    # note
+    url(r'^(?P<project_id>\d+)/notes/$', views.notes_view, name='notes'),
+
 ]

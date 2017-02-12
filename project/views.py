@@ -9,7 +9,7 @@ from django.urls import reverse
 
 from project.forms import IssueCommentCreateForm, IssueForm, CreateIssueForm
 from .forms import ProjectForm, SprintCreateForm, CreateTeamForm
-from .models import Project, ProjectTeam, Issue, Sprint
+from .models import Project, ProjectTeam, Issue, Sprint, ProjectNote
 
 from employee.models import Employee
 
@@ -448,6 +448,14 @@ def team_create(request, project_id):
         form = CreateTeamForm()
     return render(request, 'project/team_create.html', {'form': form,
                                                         'project': project})
+@waffle_flag('only_developer')
+def notes_view(request, project_id):
+    project = get_object_or_404(Project, pk=project_id)
+    if request.method == "GET":
+        notes = ProjectNote.objects.filter(project_id=project_id)
+        return render(request,'project/notes.html', {'project': project,
+                                                     'notes': notes})
+    return redirect(request, 'project:team', {'project': project})
 
 
 """

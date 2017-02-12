@@ -192,3 +192,13 @@ class ProjectTeam(models.Model):
 
     def __str__(self):
         return self.title
+
+@python_2_unicode_compatible
+class ProjectNote(models.Model):
+    project = models.ForeignKey(Project, verbose_name=_('Project'))
+    title = models.CharField(max_length=255, verbose_name=_('Title'))
+    text = models.TextField(verbose_name=_('Note text'), null=True,
+                                   blank=True)
+
+    def __str__(self):
+        return self.title

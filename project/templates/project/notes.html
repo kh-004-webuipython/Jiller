@@ -1,0 +1,59 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load i18n %}
+{% load waffle_tags %}
+
+{% block styles %}
+  {{ block.super }}
+  <link rel="stylesheet" type="text/css"
+        href="{% static 'css/notes.css' %}"/>
+{% endblock %}
+
+{% block title %}Developer notes{% endblock %}
+
+{% block breadcrumbs %}
+  {{ block.super }}
+  <li>
+    <a href="{% url 'project:list' %}">Projects</a>
+  </li>
+  <li>
+    <a href="{% url 'project:detail' project.id %}">{{ project.title }}</a>
+  </li>
+  <li>
+    <span>{% trans 'Notes' %}</span>
+  </li>
+{% endblock %}
+
+{% block content %}
+   <button id="btnNew" class="btn btn-info pull-right">Create new note</button>
+
+  {% include 'project/project_navbar.html' with notes=True %}
+
+
+  <div class="notes">
+    {#  <div id="controls">#}
+     {# <img id="btnSave" src="http://s1.iconbird.com/ico/2013/6/365/w256h2561372351017Save256.png"/>#}
+   {# </div>#}
+
+
+    <ul id="notes">
+      {% for note in notes %}
+        <li>
+        <div class="note" >
+          <textarea class="note-title text-center" maxlength='15'>
+            {{ note.title }}
+          </textarea>
+          <textarea class="note-content text-center" maxlength='5000'>
+            {{ note.text }}
+          </textarea>
+        </div>
+        </li>
+      {% endfor %}
+        </ul>
+  </div>
+{% endblock %}
+
+{% block extrascripts %}
+  <script src="{% static 'js/jquery.js' %}"></script>
+  <script src="{% static 'project/js/notes.js' %}"></script>
+{% endblock %}

@@ -28,6 +28,11 @@
         Team
       </a>
     </li>
+  <li {% if notes %}class="active" {% endif %}>
+      <a href="{% url 'project:notes' project.id %}">
+        Notes
+      </a>
+    </li>
   </ul>
 </div>
 <div class="clearfix navbar-margin-bottom"></div>
