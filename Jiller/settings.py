@@ -49,7 +49,6 @@ INSTALLED_APPS = [
     'waffle',
     'simple_email_confirmation',
     'django_tables2',
-    'post_office',
 ]
 
 MIDDLEWARE_CLASSES = (
