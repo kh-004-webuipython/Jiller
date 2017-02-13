@@ -66,6 +66,8 @@ class IssueFormTests(LoginRequiredBase):
         self.employee = Employee.objects.create()
         self.issue = Issue.objects.create(project=self.project,
                                           author=self.employee)
+        self.sprint = Sprint.objects.create(title='title', project=self.project)
+        self.team = ProjectTeam.objects.create(project=self.project, title='title')
 
     def test_form_is_valid_with_empty_fields(self):
         """
@@ -79,7 +81,7 @@ class IssueFormTests(LoginRequiredBase):
              method should return True if required fields are full
         """
         form_data = {'title': 'new issue'}
-        form = IssueForm(project=self.project,data=form_data)
+        form = IssueForm(project=self.project, data=form_data)
         self.assertEqual(form.is_valid(), True)
 
     def test_form_is_valid_with_not_null_some_required_fields(self):
@@ -87,19 +89,43 @@ class IssueFormTests(LoginRequiredBase):
              method should return False if some required fields are empty
         """
         form_data = {}
-        form = IssueForm(project=self.project,data=form_data)
+        form = IssueForm(project=self.project, data=form_data)
         self.assertEqual(form.is_valid(), False)
 
     def test_form_is_valid_with_all_fields_are_full(self):
         """
              method should return True if all fields are full right
         """
-        form_data = {'root': self.issue.pk,'employee': self.employee.pk,
+        form_data = {'root': self.issue.pk, 'employee': self.employee.pk,
                      'title': 'new issue', 'description': 'description',
                      'status': self.issue.status, 'estimation': 2
                      }
-        form = IssueForm(project=self.project,data=form_data)
+        form = IssueForm(project=self.project, data=form_data)
         self.assertEqual(form.is_valid(), True)
+
+    def test_form_is_not_valid_with_no_sprint_and_status_distinct_new(self):
+        form_data = {'root': self.issue, 'employee': self.user,
+                     'title': 'new issue', 'description': 'description',
+                     'status': Issue.RESOLVED, 'estimation': 2
+                     }
+        form = IssueForm(project=self.project, data=form_data)
+        self.assertEqual(form.is_valid(), False)
+
+    def test_form_is_not_valid_with_sprint_and_status_new(self):
+        form_data = {'root': self.issue, 'employee': self.user,
+                     'title': 'new issue', 'description': 'description',
+                     'status': Issue.NEW, 'estimation': 2, 'sprint': self.sprint
+                     }
+        form = IssueForm(project=self.project, data=form_data)
+        self.assertEqual(form.is_valid(), False)
+
+    def test_form_is_not_valid_with_sprint_and_no_estimation(self):
+        form_data = {'root': self.issue, 'employee': self.user,
+                     'title': 'new issue', 'description': 'description',
+                     'status': Issue.IN_PROGRESS, 'sprint': self.sprint
+                     }
+        form = IssueForm(project=self.project, data=form_data)
+        self.assertEqual(form.is_valid(), False)
 
 
 class IssueEditViewTests(LoginRequiredBase):
@@ -110,6 +136,8 @@ class IssueEditViewTests(LoginRequiredBase):
         self.employee = Employee.objects.create()
         self.issue = Issue.objects.create(project=self.project,
                                           author=self.employee, title='title')
+        self.team = ProjectTeam.objects.create(project=self.project, title='title')
+        self.team.employees.add(self.user)
 
     def test_issue_edit_view_use_right_template(self):
         """
@@ -119,6 +147,15 @@ class IssueEditViewTests(LoginRequiredBase):
             reverse('project:issue_edit', args=[self.project.pk,
                                                 self.issue.pk]))
         self.assertTemplateUsed(response, 'project/issue_edit.html')
+
+    def test_issue_edit_view_can_get_object(self):
+        """
+            method should be True and return title if it can get an object
+        """
+        issue = get_object_or_404(Issue, pk=self.issue.pk,
+                                  project=self.project.pk)
+        self.assertTrue(isinstance(issue, Issue))
+        self.assertEqual(issue.__str__(), issue.title)
 
     def test_issue_edit_view_can_get_object(self):
         """
@@ -339,8 +376,8 @@ class ProjectViewTests(LoginRequiredBase):
                     kwargs={'project_id': test_project.id}), data=form_data)
         test_project = Project.objects.all()[0]
         self.assertNotEquals(test_project.start_date,
-                          date + datetime.timedelta(
-                              days=5))
+                             date + datetime.timedelta(
+                                 days=5))
 
         # delete
 
@@ -392,7 +429,7 @@ class SprintResponseTests(LoginRequiredBase):
     def test_project_sprint_create(self):
         project = Project.objects.create(title='Test Project')
         team = ProjectTeam.objects.create(project=project, title='Test Team')
-        sprint = Sprint.objects.create(title='T_sprint', project_id=project.id,status='new')
+        sprint = Sprint.objects.create(title='T_sprint', project_id=project.id, status='new')
         url = reverse('project:sprint_create',
                       kwargs={'project_id': sprint.project_id})
         response = self.client.get(url)
@@ -403,7 +440,7 @@ class SprintResponseTests(LoginRequiredBase):
         end_date = datetime.datetime.now() + datetime.timedelta(days=14)
         end_date = end_date.strftime("%Y-%m-%d")
         data = {'title': "It's a New Sprint", 'project': project.id,
-                "start_date": start_date, "end_date": end_date,'status':'new'}
+                "start_date": start_date, "end_date": end_date, 'status': 'new'}
         response = self.client.post(url, data)
         new_sprint = Sprint.objects.get(pk=2)
         self.assertEquals(new_sprint.start_date.strftime("%Y-%m-%d"),
@@ -458,7 +495,7 @@ class ActiveSprintTests(LoginRequiredBase):
     def test_project_sprint_active_response_200(self):
         project = Project.objects.create(title='Test Project')
         team = ProjectTeam.objects.create(project=project, title='Test Team')
-        sprint = Sprint.objects.create(title='T_sprint', project_id=project.id,status='active')
+        sprint = Sprint.objects.create(title='T_sprint', project_id=project.id, status='active')
         self.assertEqual(Sprint.objects.get(pk=1).status, 'active')
         url = reverse('project:sprint_active',
                       kwargs={'project_id': sprint.project_id})
@@ -471,12 +508,64 @@ class ActiveSprintTests(LoginRequiredBase):
         response = self.client.get(url)
         self.assertEqual(response.status_code, 404)
 
+    def test_all_unfinished_issues_after_sprint_ends_move_to_backlog(self):
+        number_of_issues = 10
+        project = Project.objects.create(title='Test Project')
+        sprint = Sprint.objects.create(title='T_sprint', project_id=project.id, status='active')
+        for i in range(number_of_issues):
+            Issue.objects.create(title='Test Issue {}'.format(i), project=project, order=Issue.MEDIUM,
+                                 author=self.user)
+
+        issue_sprints = []
+        issue_resolved = []
+        issue_closed = []
+        issue_in_progress = []
+        issue_new = []
+        for i, issue in enumerate(Issue.objects.all().order_by('order')[number_of_issues / 2:]):
+            issue.sprint = sprint
+            if not i % 3:
+                issue.status = Issue.RESOLVED
+                issue_resolved.append(issue)
+            elif not i % 2 and i % 4:
+                issue.status = Issue.CLOSED
+                issue_closed.append(issue)
+            elif not i % 4:
+                issue.status = Issue.IN_PROGRESS
+                issue_in_progress.append(issue)
+            else:
+                issue_new.append(issue)
+            issue.save()
+            issue_sprints.append(issue)
+
+        sprint.status = Sprint.FINISHED
+        sprint.save()
+        sprint.refresh_from_db()
+        for issue in issue_sprints:
+            issue.refresh_from_db()
+        highest_backlog_issues = Issue.objects.filter(project=project.id, sprint=None).order_by('order')[
+                                 :2 + len(issue_new) + len(issue_in_progress)]
+        print(highest_backlog_issues)
+        for issue in issue_closed:
+            self.assertTrue(issue.sprint == sprint)
+            self.assertTrue(issue.status == Issue.CLOSED)
+        for issue in issue_resolved:
+            self.assertTrue(issue.sprint == sprint)
+            self.assertTrue(issue.status == Issue.RESOLVED)
+        for issue in issue_in_progress:
+            self.assertIsNone(issue.sprint)
+            self.assertTrue(issue.status == Issue.NEW)
+            self.assertTrue(issue in highest_backlog_issues)
+        for issue in issue_new:
+            self.assertIsNone(issue.sprint)
+            self.assertTrue(issue.status == Issue.NEW)
+            self.assertTrue(issue in highest_backlog_issues)
+
 
 class SprintDashboard(LoginRequiredBase):
     def test_project_issue_push_response_302(self):
         project = Project.objects.create(title='Test Project')
         team = ProjectTeam.objects.create(project=project, title='Test Team')
-        sprint = Sprint.objects.create(title='T_sprint', project_id=project.id,status='new')
+        sprint = Sprint.objects.create(title='T_sprint', project_id=project.id, status='new')
         iss_new = Issue.objects.create(sprint_id=1, title='T_issue',
                                        author_id=1, project_id=1,
                                        status='new')
@@ -504,7 +593,7 @@ class SprintDashboard(LoginRequiredBase):
     def test_project_issue_push_right(self):
         project = Project.objects.create(title='Test Project')
         team = ProjectTeam.objects.create(project=project, title='Test Team')
-        Sprint.objects.create(title='T_sprint', project_id=project.id,status='active')
+        Sprint.objects.create(title='T_sprint', project_id=project.id, status='active')
         iss_new = Issue.objects.create(sprint_id=1, title='T_issue',
                                        author_id=1, project_id=1,
                                        status='new')
@@ -540,7 +629,7 @@ class SprintDashboard(LoginRequiredBase):
     def test_project_issue_push_left(self):
         project = Project.objects.create(title='Test Project')
         team = ProjectTeam.objects.create(project=project, title='Test Team')
-        Sprint.objects.create(title='T_sprint', project_id=project.id,status='active')
+        Sprint.objects.create(title='T_sprint', project_id=project.id, status='active')
         iss_res = Issue.objects.create(sprint_id=1, title='T_issue',
                                        author_id=1, project_id=1,
                                        status='resolved')

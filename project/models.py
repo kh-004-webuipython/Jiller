@@ -67,23 +67,28 @@ class Sprint(models.Model):
         return self.title
 
     def save(self, *args, **kwargs):
-        active_sprint = Sprint.objects.filter(project_id=self.project,
-                                              status='active')
+
         # disable 2 active sprints in project at time exclude self
-        if self.status == 'active' and len(active_sprint) == 1:
-            if active_sprint[0].project_id != self.project:
+        if self.status == Sprint.ACTIVE:
+            if len(Sprint.objects.filter(
+                    project_id=self.project, status=Sprint.ACTIVE)
+                           .exclude(pk=self.id)) >= 1:
                 raise ValidationError(
                     "Another active sprint already exists in this project")
-            else:
-                super(Sprint, self).save(*args, **kwargs)
-        else:
-            # check for self saving, and if is it - just save current order
-            if len(Sprint.objects.filter(pk=self.id)):
-                super(Sprint, self).save(*args, **kwargs)
-            else:
-                self.order = len(Sprint.objects.filter(
-                    project_id=self.project)) + 1
-                super(Sprint, self).save(*args, **kwargs)
+
+        if not self.id:
+            self.order = len(Sprint.objects.filter(project_id=self.project)) + 1
+
+        if self.status not in (Sprint.ACTIVE, Sprint.NEW):
+            sprint_unfinished_issues = Issue.objects.filter(sprint=self.id).exclude(
+                status__in=(Issue.CLOSED, Issue.RESOLVED, Issue.DELETED))
+            for issue in sprint_unfinished_issues:
+                issue.sprint = None
+                issue.status = Issue.NEW
+                issue.order = Issue.HIGH
+                issue.save()
+
+        super(Sprint, self).save(*args, **kwargs)
 
 
 @python_2_unicode_compatible
