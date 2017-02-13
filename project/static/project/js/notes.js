@@ -1,160 +1,111 @@
 document.addEventListener("DOMContentLoaded", function () {
-    var notewindow = document.getElementById('notes');
-    var notes = document.querySelectorAll('.note');
+    var csrftoken = getCookie('csrftoken');
+    var notes = document.querySelector('.notes');
+    var noteQuery = document.querySelectorAll('.note');
     var openedNote;
-    /*titleNotes.forEach(function (title) {
-        title.addEventListener('click', openNote, false);
+
+    // event on button to create new notes
+    document.getElementById('btnNew').addEventListener('click', function () {
+        addNewNote();
     });
-    document.querySelectorAll('.note-title').forEach(function (title) {
-        title.addEventListener('click', openNote, false);
-    });*/
-    // on click hide other notes, and open current
-    notes.forEach(function (title) {
-        title.onclick = function(e) {
+
+    // make openNote smalle on offset clicks
+    window.addEventListener('click', cancelSize, false);
+
+    function cancelSize(e) {
+        if (openedNote && e.target != openedNote &&
+            !openedNote.contains(e.target)) {
+            openedNote.removeAttribute('id');
+            openedNote.lastElementChild.classList.add('hide');
+        }
+    }
+
+    // add event handlers on all notes
+    noteQuery.forEach(function (note) {
+        addNoteEvents(note);
+    });
+
+    function addNoteEvents(note) {
+
+        // make notes bigger after click
+        note.onclick = function () {
+            noteQuery.forEach(function (note) {
+                note.removeAttribute('id');
+                note.lastElementChild.classList.add('hide');
+            });
             openedNote = this;
-            console.log (this);/*
-            notes.forEach(function (note) {
-                if (openedNote != note) {
-                    note.offsetParent.style.width = '54%';
-                    note.offsetParent.style.height = '500px';
-                    note.offsetParent.focus();
-                    note.style.width = '100%';
-                    note.style.height = '100%';
+            this.id = ('clicked');
+            this.lastElementChild.classList.remove('hide');
+        };
+
+        // send data to server after changing text
+        note.children[0].addEventListener('input', function () {
+            sendData(note);
+        });
+        note.children[1].addEventListener('input', function () {
+            sendData(note);
+        });
+
+        // delete note event
+        note.lastElementChild.addEventListener('click', function () {
+            var xhrd = new XMLHttpRequest();
+            var body = 'id=' + encodeURIComponent(note.dataset['id']);
+            xhrd.open("DELETE", '/project/' + notes.dataset['pr'] + '/note/',
+                true);
+            xhrd.setRequestHeader('Content-Type',
+                'application/x-www-form-urlencoded');
+            xhrd.setRequestHeader("X-CSRFTOKEN", csrftoken);
+            xhrd.onreadystatechange = function () {
+                if (xhrd.readyState == 4 && xhrd.status == 200) {
+                    note.remove();
                 }
-            });*/
-            openNote(openedNote);
+            };
+            xhrd.send(body);
+        });
+    }
+
+    // send data only if data will not be changed in next 3 sec
+    var sendInterval;
+
+    function sendData(note) {
+        stopSend();
+        sendInterval = setTimeout(sendToServer, 3000);
+
+        function stopSend() {
+            clearTimeout(sendInterval);
         }
 
-    });
-
-
-    function openNote(note) {
-        /*note.offsetParent.style.width = '54%';
-        note.offsetParent.style.height = '500px';
-        note.style.width = '100%';
-        note.style.height = '100%';
-
-*/
-
-        console.log();
-
+        function sendToServer() {
+            var xhr = new XMLHttpRequest();
+            var body = 'id=' + encodeURIComponent(note.dataset['id']) +
+                '&title=' + encodeURIComponent(note.children[0].value) +
+                '&content=' + encodeURIComponent(note.children[1].value);
+            xhr.open("POST", '/project/' + notes.dataset['pr'] + '/note/',
+                true);
+            xhr.setRequestHeader('Content-Type',
+                'application/x-www-form-urlencoded');
+            xhr.setRequestHeader("X-CSRFTOKEN", csrftoken);
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState == 4 && xhr.status == 200) {
+                    //TODO: show that data is saved
+                }
+            };
+            xhr.send(body);
+        }
     }
 
+    //  adds a new note to the 'notes' list
+    function addNewNote() {
+        // add a new note to the end of the list
+        var newNote = document.createElement('div');
+        newNote.className = 'note';
+        newNote.innerHTML = "<textarea class='note-title " +
+            "text-center' maxlength='15'></textarea>" +
+            "<textarea class='note-content text-justify' " +
+            "maxlength='5000'></textarea>" +
+            "<div><span class='glyphicon glyphicon-trash'></span></div>";
+        notes.appendChild(newNote);
+        addNoteEvents(newNote);
+
+    }
 });
-
-/*
-
-$(document).ready(function() {
-    notes = $("#notes"); // get references to the 'notes' list
-    // clicking the 'New Note' button adds a new note to the list
-    $("#btnNew").click(function() {
-        addNewNote();
-    });
-});
-
-//  adds a new note to the 'notes' list
-function addNewNote(title, content) {
-
-    // add a new note to the end of the list
-    notes.append("<li><div class='note'>" +
-        "<textarea class='note-title text-center' disabled maxlength='50'/>" +
-        "<textarea class='note-content' maxlength='5000'/>" +
-        //"<img class='hide' src='http://iconizer.net/files/Shimmer_Icons/thumb/128/delete.png'/>" +
-        "</div></li>");
-//""
-    // get the new note that's just been added and attach the click event handler to its close button
-    var newNote = notes.find("li:last");
-    newNote.find("img").click(function() {
-        newNote.remove();
-    });
-
-    // hook up event handlers to show/hide close button as appropriate
-    addNoteEvent(newNote);
-    // if a title is provided then set the title of the new note
-    if (title) {
-        // get the title textarea element and set its value
-        newNote.find("textarea.note-title").val(title);
-    }
-
-    // if a content is provided then set the content of the new note
-    if (content) {
-        // get the content textarea element and set its value
-        newNote.find("textarea.note-content").val(content);
-    }
-}
-
-function addNoteEvent(noteElement) {
-    noteElement.focus(function () {
-        $(this).find(".img").removeClass("hide");
-    }).hover(function() {
-        $(this).find("img").removeClass("hide");
-    }, function () {
-        $(this).find("img").addClass("hide");
-    });
-}
-
-
-
-
-
-
-
-
-
-
-
-/*
-
-
-$(document).ready(function() {
-    notes = $("#notes"); // get references to the 'notes' list
-    // clicking the 'New Note' button adds a new note to the list
-    $("#btnNew").click(function() {
-        addNewNote();
-    });
-});
-
-//  adds a new note to the 'notes' list
-function addNewNote(title, content) {
-
-    // add a new note to the end of the list
-    notes.append("<li><div>" +
-                 "<textarea class='note-title text-center' placeholder='Empty' maxlength='50'/>" +
-                 "<textarea class='note-content'/>" +
-                  +
-                 "</div></li>");
-//"<img class='hide' src='http://iconizer.net/files/Shimmer_Icons/thumb/128/delete.png'/>"
-    // get the new note that's just been added and attach the click event handler to its close button
-    var newNote = notes.find("li:last");
-    newNote.find("img").click(function() {
-        newNote.remove();
-    });
-
-    // hook up event handlers to show/hide close button as appropriate
-    addNoteEvent(newNote);
-    // if a title is provided then set the title of the new note
-    if (title) {
-        // get the title textarea element and set its value
-        newNote.find("textarea.note-title").val(title);
-    }
-
-    // if a content is provided then set the content of the new note
-    if (content) {
-        // get the content textarea element and set its value
-        newNote.find("textarea.note-content").val(content);
-    }
-}
-
-function addNoteEvent(noteElement) {
-    noteElement.focus(function () {
-        $(this).find(".img").removeClass("hide");
-    }).hover(function() {
-        $(this).find("img").removeClass("hide");
-    }, function () {
-        $(this).find("img").addClass("hide");
-    });
-}
-
-
-
-*/

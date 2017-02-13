@@ -1,7 +1,7 @@
 import datetime
 from django.conf import settings
 from django.db.models import Q
-from django.http import HttpResponseRedirect, Http404, HttpResponse
+from django.http import HttpResponseRedirect, Http404, HttpResponse, QueryDict
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.views.generic import DetailView, ListView
@@ -174,7 +174,7 @@ class IssueDeleteView(DeleteView):
     def delete(self, request, *args, **kwargs):
         project = Project.objects.get(id=kwargs['project_id'])
         issue = Issue.objects.get(id=kwargs['issue_id'])
-        issue.status = 'deleted';
+        issue.status = 'deleted'
         issue.save()
         return HttpResponseRedirect(reverse('project:backlog',
                                             kwargs={'project_id': project.id}))
@@ -448,24 +448,41 @@ def team_create(request, project_id):
         form = CreateTeamForm()
     return render(request, 'project/team_create.html', {'form': form,
                                                         'project': project})
+
+
 @waffle_flag('only_developer')
 def notes_view(request, project_id):
     project = get_object_or_404(Project, pk=project_id)
     if request.method == "GET":
         notes = ProjectNote.objects.filter(project_id=project_id)
-        return render(request,'project/notes.html', {'project': project,
-                                                     'notes': notes})
-    return redirect(request, 'project:team', {'project': project})
-
-
-"""
-class SprintDelete(DeleteView):
-    model = Sprint
-
-    def delete(self, **kwargs):
-        sprint = Sprint.objects.get(id=self.kwargs['pk'])
-        sprint.is_active = False
-        sprint.save()
-        return HttpResponseRedirect(
-            reverse('project:sprints_list'))
-"""
+        return render(request, 'project/notes.html', {'project': project,
+                                                      'notes': notes})
+    if request.method == "POST":
+        if 'id' in request.POST and 'title' in request.POST and 'content'\
+                in request.POST:
+            id = request.POST.get('id', None)
+            title = str(request.POST.get('title', None))
+            content = str(request.POST.get('content', None))
+            if id == 'undefined' and len(content) <= 5000 and len(title) <= 15:
+                note = ProjectNote.objects.create(project_id=project.id)
+                note.title = title
+                note.content = content
+                note.save()
+                return HttpResponse()
+            else:
+                note = get_object_or_404(ProjectNote, pk=int(id))
+                if len(content) <= 5000 and len(title) <= 15:
+                    note.title = title
+                    note.content = content
+                    note.save()
+                    return HttpResponse()
+            raise Http404("Wrong request")
+    if request.method == "DELETE":
+        delete = QueryDict(request.body)
+        if 'id' in delete:
+            id = int(delete.get('id', None))
+            note = get_object_or_404(ProjectNote, pk=id)
+            note.delete()
+            return HttpResponse()
+        raise Http404("Wrong request")
+    return redirect(request, 'project:notes', {'project': project})

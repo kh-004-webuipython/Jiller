@@ -79,10 +79,12 @@ class Sprint(models.Model):
                     "Another active sprint already exists in this project")
 
         if not self.id:
-            self.order = len(Sprint.objects.filter(project_id=self.project)) + 1
+            self.order = len(
+                Sprint.objects.filter(project_id=self.project)) + 1
 
         if self.status not in (Sprint.ACTIVE, Sprint.NEW):
-            sprint_unfinished_issues = Issue.objects.filter(sprint=self.id).exclude(
+            sprint_unfinished_issues = Issue.objects.filter(
+                sprint=self.id).exclude(
                 status__in=(Issue.CLOSED, Issue.RESOLVED, Issue.DELETED))
             for issue in sprint_unfinished_issues:
                 issue.sprint = None
@@ -193,12 +195,13 @@ class ProjectTeam(models.Model):
     def __str__(self):
         return self.title
 
+
 @python_2_unicode_compatible
 class ProjectNote(models.Model):
     project = models.ForeignKey(Project, verbose_name=_('Project'))
     title = models.CharField(max_length=255, verbose_name=_('Title'))
-    text = models.TextField(verbose_name=_('Note text'), null=True,
-                                   blank=True)
+    content = models.TextField(verbose_name=_('Note text'), null=True,
+                               blank=True)
 
     def __str__(self):
         return self.title

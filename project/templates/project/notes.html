@@ -25,35 +25,27 @@
 {% endblock %}
 
 {% block content %}
-   <button id="btnNew" class="btn btn-info pull-right">Create new note</button>
+  <button id="btnNew" class="btn btn-info pull-right">Create new note</button>
 
   {% include 'project/project_navbar.html' with notes=True %}
 
 
-  <div class="notes">
-    {#  <div id="controls">#}
-     {# <img id="btnSave" src="http://s1.iconbird.com/ico/2013/6/365/w256h2561372351017Save256.png"/>#}
-   {# </div>#}
-
-
-    <ul id="notes">
-      {% for note in notes %}
-        <li>
-        <div class="note" >
-          <textarea class="note-title text-center" maxlength='15'>
-            {{ note.title }}
-          </textarea>
-          <textarea class="note-content text-center" maxlength='5000'>
-            {{ note.text }}
-          </textarea>
+  <div class="notes" data-pr="{{ project.id }}">
+    {% for note in notes %}
+      <div class="note" data-id="{{ note.id }}">
+        <textarea class="note-title text-center"
+                  maxlength='15'>{{ note.title }}</textarea>
+        <textarea class="note-content text-justify"
+                  maxlength='5000'>{{ note.content }}</textarea>
+        <div class="hide"><span class='glyphicon glyphicon-trash'></span>
         </div>
-        </li>
-      {% endfor %}
-        </ul>
+      </div>
+    {% endfor %}
   </div>
 {% endblock %}
 
 {% block extrascripts %}
   <script src="{% static 'js/jquery.js' %}"></script>
+  <script src="{% static 'js/main.js' %}"></script>
   <script src="{% static 'project/js/notes.js' %}"></script>
 {% endblock %}
