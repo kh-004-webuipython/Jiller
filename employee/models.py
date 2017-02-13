@@ -38,14 +38,13 @@ class Employee(SimpleEmailConfirmationUserMixin, AbstractUser):
         return get_thumbnail(self.photo, '136x150', crop='center')
 
 
-# check for for PM teams before delete
+# check users for for PM teams before delete
 @receiver(pre_delete, sender=Employee)
-def delete_user_without_team(instance, **kwargs):
+def check_delete_user_in_team(instance, **kwargs):
     from project.models import ProjectTeam
     team = ProjectTeam.objects.filter(employees=instance.id)
-
     team_list = ' '
-    if instance.pm_role_access and team:
+    if instance in Employee.objects.filter(groups=4) and team:
         for cur_team in team:
             team_list += '"' + str(cur_team) + '", '
         team_list = team_list[:len(team_list) - 2]

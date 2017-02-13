@@ -9,9 +9,12 @@
     color: #b41d00;
 }
 
+.note div:last-child:hover {
+    transform: scale(1.25);
+}
+
+
 .notes img {
-    padding: 1px 3px;
-    margin: 10px;
     position: absolute;
     top: 0;
     right: 0;
@@ -39,28 +42,30 @@
 }
 
 .note textarea {
-    font-family: "Reenie Beanie", arial, sans-serif;
-    background: rgba(0, 0, 0, 0); /* transparent background */
+    font-family: arial, sans-serif;
+    background: rgba(0, 0, 0, 0.02); /* transparent background */
     resize: none;
     padding: 0 10px;
     overflow: hidden;
-    border: 1px dotted palegoldenrod;
+    border: 1px dotted rgba(247, 241, 176, 0.1)
 }
 
 .note-title {
+    min-width: 178px;
     padding: 0;
     font-size: 120%;
     font-weight: bold;
     height: 25px;
-    width: 100%;
+    width: 25%;
     overflow: hidden;
-
+    background: #bdcae2;
 }
 
 .note-content {
-    margin-top: 1%;
-    font-size: 100%;
-    height: 75%;
+    border-radius: 25px;
+    margin-top: 2%;
+    font-size: 110%;
+    height: 82%;
     width: 100%;
     overflow: hidden;
 }
