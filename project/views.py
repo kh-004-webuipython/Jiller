@@ -1,7 +1,7 @@
 import datetime
 from django.conf import settings
 from django.db.models import Q
-from django.http import HttpResponseRedirect, Http404, HttpResponse
+from django.http import HttpResponseRedirect, Http404, HttpResponse, QueryDict
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.views.generic import DetailView, ListView
@@ -9,7 +9,7 @@ from django.urls import reverse
 
 from project.forms import IssueCommentCreateForm, IssueForm, CreateIssueForm, IssueFormForEditing
 from .forms import ProjectForm, SprintCreateForm, CreateTeamForm
-from .models import Project, ProjectTeam, Issue, Sprint
+from .models import Project, ProjectTeam, Issue, Sprint, ProjectNote
 
 from employee.models import Employee
 
@@ -49,7 +49,8 @@ def sprints_list(request, project_id):
         .exclude(status=Sprint.ACTIVE)
 
     table = SprintsListTable(sprints)
-    RequestConfig(request, paginate={'per_page': settings.PAGINATION_PER_PAGE}). \
+    RequestConfig(request,
+                  paginate={'per_page': settings.PAGINATION_PER_PAGE}). \
         configure(table)
     return render(request, 'project/sprints_list.html', {'project': project,
                                                          'table': table})
@@ -173,7 +174,7 @@ class IssueDeleteView(DeleteView):
     def delete(self, request, *args, **kwargs):
         project = Project.objects.get(id=kwargs['project_id'])
         issue = Issue.objects.get(id=kwargs['issue_id'])
-        issue.status = 'deleted';
+        issue.status = 'deleted'
         issue.save()
         return HttpResponseRedirect(reverse('project:backlog',
                                             kwargs={'project_id': project.id}))
@@ -304,7 +305,8 @@ class SprintCreate(CreateView):
         project = Project.objects.get(id=self.kwargs['project_id'])
         context = super(SprintCreate, self).get_context_data(**kwargs)
         context['project'] = self.project
-        context['issue_list'] = project.issue_set.filter(sprint=None).order_by('order')
+        context['issue_list'] = project.issue_set.filter(sprint=None).order_by(
+            'order')
         return context
 
     def get_success_url(self):
@@ -364,27 +366,22 @@ class ActiveSprintView(DetailView):
 
 
 @waffle_flag('push_issue', 'project:list')
-def push_issue_in_active_sprint(request, project_id, issue_id):
-    current_issue = get_object_or_404(Issue, pk=issue_id)
-    sprint = get_object_or_404(Sprint, pk=current_issue.sprint_id)
-
+def push_issue_in_active_sprint(request):
     if request.method == 'POST':
-        if 'right' in request.POST and sprint.status == 'active':
-            if current_issue.status == "new":
-                current_issue.status = "in progress"
+        if 'table' in request.POST and 'id' in request.POST:
+            table = str(request.POST.get('table', None))
+            row = int(request.POST.get('id', None))
+            current_issue = get_object_or_404(Issue, pk=row)
+            sprint = get_object_or_404(Sprint, pk=current_issue.sprint_id)
+            if sprint.status == Sprint.ACTIVE and table in [Issue.IN_PROGRESS,
+                                                            Issue.NEW,
+                                                            Issue.RESOLVED]:
+                current_issue.status = table
                 current_issue.save()
-            elif current_issue.status == "in progress":
-                current_issue.status = "resolved"
-                current_issue.save()
-        elif 'left' in request.POST and sprint.status == 'active':
-            if current_issue.status == "resolved":
-                current_issue.status = "in progress"
-                current_issue.save()
-            elif current_issue.status == "in progress":
-                current_issue.status = "new"
-                current_issue.save()
-        return redirect('project:sprint_active', project_id)
-    return redirect('project:sprint_active', project_id)
+                return HttpResponse()
+            raise Http404("Wrong request")
+    else:
+        raise Http404("Wrong request")
 
 
 class SprintStatusUpdate(UpdateView):
@@ -453,14 +450,39 @@ def team_create(request, project_id):
                                                         'project': project})
 
 
-"""
-class SprintDelete(DeleteView):
-    model = Sprint
-
-    def delete(self, **kwargs):
-        sprint = Sprint.objects.get(id=self.kwargs['pk'])
-        sprint.is_active = False
-        sprint.save()
-        return HttpResponseRedirect(
-            reverse('project:sprints_list'))
-"""
+@waffle_flag('only_developer')
+def notes_view(request, project_id):
+    project = get_object_or_404(Project, pk=project_id)
+    if request.method == "GET":
+        notes = ProjectNote.objects.filter(project_id=project_id)
+        return render(request, 'project/notes.html', {'project': project,
+                                                      'notes': notes})
+    if request.method == "POST":
+        if 'id' in request.POST and 'title' in request.POST and 'content'\
+                in request.POST:
+            id = request.POST.get('id', None)
+            title = str(request.POST.get('title', None))
+            content = str(request.POST.get('content', None))
+            if id == 'undefined' and len(content) <= 5000 and len(title) <= 15:
+                note = ProjectNote.objects.create(project_id=project.id)
+                note.title = title
+                note.content = content
+                note.save()
+                return HttpResponse()
+            else:
+                note = get_object_or_404(ProjectNote, pk=int(id))
+                if len(content) <= 5000 and len(title) <= 15:
+                    note.title = title
+                    note.content = content
+                    note.save()
+                    return HttpResponse()
+            raise Http404("Wrong request")
+    if request.method == "DELETE":
+        delete = QueryDict(request.body)
+        if 'id' in delete:
+            id = int(delete.get('id', None))
+            note = get_object_or_404(ProjectNote, pk=id)
+            note.delete()
+            return HttpResponse()
+        raise Http404("Wrong request")
+    return redirect(request, 'project:notes', {'project': project})
