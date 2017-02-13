@@ -311,6 +311,10 @@ class SprintCreate(CreateView):
 
 class SprintView(DeleteView):
     model = Sprint
+    template_name = 'project/sprint_detail.html'
+
+    def get_object(self, queryset=None):
+        return get_object_or_404(self.model, pk=self.kwargs['sprint_id'])
 
     def dispatch(self, *args, **kwargs):
         self.project = get_object_or_404(Project, pk=self.kwargs['project_id'])
@@ -318,24 +322,18 @@ class SprintView(DeleteView):
 
     def get_context_data(self, **kwargs):
         context = super(SprintView, self).get_context_data(**kwargs)
-        issues_from_this_sprint = self.object.issue_set.all()
-        context['new_issues'] = issues_from_this_sprint.filter(status="new")
-        context['in_progress_issues'] = \
-            issues_from_this_sprint.filter(status="in progress")
-        context['resolved_issues'] = \
-            issues_from_this_sprint.filter(status="resolved")
-        context['closed_issues'] = issues_from_this_sprint.filter(
-            status="closed")
+        if self.object:
+            issues_from_this_sprint = self.object.issue_set.all()
+            context['new_issues'] = issues_from_this_sprint.filter(status="new")
+            context['in_progress_issues'] = \
+                issues_from_this_sprint.filter(status="in progress")
+            context['resolved_issues'] = \
+                issues_from_this_sprint.filter(status="resolved")
+            context['closed_issues'] = issues_from_this_sprint.filter(
+                status="closed")
+            context['chart'] = self.object.chart()
         context['project'] = self.project
-        context['chart'] = self.object.chart()
         return context
-
-
-class SprintDetailView(SprintView):
-    template_name = 'project/sprint_detail.html'
-
-    def get_object(self, queryset=None):
-        return get_object_or_404(self.model, pk=self.kwargs['sprint_id'])
 
 
 class ActiveSprintDetailView(SprintView):
@@ -343,7 +341,7 @@ class ActiveSprintDetailView(SprintView):
     context_object_name = 'active_sprint'
 
     def get_object(self, queryset=None):
-        return self.project.sprint_set.get(status=Sprint.ACTIVE)
+        return self.project.sprint_set.filter(status=Sprint.ACTIVE).first()
 
 
 @waffle_flag('push_issue', 'project:list')

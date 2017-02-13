@@ -40,12 +40,12 @@
   {% include 'project/project_navbar.html' with sprint_detail=True %}
 
 
-  {% if no_active_sprint %}
+  {% if not object %}
 
     <div class="page-header"><h1>There is no active sprint yet</h1></div>
   {% endif %}
 
-  {% if not no_active_sprint %}
+  {% if object %}
     <div class="table-responsive">
       <table class="table table-bordered">
         <thead>
@@ -57,9 +57,9 @@
         </thead>
         <tbody>
         <tr>
-          <td>{{ active_sprint.title }}</td>
-          <td>{{ active_sprint.start_date|date:"d/m/Y" }}</td>
-          <td>{{ active_sprint.end_date|date:"d/m/Y" }}</td>
+          <td>{{ object.title }}</td>
+          <td>{{ object.start_date|date:"d/m/Y" }}</td>
+          <td>{{ object.end_date|date:"d/m/Y" }}</td>
         </tr>
         </tbody>
       </table>
@@ -149,7 +149,7 @@
 
 {% block extrascripts %}
   {% flag "push_issue" %}
-    <script src="{% static 'js/main.js' %}"></script>
+    <script src="{% static 'js/ajax_csrf.js' %}"></script>
     <script src="{% static 'project/js/push_issue_in_active_sprint.js' %}"></script>
   {% endflag %}
 {% endblock %}
