@@ -18,8 +18,7 @@
 
   {# Block where global CSS will go. #}
   {% block styles %}
-    {#custom styles#}
-    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+
     <!-- bootstrap & fontawesome -->
     <link rel="stylesheet" href='{% static 'css/bootstrap.css' %}'
           type='text/css'/>
@@ -38,6 +37,9 @@
     <!-- table styles -->
     <link rel="stylesheet" href="{% static 'css/table.css' %}"
           type='text/css'/>
+
+    {#custom styles#}
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
   {% endblock %}
 
   {# Additional CSS - specific to certain pages #}

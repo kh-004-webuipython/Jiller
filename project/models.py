@@ -114,11 +114,11 @@ class Issue(models.Model):
         (MEDIUM, _('Medium')),
         (LOW, _('Low'))
     )
-    USER_STORY = 'User story'
+    USER_STORY = 'User_story'
     TASK = 'Task'
     BUG = 'Bug'
     ISSUE_TYPE_CHOICES = (
-        (USER_STORY, _('User story')),
+        (USER_STORY, _('User_story')),
         (TASK, _('Task')),
         (BUG, _('Bug')),
     )

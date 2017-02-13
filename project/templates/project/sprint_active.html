@@ -63,7 +63,7 @@
           <tbody>
           {% for new_iss in new_issues %}
             <tr>
-              <td>
+              <td class="{{new_iss.type}}">
                 <a class="align-middle" href="
 {% url 'project:issue_detail' new_iss.project_id new_iss.id %}">
                   {{ new_iss.title }}</a>
@@ -92,11 +92,11 @@
           <tbody>
           {% for progress in in_progress_issues %}
             <tr>
-              <td>
+              <td class="{{progress.type}}">
                 {% flag "push_issue" %}
                   <form style="float: left"
                         action="{% url 'project:issue_push' progress.project_id progress.id %}"
-                        method="post" class="{{progress.type}}">
+                        method="post">
                     {% csrf_token %}
                     <button class="active-sprint-event" type="submit" name="left"><span
                         class="glyphicon glyphicon-circle-arrow-left"></span>
@@ -132,7 +132,7 @@
           <tbody>
           {% for resolved in resolved_issues %}
             <tr>
-              <td>
+              <td class="{{resolved.type}}">
                 {% flag "push_issue" %}
                   <form style="float: left"
                         action="{% url 'project:issue_push' resolved.project_id resolved.id %}"
