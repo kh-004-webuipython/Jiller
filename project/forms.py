@@ -39,13 +39,9 @@ class IssueForm(forms.ModelForm):
         self.fields['employee'].queryset = ProjectTeam.objects.filter(
             project=project)[0].employees.filter(
             groups__pk__in=[1, 2])
-        if user.groups.filter(name__icontains='product owner'):
+        if user.groups.filter(id=3):
             self.fields['type'].choices = [('User story', 'User story'), ]
-        elif user.groups.filter(name__icontains='developer') :
-            self.fields['type'].choices = [('Task', 'Task'), ('Bug', 'Bug'), ]
-        elif user.groups.filter(name__icontains='project manager'):
-            self.fields['type'].choices = [('Task', 'Task'), ('Bug', 'Bug'), ]
-        elif user.groups.filter(name__icontains='scrum') :
+        elif user.groups.filter(id__in=(1, 2, 4)) :
             self.fields['type'].choices = [('Task', 'Task'), ('Bug', 'Bug'), ]
 
 

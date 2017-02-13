@@ -96,7 +96,7 @@
                 {% flag "push_issue" %}
                   <form style="float: left"
                         action="{% url 'project:issue_push' progress.project_id progress.id %}"
-                        method="post">
+                        method="post" class="{{progress.type}}">
                     {% csrf_token %}
                     <button class="active-sprint-event" type="submit" name="left"><span
                         class="glyphicon glyphicon-circle-arrow-left"></span>
