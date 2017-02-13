@@ -1,7 +1,8 @@
 from __future__ import unicode_literals
 
-from datetime import datetime
+import datetime
 
+import pygal
 from django.db.models.aggregates import Sum
 from django.utils.encoding import python_2_unicode_compatible
 from django.utils import timezone
@@ -74,8 +75,46 @@ class Sprint(models.Model):
     def __str__(self):
         return self.title
 
+    def get_expected_end_date(self):
+        return self.start_date + datetime.timedelta(days=self.duration)
+
     def calculate_estimation_sum(self):
         return self.issue_set.aggregate(Sum('estimation'))['estimation__sum'] or 0
+
+    def get_chart_data(self, date):
+        return self.issue_set.filter(
+            issuelog__date_created__range=[self.start_date, date + datetime.timedelta(days=1)]).extra(
+            {'date_created': "date(date_created)"}).values('date_created').annotate(
+            sum=Sum('issuelog__cost')).order_by()
+
+    def sprint_daterange(self):
+        for n in range(int((self.get_expected_end_date() - self.start_date).days)):
+            yield self.start_date + datetime.timedelta(n)
+
+    def chart(self):
+        today = datetime.date.today()
+        if today <= self.get_expected_end_date():
+            data = self.get_chart_data(today)
+        else:
+            data = self.get_chart_data(self.get_expected_end_date())
+        res = dict((x['date_created'], x['sum']) for x in data)
+        estimation_sum = self.calculate_estimation_sum()
+        total_date_range = [day for day in self.sprint_daterange()]
+        perfect_line = [None for _ in range(len(total_date_range) + 1)]
+        perfect_line[0] = estimation_sum
+        perfect_line[-1] = 0
+        chart_data = [estimation_sum]
+        for day in total_date_range:
+            if res.get(day.isoformat()):
+                estimation_sum -= res.get(day.isoformat())
+            if not day > today:
+                chart_data.append(estimation_sum)
+        total_date_range.insert(0, None)
+        line_chart = pygal.Line(height=400, include_x_axis=True, max_scale=4)
+        line_chart.x_labels = total_date_range
+        line_chart.add(None, chart_data)
+        line_chart.add(None, perfect_line)
+        return line_chart
 
     def save(self, *args, **kwargs):
         active_sprint = Sprint.objects.filter(project_id=self.project,
@@ -184,7 +223,7 @@ class IssueComment(models.Model):
         return self.title
 
     def get_pretty_date_created(self):
-        return datetime.strftime(self.date_created, "%d.%m.%y %H:%M")
+        return datetime.datetime.strftime(self.date_created, "%d.%m.%y %H:%M")
 
     def get_cropped_photo(self, *args, **kwargs):
         return get_thumbnail(self.photo, '40x40', crop='center')

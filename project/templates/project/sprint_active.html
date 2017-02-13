@@ -18,12 +18,14 @@
 {% endblock %}
 
 {% block content %}
+  <div class='btn-group pull-right'>
   <a href="#chart-modal" role="button" data-toggle="modal"
          class="btn btn-info pull-right">Burndown chart</a>
   {% flag 'create_sprint' %}
     <a href="{% url 'project:sprint_create' project.id %}"
        class="btn btn-primary pull-right">Create new sprint</a>
   {% endflag %}
+  </div>
   {% include 'project/project_navbar.html' with sprint_detail=True %}
 
 
@@ -165,7 +167,7 @@
         <div class="modal-body">
           <div class="row">
             <div class="col-sm-12">
-              <figure>{{ chart | safe }}</figure>
+              <figure>{{ chart.render | safe }}</figure>
             </div>
           </div>
         </div>

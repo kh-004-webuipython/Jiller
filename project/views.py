@@ -193,31 +193,6 @@ class IssueDeleteView(DeleteView):
                                             kwargs={'project_id': project.id}))
 
 
-class SprintView(DetailView):
-    model = Sprint
-    template_name = 'project/sprint_detail.html'
-    query_pk_and_slug = True
-    pk_url_kwarg = 'sprint_id'
-    slug_field = 'project'
-    slug_url_kwarg = 'project_id'
-
-    def get_context_data(self, **kwargs):
-        context = super(SprintView, self).get_context_data(**kwargs)
-        cur_proj = self.kwargs['project_id']
-        cur_spr = self.kwargs['sprint_id']
-        issues_from_this_sprint = Issue.objects.filter(project_id=cur_proj,
-                                                       sprint_id=cur_spr)
-        context['new_issues'] = issues_from_this_sprint.filter(status="new")
-        context['in_progress_issues'] = \
-            issues_from_this_sprint.filter(status="in progress")
-        context['resolved_issues'] = \
-            issues_from_this_sprint.filter(status="resolved")
-        context['closed_issues'] = issues_from_this_sprint.filter(
-            status="closed")
-        context['project'] = Project.objects.get(id=cur_proj)
-        return context
-
-
 class ProjectCreateView(CreateView):
     model = Project
     form_class = ProjectForm
@@ -331,91 +306,41 @@ class SprintCreate(CreateView):
         return super(SprintCreate, self).dispatch(*args, **kwargs)
 
 
-class ActiveSprintView(DetailView):
+class SprintView(DeleteView):
     model = Sprint
-    query_pk_and_slug = True
-    pk_url_kwarg = 'project_id'
-    template_name = 'project/sprint_active.html'
 
     def dispatch(self, *args, **kwargs):
         self.project = get_object_or_404(Project, pk=self.kwargs['project_id'])
-        self.get_sprint = self.project.sprint_set.get(status=Sprint.ACTIVE)
-        return super(ActiveSprintView, self).dispatch(*args, **kwargs)
-
-    def get_chart_data(self, date):
-        return self.get_sprint.issue_set.filter(
-            issuelog__date_created__range=[self.get_sprint.start_date, date + datetime.timedelta(days=1)]).extra(
-            {'date_created': "date(date_created)"}).values('date_created').annotate(
-            sum=Sum('issuelog__cost')).order_by()
-
-    def chart(self):
-        def daterange(start_date, end_date):
-            for n in range(int((end_date - start_date).days)):
-                yield start_date + datetime.timedelta(n)
-        end_date = self.get_sprint.start_date + datetime.timedelta(days=self.get_sprint.duration)
-        today = datetime.date.today()
-        if today <= end_date:
-            data = self.get_chart_data(today)
-        else:
-            data = self.get_chart_data(end_date)
-        res = dict((x['date_created'], x['sum']) for x in data)
-        estimation_sum = self.object.calculate_estimation_sum()
-        total_date_range = [day for day in daterange(self.get_sprint.start_date, end_date)]
-        perfect_line = [None for _ in range(len(total_date_range) + 1)]
-        perfect_line[0] = estimation_sum
-        perfect_line[-1] = 0
-        chart_data = [estimation_sum]
-        for day in total_date_range:
-            if res.get(day.isoformat()):
-                estimation_sum -= res.get(day.isoformat())
-            if not day > today:
-                chart_data.append(estimation_sum)
-        total_date_range.insert(0, None)
-        line_chart = pygal.Line(height=400, include_x_axis=True, max_scale=4)
-        line_chart.x_labels = total_date_range
-        line_chart.add(None, chart_data)
-        line_chart.add(None, perfect_line)
-        return line_chart.render()
-
-    def get_object(self, queryset=None):
-        try:
-            return super(ActiveSprintView, self).get_object(queryset)
-        except:
-            try:
-                Project.objects.get(pk=self.kwargs['project_id'])
-            except:
-                raise Http404("Project does not exist")
+        return super(SprintView, self).dispatch(*args, **kwargs)
 
     def get_context_data(self, **kwargs):
-        context = super(ActiveSprintView, self).get_context_data(
-            **kwargs)
+        context = super(SprintView, self).get_context_data(**kwargs)
+        issues_from_this_sprint = self.object.issue_set.all()
+        context['new_issues'] = issues_from_this_sprint.filter(status="new")
+        context['in_progress_issues'] = \
+            issues_from_this_sprint.filter(status="in progress")
+        context['resolved_issues'] = \
+            issues_from_this_sprint.filter(status="resolved")
+        context['closed_issues'] = issues_from_this_sprint.filter(
+            status="closed")
+        context['project'] = self.project
+        context['chart'] = self.object.chart()
+        return context
 
-        try:
-            Sprint.objects.get(project_id=self.kwargs['project_id'],
-                               status='active')
-        except Sprint.DoesNotExist:
-            context['project'] = Project.objects.get(
-                id=self.kwargs['project_id'])
-            context['no_active_sprint'] = True
-            return context
-        else:
-            active_sprint = Sprint.objects.get(
-                project_id=self.kwargs['project_id'],
-                status='active')
-            context['active_sprint'] = active_sprint
-            issues_from_active_sprint = Issue.objects.filter(
-                project_id=self.kwargs['project_id'],
-                sprint_id=active_sprint.id)
-            context['new_issues'] = issues_from_active_sprint.filter(
-                status="new")
-            context['in_progress_issues'] = issues_from_active_sprint.filter(
-                status="in progress")
-            context['resolved_issues'] = issues_from_active_sprint.filter(
-                status="resolved")
-            context['project'] = Project.objects.get(
-                id=self.kwargs['project_id'])
-            context['chart'] = self.chart()
-            return context
+
+class SprintDetailView(SprintView):
+    template_name = 'project/sprint_detail.html'
+
+    def get_object(self, queryset=None):
+        return get_object_or_404(self.model, pk=self.kwargs['sprint_id'])
+
+
+class ActiveSprintDetailView(SprintView):
+    template_name = 'project/sprint_active.html'
+    context_object_name = 'active_sprint'
+
+    def get_object(self, queryset=None):
+        return self.project.sprint_set.get(status=Sprint.ACTIVE)
 
 
 @waffle_flag('push_issue', 'project:list')
