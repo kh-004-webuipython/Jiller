@@ -29,10 +29,18 @@
 {% endblock %}
 
 {% block content %}
+{% if no_active_sprint %}
   {% flag 'create_sprint' %}
       <a href="{% url 'project:sprint_create' project.id %}"
        class="btn btn-primary pull-right">Create new sprint</a>
   {% endflag %}
+    {% else %}
+    {% flag 'edit_sprint' %}
+        <div class="col-md-2 pull-right">
+      <button class="btn btn-primary " data-toggle="modal" data-target="#confirm_finish_modal">Finish Sprint</button>
+  </div>
+    {% endflag %}
+    {% endif %}
   {% include 'project/project_navbar.html' with sprint_detail=True %}
 
 
@@ -124,6 +132,26 @@
       </div>
     </div>
   {% endif %}
+    <div id="confirm_finish_modal" class="modal fade" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title">Confirmation</h4>
+      </div>
+      <div class="modal-body">
+        <p>Do you really want to finish sprint?</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+          <form action="{% url 'project:finish_active_sprint' project.id %}" method="post">
+              {% csrf_token %}
+              <button type="submit" class="btn btn-primary" type="submit">Yes</button>
+          </form>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
 {% endblock %}
 
 {% block extrascripts %}
@@ -132,3 +160,4 @@
     <script src="{% static 'project/js/push_issue_in_active_sprint.js' %}"></script>
   {% endflag %}
 {% endblock %}
+
