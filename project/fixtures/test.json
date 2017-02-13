@@ -156,10 +156,32 @@
   }
 },
 {
+  "model": "waffle.flag",
+  "pk": 8,
+  "fields": {
+    "name": "only_developer",
+    "everyone": null,
+    "percent": null,
+    "testing": false,
+    "superusers": true,
+    "staff": true,
+    "authenticated": false,
+    "languages": "",
+    "rollout": false,
+    "note": "",
+    "created": "2017-02-07T16:12:35Z",
+    "modified": "2017-02-08T16:13:03.933Z",
+    "groups": [
+      1
+    ],
+    "users": []
+  }
+},
+{
   "pk": 1,
   "model": "auth.Group",
   "fields": {
-    "name": "developers"
+    "name": "developer"
   }
 },
 {
@@ -174,6 +196,17 @@
   "model": "auth.Group",
   "fields": {
     "name": "product owner"
+  }
+},
+{
+  "model": "simple_email_confirmation.emailaddress",
+  "pk": 1,
+  "fields": {
+    "user": 1,
+    "email": "lennon@thebeatles.com",
+    "key": "wJeR0mkBsGzF",
+    "set_at": "2017-02-05T13:31:53.991Z",
+    "confirmed_at": "2017-02-05T13:32:43.555Z"
   }
 }
 ]

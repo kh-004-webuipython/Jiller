@@ -117,23 +117,30 @@ class Sprint(models.Model):
         return line_chart
 
     def save(self, *args, **kwargs):
-        active_sprint = Sprint.objects.filter(project_id=self.project,
-                                              status='active')
+
         # disable 2 active sprints in project at time exclude self
-        if self.status == 'active' and len(active_sprint) == 1:
-            if active_sprint[0].project_id != self.project:
+        if self.status == Sprint.ACTIVE:
+            if len(Sprint.objects.filter(
+                    project_id=self.project, status=Sprint.ACTIVE)
+                           .exclude(pk=self.id)) >= 1:
                 raise ValidationError(
                     "Another active sprint already exists in this project")
-            else:
-                super(Sprint, self).save(*args, **kwargs)
-        else:
-            # check for self saving, and if is it - just save current order
-            if len(Sprint.objects.filter(pk=self.id)):
-                super(Sprint, self).save(*args, **kwargs)
-            else:
-                self.order = len(Sprint.objects.filter(
-                    project_id=self.project)) + 1
-                super(Sprint, self).save(*args, **kwargs)
+
+        if not self.id:
+            self.order = len(
+                Sprint.objects.filter(project_id=self.project)) + 1
+
+        if self.status not in (Sprint.ACTIVE, Sprint.NEW):
+            sprint_unfinished_issues = Issue.objects.filter(
+                sprint=self.id).exclude(
+                status__in=(Issue.CLOSED, Issue.RESOLVED, Issue.DELETED))
+            for issue in sprint_unfinished_issues:
+                issue.sprint = None
+                issue.status = Issue.NEW
+                issue.order = Issue.HIGH
+                issue.save()
+
+        super(Sprint, self).save(*args, **kwargs)
 
 
 @python_2_unicode_compatible
@@ -238,6 +245,17 @@ class ProjectTeam(models.Model):
     title = models.CharField(max_length=255, verbose_name=_('Title'))
     employees = models.ManyToManyField('employee.Employee',
                                        verbose_name=_('Employees'))
+
+    def __str__(self):
+        return self.title
+
+
+@python_2_unicode_compatible
+class ProjectNote(models.Model):
+    project = models.ForeignKey(Project, verbose_name=_('Project'))
+    title = models.CharField(max_length=255, verbose_name=_('Title'))
+    content = models.TextField(verbose_name=_('Note text'), null=True,
+                               blank=True)
 
     def __str__(self):
         return self.title

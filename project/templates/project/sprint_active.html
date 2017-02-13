@@ -1,6 +1,17 @@
 {% extends 'base.html' %}
 {% load waffle_tags %}
 {% load i18n %}
+{% load static %}
+
+
+{% block styles %}
+  {{ block.super }}
+  {% flag "push_issue" %}
+
+    <link rel="stylesheet" type="text/css"
+          href="{% static 'css/push-issue.css' %}"/>
+  {% endflag %}
+{% endblock %}
 
 {% block title %} Active sprint {% endblock %}
 
@@ -58,7 +69,7 @@
     <div class="text-center table-responsive">
       <p><strong>Dashboard</strong></p>
       <div class="col-md-4">
-        <table class="table table-striped table-bordered">
+        <table class="table table-striped table-bordered" data-issueType="new">
           <thead>
           <tr>
             <th class="text-center">New issues</th>
@@ -66,28 +77,18 @@
           </thead>
           <tbody>
           {% for new_iss in new_issues %}
-            <tr>
+            <tr data-id="{{ new_iss.id }}" draggable="true" ondragstart="event.dataTransfer.setData('text/plain',null)">
               <td>
-                <a class="align-middle" href="
+                <a draggable="false" class="align-middle" href="
 {% url 'project:issue_detail' new_iss.project_id new_iss.id %}">
                   {{ new_iss.title }}</a>
-                {% flag "push_issue" %}
-                  <form style="float: right"
-                        action="{% url 'project:issue_push' new_iss.project_id new_iss.id %}"
-                        method="post">
-                    {% csrf_token %}
-                    <button class="active-sprint-event" type="submit" name="right"><span
-                        class="glyphicon glyphicon-circle-arrow-right"></span>
-                    </button>
-                  </form>
-                {% endflag %}
-            </tr>
+              </tr>
           {% endfor %}
           </tbody>
         </table>
       </div>
       <div class="col-md-4">
-        <table class="table table-striped table-bordered">
+        <table class="table table-striped table-bordered" data-issueType="in progress">
           <thead>
           <tr>
             <th class="text-center">Issues in progress</th>
@@ -95,31 +96,11 @@
           </thead>
           <tbody>
           {% for progress in in_progress_issues %}
-            <tr>
+            <tr data-id="{{ progress.id }}" draggable="true" ondragstart="event.dataTransfer.setData('text/plain',null)">
               <td>
-                {% flag "push_issue" %}
-                  <form style="float: left"
-                        action="{% url 'project:issue_push' progress.project_id progress.id %}"
-                        method="post">
-                    {% csrf_token %}
-                    <button class="active-sprint-event" type="submit" name="left"><span
-                        class="glyphicon glyphicon-circle-arrow-left"></span>
-                    </button>
-                  </form>
-                {% endflag %}
-                <a class="align-middle" href="
+                <a draggable="false" class="align-middle" href="
 {% url 'project:issue_detail' progress.project_id progress.id %}">
                   {{ progress.title }}</a>
-                {% flag "push_issue" %}
-                  <form style="float: right"
-                        action="{% url 'project:issue_push' progress.project_id progress.id %}"
-                        method="post">
-                    {% csrf_token %}
-                    <button class="active-sprint-event" type="submit" name="right"><span
-                        class="glyphicon glyphicon-circle-arrow-right"></span>
-                    </button>
-                  </form>
-                {% endflag %}
               </td>
             </tr>
           {% endfor %}
@@ -127,7 +108,7 @@
         </table>
       </div>
       <div class="col-md-4">
-        <table class="table table-striped table-bordered">
+        <table class="table table-striped table-bordered" data-issueType="resolved">
           <thead>
           <tr>
             <th class="text-center">Resolved issues</th>
@@ -135,19 +116,9 @@
           </thead>
           <tbody>
           {% for resolved in resolved_issues %}
-            <tr>
+            <tr data-id="{{ resolved.id }}" draggable="true" ondragstart="event.dataTransfer.setData('text/plain',null)">
               <td>
-                {% flag "push_issue" %}
-                  <form style="float: left"
-                        action="{% url 'project:issue_push' resolved.project_id resolved.id %}"
-                        method="post">
-                    {% csrf_token %}
-                    <button class="active-sprint-event" type="submit" name="left"><span
-                        class="glyphicon glyphicon-circle-arrow-left"></span>
-                    </button>
-                  </form>
-                {% endflag %}
-                <a class="align-middle" href="
+                <a draggable="false" class="align-middle" href="
 {% url 'project:issue_detail' resolved.project_id resolved.id %}">
                   {{ resolved.title }}</a></td>
             </tr>
@@ -174,4 +145,11 @@
       </div>
     </div>
   </div>
+{% endblock %}
+
+{% block extrascripts %}
+  {% flag "push_issue" %}
+    <script src="{% static 'js/main.js' %}"></script>
+    <script src="{% static 'project/js/push_issue_in_active_sprint.js' %}"></script>
+  {% endflag %}
 {% endblock %}
