@@ -43,8 +43,11 @@ $(function() {
                 success : function(response){
                     var element = $('#error-message');
                     element.empty();
-                    for(var i = 0; i < order.length; i++)
-                        order[i].setAttribute('data-order', (i+1).toString())
+                    for(var i = 0; i < order.length; i++) {
+                        var item = order[i];
+                        item.setAttribute('data-order', (i+1).toString());
+                        item.firstElementChild.innerHTML = (i+1).toString();
+                    }
                 },
                 error: function (xhr, ajaxOptions, thrownError) {
                     var element = $('#error-message');

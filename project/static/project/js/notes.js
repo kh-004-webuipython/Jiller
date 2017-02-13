@@ -103,7 +103,7 @@ document.addEventListener("DOMContentLoaded", function () {
             "text-center' maxlength='15'></textarea>" +
             "<textarea class='note-content text-justify' " +
             "maxlength='5000'></textarea>" +
-            "<div><span class='glyphicon glyphicon-trash'></span></div>";
+            "<div class='hide'><span class='glyphicon glyphicon-trash'></span></div>";
         notes.appendChild(newNote);
         addNoteEvents(newNote);
 

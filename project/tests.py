@@ -6,7 +6,7 @@ from django.urls import reverse
 
 from employee.models import Employee
 from project.forms import ProjectForm
-from .models import Project, Issue, Sprint, ProjectTeam
+from .models import Project, Issue, Sprint, ProjectTeam, ProjectNote
 from .forms import IssueForm
 from django.shortcuts import get_object_or_404
 from django.utils.translation import ugettext_lazy as _
@@ -53,6 +53,10 @@ class IssueFormTests(LoginRequiredBase):
         self.employee = Employee.objects.create()
         self.issue = Issue.objects.create(project=self.project,
                                           author=self.employee)
+        self.sprint = Sprint.objects.create(title='title',
+                                            project=self.project)
+        self.team = ProjectTeam.objects.create(project=self.project,
+                                               title='title')
 
     def test_form_is_valid_with_empty_fields(self):
         """
@@ -88,6 +92,31 @@ class IssueFormTests(LoginRequiredBase):
         form = IssueForm(project=self.project, data=form_data)
         self.assertEqual(form.is_valid(), True)
 
+    def test_form_is_not_valid_with_no_sprint_and_status_distinct_new(self):
+        form_data = {'root': self.issue, 'employee': self.user,
+                     'title': 'new issue', 'description': 'description',
+                     'status': Issue.RESOLVED, 'estimation': 2
+                     }
+        form = IssueForm(project=self.project, data=form_data)
+        self.assertEqual(form.is_valid(), False)
+
+    def test_form_is_not_valid_with_sprint_and_status_new(self):
+        form_data = {'root': self.issue, 'employee': self.user,
+                     'title': 'new issue', 'description': 'description',
+                     'status': Issue.NEW, 'estimation': 2,
+                     'sprint': self.sprint
+                     }
+        form = IssueForm(project=self.project, data=form_data)
+        self.assertEqual(form.is_valid(), False)
+
+    def test_form_is_not_valid_with_sprint_and_no_estimation(self):
+        form_data = {'root': self.issue, 'employee': self.user,
+                     'title': 'new issue', 'description': 'description',
+                     'status': Issue.IN_PROGRESS, 'sprint': self.sprint
+                     }
+        form = IssueForm(project=self.project, data=form_data)
+        self.assertEqual(form.is_valid(), False)
+
 
 class IssueEditViewTests(LoginRequiredBase):
     def setUp(self):
@@ -97,6 +126,9 @@ class IssueEditViewTests(LoginRequiredBase):
         self.employee = Employee.objects.create()
         self.issue = Issue.objects.create(project=self.project,
                                           author=self.employee, title='title')
+        self.team = ProjectTeam.objects.create(project=self.project,
+                                               title='title')
+        self.team.employees.add(self.user)
 
     def test_issue_edit_view_use_right_template(self):
         """
@@ -106,6 +138,15 @@ class IssueEditViewTests(LoginRequiredBase):
             reverse('project:issue_edit', args=[self.project.pk,
                                                 self.issue.pk]))
         self.assertTemplateUsed(response, 'project/issue_edit.html')
+
+    def test_issue_edit_view_can_get_object(self):
+        """
+            method should be True and return title if it can get an object
+        """
+        issue = get_object_or_404(Issue, pk=self.issue.pk,
+                                  project=self.project.pk)
+        self.assertTrue(isinstance(issue, Issue))
+        self.assertEqual(issue.__str__(), issue.title)
 
     def test_issue_edit_view_can_get_object(self):
         """
@@ -468,9 +509,11 @@ class ActiveSprintTests(LoginRequiredBase):
     def test_all_unfinished_issues_after_sprint_ends_move_to_backlog(self):
         number_of_issues = 10
         project = Project.objects.create(title='Test Project')
-        sprint = Sprint.objects.create(title='T_sprint', project_id=project.id, status='active')
+        sprint = Sprint.objects.create(title='T_sprint', project_id=project.id,
+                                       status='active')
         for i in range(number_of_issues):
-            Issue.objects.create(title='Test Issue {}'.format(i), project=project, order=Issue.MEDIUM,
+            Issue.objects.create(title='Test Issue {}'.format(i),
+                                 project=project, order=Issue.MEDIUM,
                                  author=self.user)
 
         issue_sprints = []
@@ -478,7 +521,8 @@ class ActiveSprintTests(LoginRequiredBase):
         issue_closed = []
         issue_in_progress = []
         issue_new = []
-        for i, issue in enumerate(Issue.objects.all().order_by('order')[number_of_issues / 2:]):
+        for i, issue in enumerate(
+                Issue.objects.all().order_by('order')[number_of_issues / 2:]):
             issue.sprint = sprint
             if not i % 3:
                 issue.status = Issue.RESOLVED
@@ -499,7 +543,9 @@ class ActiveSprintTests(LoginRequiredBase):
         sprint.refresh_from_db()
         for issue in issue_sprints:
             issue.refresh_from_db()
-        highest_backlog_issues = Issue.objects.filter(project=project.id, sprint=None).order_by('order')[
+        highest_backlog_issues = Issue.objects.filter(project=project.id,
+                                                      sprint=None).order_by(
+            'order')[
                                  :2 + len(issue_new) + len(issue_in_progress)]
         print(highest_backlog_issues)
         for issue in issue_closed:
@@ -530,7 +576,7 @@ class SprintDashboard(LoginRequiredBase):
                                           author=self.employee, title='title',
                                           status='new', sprint=self.sprint)
 
-    def test_project_issue_push_response_404(self):
+    def test_project_issue_push_responses(self):
         response = self.client.get(reverse('project:issue_push'))
         self.assertContains(response, "access not found: 404 ERROR",
                             status_code=200)
@@ -564,3 +610,60 @@ class SprintDashboard(LoginRequiredBase):
         response = self.client.post(url, data)
         self.assertContains(response, "access not found: 404 ERROR",
                             status_code=200)
+
+
+class ProjectNotes(LoginRequiredBase):
+    def setUp(self):
+        super(ProjectNotes, self).setUp()
+        self.project = Project.objects.create(title='pr1')
+        self.team = ProjectTeam.objects.create(project=self.project)
+        self.sprint = Sprint.objects.create(project=self.project,
+                                            status='active')
+        self.employee = Employee.objects.create()
+        self.issue = Issue.objects.create(project=self.project,
+                                          author=self.employee, title='title',
+                                          status='new', sprint=self.sprint)
+        self.note = ProjectNote.objects.create(project=self.project,
+                                               title='TESTS',
+                                               content="some text in Notes")
+
+    def test_notes_get_responses(self):
+        response = self.client.get(
+            reverse('project:note', kwargs={'project_id': self.project.id}))
+        self.assertContains(response, "some text in Notes",
+                            status_code=200)
+
+        response = self.client.get(
+            reverse('project:note', kwargs={'project_id': 2}))
+        self.assertContains(response, "access not found: 404 ERROR",
+                            status_code=200)
+
+    def test_notes_post_responses(self):
+        url = reverse('project:note', kwargs={'project_id': self.project.id})
+        data = {'id': 1, 'title': 'title', 'content': 'SOME TEXT#'}
+        self.client.post(url, data)
+        self.assertEqual(ProjectNote.objects.get(pk=1).content, 'SOME TEXT#')
+
+        data = {'id': 2, 'title': 'title', 'content': 'SOME TEXT'}
+        response = self.client.post(url, data)
+        self.assertContains(response, "access not found: 404 ERROR",
+                            status_code=200)
+
+        self.assertEqual(len(ProjectNote.objects.all()), 1)
+        data = {'id': 'undefined', 'title': 'title', 'content': 'SOME TEXT'}
+        response = self.client.post(url, data)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(ProjectNote.objects.all()), 2)
+
+
+""" TODO: need to discuss!
+    def test_notes_delete_responses(self):
+        url = reverse('project:note', kwargs={'project_id': self.project.id})
+        data = {'id': 1}
+        self.assertEqual(len(ProjectNote.objects.all()), 1)
+        response = self.client.delete(url, data)
+        print self.note.id
+        print ProjectNote.objects.all(),ProjectNote.objects.get(pk=1)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(ProjectNote.objects.all()), 0)
+"""

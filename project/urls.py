@@ -57,6 +57,6 @@ urlpatterns = [
     url(r'^issue_order/$', views.issue_order, name='issue_order'),
 
     # note
-    url(r'^(?P<project_id>\d+)/note/$', views.notes_view, name='notes'),
+    url(r'^(?P<project_id>\d+)/note/$', views.notes_view, name='note'),
 
 ]

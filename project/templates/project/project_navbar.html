@@ -31,7 +31,7 @@
     </li>
     {% flag 'only_developer' %}
     <li {% if notes %}class="active" {% endif %}>
-      <a href="{% url 'project:notes' project.id %}">
+      <a href="{% url 'project:note' project.id %}">
         Notes
       </a>
     </li>

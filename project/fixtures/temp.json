@@ -176,6 +176,72 @@
   }
 },
 {
+  "model": "waffle.flag",
+  "pk": 9,
+  "fields": {
+    "name": "update_team",
+    "everyone": null,
+    "percent": null,
+    "testing": false,
+    "superusers": true,
+    "staff": true,
+    "authenticated": false,
+    "languages": "",
+    "rollout": false,
+    "note": "",
+    "created": "2017-01-30T16:12:35Z",
+    "modified": "2017-01-30T16:13:03.933Z",
+    "groups": [
+      4
+    ],
+    "users": []
+  }
+},
+{
+  "model": "waffle.flag",
+  "pk": 10,
+  "fields": {
+    "name": "company_employees_view",
+    "everyone": null,
+    "percent": null,
+    "testing": false,
+    "superusers": true,
+    "staff": true,
+    "authenticated": false,
+    "languages": "",
+    "rollout": false,
+    "note": "",
+    "created": "2017-01-30T16:12:35Z",
+    "modified": "2017-01-30T16:13:03.933Z",
+    "groups": [
+      4
+    ],
+    "users": []
+  }
+},
+{
+  "model": "waffle.flag",
+  "pk": 11,
+  "fields": {
+    "name": "create_team",
+    "everyone": null,
+    "percent": null,
+    "testing": false,
+    "superusers": true,
+    "staff": true,
+    "authenticated": false,
+    "languages": "",
+    "rollout": false,
+    "note": "",
+    "created": "2017-01-30T16:12:35Z",
+    "modified": "2017-01-30T16:13:03.933Z",
+    "groups": [
+      4
+    ],
+    "users": []
+  }
+},
+{
   "pk": 1,
   "model": "auth.Group",
   "fields": {
@@ -194,6 +260,13 @@
   "model": "auth.Group",
   "fields": {
     "name": "product owner"
+  }
+},
+{
+  "pk": 4,
+  "model": "auth.Group",
+  "fields": {
+    "name": "project manager"
   }
 },
 {
