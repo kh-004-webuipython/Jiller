@@ -28,14 +28,12 @@ urlpatterns = [
         views.SprintView.as_view(), name='sprint_detail'),
     url(r'^(?P<project_id>\d+)/sprint/(?P<sprint_id>\d+)/activate/$',
         views.SprintStatusUpdate.as_view(), name='sprint_activate'),
-    # url(r'^(?P<project_id>\d+)/sprint/(?P<sprint_id>\d+)/delete/$',
-    #    views.SprintDelete.as_view(), name='sprint_delete'),
 
     # active_sprint
     url(r'^(?P<project_id>\d+)/sprint/active/$',
         views.ActiveSprintView.as_view(), name='sprint_active'),
-    url(r'^(?P<project_id>\d+)/(?P<issue_id>\d+)/push/$',
-        views.push_issue_in_active_sprint, name='issue_push'),
+    url(r'^issue_push/$', views.push_issue_in_active_sprint,
+        name='issue_push'),
     url(r'^(?P<project_id>\d+)/workload_manager',
         views.workload_manager, name='workload_manager'),
 
@@ -46,7 +44,8 @@ urlpatterns = [
         views.issue_detail_view, name='issue_detail'),
     url(r'^(?P<project_id>\d+)/issue/(?P<issue_id>\d+)/edit/$',
         views.issue_edit_view, name='issue_edit'),
-    url(r'^(?P<project_id>[0-9]+)/issue/(?P<issue_id>[0-9]+)/delete/$', views.IssueDeleteView.as_view(),
+    url(r'^(?P<project_id>[0-9]+)/issue/(?P<issue_id>[0-9]+)/delete/$',
+        views.IssueDeleteView.as_view(),
         name='issue_delete'),
 
     # team
@@ -58,5 +57,8 @@ urlpatterns = [
 
     # processing AJAX
     url(r'^issue_order/$', views.issue_order, name='issue_order'),
+
+    # note
+    url(r'^(?P<project_id>\d+)/note/$', views.notes_view, name='note'),
 
 ]

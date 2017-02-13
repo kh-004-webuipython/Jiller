@@ -38,8 +38,7 @@
       "created": "2017-01-30T15:10:08.981Z",
       "modified": "2017-01-30T15:10:08.981Z",
       "groups": [
-        2,
-        3
+        2,3
       ],
       "users": []
     }
@@ -83,8 +82,7 @@
       "created": "2017-01-30T15:10:09.003Z",
       "modified": "2017-01-30T15:10:09.003Z",
       "groups": [
-        2,
-        3
+        1, 2, 3
       ],
       "users": []
     }
@@ -106,7 +104,6 @@
       "created": "2017-01-30T16:11:37Z",
       "modified": "2017-01-30T16:12:29.133Z",
       "groups": [
-        1,
         2
       ],
       "users": []
@@ -129,8 +126,7 @@
       "created": "2017-01-30T16:12:35Z",
       "modified": "2017-01-30T16:13:03.933Z",
       "groups": [
-        1,
-        2
+        1, 2
       ],
       "users": []
     }
@@ -152,7 +148,7 @@
       "created": "2017-01-30T16:12:35Z",
       "modified": "2017-01-30T16:13:03.933Z",
       "groups": [
-        3,4
+        3, 4
       ],
       "users": []
     }
@@ -246,6 +242,28 @@
     }
   },
   {
+    "model": "waffle.flag",
+    "pk": 12,
+    "fields": {
+      "name": "only_developer",
+      "everyone": null,
+      "percent": null,
+      "testing": false,
+      "superusers": true,
+      "staff": true,
+      "authenticated": false,
+      "languages": "",
+      "rollout": false,
+      "note": "",
+      "created": "2017-02-07T16:12:35Z",
+      "modified": "2017-02-08T16:13:03.933Z",
+      "groups": [
+        1
+      ],
+      "users": []
+    }
+  },
+  {
     "pk": 1,
     "model": "auth.Group",
     "fields": {
@@ -281,17 +299,14 @@
       "last_login": null,
       "is_superuser": true,
       "username": "admin",
-      "first_name": "AdminName",
-      "last_name": "AdminLastName",
-      "email": "colonialist@ukr.net",
+      "first_name": "IvanAdmin",
+      "last_name": "Ivanov",
+      "email": "test1@ukr.net",
       "is_staff": true,
       "is_active": true,
       "date_joined": "2017-01-27T20:53:28Z",
       "date_birth": null,
       "photo": "",
-      "groups": [
-        4
-      ],
       "user_permissions": []
     }
   },
@@ -303,9 +318,9 @@
       "last_login": null,
       "is_superuser": false,
       "username": "developer",
-      "first_name": "DeveloperName",
-      "last_name": "DeveloperLastName",
-      "email": "colonialist@ukr.net",
+      "first_name": "IvanDeveloper",
+      "last_name": "IvanovDeveloper",
+      "email": "test2@ukr.net",
       "is_staff": false,
       "is_active": true,
       "date_joined": "2017-01-27T20:53:28Z",
@@ -325,9 +340,9 @@
       "last_login": null,
       "is_superuser": false,
       "username": "scrum_master",
-      "first_name": "ScrumName",
-      "last_name": "ScrumLastName",
-      "email": "colonialist@ukr.net",
+      "first_name": "IvanScrum",
+      "last_name": "Ivanov",
+      "email": "test3@ukr.net",
       "is_staff": false,
       "is_active": true,
       "date_joined": "2017-01-27T21:14:20Z",
@@ -347,9 +362,9 @@
       "last_login": null,
       "is_superuser": false,
       "username": "product_owner",
-      "first_name": "ProductOwnerName",
-      "last_name": "ProductOwnerLastName",
-      "email": "colonialist@ukr.net",
+      "first_name": "IvanProductOwner",
+      "last_name": "Ivanov",
+      "email": "test4@ukr.net",
       "is_staff": false,
       "is_active": true,
       "date_joined": "2017-01-30T16:45:39.517Z",
@@ -368,10 +383,10 @@
       "password": "pbkdf2_sha256$30000$80UGAYiTkmUH$rgg/i5Ya+Tpup6k1t5vQMjrBML2uTYY0AirJQYx0Z44=",
       "last_login": null,
       "is_superuser": false,
-      "username": "projectmanager",
-      "first_name": "ProjectManagerName",
-      "last_name": "ProjectManagerLastName",
-      "email": "norfolknorfolks@gmail.com",
+      "username": "project_manager",
+      "first_name": "IvanProjectManager",
+      "last_name": "Ivanov",
+      "email": "test5@ukr.net",
       "is_staff": false,
       "is_active": true,
       "date_joined": "2017-01-30T16:45:39.517Z",
@@ -390,10 +405,10 @@
       "password": "pbkdf2_sha256$30000$80UGAYiTkmUH$rgg/i5Ya+Tpup6k1t5vQMjrBML2uTYY0AirJQYx0Z44=",
       "last_login": null,
       "is_superuser": false,
-      "username": "developer#2",
-      "first_name": "fist_name_developer#2",
-      "last_name": "last_name_developer#2",
-      "email": "",
+      "username": "developer2",
+      "first_name": "IvanDeveloper2",
+      "last_name": "Ivanov",
+      "email": "test6@ukr.net",
       "is_staff": false,
       "is_active": true,
       "date_joined": "2017-01-27T20:53:28Z",
@@ -412,10 +427,10 @@
       "password": "pbkdf2_sha256$30000$80UGAYiTkmUH$rgg/i5Ya+Tpup6k1t5vQMjrBML2uTYY0AirJQYx0Z44=",
       "last_login": null,
       "is_superuser": false,
-      "username": "developer#3",
-      "first_name": "fist_name_developer#3",
-      "last_name": "last_name_developer#3",
-      "email": "",
+      "username": "developer3",
+      "first_name": "IvanDeveloper3",
+      "last_name": "Ivanov",
+      "email": "test7@ukr.net",
       "is_staff": false,
       "is_active": true,
       "date_joined": "2017-01-27T20:53:28Z",
@@ -434,10 +449,10 @@
       "password": "pbkdf2_sha256$30000$80UGAYiTkmUH$rgg/i5Ya+Tpup6k1t5vQMjrBML2uTYY0AirJQYx0Z44=",
       "last_login": null,
       "is_superuser": false,
-      "username": "developer#4",
-      "first_name": "fist_name_developer#4",
-      "last_name": "last_name_developer#4",
-      "email": "",
+      "username": "developer4",
+      "first_name": "IvanDeveloper4",
+      "last_name": "Ivanov",
+      "email": "test8@ukr.net",
       "is_staff": false,
       "is_active": true,
       "date_joined": "2017-01-27T20:53:28Z",
@@ -455,7 +470,7 @@
   "pk": 1,
   "fields": {
     "user": 1,
-    "email": "colonialist@ukr.net",
+    "email": "test1@ukr.net",
     "key": "wJeR0mkBsGzF",
     "set_at": "2017-02-05T13:31:53.991Z",
     "confirmed_at": "2017-02-05T13:32:43.555Z"
@@ -466,7 +481,7 @@
   "pk": 2,
   "fields": {
     "user": 2,
-    "email": "colonialist@ukr.net",
+    "email": "test2@ukr.net",
     "key": "cBMhN8GtPoVX",
     "set_at": "2017-02-05T13:31:54.014Z",
     "confirmed_at": "2017-02-05T13:32:43.555Z"
@@ -477,7 +492,7 @@
   "pk": 3,
   "fields": {
     "user": 3,
-    "email": "colonialist@ukr.net",
+    "email": "test3@ukr.net",
     "key": "vbIVqd6w4xcP",
     "set_at": "2017-02-05T13:31:54.030Z",
     "confirmed_at": "2017-02-05T13:32:43.555Z"
@@ -488,7 +503,7 @@
   "pk": 4,
   "fields": {
     "user": 4,
-    "email": "colonialist@ukr.net",
+    "email": "test4@ukr.net",
     "key": "JC3WcA9C918S",
     "set_at": "2017-02-05T13:31:54.051Z",
     "confirmed_at": "2017-02-05T13:32:43.555Z"
@@ -499,7 +514,7 @@
   "pk": 5,
   "fields": {
     "user": 5,
-    "email": "norfolknorfolks@gmail.com",
+    "email": "test5@ukr.net",
     "key": "gz974V21elBc",
     "set_at": "2017-02-05T13:31:54.061Z",
     "confirmed_at": "2017-02-05T13:32:43.555Z"
@@ -510,7 +525,7 @@
   "pk": 6,
   "fields": {
     "user": 6,
-    "email": "colonialist@ukr.net",
+    "email": "test6@ukr.net",
     "key": "MF7oOGX2FFzJ",
     "set_at": "2017-02-05T13:31:54.071Z",
     "confirmed_at": "2017-02-05T13:32:43.555Z"
@@ -521,7 +536,7 @@
   "pk": 7,
   "fields": {
     "user": 7,
-    "email": "colonialist@ukr.net",
+    "email": "test7@ukr.net",
     "key": "My2N8lzAQkll",
     "set_at": "2017-02-05T13:31:54.081Z",
     "confirmed_at": "2017-02-05T13:32:43.555Z"
@@ -532,7 +547,7 @@
   "pk": 8,
   "fields": {
     "user": 8,
-    "email": "colonialist@ukr.net",
+    "email": "test8@ukr.net",
     "key": "O2pcT6kyfNHL",
     "set_at": "2017-02-05T13:31:54.091Z",
     "confirmed_at": "2017-02-05T13:32:43.555Z"
