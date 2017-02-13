@@ -94,7 +94,7 @@
         </div>
       </div>
     </div>
-    <form method="post" action='{% url 'project:issue_detail' project.id issue.id %}'>
+    <form method="post" action='{% url "project:issue_detail" project.id issue.id %}'>
       <div class="form-actions">
         <div class="input-group">
           {{ form.text }}
