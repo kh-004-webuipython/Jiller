@@ -30,11 +30,6 @@
         Team
       </a>
     </li>
-    <li {% if workload %}class="active" {% endif %}>
-      <a href="{% url 'project:workload_manager' project.id %}">
-        Workload
-      </a>
-    </li>
     {% flag 'only_developer' %}
     <li {% if notes %}class="active" {% endif %}>
       <a href="{% url 'project:note' project.id %}">

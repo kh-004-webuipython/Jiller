@@ -23,12 +23,15 @@
     <a href="{% url 'project:detail' project.id %}">{{ project.title }}</a>
   </li>
   <li>
+    <a href="{% url 'project:sprint_active' project.id %}">Active sprint</a>
+  </li>
+  <li>
     <span>{% trans 'Workload manager' %}</span>
   </li>
 {% endblock %}
 
 {% block content %}
-  {% include 'project/project_navbar.html' with workload=True %}
+  {% include 'project/project_navbar.html' with sprint_detail=True %}
 
     <div id="error-message"></div>
 
@@ -37,10 +40,8 @@
   </div>
 
   {% block extrascripts %}
-{#    {% flag "prioritize_issue" %}#}
       <script defer src="{% static 'js/jquery-ui.min.js' %}"></script>
       <script defer src="{% static 'js/main.js' %}"></script>
       <script defer src="{% static 'project/js/workload_manager.js' %}"></script>
-{#    {% endflag %}#}
   {% endblock %}
 {% endblock %}

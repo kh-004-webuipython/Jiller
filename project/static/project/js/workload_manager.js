@@ -22,6 +22,7 @@ $(function() {
                 var alterData = {};
                 alterData['issue'] = ui.item.data('issue');
                 alterData['employee'] = ui.item.parent().data('employee');
+                var sprintStatus = $('#sprint-status').data('status');
 
                 $.ajaxSetup({
                     beforeSend: function(xhr, settings) {
@@ -34,18 +35,24 @@ $(function() {
                 $.ajax({
                     data: { data: JSON.stringify(alterData) },
                     type: 'POST',
-                    url: '/project/' + project + '/workload_manager',
+                    url: '/project/' + project + '/workload_manager/' + sprintStatus + '/',
 
                     success : function(data){
+                        var element = $('#error-message');
+                        element.empty();
                         $('#workload-template').html(data);
                         moveProgressBar();
                         sortable();
                     },
-                    error: function (xhr, ajaxOptions, thrownError) {
+                    error: function (error) {
+                        var message = 'Something go wrong';
+                        if(error.responseText)
+                            message = error.responseText;
                         var element = $('#error-message');
                         element.empty();
                         element.append('<h2 class="alert alert-warning">' +
-                            'Something went wrong.</h2>');
+                            message + '</h2>');
+                        setTimeout(location.reload.bind(window.location), 3500);
                     }
                 });
             }

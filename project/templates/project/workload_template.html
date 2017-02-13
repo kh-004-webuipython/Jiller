@@ -1,39 +1,67 @@
-{% if items %}
+{% load sprint_status %}
 
-    <div id="replace">
-  <div class="row">
-    {% for item in items %}
-      <div class="col-md-3">
-          <ul class="list-group">
-            <li class="blue lighter bigger-120 list-group-item">
-              <span class="glyphicon glyphicon-user"></span>&nbsp
-                <a class="no-underline" href="{% url 'employee:detail' item.employee.id %}">
-                    {{ item.employee }}</a>
-              <span class="badge">{{ item.workload }}%</span></li>
-            <div class="background-{% if item.workload < 90 %}yellow
-              {% elif item.workload > 105 %}red {% else %}green
-              {% endif %}progress-wrap progress"
-               data-progress-percent="{{ item.workload }}">
-              <div class="progress-bar progress"></div>
-            </div>
-            <div data-employee="{{ item.employee.id }}" class="sortable contant-box">
-            {% for issue in item.issues|dictsort:'order' %}
-              <li data-issue="{{ issue.id }}" class="list-group-item">
-                  <a class="no-underline" href="{% url 'project:issue_detail' project.id issue.id %}">
-                      {{ issue.title }}</a>
-                  <span class="badge">{{ issue.estimation }}</span></li>
-            {% endfor %}
-            </div>
-            <li class="list-group-item white background-blue bigger-110">Free hours
-                  <span class="badge">{{ item.free }}</span></li>
-          </ul>
-      </div>
-    {% if forloop.counter|divisibleby:4 %}
-      </div><div class="row">
-    {% endif %}
-  {% endfor %}
-</div>
+{% if items %}
+<div id="sprint-status" data-status="{{ sprint_status }}"></div>
+<div class="row">
+  {% for item in items %}
+    <div class="col-md-3">
+      <ul class="list-group">
+        <li class="blue lighter bigger-120 list-group-item">
+          <span class="glyphicon glyphicon-user"></span>&nbsp
+            <a class="no-underline" href="{% url 'employee:detail' item.employee.id %}">
+              {{ item.employee }}</a>
+          <span class="badge">{{ item.workload }}%</span></li>
+        <div class="background-{% if item.workload < 75 %}yellow
+          {% elif item.workload > 100 %}red {% else %}green
+          {% endif %}progress-wrap progress"
+           data-progress-percent="{{ item.workload }}">
+          <div class="progress-bar progress"></div>
+        </div>
+        <div data-employee="{{ item.employee.id }}" class="sortable contant-box">
+        {% for issue in item.issues|dictsort:'order' %}
+          <li data-issue="{{ issue.id }}" class="list-group-item">
+            <a class="no-underline limit-text-width"
+               href="{% url 'project:issue_detail' project.id issue.id %}">
+                {{ issue.title }}</a>
+            <span class="badge">{{ issue.estimation }}</span></li>
+        {% endfor %}
+        </div>
+        <li class="list-group-item white background-blue bigger-110">Free hours
+          <span class="badge">{{ item.free }}</span></li>
+      </ul>
     </div>
+  {% if forloop.counter == 3 %}
+
+    <div class="fixed-backlog-pool">
+      <ul class="list-group">
+        <li class="blue lighter bigger-120 list-group-item text-center">
+          {% if sprint_status == 'active'|sprint_status %}
+            <a class="no-underline" href="{% url 'project:backlog' project.id %}">
+              Backlog pool</a>
+          {% elif sprint_status == 'new'|sprint_status %}
+            New sprint pool
+          {% endif %}
+        </li>
+        <div data-employee="0" class="sortable contant-box">
+        {% for issue in issues_log|dictsort:'order' %}
+          <li data-issue="{{ issue.id }}" class="list-group-item">
+            <a class="no-underline limit-text-width"
+               href="{% url 'project:issue_detail' project.id issue.id %}">
+                {{ issue.title }}</a>
+            {% if issue.estimation %}<span class="badge">
+              {{ issue.estimation }}</span>
+            {% endif %}</li>
+        {% endfor %}
+        </div>
+      </ul>
+    </div>
+  {% endif %}
+
+  {% if forloop.counter|divisibleby:3 %}
+    </div><div class="row">
+  {% endif %}
+{% endfor %}
+</div>
 
 {% else %}
   <h3>No items.</h3>

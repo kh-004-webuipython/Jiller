@@ -452,18 +452,40 @@ def team_create(request, project_id):
                                                         'project': project})
 
 
-def workload_manager(request, project_id):
+def workload_manager(request, project_id, sprint_status):
     if request.method == 'POST':
         data = json.loads(request.POST.get('data'))
 
         if data:
             employee_id = data['employee']
-            employee = Employee.objects.get(pk=employee_id)
             issue = Issue.objects.get(pk=data['issue'])
-            issue.employee = employee
+            if not issue.estimation:
+                return HttpResponse('The issue has to be estimated', status=401)
+            if employee_id == 0:
+                current_sprint = None
+                if sprint_status == Sprint.NEW:
+                    current_sprint = Sprint.objects.get(project=project_id,
+                                                        status=Sprint.NEW)
+                issue.sprint = current_sprint
+                issue.employee = None
+            else:
+                employee = Employee.objects.get(pk=employee_id)
+                issue.employee = employee
+                if not issue.sprint:
+                    sprint = Sprint.objects.get(project=project_id, status=sprint_status)
+                    issue.sprint = sprint
             issue.save()
 
     project = get_object_or_404(Project, pk=project_id)
+    if sprint_status == Sprint.NEW:
+        issues_log = Issue.objects.filter(project=project_id) \
+            .filter(sprint__status=Sprint.NEW).filter(employee__isnull=True) \
+            .order_by("order")[:10]
+    else:
+        issues_log = Issue.objects.filter(project=project_id) \
+                         .filter(sprint__isnull=True).filter(~Q(status='deleted')) \
+                         .order_by("order")[:10]
+
     try:
         employees = ProjectTeam.objects.filter(project=project)[0]\
             .employees.filter(groups__pk__in=[1, 2])
@@ -472,10 +494,10 @@ def workload_manager(request, project_id):
     items = []
     for employee in employees:
         issues = Issue.objects.filter(project=project_id) \
-            .filter(sprint__status=Sprint.ACTIVE, employee=employee)
+            .filter(sprint__status=sprint_status, employee=employee).filter(~Q(status='deleted'))
         items.append({'employee': employee, 'issues': issues})
 
-    sprint = get_object_or_404(Sprint, pk=project_id, status=Sprint.ACTIVE)
+    sprint = Sprint.objects.get(project=project_id, status=sprint_status)
     if sprint:
         duration = sprint.end_date - sprint.start_date
         change = duration.days % 7 if duration.days % 7 < 6 else 5
@@ -488,13 +510,16 @@ def workload_manager(request, project_id):
         item['workload'] = sum * 100 / work_hours
         item['free'] = work_hours - sum
 
+    context = {'items': items,
+               'project': project,
+               'issues_log': issues_log,
+               'sprint_status': sprint_status}
+
     if request.is_ajax():
-        html = render_to_string('project/workload_template.html', {'items': items,
-                                                                   'project': project})
+        html = render_to_string('project/workload_template.html', context)
         return HttpResponse(html)
 
-    return render(request, 'project/workload_manager.html', {'items': items,
-                                                             'project': project})
+    return render(request, 'project/workload_manager.html', context)
 
 
 """

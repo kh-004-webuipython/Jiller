@@ -108,3 +108,18 @@ div.project-detail {
 .no-underline:hover {
     text-decoration: none;
 }
+
+.fixed-backlog-pool {
+    position: fixed;
+    right: 20px;
+    width: 18.7%;
+}
+
+.btn-margin-left {
+    margin-left: 10px!important;
+}
+
+.limit-text-width {
+    width: 85%;
+    display: inline-block;
+}

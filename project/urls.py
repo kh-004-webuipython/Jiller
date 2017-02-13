@@ -1,4 +1,5 @@
 from django.conf.urls import url
+from .models import Sprint
 from . import views
 
 app_name = 'project'
@@ -34,8 +35,6 @@ urlpatterns = [
         views.ActiveSprintView.as_view(), name='sprint_active'),
     url(r'^issue_push/$', views.push_issue_in_active_sprint,
         name='issue_push'),
-    url(r'^(?P<project_id>\d+)/workload_manager',
-        views.workload_manager, name='workload_manager'),
 
     # issue
     url(r'^(?P<project_id>\d+)/issue/create/$',
@@ -57,6 +56,8 @@ urlpatterns = [
 
     # processing AJAX
     url(r'^issue_order/$', views.issue_order, name='issue_order'),
+    url(r'^(?P<project_id>\d+)/workload_manager/(?P<sprint_status>\w+)/$',
+        views.workload_manager, name='workload_manager'),
 
     # note
     url(r'^(?P<project_id>\d+)/note/$', views.notes_view, name='note'),

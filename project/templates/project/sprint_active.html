@@ -2,6 +2,8 @@
 {% load waffle_tags %}
 {% load i18n %}
 {% load static %}
+{% load sprint_status %}
+{% load sprint_exist %}
 
 
 {% block styles %}
@@ -29,10 +31,21 @@
 {% endblock %}
 
 {% block content %}
-  {% flag 'create_sprint' %}
+  {% if project.id|sprint_exist:'new' %}
+    <a href="{% url 'project:workload_manager' project.id 'new'|sprint_status %}"
+       class="btn btn-primary pull-right btn-margin-left">Form Sprint</a>
+  {% else %}
+    {% flag 'create_sprint' %}
       <a href="{% url 'project:sprint_create' project.id %}"
-       class="btn btn-primary pull-right">Create new sprint</a>
-  {% endflag %}
+       class="btn btn-primary pull-right btn-margin-left">Create new sprint</a>
+    {% endflag %}
+  {% endif %}
+
+  {% if project.id|sprint_exist:'active' %}
+    <a href="{% url 'project:workload_manager' project.id 'active'|sprint_status %}"
+       class="btn btn-primary pull-right btn-margin-left">Workload Manager</a>
+  {% endif %}
+
   {% include 'project/project_navbar.html' with sprint_detail=True %}
 
 
