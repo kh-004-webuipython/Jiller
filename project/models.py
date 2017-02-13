@@ -13,8 +13,6 @@ from sorl.thumbnail.shortcuts import get_thumbnail
 from django.db.models.signals import m2m_changed, pre_save
 from django.dispatch import receiver
 
-from employee.models import Employee
-
 
 class ProjectModelManager(models.Manager):
     def get_user_projects(self, user):
@@ -200,6 +198,7 @@ class ProjectTeam(models.Model):
 
 # check ProjectTeam for Project Manager in it before save
 def check_save_team_without_pm(action, **kwargs):
+    from employee.models import Employee
     if action == 'pre_add':
         for user in kwargs['pk_set']:
             if Employee.objects.filter(pk=user, groups=4):
@@ -214,7 +213,8 @@ m2m_changed.connect(check_save_team_without_pm,
 @receiver(pre_save, sender=ProjectTeam)
 def delete_user_without_team(instance, **kwargs):
     team_in_project = ProjectTeam.objects.filter(project=instance.project_id)
-    if team_in_project:
+    print team_in_project, instance
+    if len (team_in_project) <= 1 and instance not in team_in_project:
         raise ValidationError(
             "There is already another team in the project!")
 
