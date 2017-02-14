@@ -73,62 +73,59 @@
         </div>
         <br><br>
 
-        <div class="text-center table-responsive">
-            <p><strong>Dashboard</strong></p>
-            <div class="col-md-4">
-                <table class="table table-striped table-bordered" data-issueType="new">
-                    <thead>
-                    <tr>
-                        <th class="text-center">New issues</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    {% for new_iss in new_issues %}
-                        <tr data-id="{{ new_iss.id }}" draggable="true"
-                            ondragstart="event.dataTransfer.setData('text/plain',null)">
-                            <td class="{{ new_iss.type }}">
-                                <a draggable="false" class="align-middle" href="
+    <div class="text-center table-responsive">
+      <p><strong>Dashboard</strong></p>
+      <div class="col-md-4">
+        <table class="table table-striped table-bordered" data-issueType="new">
+          <thead>
+          <tr>
+            <th class="text-center">New issues</th>
+          </tr>
+          </thead>
+          <tbody>
+          {% for new_iss in new_issues %}
+            <tr data-id="{{ new_iss.id }}" draggable="true" ondragstart="event.dataTransfer.setData('text/plain',null)">
+              <tdclass="{{ new_iss.type }}">
+                <a draggable="false" class="align-middle" href="
 {% url 'project:issue_detail' new_iss.project_id new_iss.id %}">
-                                    {{ new_iss.title }}</a>
-                        </tr>
-                    {% endfor %}
-                    </tbody>
-                </table>
-            </div>
-            <div class="col-md-4">
-                <table class="table table-striped table-bordered" data-issueType="in progress">
-                    <thead>
-                    <tr>
-                        <th class="text-center">Issues in progress</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    {% for progress in in_progress_issues %}
-                        <tr data-id="{{ progress.id }}" draggable="true"
-                            ondragstart="event.dataTransfer.setData('text/plain',null)">
-                            <td class="{{ progress.type }}">
-                                <a draggable="false" class="align-middle" href="
+                  {{ new_iss.title }}</a>
+              </tr>
+          {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      <div class="col-md-4">
+        <table class="table table-striped table-bordered" data-issueType="in progress">
+          <thead>
+          <tr>
+            <th class="text-center">Issues in progress</th>
+          </tr>
+          </thead>
+          <tbody>
+          {% for progress in in_progress_issues %}
+            <tr data-id="{{ progress.id }}" draggable="true" ondragstart="event.dataTransfer.setData('text/plain',null)">
+              <tdclass="{{ progress.type }}">
+                <a draggable="false" class="align-middle" href="
 {% url 'project:issue_detail' progress.project_id progress.id %}">
-                                    {{ progress.title }}</a>
-                            </td>
-                        </tr>
-                    {% endfor %}
-                    </tbody>
-                </table>
-            </div>
-            <div class="col-md-4">
-                <table class="table table-striped table-bordered" data-issueType="resolved">
-                    <thead>
-                    <tr>
-                        <th class="text-center">Resolved issues</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    {% for resolved in resolved_issues %}
-                        <tr data-id="{{ resolved.id }}" draggable="true"
-                            ondragstart="event.dataTransfer.setData('text/plain',null)">
-                            <td class="{{ resolved.type }}">
-                                <a draggable="false" class="align-middle" href="
+                  {{ progress.title }}</a>
+              </td>
+            </tr>
+          {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      <div class="col-md-4">
+        <table class="table table-striped table-bordered" data-issueType="resolved">
+          <thead>
+          <tr>
+            <th class="text-center">Resolved issues</th>
+          </tr>
+          </thead>
+          <tbody>
+          {% for resolved in resolved_issues %}
+            <tr data-id="{{ resolved.id }}" draggable="true" ondragstart="event.dataTransfer.setData('text/plain',null)">
+              <tdclass="{{ resolved.type }}">
+                <a draggable="false" class="align-middle" href="
 {% url 'project:issue_detail' resolved.project_id resolved.id %}">
                                     {{ resolved.title }}</a></td>
                         </tr>
@@ -187,8 +184,8 @@
 {% endblock %}
 
 {% block extrascripts %}
-    {% flag "push_issue" %}
-        <script src="{% static 'js/ajax_csrf.js' %}"></script>
-        <script src="{% static 'project/js/push_issue_in_active_sprint.js' %}"></script>
-    {% endflag %}
+  {% flag "push_issue" %}
+    <script src="{% static 'js/main.js' %}"></script>
+    <script src="{% static 'project/js/push_issue_in_active_sprint.js' %}"></script>
+  {% endflag %}
 {% endblock %}
