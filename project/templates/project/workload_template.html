@@ -9,7 +9,7 @@
         <li class="blue lighter bigger-120 list-group-item">
           <span class="glyphicon glyphicon-user"></span>&nbsp
             <a class="no-underline" href="{% url 'employee:detail' item.employee.id %}">
-              {{ item.employee }}</a>
+              {{ item.employee.last_name }}</a>
           <span class="badge">{{ item.workload }}%</span></li>
         <div class="background-{% if item.workload < 75 %}yellow
           {% elif item.workload > 100 %}red {% else %}green
