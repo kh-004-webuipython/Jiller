@@ -54,7 +54,7 @@
         </thead>
         <tbody id="sortable">
         {% for issue in issues|dictsort:'order' %}
-          <tr data-id="{{ issue.id }}" data-order="{{ issue.order }}">
+          <tr data-id="{{ issue.id }}" data-order="{{ issue.order }}" class="{{issue.type}}">
             <td>{{ forloop.counter }}</td>
             <td>{{ issue.author }}</td>
             <td><a href="{% url 'project:issue_detail' project.id issue.id %}">
@@ -74,9 +74,9 @@
 
   {% block extrascripts %}
     {% flag "prioritize_issue" %}
-      <script defer src="{% static 'js/jquery-ui.min.js' %}"></script>
-      <script defer src="{% static 'js/main.js' %}"></script>
-      <script defer src="{% static 'project/js/prioritize_issue.js' %}"></script>
+      <script src="{% static 'js/jquery-ui.min.js' %}"></script>
+      <script src="{% static 'js/ajax_csrf.js' %}"></script>
+      <script src="{% static 'project/js/prioritize_issue.js' %}"></script>
     {% endflag %}
   {% endblock %}
 {% endblock %}

@@ -3,12 +3,12 @@ from django.utils.encoding import python_2_unicode_compatible
 
 from django.core.exceptions import ValidationError
 from datetime import date, datetime
-
+from django.utils import timezone
 from django.contrib.auth.models import AbstractUser
 from simple_email_confirmation.models import SimpleEmailConfirmationUserMixin
 from django.utils.translation import ugettext_lazy as _
 from django.db import models
-from django.core.validators import MaxValueValidator
+from django.core.validators import MaxValueValidator, MinValueValidator
 from sorl.thumbnail import get_thumbnail
 from django.db.models.signals import pre_delete
 from django.dispatch import receiver
@@ -57,12 +57,10 @@ class IssueLog(models.Model):
     issue = models.ForeignKey('project.Issue', verbose_name=_('Issue'))
     user = models.ForeignKey(Employee, verbose_name=_('Employee'))
     date_created = models.DateTimeField(verbose_name=_('Time'),
-                                        auto_now_add=True)
-    labor_costs = models.PositiveIntegerField(verbose_name=_('Labor costs'),
-                                              validators=[
-                                                  MaxValueValidator(240)], )
-    note = models.TextField(verbose_name=_('Note'))
+                                        default=timezone.now)
+    cost = models.FloatField(verbose_name=_('Cost'), default=0, validators=[MinValueValidator(0.0)])
+    note = models.TextField(verbose_name=_('Note'), null=True, blank=True)
 
     def __str__(self):
-        return "{} hours. {} - {}".format(self.labor_costs, self.issue.title,
+        return "{} hours. {} - {}".format(self.cost, self.issue.title,
                                           self.user.get_full_name())

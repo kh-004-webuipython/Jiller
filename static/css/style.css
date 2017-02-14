@@ -66,3 +66,32 @@ div.project-detail {
     float: left;
     margin: 7px 0 7px 7px;
 }
+
+td.User_story {
+    background-color: #d9edf7;
+}
+
+td.Task {
+    background-color: #dff0d8;
+}
+
+td.Bug {
+    background-color: #f2dede;
+}
+
+td.User_story a, td.Task a, td.Bug a  {
+    color: #333;
+}
+
+tr.ui-sortable-handle.User_story {
+    background-color: #d9edf7;
+}
+
+tr.ui-sortable-handle.Task{
+    background-color: #dff0d8;
+}
+
+tr.ui-sortable-handle.Bug {
+    background-color: #f2dede;
+}
+

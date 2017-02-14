@@ -29,19 +29,25 @@
 {% endblock %}
 
 {% block content %}
+  <div class='btn-group pull-right'>
+  {% if active_sprint %}
+  <a href="#chart-modal" role="button" data-toggle="modal"
+         class="btn btn-info pull-right">Burndown chart</a>
+  {% endif %}
   {% flag 'create_sprint' %}
-      <a href="{% url 'project:sprint_create' project.id %}"
+    <a href="{% url 'project:sprint_create' project.id %}"
        class="btn btn-primary pull-right">Create new sprint</a>
   {% endflag %}
+  </div>
   {% include 'project/project_navbar.html' with sprint_detail=True %}
 
 
-  {% if no_active_sprint %}
+  {% if not object %}
 
     <div class="page-header"><h1>There is no active sprint yet</h1></div>
   {% endif %}
 
-  {% if not no_active_sprint %}
+  {% if object %}
     <div class="table-responsive">
       <table class="table table-bordered">
         <thead>
@@ -53,9 +59,9 @@
         </thead>
         <tbody>
         <tr>
-          <td>{{ active_sprint.title }}</td>
-          <td>{{ active_sprint.start_date|date:"d/m/Y" }}</td>
-          <td>{{ active_sprint.end_date|date:"d/m/Y" }}</td>
+          <td>{{ object.title }}</td>
+          <td>{{ object.start_date|date:"d/m/Y" }}</td>
+          <td>{{ object.end_date|date:"d/m/Y" }}</td>
         </tr>
         </tbody>
       </table>
@@ -74,7 +80,7 @@
           <tbody>
           {% for new_iss in new_issues %}
             <tr data-id="{{ new_iss.id }}" draggable="true" ondragstart="event.dataTransfer.setData('text/plain',null)">
-              <td>
+              <td class="{{new_iss.type}}">
                 <a draggable="false" class="align-middle" href="
 {% url 'project:issue_detail' new_iss.project_id new_iss.id %}">
                   {{ new_iss.title }}</a>
@@ -93,7 +99,7 @@
           <tbody>
           {% for progress in in_progress_issues %}
             <tr data-id="{{ progress.id }}" draggable="true" ondragstart="event.dataTransfer.setData('text/plain',null)">
-              <td>
+              <td class="{{progress.type}}">
                 <a draggable="false" class="align-middle" href="
 {% url 'project:issue_detail' progress.project_id progress.id %}">
                   {{ progress.title }}</a>
@@ -113,7 +119,7 @@
           <tbody>
           {% for resolved in resolved_issues %}
             <tr data-id="{{ resolved.id }}" draggable="true" ondragstart="event.dataTransfer.setData('text/plain',null)">
-              <td>
+              <td class="{{resolved.type}}">
                 <a draggable="false" class="align-middle" href="
 {% url 'project:issue_detail' resolved.project_id resolved.id %}">
                   {{ resolved.title }}</a></td>
@@ -124,11 +130,28 @@
       </div>
     </div>
   {% endif %}
+  <div id="chart-modal"  class="modal" tabindex="-1">
+    <div style="width: 920px" class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+          <h4 class="blue bigger">Burndown chart</h4>
+        </div>
+        <div class="modal-body">
+          <div class="row">
+            <div class="col-sm-12">
+              <figure>{{ chart.render | safe }}</figure>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 {% endblock %}
 
 {% block extrascripts %}
   {% flag "push_issue" %}
-    <script src="{% static 'js/main.js' %}"></script>
+    <script src="{% static 'js/ajax_csrf.js' %}"></script>
     <script src="{% static 'project/js/push_issue_in_active_sprint.js' %}"></script>
   {% endflag %}
 {% endblock %}
