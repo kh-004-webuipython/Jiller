@@ -89,6 +89,9 @@ document.addEventListener("DOMContentLoaded", function () {
             xhr.setRequestHeader("X-CSRFTOKEN", csrftoken);
             xhr.onreadystatechange = function () {
                 if (xhr.readyState == 4 && xhr.status == 200) {
+                    if (!note.dataset['id']) {
+                        note.dataset['id'] = xhr.getResponseHeader('note_id');
+                    }
                     //TODO: show that data is saved
                 }
             };
