@@ -72,9 +72,10 @@ def backlog(request, project_id):
 @waffle_flag('create_issue', 'project:list')
 def issue_create_view(request, project_id):
     current_project = get_object_or_404(Project, pk=project_id)
-    form = CreateIssueForm(project=current_project)
+    form = CreateIssueForm(project=current_project, user=request.user)
     if request.method == "POST":
-        form = CreateIssueForm(project=current_project, data=request.POST)
+        form = CreateIssueForm(project=current_project, data=request.POST,
+                               user=request.user)
         if form.is_valid():
             new_issue = form.save(commit=False)
             new_issue.project = current_project
@@ -86,7 +87,8 @@ def issue_create_view(request, project_id):
         initial = {}
         if request.GET.get('root', False):
             initial['root'] = request.GET['root']
-            form = CreateIssueForm(project=current_project, initial=initial)
+            form = CreateIssueForm(project=current_project, initial=initial,
+                                   user=request.user)
     return render(request, 'project/issue_create.html', {'form': form,
                                                          'project': current_project})
 
@@ -98,7 +100,7 @@ def issue_edit_view(request, project_id, issue_id):
                                       project=current_project.id)
     if request.method == "POST":
         form = IssueFormForEditing(project=current_project, data=request.POST,
-                         instance=current_issue)
+                         instance=current_issue, user=request.user)
         if form.is_valid():
             current_issue = form.save(commit=False)
             current_issue.project = current_project
@@ -107,7 +109,8 @@ def issue_edit_view(request, project_id, issue_id):
             form.send_email(request.user.id, current_issue.id)
             return redirect('project:backlog', current_project.id)
     else:
-        form = IssueFormForEditing(project=current_project, instance=current_issue)
+        form = IssueFormForEditing(project=current_project,
+                                   instance=current_issue,user=request.user)
     return render(request, 'project/issue_edit.html',
                   {'form': form,
                    'project': current_project,

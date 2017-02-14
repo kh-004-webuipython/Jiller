@@ -78,7 +78,7 @@
           <tbody>
           {% for new_iss in new_issues %}
             <tr data-id="{{ new_iss.id }}" draggable="true" ondragstart="event.dataTransfer.setData('text/plain',null)">
-              <td>
+              <td class="{{new_iss.type}}">
                 <a draggable="false" class="align-middle" href="
 {% url 'project:issue_detail' new_iss.project_id new_iss.id %}">
                   {{ new_iss.title }}</a>
@@ -97,7 +97,7 @@
           <tbody>
           {% for progress in in_progress_issues %}
             <tr data-id="{{ progress.id }}" draggable="true" ondragstart="event.dataTransfer.setData('text/plain',null)">
-              <td>
+              <td class="{{progress.type}}">
                 <a draggable="false" class="align-middle" href="
 {% url 'project:issue_detail' progress.project_id progress.id %}">
                   {{ progress.title }}</a>
@@ -117,7 +117,7 @@
           <tbody>
           {% for resolved in resolved_issues %}
             <tr data-id="{{ resolved.id }}" draggable="true" ondragstart="event.dataTransfer.setData('text/plain',null)">
-              <td>
+              <td class="{{resolved.type}}">
                 <a draggable="false" class="align-middle" href="
 {% url 'project:issue_detail' resolved.project_id resolved.id %}">
                   {{ resolved.title }}</a></td>

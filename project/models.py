@@ -162,6 +162,15 @@ class Issue(models.Model):
         (MEDIUM, _('Medium')),
         (LOW, _('Low'))
     )
+    USER_STORY = 'User_story'
+    TASK = 'Task'
+    BUG = 'Bug'
+    ISSUE_TYPE_CHOICES = (
+        (USER_STORY, _('User_story')),
+        (TASK, _('Task')),
+        (BUG, _('Bug')),
+    )
+
     root = models.ForeignKey('self', null=True, blank=True)
     project = models.ForeignKey(Project, verbose_name=_('Project'))
     sprint = models.ForeignKey(Sprint, verbose_name=_('Sprint'),
@@ -178,6 +187,9 @@ class Issue(models.Model):
     status = models.CharField(verbose_name=_('Status'),
                               choices=ISSUE_STATUS_CHOICES, default=NEW,
                               max_length=255)
+    type = models.CharField(verbose_name=_('Type'),
+                            choices=ISSUE_TYPE_CHOICES, default=TASK,
+                            max_length=255)
     estimation = models.PositiveIntegerField(verbose_name=_('Estimation'),
                                              validators=[
                                                  MaxValueValidator(240)],

@@ -54,7 +54,7 @@
         </thead>
         <tbody id="sortable">
         {% for issue in issues|dictsort:'order' %}
-          <tr data-id="{{ issue.id }}" data-order="{{ issue.order }}">
+          <tr data-id="{{ issue.id }}" data-order="{{ issue.order }}" class="{{issue.type}}">
             <td>{{ forloop.counter }}</td>
             <td>{{ issue.author }}</td>
             <td><a href="{% url 'project:issue_detail' project.id issue.id %}">

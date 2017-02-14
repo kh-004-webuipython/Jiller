@@ -33,7 +33,7 @@ class ProjectForm(forms.ModelForm):
 
 
 class IssueForm(forms.ModelForm):
-    def __init__(self, project, *args, **kwargs):
+    def __init__(self, user, project, *args, **kwargs):
         super(IssueForm, self).__init__(*args, **kwargs)
         self.fields['sprint'].queryset = Sprint.objects.filter(
             project=project.id)
@@ -42,6 +42,11 @@ class IssueForm(forms.ModelForm):
         self.fields['employee'].queryset = ProjectTeam.objects.filter(
             project=project)[0].employees.filter(
             groups__pk__in=[1, 2])
+        if user.groups.filter(id=3):
+            self.fields['type'].choices = [('User story', 'User story'), ]
+        elif user.groups.filter(id__in=(1, 2, 4)) :
+            self.fields['type'].choices = [('Task', 'Task'), ('Bug', 'Bug'), ]
+
 
     def clean_status(self):
         cleaned_data = super(IssueForm, self).clean()
@@ -71,7 +76,7 @@ class IssueForm(forms.ModelForm):
 
     class Meta:
         model = Issue
-        fields = ['root', 'sprint', 'employee', 'title', 'description',
+        fields = ['root', 'type', 'sprint', 'employee', 'title', 'description',
                   'status', 'estimation', 'order']
 
 
