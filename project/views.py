@@ -6,7 +6,16 @@ from django.http.request import QueryDict
 from django.http.response import JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
-from django.views.generic import DetailView
+from django.views.generic import DetailView, ListView
+from django.urls import reverse
+
+from project.forms import IssueCommentCreateForm, IssueForm, CreateIssueForm, \
+    IssueFormForEditing
+from .forms import ProjectForm, SprintCreateForm, CreateTeamForm
+from .models import Project, ProjectTeam, Issue, Sprint, ProjectNote
+
+from employee.models import Employee
+
 from django.utils.decorators import method_decorator
 from django.urls import reverse
 
@@ -18,7 +27,8 @@ from .models import Project, ProjectTeam, Issue, Sprint
 from .decorators import delete_project, \
     edit_project_detail, create_project, create_sprint
 from waffle.decorators import waffle_flag
-from .tables import ProjectTable, SprintsListTable, CurrentTeamTable, AddTeamTable
+from .tables import ProjectTable, SprintsListTable, CurrentTeamTable, \
+    AddTeamTable
 from django_tables2 import SingleTableView, RequestConfig
 import json
 from employee.models import Employee
@@ -475,7 +485,7 @@ def notes_view(request, project_id):
         return render(request, 'project/notes.html', {'project': project,
                                                       'notes': notes})
     if request.method == "POST":
-        if 'id' in request.POST and 'title' in request.POST and 'content'\
+        if 'id' in request.POST and 'title' in request.POST and 'content' \
                 in request.POST:
             id = request.POST.get('id', None)
             title = str(request.POST.get('title', None))
