@@ -95,6 +95,9 @@
     </div>
     <form method="post" action='{% url 'project:issue_detail' project.id issue.id %}'>
       <input type='hidden' name="comment" value="1">
+
+    <form method="post" action='{% url "project:issue_detail" project.id issue.id %}'>
+
       <div class="form-actions">
         <div class="input-group">
           {{ comment_form.text }}

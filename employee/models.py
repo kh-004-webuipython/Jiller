@@ -12,7 +12,7 @@ from django.core.validators import MaxValueValidator, MinValueValidator
 from sorl.thumbnail import get_thumbnail
 from django.db.models.signals import pre_delete
 from django.dispatch import receiver
-
+from project.models import ProjectTeam
 
 @python_2_unicode_compatible
 class Employee(SimpleEmailConfirmationUserMixin, AbstractUser):
