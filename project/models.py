@@ -213,8 +213,9 @@ m2m_changed.connect(check_save_team_without_pm,
 @receiver(pre_save, sender=ProjectTeam)
 def delete_user_without_team(instance, **kwargs):
     team_in_project = ProjectTeam.objects.filter(project=instance.project_id)
-    print team_in_project, instance
-    if len (team_in_project) <= 1 and instance not in team_in_project:
+
+    if len (team_in_project) > 1 or (len (team_in_project) == 1
+                                     and instance not in team_in_project):
         raise ValidationError(
             "There is already another team in the project!")
 
