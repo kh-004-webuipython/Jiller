@@ -707,6 +707,7 @@ class IssueSearchTest(LoginRequiredBase):
         response = self.client.get(url, {'s': 'Title NEW 1'})
         self.assertTrue(response.status_code == 200)
         self.assertContains(response, 'Title NEW 1')
+        self.assertNotContains(response, 'Title NEW 2')
 
     """ TODO: need to discuss!
         def test_notes_delete_responses(self):
