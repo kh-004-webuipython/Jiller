@@ -540,3 +540,12 @@ def notes_view(request, project_id):
             return HttpResponse()
         raise Http404("Wrong request")
     return redirect(request, 'project:notes', {'project': project})
+
+
+@waffle_flag('edit_sprint')
+def finish_active_sprint_view(request, project_id):
+    active_sprint = Sprint.objects.get(project_id=project_id, status=Sprint.ACTIVE)
+    active_sprint.status = Sprint.FINISHED
+    active_sprint.end_date = datetime.datetime.now()
+    active_sprint.save()
+    return redirect('project:sprint_active', project_id)
