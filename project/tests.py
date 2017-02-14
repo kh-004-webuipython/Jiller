@@ -595,6 +595,20 @@ class ActiveSprintTests(LoginRequiredBase):
             self.assertTrue(issue.status == Issue.NEW)
             self.assertTrue(issue in highest_backlog_issues)
 
+    def test_finish_sprint_view(self):
+        project = Project.objects.create(title='Test Project')
+        team = ProjectTeam.objects.create(project=project, title='Test Team')
+        sprint = Sprint.objects.create(title='T_sprint', project_id=project.id,
+                                       status=Sprint.ACTIVE)
+        url = reverse('project:sprint_active',
+                      kwargs={'project_id': sprint.project_id})
+        response = self.client.get(url)
+        url = reverse('project:finish_active_sprint', kwargs={'project_id': sprint.project_id})
+        response = self.client.post(url)
+        sprint.refresh_from_db()
+        self.assertEqual(sprint.status, Sprint.FINISHED)
+        self.assertEqual(response.status_code, 302)
+
 
 class SprintDashboard(LoginRequiredBase):
     def setUp(self):
@@ -688,14 +702,35 @@ class ProjectNotes(LoginRequiredBase):
         self.assertEqual(len(ProjectNote.objects.all()), 2)
 
 
-""" TODO: need to discuss!
-    def test_notes_delete_responses(self):
-        url = reverse('project:note', kwargs={'project_id': self.project.id})
-        data = {'id': 1}
-        self.assertEqual(len(ProjectNote.objects.all()), 1)
-        response = self.client.delete(url, data)
-        print self.note.id
-        print ProjectNote.objects.all(),ProjectNote.objects.get(pk=1)
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(len(ProjectNote.objects.all()), 0)
-"""
+class IssueSearchTest(LoginRequiredBase):
+    def setUp(self):
+        super(IssueSearchTest, self).setUp()
+        self.project = Project.objects.create(title='pr1')
+        for status, _ in Issue.ISSUE_STATUS_CHOICES:
+            for i in range(10):
+                Issue.objects.create(title='Title {} {}'.format(status, i),
+                                     description='Description {} {}'.format(status, i),
+                                     author=self.user,
+                                     status=status,
+                                     estimation=2,
+                                     project=self.project)
+
+    def test_basic_search(self):
+        url = reverse('project:issue_search', kwargs={'project_id': self.project.id})
+        response = self.client.get(url)
+        response = self.client.get(url, {'s': 'Title NEW 1'})
+        self.assertTrue(response.status_code == 200)
+        self.assertContains(response, 'Title NEW 1')
+        self.assertNotContains(response, 'Title NEW 2')
+
+    """ TODO: need to discuss!
+        def test_notes_delete_responses(self):
+            url = reverse('project:note', kwargs={'project_id': self.project.id})
+            data = {'id': 1}
+            self.assertEqual(len(ProjectNote.objects.all()), 1)
+            response = self.client.delete(url, data)
+            print self.note.id
+            print ProjectNote.objects.all(),ProjectNote.objects.get(pk=1)
+            self.assertEqual(response.status_code, 200)
+            self.assertEqual(len(ProjectNote.objects.all()), 0)
+    """
