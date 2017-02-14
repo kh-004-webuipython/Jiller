@@ -1,8 +1,8 @@
 import datetime
 from django.conf import settings
 from django.db.models import Q
-from django.db.models.aggregates import Sum
 from django.http import HttpResponseRedirect, Http404, HttpResponse
+from django.http.request import QueryDict
 from django.http.response import JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
@@ -10,13 +10,11 @@ from django.views.generic import DetailView
 from django.utils.decorators import method_decorator
 from django.urls import reverse
 
-from waffle.decorators import waffle_flag
-from django_tables2 import SingleTableView, RequestConfig
-
+from project.forms import IssueFormForEditing
+from project.models import ProjectNote
 from .forms import ProjectForm, SprintCreateForm, CreateTeamForm, \
-    IssueCommentCreateForm, IssueForm, CreateIssueForm, IssueLogForm
+    IssueCommentCreateForm, CreateIssueForm, IssueLogForm
 from .models import Project, ProjectTeam, Issue, Sprint
-from .tables import ProjectTable, SprintsListTable
 from .decorators import delete_project, \
     edit_project_detail, create_project, create_sprint
 from waffle.decorators import waffle_flag
