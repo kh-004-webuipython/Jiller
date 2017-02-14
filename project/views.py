@@ -525,6 +525,8 @@ def workload_manager(request, project_id, sprint_status):
     for item in items:
         sum = 0
         for issue in item['issues']:
+            if not issue.estimation:
+                return HttpResponse('The issue has to be estimated', status=401)
             sum += issue.estimation
 
         item['workload'] = sum * 100 / work_hours

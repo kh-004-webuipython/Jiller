@@ -44,9 +44,8 @@ class IssueForm(forms.ModelForm):
             groups__pk__in=[1, 2])
         if user.groups.filter(id=3):
             self.fields['type'].choices = [('User story', 'User story'), ]
-        elif user.groups.filter(id__in=(1, 2, 4)) :
+        elif user.groups.filter(id__in=(1, 2, 4)):
             self.fields['type'].choices = [('Task', 'Task'), ('Bug', 'Bug'), ]
-
 
     def clean_status(self):
         cleaned_data = super(IssueForm, self).clean()
