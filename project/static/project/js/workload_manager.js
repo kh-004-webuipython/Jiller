@@ -18,7 +18,7 @@ $(function() {
             cursor: 'move',
             tolerance: 'pointer',
             dropOnEmpty: true,
-            stop: function (event, ui) {
+            remove: function (event, ui) {
                 var alterData = {};
                 alterData['issue'] = ui.item.data('issue');
                 alterData['employee'] = ui.item.parent().data('employee');

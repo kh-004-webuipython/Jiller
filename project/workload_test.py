@@ -27,23 +27,6 @@ class LoginRequiredBase(TestCase):
                                                  is_staff=True)
         self.client.login(username='john', password='johnpassword')
         call_command('loaddata', 'project/fixtures/test.json', verbosity=1)
-#
-#
-# class TeamViewTest(LoginRequiredBase):
-#     def test_team_view_list_view_with_no_team(self):
-#         project = Project.objects.create(title="Pr1")
-#         response = self.client.get(
-#             reverse('project:team', kwargs={'project_id': project.id}))
-#         self.assertContains(response, "no team on project", status_code=200)
-#         self.assertQuerysetEqual(response.context['team_list'], [])
-#
-#     def test_team_view_list_view_with_one_team(self):
-#         project = Project.objects.create(title="Pr1")
-#         team = ProjectTeam.objects.create(project=project, title='title')
-#         response = self.client.get(
-#             reverse('project:team', kwargs={'project_id': project.id}))
-#         self.assertQuerysetEqual(response.context['team_list'],
-#                                  ['<ProjectTeam: title>'])
 
 
 class WorkloadManagerTest(LoginRequiredBase):
@@ -55,16 +38,18 @@ class WorkloadManagerTest(LoginRequiredBase):
 
     def test_workload_view_with_no_sprint(self):
         response = self.client.get(reverse('project:workload_manager',
-                                           kwargs={'project_id': self.project.id}))
+                                           kwargs={'project_id': self.project.id,
+                                                   'sprint_status': Sprint.ACTIVE}))
         self.assertEqual(response.status_code, 404)
 
     def test_workload_view_with_empty_items(self):
         sprint = Sprint.objects.create(title='title', project=self.project,
                                        start_date=datetime.date(2017, 12, 14),
                                        end_date=datetime.date(2017, 12, 21),
-                                       status=Sprint.ACTIVE, )
+                                       status=Sprint.ACTIVE)
         response = self.client.get(reverse('project:workload_manager',
-                                           kwargs={'project_id': self.project.id}))
+                                           kwargs={'project_id': self.project.id,
+                                                   'sprint_status': Sprint.ACTIVE}))
         self.assertContains(response, "No items.", status_code=200)
         self.assertQuerysetEqual(response.context['items'], [])
 
@@ -72,13 +57,11 @@ class WorkloadManagerTest(LoginRequiredBase):
         sprint = Sprint.objects.create(title='title', project=self.project,
                                        start_date=datetime.date(2017, 12, 14),
                                        end_date=datetime.date(2017, 12, 21),
-                                       status=Sprint.ACTIVE, )
-        self.issue = Issue.objects.create(project=self.project,
-                                          author=self.user, sprint=sprint,
-                                          employee=self.user)
+                                       status=Sprint.ACTIVE)
+        Issue.objects.create(project=self.project, author=self.user,
+                             sprint=sprint, employee=self.user)
         response = self.client.get(reverse('project:workload_manager',
-                                           kwargs={'project_id': self.project.id}))
+                                           kwargs={'project_id': self.project.id,
+                                                   'sprint_status': Sprint.ACTIVE}))
         self.assertContains(response, self.user.username, status_code=200)
         self.assertQuerysetEqual(response.context['items'], [])
-
-
