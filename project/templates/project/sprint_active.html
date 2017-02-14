@@ -29,17 +29,22 @@
 {% endblock %}
 
 {% block content %}
-  <div class='btn-group pull-right'>
-  {% if active_sprint %}
-  <a href="#chart-modal" role="button" data-toggle="modal"
-         class="btn btn-info pull-right">Burndown chart</a>
-  {% endif %}
-  {% flag 'create_sprint' %}
-    <a href="{% url 'project:sprint_create' project.id %}"
-       class="btn btn-primary pull-right">Create new sprint</a>
-  {% endflag %}
-  </div>
-  {% include 'project/project_navbar.html' with sprint_detail=True %}
+    <div class='btn-group pull-right'>
+    {% if active_sprint %}
+        <a href="#chart-modal" role="button" data-toggle="modal"
+           class="btn btn-info">Burndown chart</a>
+        {% flag 'edit_sprint' %}
+                <button class="btn btn-primary" data-toggle="modal" data-target="#confirm_finish_modal">Finish Sprint
+                </button>
+        {% endflag %}
+    {% else %}
+        {% flag 'create_sprint' %}
+            <a href="{% url 'project:sprint_create' project.id %}"
+               class="btn btn-primary pull-right">Create new sprint</a>
+        {% endflag %}
+    {% endif %}
+    </div>
+    {% include 'project/project_navbar.html' with sprint_detail=True %}
 
 
   {% if not object %}
@@ -147,6 +152,35 @@
       </div>
     </div>
   </div>
+    <div id="confirm_finish_modal" class="modal fade" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                            aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title">Confirmation</h4>
+                </div>
+                <div class="modal-body">
+                    <p>Do you really want to finish sprint?</p>
+                </div>
+                <div class="modal-footer">
+                    <div class="row">
+                        <div class="col-md-1 col-lg-offset-8">
+                            <form action="{% url 'project:finish_active_sprint' project.id %}" method="post">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-primary" type="submit">Yes</button>
+                            </form>
+                        </div>
+
+                        <div class="col-md-3 ">
+                            <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                        </div>
+
+                    </div>
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
 {% endblock %}
 
 {% block extrascripts %}
