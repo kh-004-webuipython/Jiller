@@ -1,4 +1,5 @@
 document.addEventListener("DOMContentLoaded", function () {
+    var TIME_BEFORE_SAVE = 2000;
     var csrftoken = getCookie('csrftoken');
     var notes = document.querySelector('.notes');
     var noteQuery = document.querySelectorAll('.note');
@@ -57,6 +58,7 @@ document.addEventListener("DOMContentLoaded", function () {
             xhrd.setRequestHeader("X-CSRFTOKEN", csrftoken);
             xhrd.onreadystatechange = function () {
                 if (xhrd.readyState == 4 && xhrd.status == 200) {
+                    // TODO confirm
                     note.remove();
                 }
             };
@@ -64,12 +66,12 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
-    // send data only if data will not be changed in next 3 sec
+    // send data only if data will not be changed in next few seconds
     var sendInterval;
 
     function sendData(note) {
         stopSend();
-        sendInterval = setTimeout(sendToServer, 3000);
+        sendInterval = setTimeout(sendToServer, TIME_BEFORE_SAVE);
 
         function stopSend() {
             clearTimeout(sendInterval);
@@ -87,6 +89,9 @@ document.addEventListener("DOMContentLoaded", function () {
             xhr.setRequestHeader("X-CSRFTOKEN", csrftoken);
             xhr.onreadystatechange = function () {
                 if (xhr.readyState == 4 && xhr.status == 200) {
+                    if (!note.dataset['id']) {
+                        note.dataset['id'] = xhr.getResponseHeader('note_id');
+                    }
                     //TODO: show that data is saved
                 }
             };
@@ -99,11 +104,12 @@ document.addEventListener("DOMContentLoaded", function () {
         // add a new note to the end of the list
         var newNote = document.createElement('div');
         newNote.className = 'note';
-        newNote.innerHTML = "<textarea class='note-title " +
+        newNote.innerHTML = "<textarea class='note-title center" +
             "text-center' maxlength='15'></textarea>" +
             "<textarea class='note-content text-justify' " +
             "maxlength='5000'></textarea>" +
-            "<div class='hide'><span class='glyphicon glyphicon-trash'></span></div>";
+            "<div class='hide'><span class='glyphicon glyphicon-trash'>" +
+            "</span></div>";
         notes.appendChild(newNote);
         addNoteEvents(newNote);
 

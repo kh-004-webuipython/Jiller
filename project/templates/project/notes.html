@@ -32,7 +32,7 @@
 
   <div class="notes" data-pr="{{ project.id }}">
     {% for note in notes %}
-      <div class="note" data-id="{{ note.id }}">
+      <div class="note center" data-id="{{ note.id }}">
         <textarea class="note-title text-center"
                   maxlength='15'>{{ note.title }}</textarea>
         <textarea class="note-content text-justify"
@@ -45,7 +45,6 @@
 {% endblock %}
 
 {% block extrascripts %}
-  <script src="{% static 'js/jquery.js' %}"></script>
   <script src="{% static 'js/main.js' %}"></script>
   <script src="{% static 'project/js/notes.js' %}"></script>
 {% endblock %}

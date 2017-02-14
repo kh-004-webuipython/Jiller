@@ -12,6 +12,8 @@ from django.core.exceptions import ValidationError
 from django.core.validators import MaxValueValidator
 from django.contrib.auth.models import Group
 from sorl.thumbnail.shortcuts import get_thumbnail
+from django.db.models.signals import m2m_changed, pre_save
+from django.dispatch import receiver
 
 
 class ProjectModelManager(models.Manager):
@@ -258,6 +260,30 @@ class ProjectTeam(models.Model):
 
     def __str__(self):
         return self.title
+
+
+# check ProjectTeam for Project Manager in it before save
+def check_save_team_without_pm(action, **kwargs):
+    from employee.models import Employee
+    if action == 'pre_add':
+        for user in kwargs['pk_set']:
+            if Employee.objects.filter(pk=user, groups=4):
+                break
+        else:
+            raise ValidationError(
+                "ProjectTeam cannot be saved without Project Manager")
+m2m_changed.connect(check_save_team_without_pm,
+                    sender=ProjectTeam.employees.through)
+
+# check for 2nd team before create new
+@receiver(pre_save, sender=ProjectTeam)
+def delete_user_without_team(instance, **kwargs):
+    team_in_project = ProjectTeam.objects.filter(project=instance.project_id)
+
+    if len (team_in_project) > 1 or (len (team_in_project) == 1
+                                     and instance not in team_in_project):
+        raise ValidationError(
+            "There is already another team in the project!")
 
 
 @python_2_unicode_compatible

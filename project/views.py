@@ -21,7 +21,6 @@ from waffle.decorators import waffle_flag
 from .tables import ProjectTable, SprintsListTable, CurrentTeamTable, AddTeamTable
 from django_tables2 import SingleTableView, RequestConfig
 import json
-from employee.models import Employee
 
 
 class ProjectListView(SingleTableView):
@@ -485,7 +484,9 @@ def notes_view(request, project_id):
                 note.title = title
                 note.content = content
                 note.save()
-                return HttpResponse()
+                response = HttpResponse()
+                response.__setitem__('note_id', str(note.id))
+                return response
             else:
                 note = get_object_or_404(ProjectNote, pk=int(id))
                 if len(content) <= 5000 and len(title) <= 15:
