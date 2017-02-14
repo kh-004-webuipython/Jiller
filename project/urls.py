@@ -31,9 +31,9 @@ urlpatterns = [
 
     # active_sprint
     url(r'^(?P<project_id>\d+)/sprint/active/$',
-        views.ActiveSprintView.as_view(), name='sprint_active'),
-    url(r'^issue_push/$', views.push_issue_in_active_sprint,
-        name='issue_push'),
+        views.ActiveSprintDetailView.as_view(), name='sprint_active'),
+    url(r'^(?P<project_id>\d+)/(?P<issue_id>\d+)/push/$',
+        views.push_issue_in_active_sprint, name='issue_push'),
 
     # issue
     url(r'^(?P<project_id>\d+)/issue/create/$',
