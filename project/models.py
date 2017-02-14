@@ -1,7 +1,9 @@
 from __future__ import unicode_literals
 
-from datetime import datetime
+import datetime
 
+import pygal
+from django.db.models.aggregates import Sum
 from django.utils.encoding import python_2_unicode_compatible
 from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
@@ -10,8 +12,6 @@ from django.core.exceptions import ValidationError
 from django.core.validators import MaxValueValidator
 from django.contrib.auth.models import Group
 from sorl.thumbnail.shortcuts import get_thumbnail
-
-from employee.models import Employee
 
 
 class ProjectModelManager(models.Manager):
@@ -40,6 +40,11 @@ class Project(models.Model):
     def __str__(self):
         return self.title
 
+    def get_active_sprint(self):
+        if self.sprint_set.filter(status=Sprint.ACTIVE).exists():
+            return self.sprint_set.get(status=Sprint.ACTIVE)
+        return None
+
     objects = ProjectModelManager()
 
 
@@ -55,8 +60,7 @@ class Sprint(models.Model):
     )
     title = models.CharField(verbose_name=_('Title'), max_length=255)
     project = models.ForeignKey(Project, verbose_name=_('Project'))
-    start_date = models.DateField(verbose_name=_('Start date'), null=True,
-                                  blank=True)
+    start_date = models.DateField(verbose_name=_('Start date'), default=timezone.now)
     end_date = models.DateField(verbose_name=_('End date'), null=True,
                                 blank=True)
     order = models.PositiveIntegerField(verbose_name=_('Order'), null=True,
@@ -64,9 +68,51 @@ class Sprint(models.Model):
     status = models.CharField(verbose_name=_('Status'),
                               choices=SPRINT_STATUS_CHOICES, default=NEW,
                               max_length=255)
+    duration = models.PositiveIntegerField(verbose_name=_('Duration'))
 
     def __str__(self):
         return self.title
+
+    def get_expected_end_date(self):
+        return self.start_date + datetime.timedelta(days=self.duration)
+
+    def calculate_estimation_sum(self):
+        return self.issue_set.aggregate(Sum('estimation'))['estimation__sum'] or 0
+
+    def get_chart_data(self, date):
+        return self.issue_set.filter(
+            issuelog__date_created__range=[self.start_date, date + datetime.timedelta(days=1)]).extra(
+            {'date_created': "date(date_created)"}).values('date_created').annotate(
+            sum=Sum('issuelog__cost')).order_by()
+
+    def sprint_daterange(self):
+        for n in range(int((self.get_expected_end_date() - self.start_date).days)):
+            yield self.start_date + datetime.timedelta(n)
+
+    def chart(self):
+        today = datetime.date.today()
+        if today <= self.get_expected_end_date():
+            data = self.get_chart_data(today)
+        else:
+            data = self.get_chart_data(self.get_expected_end_date())
+        res = dict((x['date_created'], x['sum']) for x in data)
+        estimation_sum = self.calculate_estimation_sum()
+        total_date_range = [day for day in self.sprint_daterange()]
+        perfect_line = [None for _ in range(len(total_date_range) + 1)]
+        perfect_line[0] = estimation_sum
+        perfect_line[-1] = 0
+        chart_data = [estimation_sum]
+        for day in total_date_range:
+            if res.get(day.isoformat()):
+                estimation_sum -= res.get(day.isoformat())
+            if not day > today:
+                chart_data.append(estimation_sum)
+        total_date_range.insert(0, None)
+        line_chart = pygal.Line(height=400, include_x_axis=True, max_scale=4)
+        line_chart.x_labels = total_date_range
+        line_chart.add(None, chart_data)
+        line_chart.add(None, perfect_line)
+        return line_chart
 
     def save(self, *args, **kwargs):
 
@@ -116,6 +162,15 @@ class Issue(models.Model):
         (MEDIUM, _('Medium')),
         (LOW, _('Low'))
     )
+    USER_STORY = 'User_story'
+    TASK = 'Task'
+    BUG = 'Bug'
+    ISSUE_TYPE_CHOICES = (
+        (USER_STORY, _('User_story')),
+        (TASK, _('Task')),
+        (BUG, _('Bug')),
+    )
+
     root = models.ForeignKey('self', null=True, blank=True)
     project = models.ForeignKey(Project, verbose_name=_('Project'))
     sprint = models.ForeignKey(Sprint, verbose_name=_('Sprint'),
@@ -132,6 +187,9 @@ class Issue(models.Model):
     status = models.CharField(verbose_name=_('Status'),
                               choices=ISSUE_STATUS_CHOICES, default=NEW,
                               max_length=255)
+    type = models.CharField(verbose_name=_('Type'),
+                            choices=ISSUE_TYPE_CHOICES, default=TASK,
+                            max_length=255)
     estimation = models.PositiveIntegerField(verbose_name=_('Estimation'),
                                              validators=[
                                                  MaxValueValidator(240)],
@@ -157,6 +215,12 @@ class Issue(models.Model):
             return self.issue_set.all()
         return False
 
+    def get_logs_sum(self):
+        return self.issuelog_set.aggregate(Sum('cost'))['cost__sum'] or 0
+
+    def completion_rate(self):
+        return round((self.get_logs_sum() * 100) / self.estimation, 2)
+
     def save(self, *args, **kwargs):
         self.calculate_issue_priority()
         if self.sprint and self.sprint.project != self.project:
@@ -176,7 +240,7 @@ class IssueComment(models.Model):
         return self.title
 
     def get_pretty_date_created(self):
-        return datetime.strftime(self.date_created, "%d.%m.%y %H:%M")
+        return datetime.datetime.strftime(self.date_created, "%d.%m.%y %H:%M")
 
     def get_cropped_photo(self, *args, **kwargs):
         return get_thumbnail(self.photo, '40x40', crop='center')

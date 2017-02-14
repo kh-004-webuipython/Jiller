@@ -1,7 +1,7 @@
 import datetime
 from django.test import TestCase, Client
 from django.core.management import call_command
-
+from django.http import Http404
 from django.urls import reverse
 
 from employee.models import Employee
@@ -30,20 +30,33 @@ class LoginRequiredBase(TestCase):
 
 
 class TeamViewTest(LoginRequiredBase):
+    def setUp(self):
+        super(TeamViewTest, self).setUp()
+        self.project = Project.objects.create(title="Pr1")
+
     def test_team_view_list_view_with_no_team(self):
-        project = Project.objects.create(title="Pr1")
-        response = self.client.get(
-            reverse('project:team', kwargs={'project_id': project.id}))
-        self.assertContains(response, "no team on project", status_code=200)
-        self.assertQuerysetEqual(response.context['team_list'], [])
+        """
+             method should return 404 if no team on project
+        """
+        try:
+            response = self.client.post(
+                reverse('project:team', kwargs={'project_id': self.project.pk}))
+        except ProjectTeam.DoesNotExist:
+            raise Http404("no team on project")
+        self.assertContains(response, '', status_code=404)
 
     def test_team_view_list_view_with_one_team(self):
+        """
+             method should return True if template with given name was used
+             and there is one team in ProjectTeam
+        """
         project = Project.objects.create(title="Pr1")
         team = ProjectTeam.objects.create(project=project, title='title')
-        response = self.client.get(
+        response = self.client.post(
             reverse('project:team', kwargs={'project_id': project.id}))
-        self.assertQuerysetEqual(response.context['team_list'],
-                                 ['<ProjectTeam: title>'])
+        self.assertTemplateUsed(template_name='team.html')
+        self.assertTrue(isinstance(team, ProjectTeam), True)
+        self.assertIsNotNone(response.context)
 
 
 class IssueFormTests(LoginRequiredBase):
@@ -62,7 +75,7 @@ class IssueFormTests(LoginRequiredBase):
         """
              method should return False if fields are empty
         """
-        form = IssueForm(project=self.project)
+        form = IssueForm(project=self.project, user=self.user)
         self.assertEqual(form.is_valid(), False)
 
     def test_form_is_valid_with_not_null_required_fields(self):
@@ -70,7 +83,8 @@ class IssueFormTests(LoginRequiredBase):
              method should return True if required fields are full
         """
         form_data = {'title': 'new issue'}
-        form = IssueForm(project=self.project, data=form_data)
+        form = IssueForm(project=self.project, data=form_data,
+                         user=self.user)
         self.assertEqual(form.is_valid(), True)
 
     def test_form_is_valid_with_not_null_some_required_fields(self):
@@ -78,7 +92,8 @@ class IssueFormTests(LoginRequiredBase):
              method should return False if some required fields are empty
         """
         form_data = {}
-        form = IssueForm(project=self.project, data=form_data)
+        form = IssueForm(project=self.project, data=form_data,
+                         user=self.user)
         self.assertEqual(form.is_valid(), False)
 
     def test_form_is_valid_with_all_fields_are_full(self):
@@ -89,7 +104,8 @@ class IssueFormTests(LoginRequiredBase):
                      'title': 'new issue', 'description': 'description',
                      'status': self.issue.status, 'estimation': 2
                      }
-        form = IssueForm(project=self.project, data=form_data)
+        form = IssueForm(project=self.project, data=form_data,
+                         user=self.user)
         self.assertEqual(form.is_valid(), True)
 
     def test_form_is_not_valid_with_no_sprint_and_status_distinct_new(self):
@@ -97,7 +113,8 @@ class IssueFormTests(LoginRequiredBase):
                      'title': 'new issue', 'description': 'description',
                      'status': Issue.RESOLVED, 'estimation': 2
                      }
-        form = IssueForm(project=self.project, data=form_data)
+        form = IssueForm(project=self.project, data=form_data,
+                         user=self.user)
         self.assertEqual(form.is_valid(), False)
 
     def test_form_is_not_valid_with_sprint_and_status_new(self):
@@ -106,7 +123,8 @@ class IssueFormTests(LoginRequiredBase):
                      'status': Issue.NEW, 'estimation': 2,
                      'sprint': self.sprint
                      }
-        form = IssueForm(project=self.project, data=form_data)
+        form = IssueForm(project=self.project, data=form_data,
+                         user=self.user)
         self.assertEqual(form.is_valid(), False)
 
     def test_form_is_not_valid_with_sprint_and_no_estimation(self):
@@ -114,7 +132,30 @@ class IssueFormTests(LoginRequiredBase):
                      'title': 'new issue', 'description': 'description',
                      'status': Issue.IN_PROGRESS, 'sprint': self.sprint
                      }
-        form = IssueForm(project=self.project, data=form_data)
+        form = IssueForm(project=self.project, data=form_data,
+                         user=self.user)
+        self.assertEqual(form.is_valid(), False)
+
+    def test_form_is_not_valid_with_not_po_make_user_story(self):
+        self.user.groups.id = 2
+        form_data = {'root': self.issue, 'employee': self.user,
+                     'title': 'new issue', 'description': 'description',
+                     'type': Issue.USER_STORY, 'status': Issue.IN_PROGRESS,
+                     'sprint': self.sprint, 'estimation': 2
+                     }
+        form = IssueForm(project=self.project, data=form_data,
+                         user=self.user)
+        self.assertEqual(form.is_valid(), False)
+
+    def test_form_is_not_valid_with_po_make_not_user_story(self):
+        self.user.groups.id = 3
+        form_data = {'root': self.issue, 'employee': self.user,
+                     'title': 'new issue', 'description': 'description',
+                     'type': Issue.TASK, 'status': Issue.IN_PROGRESS,
+                     'sprint': self.sprint, 'estimation': 2
+                     }
+        form = IssueForm(project=self.project, data=form_data,
+                         user=self.user)
         self.assertEqual(form.is_valid(), False)
 
 
@@ -138,15 +179,6 @@ class IssueEditViewTests(LoginRequiredBase):
             reverse('project:issue_edit', args=[self.project.pk,
                                                 self.issue.pk]))
         self.assertTemplateUsed(response, 'project/issue_edit.html')
-
-    def test_issue_edit_view_can_get_object(self):
-        """
-            method should be True and return title if it can get an object
-        """
-        issue = get_object_or_404(Issue, pk=self.issue.pk,
-                                  project=self.project.pk)
-        self.assertTrue(isinstance(issue, Issue))
-        self.assertEqual(issue.__str__(), issue.title)
 
     def test_issue_edit_view_can_get_object(self):
         """

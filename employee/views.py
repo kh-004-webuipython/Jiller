@@ -1,7 +1,10 @@
-from django.shortcuts import render, get_object_or_404
+from django.http.response import JsonResponse
+from django.shortcuts import render, get_object_or_404, redirect
+
+from project.models import Issue
 from .models import Employee
 from .tables import EmployeeTable
-from django_tables2 import SingleTableView, RequestConfig
+from django_tables2 import RequestConfig
 from django.conf import settings
 
 

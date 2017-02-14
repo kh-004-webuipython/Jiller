@@ -1,23 +1,34 @@
 import datetime
 from django.conf import settings
 from django.db.models import Q
-from django.http import HttpResponseRedirect, Http404, HttpResponse, QueryDict
+from django.http import HttpResponseRedirect, Http404, HttpResponse
+from django.http.request import QueryDict
+from django.http.response import JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.views.generic import DetailView, ListView
 from django.urls import reverse
 
-from project.forms import IssueCommentCreateForm, IssueForm, CreateIssueForm, IssueFormForEditing
+from project.forms import IssueCommentCreateForm, IssueForm, CreateIssueForm, \
+    IssueFormForEditing
 from .forms import ProjectForm, SprintCreateForm, CreateTeamForm
 from .models import Project, ProjectTeam, Issue, Sprint, ProjectNote
 
 from employee.models import Employee
 
 from django.utils.decorators import method_decorator
+from django.urls import reverse
+
+from project.forms import IssueFormForEditing
+from project.models import ProjectNote
+from .forms import ProjectForm, SprintCreateForm, CreateTeamForm, \
+    IssueCommentCreateForm, CreateIssueForm, IssueLogForm
+from .models import Project, ProjectTeam, Issue, Sprint
 from .decorators import delete_project, \
     edit_project_detail, create_project, create_sprint
 from waffle.decorators import waffle_flag
-from .tables import ProjectTable, SprintsListTable
+from .tables import ProjectTable, SprintsListTable, CurrentTeamTable, \
+    AddTeamTable
 from django_tables2 import SingleTableView, RequestConfig
 import json
 from employee.models import Employee
@@ -71,20 +82,23 @@ def backlog(request, project_id):
 @waffle_flag('create_issue', 'project:list')
 def issue_create_view(request, project_id):
     current_project = get_object_or_404(Project, pk=project_id)
-    form = CreateIssueForm(project=current_project)
+    form = CreateIssueForm(project=current_project, user=request.user)
     if request.method == "POST":
-        form = CreateIssueForm(project=current_project, data=request.POST)
+        form = CreateIssueForm(project=current_project, data=request.POST,
+                               user=request.user)
         if form.is_valid():
             new_issue = form.save(commit=False)
             new_issue.project = current_project
             new_issue.author = request.user
             new_issue.save()
+            form.send_email(request.user.id, new_issue.id)
             return redirect('project:backlog', current_project.id)
     else:
         initial = {}
         if request.GET.get('root', False):
             initial['root'] = request.GET['root']
-            form = CreateIssueForm(project=current_project, initial=initial)
+            form = CreateIssueForm(project=current_project, initial=initial,
+                                   user=request.user)
     return render(request, 'project/issue_create.html', {'form': form,
                                                          'project': current_project})
 
@@ -96,15 +110,17 @@ def issue_edit_view(request, project_id, issue_id):
                                       project=current_project.id)
     if request.method == "POST":
         form = IssueFormForEditing(project=current_project, data=request.POST,
-                         instance=current_issue)
+                         instance=current_issue, user=request.user)
         if form.is_valid():
             current_issue = form.save(commit=False)
             current_issue.project = current_project
             current_issue.author = request.user
             current_issue.save()
+            form.send_email(request.user.id, current_issue.id)
             return redirect('project:backlog', current_project.id)
     else:
-        form = IssueFormForEditing(project=current_project, instance=current_issue)
+        form = IssueFormForEditing(project=current_project,
+                                   instance=current_issue,user=request.user)
     return render(request, 'project/issue_edit.html',
                   {'form': form,
                    'project': current_project,
@@ -112,18 +128,53 @@ def issue_edit_view(request, project_id, issue_id):
 
 
 def team_view(request, project_id):
+    data = {}
     current_project = get_object_or_404(Project, pk=project_id)
-    # hide PMs on "global" team board
-    user_list = Employee.objects.exclude(groups__name='project manager')
+    data.update({'project': current_project})
+
     # filter needs for possibility to add two PMs, when we need change 1st PM
     project_managers = Employee.objects.filter(projectteam__project=project_id,
                                                groups__name='project manager')
+    data.update({'pm': project_managers})
 
-    teams = ProjectTeam.objects.filter(project_id=current_project)
-    return render(request, 'project/team.html', {'teams': teams,
-                                                 'pm': project_managers,
-                                                 'project': current_project,
-                                                 'user_list': user_list})
+    # for one project it could be only one team
+    team = get_object_or_404(ProjectTeam, project_id=current_project)
+    data.update({'team': team})
+    e_list = []
+    if team.employees.count() != 1:
+        for employee in team.employees.all():
+            if employee not in project_managers:
+                e_list.append({'id_team': team.id, 'id': employee.id,
+                               'project': team.project, 'title': team.title,
+                               'get_full_name': employee.get_full_name(),
+                               'role': employee.groups.get()})
+
+        table_cur = CurrentTeamTable(e_list)
+        data.update({'table_cur': table_cur})
+        RequestConfig(request, paginate={'per_page': settings.PAGINATION_PER_PAGE}).\
+                                         configure(table_cur)
+
+
+    # hide PMs on "global" team board
+    u_list = []
+    user_list = 'None'
+
+    if request.user.groups.filter(name='project manager').exists():
+        user_list = Employee.objects.exclude(groups__name='project manager').\
+                                     exclude(projectteam__project=project_id). \
+                                     exclude(groups__name='product owner')
+        for user in user_list:
+            u_list.append({'id': user.id, 'get_full_name': user.get_full_name(),
+                           'role': user.groups.get()})
+
+        table_add = AddTeamTable(u_list)
+        data.update({'table_add': table_add})
+        RequestConfig(request, paginate={'per_page': settings.PAGINATION_PER_PAGE}).\
+                                         configure(table_add)
+    else:
+        table_cur.exclude = ('sub')
+
+    return render(request, 'project/team.html', data)
 
 
 def issue_detail_view(request, project_id, issue_id):
@@ -131,14 +182,25 @@ def issue_detail_view(request, project_id, issue_id):
     project = get_object_or_404(Project, pk=project_id)
 
     if request.method == 'POST':
-        form = IssueCommentCreateForm(request.POST)
-        if form.is_valid():
-            comment = form.save(commit=False)
-            comment.author = request.user
-            comment.issue = current_issue
-            comment.save()
-            return redirect(reverse('project:issue_detail',
-                                    args=(project.id, current_issue.id)))
+        if 'comment' in request.POST:
+            form = IssueCommentCreateForm(request.POST)
+            if form.is_valid():
+                comment = form.save(commit=False)
+                comment.author = request.user
+                comment.issue = current_issue
+                comment.save()
+                return redirect(reverse('project:issue_detail',
+                                        args=(project.id, current_issue.id)))
+
+        if 'log' in request.POST:
+            form = IssueLogForm(request.POST, issue=current_issue)
+            if form.is_valid():
+                log = form.save(commit=False)
+                log.issue = current_issue
+                log.user = request.user
+                log.save()
+                return JsonResponse({'success': True, 'errors': None}, status=201)
+            return JsonResponse({'success': False, 'error': form.errors}, status=400)
 
     if current_issue.project_id != project.id:
         raise Http404("Issue does not exist")
@@ -150,7 +212,8 @@ def issue_detail_view(request, project_id, issue_id):
     child_issues = Issue.objects.filter(root=current_issue.id)
     if child_issues:
         context['child_issues'] = child_issues
-    context['form'] = IssueCommentCreateForm()
+    context['comment_form'] = IssueCommentCreateForm()
+    context['log_form'] = IssueLogForm()
     return render(request, 'project/issue_detail.html', context)
 
 
@@ -178,31 +241,6 @@ class IssueDeleteView(DeleteView):
         issue.save()
         return HttpResponseRedirect(reverse('project:backlog',
                                             kwargs={'project_id': project.id}))
-
-
-class SprintView(DetailView):
-    model = Sprint
-    template_name = 'project/sprint_detail.html'
-    query_pk_and_slug = True
-    pk_url_kwarg = 'sprint_id'
-    slug_field = 'project'
-    slug_url_kwarg = 'project_id'
-
-    def get_context_data(self, **kwargs):
-        context = super(SprintView, self).get_context_data(**kwargs)
-        cur_proj = self.kwargs['project_id']
-        cur_spr = self.kwargs['sprint_id']
-        issues_from_this_sprint = Issue.objects.filter(project_id=cur_proj,
-                                                       sprint_id=cur_spr)
-        context['new_issues'] = issues_from_this_sprint.filter(status="new")
-        context['in_progress_issues'] = \
-            issues_from_this_sprint.filter(status="in progress")
-        context['resolved_issues'] = \
-            issues_from_this_sprint.filter(status="resolved")
-        context['closed_issues'] = issues_from_this_sprint.filter(
-            status="closed")
-        context['project'] = Project.objects.get(id=cur_proj)
-        return context
 
 
 class ProjectCreateView(CreateView):
@@ -319,50 +357,39 @@ class SprintCreate(CreateView):
         return super(SprintCreate, self).dispatch(*args, **kwargs)
 
 
-class ActiveSprintView(DetailView):
+class SprintView(DeleteView):
     model = Sprint
-    query_pk_and_slug = True
-    pk_url_kwarg = 'project_id'
-    template_name = 'project/sprint_active.html'
+    template_name = 'project/sprint_detail.html'
 
     def get_object(self, queryset=None):
-        try:
-            return super(ActiveSprintView, self).get_object(queryset)
-        except:
-            try:
-                Project.objects.get(pk=self.kwargs['project_id'])
-            except:
-                raise Http404("Project does not exist")
+        return get_object_or_404(self.model, pk=self.kwargs['sprint_id'])
+
+    def dispatch(self, *args, **kwargs):
+        self.project = get_object_or_404(Project, pk=self.kwargs['project_id'])
+        return super(SprintView, self).dispatch(*args, **kwargs)
 
     def get_context_data(self, **kwargs):
-        context = super(ActiveSprintView, self).get_context_data(
-            **kwargs)
+        context = super(SprintView, self).get_context_data(**kwargs)
+        if self.object:
+            issues_from_this_sprint = self.object.issue_set.all()
+            context['new_issues'] = issues_from_this_sprint.filter(status="new")
+            context['in_progress_issues'] = \
+                issues_from_this_sprint.filter(status="in progress")
+            context['resolved_issues'] = \
+                issues_from_this_sprint.filter(status="resolved")
+            context['closed_issues'] = issues_from_this_sprint.filter(
+                status="closed")
+            context['chart'] = self.object.chart()
+        context['project'] = self.project
+        return context
 
-        try:
-            Sprint.objects.get(project_id=self.kwargs['project_id'],
-                               status='active')
-        except Sprint.DoesNotExist:
-            context['project'] = Project.objects.get(
-                id=self.kwargs['project_id'])
-            context['no_active_sprint'] = True
-            return context
-        else:
-            active_sprint = Sprint.objects.get(
-                project_id=self.kwargs['project_id'],
-                status='active')
-            context['active_sprint'] = active_sprint
-            issues_from_active_sprint = Issue.objects.filter(
-                project_id=self.kwargs['project_id'],
-                sprint_id=active_sprint.id)
-            context['new_issues'] = issues_from_active_sprint.filter(
-                status="new")
-            context['in_progress_issues'] = issues_from_active_sprint.filter(
-                status="in progress")
-            context['resolved_issues'] = issues_from_active_sprint.filter(
-                status="resolved")
-            context['project'] = Project.objects.get(
-                id=self.kwargs['project_id'])
-            return context
+
+class ActiveSprintDetailView(SprintView):
+    template_name = 'project/sprint_active.html'
+    context_object_name = 'active_sprint'
+
+    def get_object(self, queryset=None):
+        return self.project.sprint_set.filter(status=Sprint.ACTIVE).first()
 
 
 @waffle_flag('push_issue', 'project:list')
@@ -458,7 +485,7 @@ def notes_view(request, project_id):
         return render(request, 'project/notes.html', {'project': project,
                                                       'notes': notes})
     if request.method == "POST":
-        if 'id' in request.POST and 'title' in request.POST and 'content'\
+        if 'id' in request.POST and 'title' in request.POST and 'content' \
                 in request.POST:
             id = request.POST.get('id', None)
             title = str(request.POST.get('title', None))

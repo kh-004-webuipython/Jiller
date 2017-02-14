@@ -1,5 +1,6 @@
 {% load django_tables2 %}
 {% load i18n %}
+{% load waffle_tags %}
 
 <div class="table-container">
 {% block table %}
@@ -24,20 +25,40 @@
         {% for row in table.page.object_list|default:table.rows %} {# support pagination #}
         {% block table.tbody.row %}
         <tr {{ row.attrs.as_html }}>
+          {% if row.items %}
             {% for column, cell in row.items %}
                 <td {{ column.attrs.td.as_html }}>
-                    {% if column.name == 'remove'%}
-                    <p>{{ record.field[''] }}</p>
+                    {% if column.name == 'sub'%}
+                      {% flag "update_team" %}
+                        <form action="{% url 'project:change_user_in_team' project.id row.record.id team.id %}"
+                                method="post">{% csrf_token %}
+                            <button type="submit" name="remove" class="team-event">
+                              <i class="ace-icon fa fa-user-times bigger-130 red"></i>
+                            </button>
+                          </form>
+                      {% endflag %}
+
+                    {% elif column.name == 'add'%}
+                      {% flag "update_team" %}
+                        <form action="{% url 'project:change_user_in_team' project.id row.record.id team.id %}"
+                                method="post">{% csrf_token %}
+                            <button type="submit" name="add" class="team-event">
+                              <i class="ace-icon fa bigger-130 fa-user-plus green"></i>
+                            </button>
+                          </form>
+                      {% endflag %}
+
                     {% else %}
-                        {% if column.localize == None %}{{ cell }}
-                        {% else %}
-                            {% if column.localize %}{{ cell|localize }}
+                    {% if column.localize == None %}{{ cell }}
+                      {% else %}
+                          {% if column.localize %}{{ cell|localize }}
                             {% else %}{{ cell|unlocalize }}
-                            {% endif %}
-                        {% endif %}
+                          {% endif %}
+                      {% endif %}
                     {% endif %}
                 </td>
             {% endfor %}
+          {% endif %}
         </tr>
         {% endblock table.tbody.row %}
         {% empty %}
