@@ -10,7 +10,7 @@ from django.core.exceptions import ValidationError
 from django.core.validators import MaxValueValidator
 from django.contrib.auth.models import Group
 from sorl.thumbnail.shortcuts import get_thumbnail
-from django.db.models.signals import m2m_changed, pre_save
+from django.db.models.signals import pre_save
 from django.dispatch import receiver
 
 
@@ -73,8 +73,8 @@ class Sprint(models.Model):
         # disable 2 active sprints in project at time exclude self
         if self.status == Sprint.ACTIVE:
             if len(Sprint.objects.filter(
-                    project_id=self.project, status=Sprint.ACTIVE)
-                           .exclude(pk=self.id)) >= 1:
+                    project_id=self.project,
+                    status=Sprint.ACTIVE).exclude(pk=self.id)) >= 1:
                 raise ValidationError(
                     "Another active sprint already exists in this project")
 
@@ -196,29 +196,13 @@ class ProjectTeam(models.Model):
         return self.title
 
 
-# check ProjectTeam for Project Manager in it before save
-def check_save_team_without_pm(action, **kwargs):
-    from employee.models import Employee
-    if action == 'post_add':
-        print kwargs['pk_set']
-        for user_id in kwargs['pk_set']:
-            if Employee.objects.filter(pk=user_id)[0]:
-                print user_id
-                print Employee.objects.filter(pk=user_id)[0].groups.filter(name='project manager').exists()
-               # print Employee.objects.get(pk=user_id).groups.get().id
-        else:
-            raise ValidationError(
-                "ProjectTeam cannot be saved without Project Manager")
-m2m_changed.connect(check_save_team_without_pm,
-                    sender=ProjectTeam.employees.through)
-
 # check for 2nd team before create new
 @receiver(pre_save, sender=ProjectTeam)
 def delete_user_without_team(instance, **kwargs):
     team_in_project = ProjectTeam.objects.filter(project=instance.project_id)
 
-    if len (team_in_project) > 1 or (len (team_in_project) == 1
-                                     and instance not in team_in_project):
+    if len(team_in_project) > 1 or (len(team_in_project) == 1
+                                    and instance not in team_in_project):
         raise ValidationError(
             "There is already another team in the project!")
 
@@ -232,4 +216,3 @@ class ProjectNote(models.Model):
 
     def __str__(self):
         return self.title
-

@@ -3,6 +3,7 @@ from django.test import TestCase, Client
 from django.core.management import call_command
 from django.http import Http404
 from django.urls import reverse
+from django.core.exceptions import ValidationError
 
 from employee.models import Employee
 from project.forms import ProjectForm
@@ -502,6 +503,29 @@ class IssueResponseTests(LoginRequiredBase):
 
 
 class ActiveSprintTests(LoginRequiredBase):
+    def setUp(self):
+        super(ActiveSprintTests, self).setUp()
+        self.project = Project.objects.create(title='pr1')
+        self.team = ProjectTeam.objects.create(project=self.project)
+        self.sprint = Sprint.objects.create(project=self.project,
+                                            status='active')
+        self.employee = Employee.objects.create()
+        self.issue = Issue.objects.create(project=self.project,
+                                          author=self.employee, title='title',
+                                          status='new', sprint=self.sprint)
+
+
+    # its a new test, dont delete
+    def test_on_create_two_active_sprints_at_time(self):
+        print '___________', Sprint.objects.filter(status='active').count()
+        self.assertEqual(Sprint.objects.filter(status='active').count(), 1)
+        try:
+            Sprint.objects.create(project=self.project,
+                                  status='active')
+        except ValidationError:
+            self.assertEqual(Sprint.objects.filter(status='active').count(), 1)
+
+
     def test_project_sprint_active_response_200(self):
         project = Project.objects.create(title='Test Project')
         team = ProjectTeam.objects.create(project=project, title='Test Team')
