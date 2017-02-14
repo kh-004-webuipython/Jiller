@@ -69,8 +69,9 @@ class IssueForm(forms.ModelForm):
 
     def send_email(self, user_id, issue_id):
         employee = self.cleaned_data['employee']
-        email = employee.email
-        send_assign_email_task.delay(email, user_id, issue_id)
+        if employee and employee.email:
+            email = employee.email
+            send_assign_email_task.delay(email, user_id, issue_id)
 
     class Meta:
         model = Issue
