@@ -3,6 +3,7 @@ import datetime
 from django import forms
 from django.utils.translation import ugettext_lazy as _
 
+from general.tasks import send_assign_email_task
 from .models import Project, Sprint, Issue, ProjectTeam, IssueComment
 
 
@@ -60,6 +61,11 @@ class IssueForm(forms.ModelForm):
             raise forms.ValidationError(
                 'The issue related to sprint has to be estimated')
         return estimation
+
+    def send_email(self, user_id, issue_id):
+        employee = self.cleaned_data['employee']
+        email = employee.email
+        send_assign_email_task.delay(email, user_id, issue_id)
 
     class Meta:
         model = Issue

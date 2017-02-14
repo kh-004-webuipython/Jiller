@@ -79,6 +79,7 @@ def issue_create_view(request, project_id):
             new_issue.project = current_project
             new_issue.author = request.user
             new_issue.save()
+            form.send_email(request.user.id, new_issue.id)
             return redirect('project:backlog', current_project.id)
     else:
         initial = {}
@@ -102,6 +103,7 @@ def issue_edit_view(request, project_id, issue_id):
             current_issue.project = current_project
             current_issue.author = request.user
             current_issue.save()
+            form.send_email(request.user.id, current_issue.id)
             return redirect('project:backlog', current_project.id)
     else:
         form = IssueFormForEditing(project=current_project, instance=current_issue)
