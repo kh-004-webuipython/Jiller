@@ -40,7 +40,8 @@ class WorkloadManagerTest(LoginRequiredBase):
         response = self.client.get(reverse('project:workload_manager',
                                            kwargs={'project_id': self.project.id,
                                                    'sprint_status': Sprint.ACTIVE}))
-        self.assertEqual(response.status_code, 404)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'general/404.html')
 
     def test_workload_view_with_empty_items(self):
         sprint = Sprint.objects.create(title='title', project=self.project,

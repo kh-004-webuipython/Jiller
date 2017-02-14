@@ -487,6 +487,7 @@ def team_create(request, project_id):
                                                         'project': project})
 
 
+@waffle_flag('read_workflow_manager', 'project:list')
 def workload_manager(request, project_id, sprint_status):
     if request.method == 'POST':
         data = json.loads(request.POST.get('data'))

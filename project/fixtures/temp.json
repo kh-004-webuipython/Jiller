@@ -412,8 +412,8 @@
   "fields": {
     "title": "First sprint",
     "project": 1,
-    "start_date": "2017-01-30",
-    "end_date": "2017-01-11",
+    "start_date": "2017-02-08",
+    "end_date": "2017-02-15",
     "order": null,
     "status": "active"
   }

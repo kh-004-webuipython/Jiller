@@ -264,6 +264,50 @@
     }
   },
   {
+    "model": "waffle.flag",
+    "pk": 13,
+    "fields": {
+      "name": "read_workflow_manager",
+      "everyone": null,
+      "percent": null,
+      "testing": false,
+      "superusers": true,
+      "staff": true,
+      "authenticated": false,
+      "languages": "",
+      "rollout": false,
+      "note": "",
+      "created": "2017-02-07T16:12:35Z",
+      "modified": "2017-02-08T16:13:03.933Z",
+      "groups": [
+        1,2,3,4
+      ],
+      "users": []
+    }
+  },
+  {
+    "model": "waffle.flag",
+    "pk": 14,
+    "fields": {
+      "name": "update_workflow_manager",
+      "everyone": null,
+      "percent": null,
+      "testing": false,
+      "superusers": true,
+      "staff": true,
+      "authenticated": false,
+      "languages": "",
+      "rollout": false,
+      "note": "",
+      "created": "2017-02-07T16:12:35Z",
+      "modified": "2017-02-08T16:13:03.933Z",
+      "groups": [
+        1,2
+      ],
+      "users": []
+    }
+  },
+  {
     "pk": 1,
     "model": "auth.Group",
     "fields": {

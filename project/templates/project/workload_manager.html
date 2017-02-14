@@ -40,8 +40,12 @@
   </div>
 
   {% block extrascripts %}
-      <script defer src="{% static 'js/jquery-ui.min.js' %}"></script>
-      <script defer src="{% static 'js/main.js' %}"></script>
-      <script defer src="{% static 'project/js/workload_manager.js' %}"></script>
+
+    {% flag "update_workflow_manager" %}
+    <script defer src="{% static 'js/jquery-ui.min.js' %}"></script>
+    <script defer src="{% static 'js/main.js' %}"></script>
+    <script defer src="{% static 'project/js/workload_manager.js' %}"></script>
+    {% endflag %}
+
   {% endblock %}
 {% endblock %}
