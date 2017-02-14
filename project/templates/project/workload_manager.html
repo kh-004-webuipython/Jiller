@@ -2,6 +2,7 @@
 {% load static %}
 {% load waffle_tags %}
 {% load i18n %}
+{% load sprint_status %}
 
 
 {% block extrastyles %}
@@ -26,7 +27,15 @@
     <a href="{% url 'project:sprint_active' project.id %}">Active sprint</a>
   </li>
   <li>
-    <span>{% trans 'Workload manager' %}</span>
+    {% url 'project:workload_manager' project.id 'active'|sprint_status as active %}
+    {% if request.get_full_path == active %}
+      <span>{% trans 'Workload manager' %}</span>
+    {% endif %}
+
+    {% url 'project:workload_manager' project.id 'new'|sprint_status as new %}
+    {% if request.get_full_path == new %}
+      <span>{% trans 'Form sprint' %}</span>
+    {% endif %}
   </li>
 {% endblock %}
 
