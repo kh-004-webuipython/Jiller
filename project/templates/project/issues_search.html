@@ -18,7 +18,7 @@
 {% endblock %}
 
 {% block content %}
-    {% include 'project/project_navbar.html' with issues=True %}
+    {% include 'project/project_navbar.html' with issues_tab=True %}
     <div class="container-fluid">
         <form action="{% url 'project:issue_search' project.id %}" method="get">
             <div class="row">

@@ -24,7 +24,7 @@
         Sprint history
       </a>
     </li>
-    <li {% if issues %}class="active" {% endif %}>
+    <li {% if issues_tab %}class="active" {% endif %}>
       <a href="{% url 'project:issue_search' project.id %}">
         Issues
       </a>
