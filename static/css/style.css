@@ -115,11 +115,35 @@ div.project-detail {
     width: 18.7%;
 }
 
-.btn-margin-left {
-    margin-left: 10px!important;
-}
-
 .limit-text-width {
     width: 80%;
     display: inline-block;
+}
+
+td.User_story {
+    background-color: #d9edf7;
+}
+
+td.Task {
+    background-color: #dff0d8;
+}
+
+td.Bug {
+    background-color: #f2dede;
+}
+
+td.User_story a, td.Task a, td.Bug a  {
+    color: #333;
+}
+
+tr.ui-sortable-handle.User_story {
+    background-color: #d9edf7;
+}
+
+tr.ui-sortable-handle.Task{
+    background-color: #dff0d8;
+}
+
+tr.ui-sortable-handle.Bug {
+    background-color: #f2dede;
 }

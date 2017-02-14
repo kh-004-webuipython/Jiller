@@ -170,3 +170,22 @@ try:
     from .local_settings import *
 except ImportError:
     pass
+
+# CELERY
+BROKER_URL = 'redis://localhost:6379'
+# CELERY_BROKER_URL = 'redis://localhost:6379'
+CELERY_RESULT_BACKEND = 'redis://localhost:6379'
+CELERY_ACCEPT_CONTENT = ['application/json']
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = 'json'
+CELERY_TIMEZONE = 'Ukraine/Kiew'
+CELERY_IMPORTS = ['general.tasks']
+
+# EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+EMAIL_USE_TLS = True
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_HOST_USER = 'email.assign.python.webui@gmail.com'
+EMAIL_HOST_PASSWORD = 'Evrey123'
+EMAIL_PORT = 587
+DEFAULT_FROM_EMAIL = 'email.assign.python.webui@gmail.com'
+

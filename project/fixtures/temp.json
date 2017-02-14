@@ -242,6 +242,72 @@
   }
 },
 {
+  "model": "waffle.flag",
+  "pk": 12,
+  "fields": {
+    "name": "only_developer",
+    "everyone": null,
+    "percent": null,
+    "testing": false,
+    "superusers": true,
+    "staff": true,
+    "authenticated": false,
+    "languages": "",
+    "rollout": false,
+    "note": "",
+    "created": "2017-02-07T16:12:35Z",
+    "modified": "2017-02-08T16:13:03.933Z",
+    "groups": [
+      1
+    ],
+    "users": []
+  }
+},
+{
+  "model": "waffle.flag",
+  "pk": 13,
+  "fields": {
+    "name": "read_workflow_manager",
+    "everyone": null,
+    "percent": null,
+    "testing": false,
+    "superusers": true,
+    "staff": true,
+    "authenticated": false,
+    "languages": "",
+    "rollout": false,
+    "note": "",
+    "created": "2017-02-07T16:12:35Z",
+    "modified": "2017-02-08T16:13:03.933Z",
+    "groups": [
+      1,2,3,4
+    ],
+    "users": []
+  }
+},
+{
+  "model": "waffle.flag",
+  "pk": 14,
+  "fields": {
+    "name": "update_workflow_manager",
+    "everyone": null,
+    "percent": null,
+    "testing": false,
+    "superusers": true,
+    "staff": true,
+    "authenticated": false,
+    "languages": "",
+    "rollout": false,
+    "note": "",
+    "created": "2017-02-07T16:12:35Z",
+    "modified": "2017-02-08T16:13:03.933Z",
+    "groups": [
+      1,2
+    ],
+    "users": []
+  }
+},
+{
   "pk": 1,
   "model": "auth.Group",
   "fields": {
@@ -274,15 +340,37 @@
   "pk": 1,
   "fields": {
     "password": "pbkdf2_sha256$30000$80UGAYiTkmUH$rgg/i5Ya+Tpup6k1t5vQMjrBML2uTYY0AirJQYx0Z44=",
-    "last_login": "2017-01-30T16:29:12.707Z",
+    "last_login": "2017-02-13T20:42:04.301Z",
     "is_superuser": true,
     "username": "admin",
-    "first_name": "",
+    "first_name": "Admin",
     "last_name": "",
     "email": "colonialist@ukr.net",
     "is_staff": true,
     "is_active": true,
-    "date_joined": "2017-01-27T19:40:41Z",
+    "date_joined": "2017-01-27T20:53:28Z",
+    "date_birth": null,
+    "photo": "",
+    "groups": [
+      4
+    ],
+    "user_permissions": []
+  }
+},
+{
+  "model": "employee.employee",
+  "pk": 2,
+  "fields": {
+    "password": "pbkdf2_sha256$30000$80UGAYiTkmUH$rgg/i5Ya+Tpup6k1t5vQMjrBML2uTYY0AirJQYx0Z44=",
+    "last_login": "2017-02-09T15:49:39.761Z",
+    "is_superuser": false,
+    "username": "developer",
+    "first_name": "DeveloperName",
+    "last_name": "DeveloperLastName",
+    "email": "colonialist@ukr.net",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2017-01-27T20:53:28Z",
     "date_birth": null,
     "photo": "",
     "groups": [
@@ -293,61 +381,45 @@
 },
 {
   "model": "employee.employee",
-  "pk": 2,
+  "pk": 3,
   "fields": {
     "password": "pbkdf2_sha256$30000$80UGAYiTkmUH$rgg/i5Ya+Tpup6k1t5vQMjrBML2uTYY0AirJQYx0Z44=",
     "last_login": null,
     "is_superuser": false,
-    "username": "developer",
-    "first_name": "",
-    "last_name": "",
+    "username": "scrum_master",
+    "first_name": "ScrumName",
+    "last_name": "ScrumLastName",
     "email": "colonialist@ukr.net",
     "is_staff": false,
     "is_active": true,
-    "date_joined": "2017-01-27T20:53:28Z",
+    "date_joined": "2017-01-27T21:14:20Z",
     "date_birth": null,
     "photo": "",
-    "groups": [1],
+    "groups": [
+      2
+    ],
     "user_permissions": []
   }
 },
 {
   "model": "employee.employee",
-  "pk": 3,
-  "fields": {
-    "password": "pbkdf2_sha256$30000$80UGAYiTkmUH$rgg/i5Ya+Tpup6k1t5vQMjrBML2uTYY0AirJQYx0Z44=",
-    "last_login": "2017-01-30T16:26:15.082Z",
-    "is_superuser": false,
-    "username": "scrum_master",
-    "first_name": "",
-    "last_name": "",
-    "email": "colonialist@ukr.net",
-    "is_staff": false,
-    "is_active": true,
-    "date_joined": "2017-01-27T21:14:20Z",
-    "date_birth": null,
-    "photo": "",
-    "groups": [2],
-    "user_permissions": []
-  }
-},
-  {
-  "model": "employee.employee",
   "pk": 4,
   "fields": {
     "password": "pbkdf2_sha256$30000$80UGAYiTkmUH$rgg/i5Ya+Tpup6k1t5vQMjrBML2uTYY0AirJQYx0Z44=",
-    "last_login": "2017-01-30T16:26:15.082Z",
+    "last_login": "2017-02-09T17:11:37.469Z",
     "is_superuser": false,
-    "username": "senior",
-    "first_name": "",
-    "last_name": "",
+    "username": "product_owner",
+    "first_name": "ProductOwnerName",
+    "last_name": "ProductOwnerLastName",
     "email": "colonialist@ukr.net",
     "is_staff": false,
     "is_active": true,
-    "date_joined": "2017-01-27T21:14:20Z",
+    "date_joined": "2017-01-30T16:45:39.517Z",
     "date_birth": null,
     "photo": "",
-    "groups": [1],
+    "groups": [
+      3
+    ],
     "user_permissions": []
   }
 },
@@ -358,16 +430,302 @@
     "password": "pbkdf2_sha256$30000$80UGAYiTkmUH$rgg/i5Ya+Tpup6k1t5vQMjrBML2uTYY0AirJQYx0Z44=",
     "last_login": null,
     "is_superuser": false,
-    "username": "product_owner",
-    "first_name": "test",
-    "last_name": "test",
-    "email": "colonialist@ukr.net",
+    "username": "projectmanager",
+    "first_name": "ProjectManagerName",
+    "last_name": "ProjectManagerLastName",
+    "email": "norfolknorfolks@gmail.com",
     "is_staff": false,
     "is_active": true,
     "date_joined": "2017-01-30T16:45:39.517Z",
     "date_birth": null,
     "photo": "",
-    "groups": [3],
+    "groups": [
+      4
+    ],
+    "user_permissions": []
+  }
+},
+{
+  "model": "employee.employee",
+  "pk": 6,
+  "fields": {
+    "password": "pbkdf2_sha256$30000$80UGAYiTkmUH$rgg/i5Ya+Tpup6k1t5vQMjrBML2uTYY0AirJQYx0Z44=",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "developer#2",
+    "first_name": "fist_name_developer#2",
+    "last_name": "last_name_developer#2",
+    "email": "",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2017-01-27T20:53:28Z",
+    "date_birth": null,
+    "photo": "",
+    "groups": [
+      1
+    ],
+    "user_permissions": []
+  }
+},
+{
+  "model": "employee.employee",
+  "pk": 7,
+  "fields": {
+    "password": "pbkdf2_sha256$30000$80UGAYiTkmUH$rgg/i5Ya+Tpup6k1t5vQMjrBML2uTYY0AirJQYx0Z44=",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "developer#3",
+    "first_name": "fist_name_developer#3",
+    "last_name": "last_name_developer#3",
+    "email": "",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2017-01-27T20:53:28Z",
+    "date_birth": null,
+    "photo": "",
+    "groups": [
+      1
+    ],
+    "user_permissions": []
+  }
+},
+{
+  "model": "employee.employee",
+  "pk": 8,
+  "fields": {
+    "password": "pbkdf2_sha256$30000$80UGAYiTkmUH$rgg/i5Ya+Tpup6k1t5vQMjrBML2uTYY0AirJQYx0Z44=",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "developer#4",
+    "first_name": "fist_name_developer#4",
+    "last_name": "last_name_developer#4",
+    "email": "",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2017-01-27T20:53:28Z",
+    "date_birth": null,
+    "photo": "",
+    "groups": [
+      1
+    ],
+    "user_permissions": []
+  }
+},
+{
+  "model": "employee.employee",
+  "pk": 9,
+  "fields": {
+    "password": "pbkdf2_sha256$30000$1c5znH6IOjw4$J2M/PGYhr3eTL72O/z69P3BrgoxKGVYcRlUsCRG9r4c=",
+    "last_login": "2017-02-12T19:00:12.799Z",
+    "is_superuser": false,
+    "username": "Iryna",
+    "first_name": "Iryna",
+    "last_name": "Talamanova",
+    "email": "iryna.talamanova@gmail.com",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2017-02-08T16:31:50.014Z",
+    "date_birth": null,
+    "photo": "",
+    "groups": [
+      1
+    ],
+    "user_permissions": []
+  }
+},
+{
+  "model": "employee.employee",
+  "pk": 10,
+  "fields": {
+    "password": "pbkdf2_sha256$30000$LxjRyuUhf1Hr$+Q+LZl2kJoYNYcUe6D4mkV1H4AOsP+IWqmbFh61fvr8=",
+    "last_login": "2017-02-09T17:16:37.612Z",
+    "is_superuser": false,
+    "username": "Phobos",
+    "first_name": "Oleksandr",
+    "last_name": "Kravchenko",
+    "email": "phobosprogrammer@gmail.com",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2017-02-08T16:35:43Z",
+    "date_birth": null,
+    "photo": "",
+    "groups": [
+      2
+    ],
+    "user_permissions": []
+  }
+},
+{
+  "model": "employee.employee",
+  "pk": 11,
+  "fields": {
+    "password": "pbkdf2_sha256$30000$tKHtiEkppbxs$QwZAEiF0trbCxhLDLPBoysplfUObFgfUMQ+qwodDu8I=",
+    "last_login": "2017-02-09T21:06:24.975Z",
+    "is_superuser": false,
+    "username": "Alex",
+    "first_name": "Oleksandr",
+    "last_name": "Dubrovskyi",
+    "email": "oleksandrdubrovskyi@gmail.com",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2017-02-08T16:37:54.695Z",
+    "date_birth": null,
+    "photo": "",
+    "groups": [
+      1
+    ],
+    "user_permissions": []
+  }
+},
+{
+  "model": "employee.employee",
+  "pk": 12,
+  "fields": {
+    "password": "pbkdf2_sha256$30000$uYBOkNv3tj3F$oOCSPyGS9PTn//7tvsjBrIzG+LwbMNYqrF7FDJc0dQk=",
+    "last_login": "2017-02-08T16:41:22.920Z",
+    "is_superuser": false,
+    "username": "Nataly",
+    "first_name": "Nataly",
+    "last_name": "Pysanka",
+    "email": "zeland18@ukr.net",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2017-02-08T16:40:57.345Z",
+    "date_birth": null,
+    "photo": "",
+    "groups": [
+      1
+    ],
+    "user_permissions": []
+  }
+},
+{
+  "model": "employee.employee",
+  "pk": 13,
+  "fields": {
+    "password": "pbkdf2_sha256$30000$2GAI9h4T8kzj$Ys/J8xLPamGnVpsReeYgGa+IeDlGZQqW+UcVO5vh7Yk=",
+    "last_login": "2017-02-09T10:13:37.155Z",
+    "is_superuser": false,
+    "username": "Vitalii",
+    "first_name": "Vitalii",
+    "last_name": "Sipchenko",
+    "email": "theoblivion@mail.ru",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2017-02-08T20:04:04.435Z",
+    "date_birth": null,
+    "photo": "",
+    "groups": [
+      1
+    ],
+    "user_permissions": []
+  }
+},
+{
+  "model": "employee.employee",
+  "pk": 14,
+  "fields": {
+    "password": "pbkdf2_sha256$30000$COBDmOeOxjKk$u11cAmi9pIxHfvOXyGJSEKPlXuG+QEVdyTYz9VtO6NY=",
+    "last_login": "2017-02-13T10:15:16.530Z",
+    "is_superuser": false,
+    "username": "nick",
+    "first_name": "Nick",
+    "last_name": "Ivanov",
+    "email": "zvxjqjqm@zetmail.com",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2017-02-09T15:29:49.130Z",
+    "date_birth": null,
+    "photo": "",
+    "groups": [
+      1
+    ],
+    "user_permissions": []
+  }
+},
+{
+  "model": "employee.employee",
+  "pk": 15,
+  "fields": {
+    "password": "pbkdf2_sha256$30000$rvpd6HoNiP1I$ja0pfEKjfOjz1xRDsvvf7oPQn7YhiA93q5lNZoiqHXI=",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "User_test",
+    "first_name": "dd",
+    "last_name": "dd",
+    "email": "gogle@gmail.com",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2017-02-09T16:35:00.392Z",
+    "date_birth": null,
+    "photo": "",
+    "groups": [
+      1
+    ],
+    "user_permissions": []
+  }
+},
+{
+  "model": "employee.employee",
+  "pk": 16,
+  "fields": {
+    "password": "pbkdf2_sha256$30000$jTV1hbLj2dtD$iS5Ol9AulGtsSbgEutE/rGSxwEcWaIpP2IZsy/PISHQ=",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "User_test1",
+    "first_name": "dd",
+    "last_name": "dd",
+    "email": "gogle@ggmail.com",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2017-02-09T16:35:36.853Z",
+    "date_birth": null,
+    "photo": "",
+    "groups": [
+      1
+    ],
+    "user_permissions": []
+  }
+},
+{
+  "model": "employee.employee",
+  "pk": 17,
+  "fields": {
+    "password": "pbkdf2_sha256$30000$qc6MzSaS0frX$Q0/uliSwHoHkvlQLD6mh/q79PCXJ+sOqGxYZ2sVeCrg=",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "product_manager",
+    "first_name": "dddd",
+    "last_name": "ddd",
+    "email": "google@google.com",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2017-02-09T16:39:49.128Z",
+    "date_birth": null,
+    "photo": "",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "employee.employee",
+  "pk": 18,
+  "fields": {
+    "password": "pbkdf2_sha256$30000$ezwoU4ANgkxF$c5MMdUmJWTYxsQd7Zq/dxxF8r3d0AuDsxzFDUPOzpfU=",
+    "last_login": "2017-02-10T12:34:36.312Z",
+    "is_superuser": false,
+    "username": "byasic",
+    "first_name": "Max",
+    "last_name": "Bilokon",
+    "email": "byasic@gmail.com",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2017-02-09T21:57:39.763Z",
+    "date_birth": null,
+    "photo": "",
+    "groups": [
+      1
+    ],
     "user_permissions": []
   }
 },
@@ -375,9 +733,9 @@
   "model": "project.project",
   "pk": 1,
   "fields": {
-    "title": "First project",
-    "description": "First project",
-    "start_date": "2017-01-30",
+    "title": "KH-004-webuipython",
+    "description": "",
+    "start_date": "2017-02-08",
     "end_date": null,
     "is_active": true
   }
@@ -398,11 +756,17 @@
   "pk": 1,
   "fields": {
     "project": 1,
-    "title": "team1",
+    "title": "KH-004-webuipython",
     "employees": [
-      2,
-      3,
-      5
+      1,
+      4,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      18
     ]
   }
 },
@@ -415,7 +779,8 @@
     "start_date": "2017-02-08",
     "end_date": "2017-02-15",
     "order": null,
-    "status": "active"
+    "status": "finished",
+    "duration": 7
   }
 },
 {
@@ -424,10 +789,50 @@
   "fields": {
     "title": "second sprint",
     "project": 1,
-    "start_date": null,
+    "start_date": "2017-02-08",
     "end_date": null,
     "order": null,
-    "status": "new"
+    "status": "finished",
+    "duration": 7
+  }
+},
+{
+  "model": "project.sprint",
+  "pk": 3,
+  "fields": {
+    "title": "second sprint",
+    "project": 1,
+    "start_date": "2017-01-08",
+    "end_date": null,
+    "order": null,
+    "status": "finished",
+    "duration": 7
+  }
+},
+{
+  "model": "project.sprint",
+  "pk": 4,
+  "fields": {
+    "title": "second sprint",
+    "project": 1,
+    "start_date": "2017-02-08",
+    "end_date": "2017-02-15",
+    "order": null,
+    "status": "finished",
+    "duration": 7
+  }
+},
+{
+  "model": "project.sprint",
+  "pk": 5,
+  "fields": {
+    "title": "second sprint",
+    "project": 1,
+    "start_date": "2017-02-08",
+    "end_date": "2017-02-15",
+    "order": null,
+    "status": "active",
+    "duration": 7
   }
 },
 {
@@ -437,12 +842,13 @@
     "root": null,
     "project": 1,
     "sprint": null,
-    "author": 1,
+    "author": 10,
     "employee": null,
-    "title": "First issue",
-    "description": "First issue",
+    "title": "Jenkins",
+    "description": "deploy CI on RH",
     "status": "new",
-    "estimation": null
+    "estimation": 24,
+    "order": 9
   }
 },
 {
@@ -451,13 +857,766 @@
   "fields": {
     "root": null,
     "project": 1,
-    "sprint": 1,
+    "sprint": 5,
+    "author": 1,
+    "employee": 14,
+    "title": "Stop sprint features",
+    "description": "When sprint is stopping, all not resolved issues must be pushed to the top of the backlog",
+    "status": "resolved",
+    "estimation": 4,
+    "order": 0
+  }
+},
+{
+  "model": "project.issue",
+  "pk": 3,
+  "fields": {
+    "root": null,
+    "project": 1,
+    "sprint": 5,
+    "author": 1,
+    "employee": 13,
+    "title": "Burndown Scrum feature in sprints",
+    "description": "For all sprints add redirect to burndown chart view.\r\nBurndown chart must depend on days from sprint start date.",
+    "status": "new",
+    "estimation": 8,
+    "order": 0
+  }
+},
+{
+  "model": "project.issue",
+  "pk": 4,
+  "fields": {
+    "root": null,
+    "project": 1,
+    "sprint": 5,
+    "author": 1,
+    "employee": 13,
+    "title": "Issue face remade",
+    "description": "all \"issues\" in active sprint and history need to show: its title, estimation, assignee, % done (depends from estimate and spend time, which is write every day before stand-up)",
+    "status": "new",
+    "estimation": 1,
+    "order": 0
+  }
+},
+{
+  "model": "project.issue",
+  "pk": 5,
+  "fields": {
+    "root": null,
+    "project": 1,
+    "sprint": 5,
+    "author": 1,
+    "employee": 14,
+    "title": "Issue search",
+    "description": "make search on all issues include finished and closed\r\nKolya",
+    "status": "in progress",
+    "estimation": 16,
+    "order": 0
+  }
+},
+{
+  "model": "project.issue",
+  "pk": 6,
+  "fields": {
+    "root": null,
+    "project": 1,
+    "sprint": 5,
+    "author": 1,
+    "employee": 9,
+    "title": "Send mail after issue assign",
+    "description": "Salary",
+    "status": "in progress",
+    "estimation": 24,
+    "order": 0
+  }
+},
+{
+  "model": "project.issue",
+  "pk": 7,
+  "fields": {
+    "root": null,
+    "project": 1,
+    "sprint": 5,
+    "author": 1,
+    "employee": 10,
+    "title": "More drag and drop In other things",
+    "description": "Make drag and drop on all action buttons\r\nIn active sprint.",
+    "status": "in progress",
+    "estimation": 8,
+    "order": 0
+  }
+},
+{
+  "model": "project.issue",
+  "pk": 8,
+  "fields": {
+    "root": null,
+    "project": 1,
+    "sprint": 5,
+    "author": 1,
+    "employee": 14,
+    "title": "Implement Error Pages",
+    "description": "rewrite all errors raise in code to render \"404\" or \"Wrong request\", 403",
+    "status": "resolved",
+    "estimation": 4,
+    "order": 0
+  }
+},
+{
+  "model": "project.issue",
+  "pk": 9,
+  "fields": {
+    "root": null,
+    "project": 1,
+    "sprint": 5,
+    "author": 1,
+    "employee": 14,
+    "title": "Bug Hide sprint \"end date\"",
+    "description": "hide sprint \"end date\" field on create sprint, and make it auto assignable on stop/finish sprint\r\nAdd duration field (weeks, days).\r\nKolya",
+    "status": "new",
+    "estimation": 4,
+    "order": 0
+  }
+},
+{
+  "model": "project.issue",
+  "pk": 10,
+  "fields": {
+    "root": null,
+    "project": 1,
+    "sprint": 5,
+    "author": 1,
+    "employee": 10,
+    "title": "Bug Fixture correcting",
+    "description": "fix all data  in fixture to actual value",
+    "status": "resolved",
+    "estimation": 1,
+    "order": 0
+  }
+},
+{
+  "model": "project.issue",
+  "pk": 11,
+  "fields": {
+    "root": null,
+    "project": 1,
+    "sprint": 5,
+    "author": 1,
+    "employee": 12,
+    "title": "More Sort Table",
+    "description": "cover all data lists with sorting\r\nFor Team",
+    "status": "resolved",
+    "estimation": 8,
+    "order": 0
+  }
+},
+{
+  "model": "project.issue",
+  "pk": 12,
+  "fields": {
+    "root": null,
+    "project": 1,
+    "sprint": 5,
+    "author": 1,
+    "employee": 13,
+    "title": "More style",
+    "description": "Make all buttons in same color and other elements too.\r\nFix footer label pushing.\r\nAdd edit Sprint button in active Sprint.\r\nPush \"edit\" button in sprint history to the header.\r\nHide team in sprint history",
+    "status": "new",
+    "estimation": 4,
+    "order": 0
+  }
+},
+{
+  "model": "project.issue",
+  "pk": 13,
+  "fields": {
+    "root": null,
+    "project": 1,
+    "sprint": null,
+    "author": 10,
+    "employee": null,
+    "title": "More soft delete",
+    "description": "make soft delete on users, and check other important data for it",
+    "status": "deleted",
+    "estimation": null,
+    "order": 0
+  }
+},
+{
+  "model": "project.issue",
+  "pk": 14,
+  "fields": {
+    "root": null,
+    "project": 1,
+    "sprint": 5,
+    "author": 1,
+    "employee": 10,
+    "title": "Sprint feedback feature",
+    "description": "Add new field to sprint for feedback and implement feedback edit form\r\nadd text field on stop sprint",
+    "status": "new",
+    "estimation": 3,
+    "order": 0
+  }
+},
+{
+  "model": "project.issue",
+  "pk": 15,
+  "fields": {
+    "root": null,
+    "project": 1,
+    "sprint": null,
+    "author": 10,
+    "employee": null,
+    "title": "tests",
+    "description": "fix all previous tests",
+    "status": "new",
+    "estimation": null,
+    "order": 32
+  }
+},
+{
+  "model": "project.issue",
+  "pk": 16,
+  "fields": {
+    "root": null,
+    "project": 1,
+    "sprint": 5,
+    "author": 1,
+    "employee": 18,
+    "title": "Add types for issues",
+    "description": "Bug\r\nUser Story - no root\r\nSubTask - auto root (read-only)\r\nMax",
+    "status": "new",
+    "estimation": 16,
+    "order": 0
+  }
+},
+{
+  "model": "project.issue",
+  "pk": 17,
+  "fields": {
+    "root": null,
+    "project": 1,
+    "sprint": 5,
+    "author": 1,
+    "employee": 18,
+    "title": "QA responsibility",
+    "description": "Every day check project on stable work, pep8 rules and flake8 (or other) reports. Don't make pull request without tests.\r\nAt the end of sprint watch and fix all code for pep8 rules before release.\r\n\r\nMax",
+    "status": "new",
+    "estimation": 8,
+    "order": 0
+  }
+},
+{
+  "model": "project.issue",
+  "pk": 18,
+  "fields": {
+    "root": null,
+    "project": 1,
+    "sprint": null,
+    "author": 10,
+    "employee": null,
+    "title": "BUG: fix lower/uppercase in accounts data",
+    "description": "make lowercase account data on authentication",
+    "status": "deleted",
+    "estimation": null,
+    "order": 0
+  }
+},
+{
+  "model": "project.issue",
+  "pk": 19,
+  "fields": {
+    "root": null,
+    "project": 1,
+    "sprint": 5,
+    "author": 1,
+    "employee": 12,
+    "title": "hide personal data",
+    "description": "hide personal data like logins/emails on some project pages. Maybe make login by email, and then show everywhere current nick. \r\nFirst name and last name not null",
+    "status": "resolved",
+    "estimation": 2,
+    "order": 0
+  }
+},
+{
+  "model": "project.issue",
+  "pk": 20,
+  "fields": {
+    "root": null,
+    "project": 1,
+    "sprint": 5,
+    "author": 1,
+    "employee": 10,
+    "title": "Notes board for developers",
+    "description": "Create new board, that would be shown only to developers in team. Every developer can change it",
+    "status": "in progress",
+    "estimation": 16,
+    "order": 0
+  }
+},
+{
+  "model": "project.issue",
+  "pk": 21,
+  "fields": {
+    "root": null,
+    "project": 1,
+    "sprint": null,
+    "author": 10,
+    "employee": null,
+    "title": "Artificial intellect",
+    "description": "Make help in assign new tasks, depends on developer history (bugs/new features) and tags+words in issues.",
+    "status": "new",
+    "estimation": null,
+    "order": 31
+  }
+},
+{
+  "model": "project.issue",
+  "pk": 22,
+  "fields": {
+    "root": null,
+    "project": 1,
+    "sprint": 5,
+    "author": 1,
+    "employee": 11,
+    "title": "BUG: backlog status",
+    "description": "In backlog cannot be issues with in_progress/closed status. Need discuss",
+    "status": "resolved",
+    "estimation": 2,
+    "order": 0
+  }
+},
+{
+  "model": "project.issue",
+  "pk": 23,
+  "fields": {
+    "root": null,
+    "project": 1,
+    "sprint": null,
+    "author": 10,
+    "employee": null,
+    "title": "Bug/feature differ",
+    "description": "Make feature that show visual differ in bugs and new feature",
+    "status": "deleted",
+    "estimation": null,
+    "order": 0
+  }
+},
+{
+  "model": "project.issue",
+  "pk": 24,
+  "fields": {
+    "root": null,
+    "project": 1,
+    "sprint": 5,
+    "author": 1,
+    "employee": 10,
+    "title": "link on releaze in sprint history",
+    "description": "on finished Sprints need to add field for link to project releaze\r\noptional",
+    "status": "new",
+    "estimation": 2,
+    "order": 0
+  }
+},
+{
+  "model": "project.issue",
+  "pk": 25,
+  "fields": {
+    "root": null,
+    "project": 1,
+    "sprint": null,
+    "author": 10,
+    "employee": null,
+    "title": "Authorization with Social Networks",
+    "description": "Google - Kolya\r\nTwitter - Phobos\r\nFacebook - Alex\r\nLinkedIn - Ira\r\nInstagram - Nataly\r\nVk - Max\r\nGitHub - Vitalii",
+    "status": "new",
+    "estimation": null,
+    "order": 30
+  }
+},
+{
+  "model": "project.issue",
+  "pk": 26,
+  "fields": {
+    "root": null,
+    "project": 1,
+    "sprint": null,
+    "author": 10,
+    "employee": null,
+    "title": "Add PayPal",
+    "description": "need discuss",
+    "status": "new",
+    "estimation": null,
+    "order": 29
+  }
+},
+{
+  "model": "project.issue",
+  "pk": 27,
+  "fields": {
+    "root": null,
+    "project": 1,
+    "sprint": 4,
+    "author": 10,
+    "employee": 9,
+    "title": "Delete/Edit issue",
+    "description": "",
+    "status": "resolved",
+    "estimation": null,
+    "order": 0
+  }
+},
+{
+  "model": "project.issue",
+  "pk": 28,
+  "fields": {
+    "root": null,
+    "project": 1,
+    "sprint": 4,
+    "author": 10,
+    "employee": 11,
+    "title": "Sort issues in backlog page",
+    "description": "\u0412\u044b\u0432\u043e\u0434 issues \u043e\u0442\u0441\u043e\u0440\u0442\u0438\u0440\u043e\u0432\u0430\u043d\u043d\u044b\u043c\u0438 \u043e\u0442 \u043d\u0430\u0438\u0431\u043e\u043b\u044c\u0448\u0435\u0433\u043e \u043f\u0440\u0438\u043e\u0440\u0438\u0442\u0435\u0442\u0430 \u043a \u043d\u0430\u0438\u043c\u0435\u043d\u044c\u0448\u0435\u043c\u0443. \u0412\u043e\u0437\u043c\u043e\u0436\u043d\u043e\u0441\u0442\u044c \u0438\u0437\u043c\u0435\u043d\u044f\u0442\u044c \u043f\u0440\u0438\u043e\u0440\u0438\u0442\u0435\u0442 \u043c\u0435\u0442\u043e\u0434\u043e\u043c drag'n'drop.",
+    "status": "resolved",
+    "estimation": null,
+    "order": 0
+  }
+},
+{
+  "model": "project.issue",
+  "pk": 29,
+  "fields": {
+    "root": null,
+    "project": 1,
+    "sprint": 4,
+    "author": 10,
+    "employee": 9,
+    "title": "Data filer",
+    "description": "\u0420\u0435\u0430\u043b\u0438\u0437\u043e\u0432\u0430\u0442\u044c \u0444\u0438\u043b\u044c\u0442\u0440\u0430\u0446\u0438\u044e \u0434\u0430\u043d\u043d\u044b\u0445 \u0432\u043e view \u0432 \u0437\u0430\u0432\u0438\u0441\u0438\u043c\u043e\u0441\u0442\u0438 \u043e\u0442 \u0440\u043e\u043b\u0438",
+    "status": "resolved",
+    "estimation": null,
+    "order": 0
+  }
+},
+{
+  "model": "project.issue",
+  "pk": 30,
+  "fields": {
+    "root": null,
+    "project": 1,
+    "sprint": 4,
+    "author": 10,
+    "employee": null,
+    "title": "python anywhere",
+    "description": "\u0420\u0430\u0437\u0432\u0435\u0440\u043d\u0443\u0442\u044c \u043f\u0440\u043e\u0435\u043a\u0442 Jiller \u043d\u0430 \u0443\u0434\u0430\u043b\u0435\u043d\u043d\u043e\u043c \u0441\u0435\u0440\u0432\u0435\u0440\u0435.",
+    "status": "resolved",
+    "estimation": null,
+    "order": 0
+  }
+},
+{
+  "model": "project.issue",
+  "pk": 31,
+  "fields": {
+    "root": null,
+    "project": 1,
+    "sprint": 4,
+    "author": 10,
+    "employee": 10,
+    "title": "Add PM role. Create team manage board",
+    "description": "Create PM role - make new \"Project manager\" group with permissions, and team manager.\r\n1) On project creation make new team with hidden PM in it.\r\n2) Create team manage board - table with current team and table with all available employees in company\r\n3) make manage employee only by PM",
+    "status": "resolved",
+    "estimation": null,
+    "order": 0
+  }
+},
+{
+  "model": "project.issue",
+  "pk": 32,
+  "fields": {
+    "root": null,
+    "project": 1,
+    "sprint": 4,
+    "author": 10,
+    "employee": 10,
+    "title": "deployment on apache",
+    "description": "\u0420\u0430\u0437\u0432\u0435\u0440\u043d\u0443\u0442\u044c \u043f\u0440\u043e\u0435\u043a\u0442 \u043d\u0430 \u043b\u043e\u043a\u0430\u043b\u044c\u043d\u043e\u043c \u0441\u0435\u0440\u0432\u0435\u0440\u0435 apache.",
+    "status": "resolved",
+    "estimation": null,
+    "order": 0
+  }
+},
+{
+  "model": "project.issue",
+  "pk": 33,
+  "fields": {
+    "root": null,
+    "project": 1,
+    "sprint": 4,
+    "author": 10,
+    "employee": null,
+    "title": "add chat with comments",
+    "description": "\u0420\u0435\u0430\u043b\u0438\u0437\u043e\u0432\u0430\u0442\u044c \u0447\u0430\u0442 \u0441 \u043a\u043e\u043c\u043c\u0435\u043d\u0442\u0430\u0440\u0438\u044f\u043c\u0438",
+    "status": "resolved",
+    "estimation": null,
+    "order": 0
+  }
+},
+{
+  "model": "project.issue",
+  "pk": 34,
+  "fields": {
+    "root": null,
+    "project": 1,
+    "sprint": 4,
+    "author": 10,
+    "employee": null,
+    "title": "Issues inheritance",
+    "description": "Issues inheritance",
+    "status": "resolved",
+    "estimation": null,
+    "order": 0
+  }
+},
+{
+  "model": "project.issue",
+  "pk": 35,
+  "fields": {
+    "root": null,
+    "project": 1,
+    "sprint": 4,
+    "author": 10,
+    "employee": null,
+    "title": "More features in create sprint",
+    "description": "Add issues on sprint creation",
+    "status": "resolved",
+    "estimation": null,
+    "order": 0
+  }
+},
+{
+  "model": "project.issue",
+  "pk": 36,
+  "fields": {
+    "root": null,
+    "project": 1,
+    "sprint": 4,
+    "author": 10,
+    "employee": 11,
+    "title": "email-confirmation",
+    "description": "",
+    "status": "resolved",
+    "estimation": null,
+    "order": 0
+  }
+},
+{
+  "model": "project.issue",
+  "pk": 37,
+  "fields": {
+    "root": null,
+    "project": 1,
+    "sprint": 4,
+    "author": 10,
+    "employee": 11,
+    "title": "write issues notes in active sprint in deployed server",
+    "description": "\u0414\u043e\u0431\u0430\u0432\u0438\u0442\u044c issues \u0432 \u0430\u043a\u0442\u0438\u0432\u043d\u044b\u0439 \u0441\u043f\u0440\u0438\u043d\u0442 Jiller'a",
+    "status": "resolved",
+    "estimation": null,
+    "order": 0
+  }
+},
+{
+  "model": "project.issue",
+  "pk": 38,
+  "fields": {
+    "root": null,
+    "project": 1,
+    "sprint": 4,
+    "author": 10,
+    "employee": 10,
+    "title": "deploy project on cloud",
+    "description": "Deploy project on Red Hat",
+    "status": "resolved",
+    "estimation": null,
+    "order": 0
+  }
+},
+{
+  "model": "project.issue",
+  "pk": 39,
+  "fields": {
+    "root": 7,
+    "project": 1,
+    "sprint": 5,
+    "author": 1,
+    "employee": 12,
+    "title": "Drag and drop in team",
+    "description": "",
+    "status": "in progress",
+    "estimation": 8,
+    "order": 0
+  }
+},
+{
+  "model": "project.issue",
+  "pk": 40,
+  "fields": {
+    "root": null,
+    "project": 1,
+    "sprint": 5,
+    "author": 1,
+    "employee": 11,
+    "title": "Make backlog logically",
+    "description": "1) Replace id column with order\r\nMake view of issue more informative and comfortable to see.\r\n2) Change author to assign\r\n3) in dropdown menu Assigner must be from current team, not all employees\r\n4) hide issues status in backlog (they allways new)",
+    "status": "deleted",
+    "estimation": null,
+    "order": 0
+  }
+},
+{
+  "model": "project.issue",
+  "pk": 41,
+  "fields": {
+    "root": null,
+    "project": 1,
+    "sprint": 5,
+    "author": 1,
+    "employee": 12,
+    "title": "Delete description in Project List",
+    "description": "",
+    "status": "resolved",
+    "estimation": 1,
+    "order": 0
+  }
+},
+{
+  "model": "project.issue",
+  "pk": 42,
+  "fields": {
+    "root": null,
+    "project": 1,
+    "sprint": 5,
+    "author": 1,
+    "employee": 11,
+    "title": "Display estimate and issue sum information before start Sprint",
+    "description": "Create sprint page on its start, where display sums of 1) all estimations and 2) all issues, that was chosen on this sprint, and 3) statistic on all team developers",
+    "status": "in progress",
+    "estimation": 16,
+    "order": 0
+  }
+},
+{
+  "model": "project.issue",
+  "pk": 43,
+  "fields": {
+    "root": null,
+    "project": 1,
+    "sprint": null,
+    "author": 10,
+    "employee": null,
+    "title": "BUG developer change sprints",
+    "description": "Developer can create active sprint, end change status in other sprints",
+    "status": "deleted",
+    "estimation": null,
+    "order": 23
+  }
+},
+{
+  "model": "project.issue",
+  "pk": 44,
+  "fields": {
+    "root": null,
+    "project": 1,
+    "sprint": null,
+    "author": 10,
+    "employee": null,
+    "title": "BUG: developer cannot assign issues",
+    "description": "",
+    "status": "deleted",
+    "estimation": null,
+    "order": 22
+  }
+},
+{
+  "model": "project.issue",
+  "pk": 45,
+  "fields": {
+    "root": null,
+    "project": 1,
+    "sprint": null,
+    "author": 10,
+    "employee": null,
+    "title": "Feature change DB",
+    "description": "PostgreSQL",
+    "status": "new",
+    "estimation": null,
+    "order": 28
+  }
+},
+{
+  "model": "project.issue",
+  "pk": 46,
+  "fields": {
+    "root": null,
+    "project": 1,
+    "sprint": null,
     "author": 1,
     "employee": null,
-    "title": "second issue",
-    "description": "second issue",
-    "status": "in progress",
-    "estimation": null
+    "title": "loading avatarfotos work on deploy not working",
+    "description": "need to correct settings",
+    "status": "new",
+    "estimation": null,
+    "order": 0
+  }
+},
+{
+  "model": "project.issue",
+  "pk": 47,
+  "fields": {
+    "root": null,
+    "project": 1,
+    "sprint": 5,
+    "author": 1,
+    "employee": 11,
+    "title": "BUG: issue priority",
+    "description": "When we make assign or resave issue priority is changing",
+    "status": "resolved",
+    "estimation": 4,
+    "order": 0
+  }
+},
+{
+  "model": "project.issue",
+  "pk": 48,
+  "fields": {
+    "root": null,
+    "project": 1,
+    "sprint": 5,
+    "author": 1,
+    "employee": 11,
+    "title": "implement users busy",
+    "description": "1) in @sprint_active@\r\nadd button for follow to sprint in workload manager\r\n2) make check for 1 only one \"new sprint\" in project at the time\r\n3) add in @sprint_detail@ new feature workload manager\r\n4) make manager editable when status in new, and only by scrum in active sprint",
+    "status": "new",
+    "estimation": 8,
+    "order": 0
+  }
+},
+{
+  "model": "project.issue",
+  "pk": 49,
+  "fields": {
+    "root": null,
+    "project": 1,
+    "sprint": 5,
+    "author": 1,
+    "employee": 14,
+    "title": "implement sprint Stopinng",
+    "description": "implement sprint Stopinng (add button in active sprint)",
+    "status": "deleted",
+    "estimation": null,
+    "order": 0
   }
 }
 ]

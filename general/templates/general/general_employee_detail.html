@@ -102,16 +102,16 @@
               <thead>
               <tr>
                 <th>Issue</th>
-                <th>Labor costs</th>
+                <th>Costs</th>
                 <th>Note</th>
               </tr>
               </thead>
               <tbody>
               {% for log in user.issuelog_set.all %}
                 <tr>
-                  <td><a href=".">{{ log.issue.title }}</a></td>
-                  <td><span>{{ log.labor_costs }}</span></td>
-                  <td><span>{{ log.note }}</span></td>
+                  <td class="col-sm-2"><a href=".">{{ log.issue.title }}</a></td>
+                  <td class="col-sm-1"><span>{{ log.cost }}</span></td>
+                  <td class="col-sm-9"><span>{{ log.note }}</span></td>
                 </tr>
               {% endfor %}
               </tbody>

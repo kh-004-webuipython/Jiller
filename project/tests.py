@@ -75,7 +75,7 @@ class IssueFormTests(LoginRequiredBase):
         """
              method should return False if fields are empty
         """
-        form = IssueForm(project=self.project)
+        form = IssueForm(project=self.project, user=self.user)
         self.assertEqual(form.is_valid(), False)
 
     def test_form_is_valid_with_not_null_required_fields(self):
@@ -83,7 +83,8 @@ class IssueFormTests(LoginRequiredBase):
              method should return True if required fields are full
         """
         form_data = {'title': 'new issue'}
-        form = IssueForm(project=self.project, data=form_data)
+        form = IssueForm(project=self.project, data=form_data,
+                         user=self.user)
         self.assertEqual(form.is_valid(), True)
 
     def test_form_is_valid_with_not_null_some_required_fields(self):
@@ -91,7 +92,8 @@ class IssueFormTests(LoginRequiredBase):
              method should return False if some required fields are empty
         """
         form_data = {}
-        form = IssueForm(project=self.project, data=form_data)
+        form = IssueForm(project=self.project, data=form_data,
+                         user=self.user)
         self.assertEqual(form.is_valid(), False)
 
     def test_form_is_valid_with_all_fields_are_full(self):
@@ -102,7 +104,8 @@ class IssueFormTests(LoginRequiredBase):
                      'title': 'new issue', 'description': 'description',
                      'status': self.issue.status, 'estimation': 2
                      }
-        form = IssueForm(project=self.project, data=form_data)
+        form = IssueForm(project=self.project, data=form_data,
+                         user=self.user)
         self.assertEqual(form.is_valid(), True)
 
     def test_form_is_not_valid_with_no_sprint_and_status_distinct_new(self):
@@ -110,7 +113,8 @@ class IssueFormTests(LoginRequiredBase):
                      'title': 'new issue', 'description': 'description',
                      'status': Issue.RESOLVED, 'estimation': 2
                      }
-        form = IssueForm(project=self.project, data=form_data)
+        form = IssueForm(project=self.project, data=form_data,
+                         user=self.user)
         self.assertEqual(form.is_valid(), False)
 
     def test_form_is_not_valid_with_sprint_and_status_new(self):
@@ -119,7 +123,8 @@ class IssueFormTests(LoginRequiredBase):
                      'status': Issue.NEW, 'estimation': 2,
                      'sprint': self.sprint
                      }
-        form = IssueForm(project=self.project, data=form_data)
+        form = IssueForm(project=self.project, data=form_data,
+                         user=self.user)
         self.assertEqual(form.is_valid(), False)
 
     def test_form_is_not_valid_with_sprint_and_no_estimation(self):
@@ -127,7 +132,30 @@ class IssueFormTests(LoginRequiredBase):
                      'title': 'new issue', 'description': 'description',
                      'status': Issue.IN_PROGRESS, 'sprint': self.sprint
                      }
-        form = IssueForm(project=self.project, data=form_data)
+        form = IssueForm(project=self.project, data=form_data,
+                         user=self.user)
+        self.assertEqual(form.is_valid(), False)
+
+    def test_form_is_not_valid_with_not_po_make_user_story(self):
+        self.user.groups.id = 2
+        form_data = {'root': self.issue, 'employee': self.user,
+                     'title': 'new issue', 'description': 'description',
+                     'type': Issue.USER_STORY, 'status': Issue.IN_PROGRESS,
+                     'sprint': self.sprint, 'estimation': 2
+                     }
+        form = IssueForm(project=self.project, data=form_data,
+                         user=self.user)
+        self.assertEqual(form.is_valid(), False)
+
+    def test_form_is_not_valid_with_po_make_not_user_story(self):
+        self.user.groups.id = 3
+        form_data = {'root': self.issue, 'employee': self.user,
+                     'title': 'new issue', 'description': 'description',
+                     'type': Issue.TASK, 'status': Issue.IN_PROGRESS,
+                     'sprint': self.sprint, 'estimation': 2
+                     }
+        form = IssueForm(project=self.project, data=form_data,
+                         user=self.user)
         self.assertEqual(form.is_valid(), False)
 
 
@@ -151,15 +179,6 @@ class IssueEditViewTests(LoginRequiredBase):
             reverse('project:issue_edit', args=[self.project.pk,
                                                 self.issue.pk]))
         self.assertTemplateUsed(response, 'project/issue_edit.html')
-
-    def test_issue_edit_view_can_get_object(self):
-        """
-            method should be True and return title if it can get an object
-        """
-        issue = get_object_or_404(Issue, pk=self.issue.pk,
-                                  project=self.project.pk)
-        self.assertTrue(isinstance(issue, Issue))
-        self.assertEqual(issue.__str__(), issue.title)
 
     def test_issue_edit_view_can_get_object(self):
         """
@@ -770,6 +789,45 @@ class ProjectNotes(LoginRequiredBase):
         response = self.client.post(url, data)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(ProjectNote.objects.all()), 2)
+
+
+class WorkloadManagerTest(LoginRequiredBase):
+    def setUp(self):
+        super(WorkloadManagerTest, self).setUp()
+        self.project = Project.objects.create()
+        self.team = ProjectTeam.objects.create(project=self.project, title='title')
+        self.team.employees.add(self.user)
+
+    def test_workload_view_with_no_sprint(self):
+        response = self.client.get(reverse('project:workload_manager',
+                                           kwargs={'project_id': self.project.id,
+                                                   'sprint_status': Sprint.ACTIVE}))
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'general/404.html')
+
+    def test_workload_view_with_empty_items(self):
+        sprint = Sprint.objects.create(title='title', project=self.project,
+                                       start_date=datetime.date(2017, 12, 14),
+                                       end_date=datetime.date(2017, 12, 21),
+                                       status=Sprint.ACTIVE)
+        response = self.client.get(reverse('project:workload_manager',
+                                           kwargs={'project_id': self.project.id,
+                                                   'sprint_status': Sprint.ACTIVE}))
+        self.assertContains(response, "No items.", status_code=200)
+        self.assertQuerysetEqual(response.context['items'], [])
+
+    def test_workload_view_with_items(self):
+        sprint = Sprint.objects.create(title='title', project=self.project,
+                                       start_date=datetime.date(2017, 12, 14),
+                                       end_date=datetime.date(2017, 12, 21),
+                                       status=Sprint.ACTIVE)
+        Issue.objects.create(project=self.project, author=self.user,
+                             sprint=sprint, employee=self.user)
+        response = self.client.get(reverse('project:workload_manager',
+                                           kwargs={'project_id': self.project.id,
+                                                   'sprint_status': Sprint.ACTIVE}))
+        self.assertContains(response, self.user.username, status_code=200)
+        self.assertQuerysetEqual(response.context['items'], [])
 
 
 """ TODO: need to discuss!
