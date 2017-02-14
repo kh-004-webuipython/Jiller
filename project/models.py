@@ -199,10 +199,13 @@ class ProjectTeam(models.Model):
 # check ProjectTeam for Project Manager in it before save
 def check_save_team_without_pm(action, **kwargs):
     from employee.models import Employee
-    if action == 'pre_add':
-        for user in kwargs['pk_set']:
-            if Employee.objects.filter(pk=user, groups=4):
-                break
+    if action == 'post_add':
+        print kwargs['pk_set']
+        for user_id in kwargs['pk_set']:
+            if Employee.objects.filter(pk=user_id)[0]:
+                print user_id
+                print Employee.objects.filter(pk=user_id)[0].groups.filter(name='project manager').exists()
+               # print Employee.objects.get(pk=user_id).groups.get().id
         else:
             raise ValidationError(
                 "ProjectTeam cannot be saved without Project Manager")
@@ -229,3 +232,4 @@ class ProjectNote(models.Model):
 
     def __str__(self):
         return self.title
+
