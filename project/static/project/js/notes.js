@@ -1,5 +1,5 @@
 document.addEventListener("DOMContentLoaded", function () {
-    var TIME_BEFORE_SAVE = 2000;
+    var TIME_BEFORE_SAVE = 1000;
     var csrftoken = getCookie('csrftoken');
     var notes = document.querySelector('.notes');
     var noteQuery = document.querySelectorAll('.note');
@@ -103,8 +103,8 @@ document.addEventListener("DOMContentLoaded", function () {
     function addNewNote() {
         // add a new note to the end of the list
         var newNote = document.createElement('div');
-        newNote.className = 'note';
-        newNote.innerHTML = "<textarea class='note-title center" +
+        newNote.className = 'note center';
+        newNote.innerHTML = "<textarea class='note-title center " +
             "text-center' maxlength='15'></textarea>" +
             "<textarea class='note-content text-justify' " +
             "maxlength='5000'></textarea>" +
@@ -112,6 +112,5 @@ document.addEventListener("DOMContentLoaded", function () {
             "</span></div>";
         notes.appendChild(newNote);
         addNoteEvents(newNote);
-
     }
 });
