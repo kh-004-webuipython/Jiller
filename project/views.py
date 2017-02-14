@@ -171,6 +171,7 @@ def team_view(request, project_id):
         RequestConfig(request, paginate={'per_page': settings.PAGINATION_PER_PAGE}).\
                                          configure(table_add)
     else:
+        table_cur = CurrentTeamTable(e_list)
         table_cur.exclude = ('sub')
 
     return render(request, 'project/team.html', data)
