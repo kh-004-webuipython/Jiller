@@ -595,6 +595,20 @@ class ActiveSprintTests(LoginRequiredBase):
             self.assertTrue(issue.status == Issue.NEW)
             self.assertTrue(issue in highest_backlog_issues)
 
+    def test_finish_sprint_view(self):
+        project = Project.objects.create(title='Test Project')
+        team = ProjectTeam.objects.create(project=project, title='Test Team')
+        sprint = Sprint.objects.create(title='T_sprint', project_id=project.id,
+                                       status=Sprint.ACTIVE)
+        url = reverse('project:sprint_active',
+                      kwargs={'project_id': sprint.project_id})
+        response = self.client.get(url)
+        url = reverse('project:finish_active_sprint', kwargs={'project_id': sprint.project_id})
+        response = self.client.post(url)
+        sprint.refresh_from_db()
+        self.assertEqual(sprint.status, Sprint.FINISHED)
+        self.assertEqual(response.status_code, 302)
+
 
 class SprintDashboard(LoginRequiredBase):
     def setUp(self):
