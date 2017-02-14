@@ -5,27 +5,27 @@
 
 
 {% block styles %}
-    {{ block.super }}
-    {% flag "push_issue" %}
+  {{ block.super }}
+  {% flag "push_issue" %}
 
-        <link rel="stylesheet" type="text/css"
-              href="{% static 'css/push-issue.css' %}"/>
-    {% endflag %}
+    <link rel="stylesheet" type="text/css"
+          href="{% static 'css/push-issue.css' %}"/>
+  {% endflag %}
 {% endblock %}
 
 {% block title %} Active sprint {% endblock %}
 
 {% block breadcrumbs %}
-    {{ block.super }}
-    <li>
-        <a href="{% url 'project:list' %}">Projects</a>
-    </li>
-    <li>
-        <a href="{% url 'project:detail' project.id %}">{{ project.title }}</a>
-    </li>
-    <li>
-        <span>{% trans 'Active sprint' %}</span>
-    </li>
+  {{ block.super }}
+  <li>
+    <a href="{% url 'project:list' %}">Projects</a>
+  </li>
+  <li>
+    <a href="{% url 'project:detail' project.id %}">{{ project.title }}</a>
+  </li>
+  <li>
+    <span>{% trans 'Active sprint' %}</span>
+  </li>
 {% endblock %}
 
 {% block content %}
@@ -47,31 +47,31 @@
     {% include 'project/project_navbar.html' with sprint_detail=True %}
 
 
-    {% if not object %}
+  {% if not object %}
 
-        <div class="page-header"><h1>There is no active sprint yet</h1></div>
-    {% endif %}
+    <div class="page-header"><h1>There is no active sprint yet</h1></div>
+  {% endif %}
 
-    {% if object %}
-        <div class="table-responsive">
-            <table class="table table-bordered">
-                <thead>
-                <tr>
-                    <th>Sprint Title</th>
-                    <th>Start date</th>
-                    <th>End date</th>
-                </tr>
-                </thead>
-                <tbody>
-                <tr>
-                    <td>{{ object.title }}</td>
-                    <td>{{ object.start_date|date:"d/m/Y" }}</td>
-                    <td>{{ object.end_date|date:"d/m/Y" }}</td>
-                </tr>
-                </tbody>
-            </table>
-        </div>
-        <br><br>
+  {% if object %}
+    <div class="table-responsive">
+      <table class="table table-bordered">
+        <thead>
+        <tr>
+          <th>Sprint Title</th>
+          <th>Start date</th>
+          <th>End date</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+          <td>{{ object.title }}</td>
+          <td>{{ object.start_date|date:"d/m/Y" }}</td>
+          <td>{{ object.end_date|date:"d/m/Y" }}</td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+    <br><br>
 
     <div class="text-center table-responsive">
       <p><strong>Dashboard</strong></p>
@@ -85,7 +85,7 @@
           <tbody>
           {% for new_iss in new_issues %}
             <tr data-id="{{ new_iss.id }}" draggable="true" ondragstart="event.dataTransfer.setData('text/plain',null)">
-              <tdclass="{{ new_iss.type }}">
+              <td class="{{new_iss.type}}">
                 <a draggable="false" class="align-middle" href="
 {% url 'project:issue_detail' new_iss.project_id new_iss.id %}">
                   {{ new_iss.title }}</a>
@@ -104,7 +104,7 @@
           <tbody>
           {% for progress in in_progress_issues %}
             <tr data-id="{{ progress.id }}" draggable="true" ondragstart="event.dataTransfer.setData('text/plain',null)">
-              <tdclass="{{ progress.type }}">
+              <td class="{{progress.type}}">
                 <a draggable="false" class="align-middle" href="
 {% url 'project:issue_detail' progress.project_id progress.id %}">
                   {{ progress.title }}</a>
@@ -124,34 +124,34 @@
           <tbody>
           {% for resolved in resolved_issues %}
             <tr data-id="{{ resolved.id }}" draggable="true" ondragstart="event.dataTransfer.setData('text/plain',null)">
-              <tdclass="{{ resolved.type }}">
+              <td class="{{resolved.type}}">
                 <a draggable="false" class="align-middle" href="
 {% url 'project:issue_detail' resolved.project_id resolved.id %}">
-                                    {{ resolved.title }}</a></td>
-                        </tr>
-                    {% endfor %}
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    {% endif %}
-    <div id="chart-modal" class="modal" tabindex="-1">
-        <div style="width: 920px" class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal">&times;</button>
-                    <h4 class="blue bigger">Burndown chart</h4>
-                </div>
-                <div class="modal-body">
-                    <div class="row">
-                        <div class="col-sm-12">
-                            <figure>{{ chart.render | safe }}</figure>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+                  {{ resolved.title }}</a></td>
+            </tr>
+          {% endfor %}
+          </tbody>
+        </table>
+      </div>
     </div>
+  {% endif %}
+  <div id="chart-modal"  class="modal" tabindex="-1">
+    <div style="width: 920px" class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+          <h4 class="blue bigger">Burndown chart</h4>
+        </div>
+        <div class="modal-body">
+          <div class="row">
+            <div class="col-sm-12">
+              <figure>{{ chart.render | safe }}</figure>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
     <div id="confirm_finish_modal" class="modal fade" tabindex="-1" role="dialog">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
@@ -185,7 +185,7 @@
 
 {% block extrascripts %}
   {% flag "push_issue" %}
-    <script src="{% static 'js/main.js' %}"></script>
+    <script src="{% static 'js/ajax_csrf.js' %}"></script>
     <script src="{% static 'project/js/push_issue_in_active_sprint.js' %}"></script>
   {% endflag %}
 {% endblock %}
