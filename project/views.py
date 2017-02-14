@@ -27,8 +27,7 @@ from .models import Project, ProjectTeam, Issue, Sprint
 from .decorators import delete_project, \
     edit_project_detail, create_project, create_sprint
 from waffle.decorators import waffle_flag
-from .tables import ProjectTable, SprintsListTable, CurrentTeamTable, \
-    AddTeamTable
+from .tables import ProjectTable, SprintsListTable, IssuesTable, CurrentTeamTable, AddTeamTable
 from django_tables2 import SingleTableView, RequestConfig
 import json
 from employee.models import Employee
@@ -409,6 +408,34 @@ def push_issue_in_active_sprint(request):
             raise Http404("Wrong request")
     else:
         raise Http404("Wrong request")
+
+
+class IssueSearchView(SingleTableView):
+    model = Issue
+    table_class = IssuesTable
+    template_name = 'project/issues_search.html'
+    table_pagination = {
+        'per_page': settings.PAGINATION_PER_PAGE
+    }
+
+    def get_queryset(self):
+        status = self.request.GET.get('status', None)
+        type = self.request.GET.get('type', None)
+        search_string = self.request.GET.get('s', None)
+        query_expr = Issue.objects.filter(project_id=self.kwargs['project_id'])
+        if type:
+            query_expr = query_expr.filter(type=type)  # Not Implemented
+        if status and status!='all':
+            query_expr = query_expr.filter(status=status)
+        if search_string:
+            query_expr = query_expr.filter(Q(title__contains=search_string) | Q(description__contains=search_string))
+        return query_expr
+
+    def get_context_data(self, **kwargs):
+        context = super(IssueSearchView, self).get_context_data(**kwargs)
+        context['project'] = Project.objects.get(id=self.kwargs['project_id'])
+        context['issues_status'] = Issue.ISSUE_STATUS_CHOICES
+        return context
 
 
 class SprintStatusUpdate(UpdateView):
