@@ -36,3 +36,7 @@ $ python manage.py loaddata project/fixtures/init_data.json
 
 (You get 4 users: admin, developer, scrum_master, product_owner
 password for all: test)
+
+to check and run celery for sending async emails:
+
+$ celery -A Jiller worker -l info
