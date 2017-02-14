@@ -192,4 +192,3 @@ EMAIL_HOST_PASSWORD = 'Evrey123'
 EMAIL_PORT = 587
 DEFAULT_FROM_EMAIL = 'email.assign.python.webui@gmail.com'
 
-
