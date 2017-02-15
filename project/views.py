@@ -30,8 +30,10 @@ from waffle.decorators import waffle_flag
 from .tables import ProjectTable, SprintsListTable, IssuesTable, CurrentTeamTable, AddTeamTable
 from django_tables2 import SingleTableView, RequestConfig
 import json
-
 from django.template.loader import render_to_string
+
+from .utils.workload_manager import put_issue_back_to_pool, \
+    assign_issue, get_pool, calc_work_hours
 
 
 class ProjectListView(SingleTableView):
@@ -512,41 +514,24 @@ def workload_manager(request, project_id, sprint_status):
     if request.method == 'POST':
         data = json.loads(request.POST.get('data'))
 
-        if data:
-            employee_id = data['employee']
-            issue = Issue.objects.get(pk=data['issue'])
-            if not issue.estimation:
-                return HttpResponse('The issue has to be estimated', status=401)
-            if employee_id == 0:
-                current_sprint = None
-                if sprint_status == Sprint.NEW:
-                    current_sprint = Sprint.objects.get(project=project_id,
-                                                        status=Sprint.NEW)
-                issue.sprint = current_sprint
-                issue.employee = None
-            else:
-                employee = Employee.objects.get(pk=employee_id)
-                issue.employee = employee
-                if not issue.sprint:
-                    sprint = Sprint.objects.get(project=project_id, status=sprint_status)
-                    issue.sprint = sprint
-            issue.save()
+        employee_id = data['employee']
+        issue = Issue.objects.get(pk=data['issue'])
+        # if issue was pushed into pool
+        if employee_id == 0:
+            put_issue_back_to_pool(project_id, issue, sprint_status)
+        else:
+            assign_issue(project_id, employee_id, issue, sprint_status)
+        issue.save()
 
     project = get_object_or_404(Project, pk=project_id)
-    if sprint_status == Sprint.NEW:
-        issues_log = Issue.objects.filter(project=project_id) \
-            .filter(sprint__status=Sprint.NEW).filter(employee__isnull=True) \
-            .order_by("order")[:10]
-    else:
-        issues_log = Issue.objects.filter(project=project_id) \
-                         .filter(sprint__isnull=True).filter(~Q(status='deleted')) \
-                         .order_by("order")[:10]
+    issues_log = get_pool(project_id, sprint_status)
 
     try:
         employees = ProjectTeam.objects.filter(project=project)[0]\
             .employees.filter(groups__pk__in=[1, 2])
     except ProjectTeam.DoesNotExist:
         raise Http404("ProjectTeam does not exist")
+
     items = []
     for employee in employees:
         issues = Issue.objects.filter(project=project_id) \
@@ -557,9 +542,8 @@ def workload_manager(request, project_id, sprint_status):
         sprint = Sprint.objects.get(project=project_id, status=sprint_status)
     except Sprint.DoesNotExist:
         raise Http404("Sprint does not exist")
-    duration = sprint.duration
-    change = duration % 7 if duration % 7 < 6 else 5
-    work_hours = duration / 7 * 40 + change * 8
+
+    work_hours = calc_work_hours(sprint)
     for item in items:
         sum = 0
         for issue in item['issues']:
@@ -580,19 +564,6 @@ def workload_manager(request, project_id, sprint_status):
         return HttpResponse(html)
 
     return render(request, 'project/workload_manager.html', context)
-
-
-"""
-class SprintDelete(DeleteView):
-    model = Sprint
-
-    def delete(self, **kwargs):
-        sprint = Sprint.objects.get(id=self.kwargs['pk'])
-        sprint.is_active = False
-        sprint.save()
-        return HttpResponseRedirect(
-            reverse('project:sprints_list'))
-"""
 
 
 @waffle_flag('only_developer')
