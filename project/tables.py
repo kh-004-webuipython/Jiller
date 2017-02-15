@@ -65,22 +65,23 @@ class ProjectTeamTable(tables.Table):
     class Meta:
         model = ProjectTeam
         exclude = ('title', 'project', 'id_team', 'id', 'email', 'date_joined', 'is_active')
-        fields = ['get_full_name', 'role']
 
 
 class CurrentTeamTable(ProjectTeamTable):
-    get_full_name = tables.LinkColumn('employee:detail', kwargs={"employee_id": A('id')},\
-                                      order_by=('get_full_name'), verbose_name='Current employees')
+    cur_name = tables.LinkColumn('employee:detail', kwargs={"employee_id": A('id')},\
+                                      order_by=('cur_name'), verbose_name='Current employees')
     sub = tables.Column(attrs={'td': {'width': '10%'}}, verbose_name='Del')
 
     class Meta:
         attrs = {"class": "table table-bordered table-striped table-hover table-sm"}
+        fields = ['cur_name', 'role']
 
 
 class AddTeamTable(ProjectTeamTable):
-    get_full_name = tables.LinkColumn('employee:detail', kwargs={"employee_id": A('id')},\
-                                      order_by=('get_full_name'), verbose_name='Free employees')
+    add_name = tables.LinkColumn('employee:detail', kwargs={"employee_id": A('id')},\
+                                      order_by=('add_name'), verbose_name='Free employees')
     add = tables.Column(attrs={'td': {'width': '10%'}})
 
     class Meta:
         attrs = {"class": "table table-bordered table-striped table-hover table-sm"}
+        fields = ['add_name', 'role']

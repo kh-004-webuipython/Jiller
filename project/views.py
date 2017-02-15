@@ -144,7 +144,7 @@ def team_view(request, project_id):
             if employee not in project_managers:
                 e_list.append({'id_team': team.id, 'id': employee.id,
                                'project': team.project, 'title': team.title,
-                               'get_full_name': employee.get_full_name(),
+                               'cur_name': employee.get_full_name(),
                                'role': employee.groups.get()})
 
         table_cur = CurrentTeamTable(e_list)
@@ -162,7 +162,7 @@ def team_view(request, project_id):
                                      exclude(projectteam__project=project_id)
                                      #exclude(groups__name='product owner')
         for user in user_list:
-            u_list.append({'id': user.id, 'get_full_name': user.get_full_name(),
+            u_list.append({'id': user.id, 'add_name': user.get_full_name(),
                            'role': user.groups.get()})
 
         table_add = AddTeamTable(u_list)
