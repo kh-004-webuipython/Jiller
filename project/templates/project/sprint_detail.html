@@ -28,38 +28,7 @@
   </div>
   {% include 'project/project_navbar.html' with sprint_list=True %}
 
-  <p>
-  <div class="col-sm-4 project-detail" >
-    <div style="margin:0" class="profile-user-info profile-user-info-striped">
-      <div class="profile-info-row">
-        <div class="profile-info-name"> Title</div>
-
-        <div class="profile-info-value">
-          <span>{{ object.title }}</span>
-        </div>
-      </div>
-
-      <div class="profile-info-row">
-        <div class="profile-info-name"> Start date</div>
-
-        <div class="profile-info-value">
-          <span>{{ object.start_date|date:"d/m/Y" }}</span>
-        </div>
-      </div>
-
-      <div class="profile-info-row">
-        <div class="profile-info-name">End date</div>
-
-        <div class="profile-info-value">
-          <span>{{ object.end_date|date:"d/m/Y" }}</span>
-        </div>
-      </div>
-    </div>
-  </div>
-  <span>{{ object.description }}</span>
-  </p>
-
-<!--  <div class="table-responsive">
+ <div class="table-responsive">
     <table class="table table-bordered">
       <thead>
       <tr>
@@ -76,8 +45,7 @@
       </tr>
       </tbody>
     </table>
-    <br><br>
-  </div>-->
+  </div>
 
   {% if new_issues %}
     <div class="col-lg-4">

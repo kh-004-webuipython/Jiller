@@ -1,0 +1,71 @@
+{% extends 'base.html' %}
+{% load i18n %}
+{% load waffle_tags %}
+
+{% block title %}Sprint{% endblock %}
+
+{% block breadcrumbs %}
+  {{ block.super }}
+  <li>
+    <a href="{% url 'project:list' %}">Projects</a>
+  </li>
+  <li>
+    <a href="{% url 'project:detail' project.id %}">{{ project.title }}</a>
+  </li>
+  <li>
+    <span>{{ object.title }}</span>
+  </li>
+{% endblock %}
+
+{% block content %}
+  {% if not project.get_active_sprint %}
+    <div class='btn-group pull-right'>
+      {% if object %}
+        <a href="#start-sprint-modal" role="button" data-toggle="modal"
+           class="btn btn-success ">Start sprint</a>
+      {% endif %}
+      {% flag 'create_sprint' %}
+        <a href="{% url 'project:sprint_create' project.id %}"
+           class="btn btn-primary pull-right">Create new sprint</a>
+      {% endflag %}
+    </div>
+  {% endif %}
+  {% include 'project/project_navbar.html' with sprint=True %}
+
+  <div class="table-responsive">
+    <table class="table table-bordered">
+      <thead>
+      <tr>
+        <th>Sprint Title</th>
+        <th>Start date</th>
+        <th>End date</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr>
+        <td>{{ object.title }}</td>
+        <td>{{ object.start_date|date:"d/m/Y" }}</td>
+        <td>{{ object.end_date|date:"d/m/Y" }}</td>
+      </tr>
+      </tbody>
+    </table>
+    <br><br>
+  </div>
+
+  <h1>New sprint is here.</h1>
+
+  <div id="start-sprint-modal" class="modal" tabindex="-1">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+          <h4 class="blue bigger">Sure?</h4>
+          <div class="btn-group">
+            <button class="btn btn-danger">No</button>
+            <button class="btn btn-success">Yes</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}

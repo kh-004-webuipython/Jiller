@@ -382,6 +382,13 @@ class ActiveSprintDetailView(SprintView):
         return self.project.sprint_set.filter(status=Sprint.ACTIVE).first()
 
 
+class NewSprintDetailView(SprintView):
+    template_name = 'project/sprint_new.html'
+
+    def get_object(self, queryset=None):
+        return self.project.sprint_set.filter(status=Sprint.NEW).first()
+
+
 @waffle_flag('push_issue', 'project:list')
 def push_issue_in_active_sprint(request):
     if request.method == 'POST':

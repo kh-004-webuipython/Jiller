@@ -32,18 +32,13 @@
   <div class='btn-group pull-right'>
   {% if active_sprint %}
   <a href="#chart-modal" role="button" data-toggle="modal"
-         class="btn btn-info pull-right">Burndown chart</a>
+         class="btn btn-info">Burndown chart</a>
   {% endif %}
-  {% flag 'create_sprint' %}
-    <a href="{% url 'project:sprint_create' project.id %}"
-       class="btn btn-primary pull-right">Create new sprint</a>
-  {% endflag %}
   </div>
-  {% include 'project/project_navbar.html' with sprint_detail=True %}
+  {% include 'project/project_navbar.html' with sprint=True %}
 
 
   {% if not object %}
-
     <div class="page-header"><h1>There is no active sprint yet</h1></div>
   {% endif %}
 

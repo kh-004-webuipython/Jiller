@@ -125,6 +125,11 @@ class SprintCreateForm(forms.ModelForm):
             raise forms.ValidationError(
                 "You are already have an active sprint."
             )
+        if self.cleaned_data['status'] == Sprint.NEW and self.project.sprint_set.filter(
+                status=Sprint.NEW).exists():
+            raise forms.ValidationError(
+                "You can make only one new sprint."
+            )
         return self.cleaned_data['status']
 
     def clean_end_date(self):

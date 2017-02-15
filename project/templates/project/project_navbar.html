@@ -9,19 +9,36 @@
         Detail
       </a>
     </li>
-    <li {% if sprint_detail %}class="active"{% endif %}>
-      <a href="{% url 'project:sprint_active' project.id %}">
-        Sprint
+
+    <li class="dropdown {% if sprint %} active{% endif %}">
+      <a data-toggle="dropdown" class="dropdown-toggle" href="#">
+        Sprint &nbsp;
+        <i class="ace-icon fa fa-caret-down bigger-110 width-auto"></i>
       </a>
+
+      <ul class="dropdown-menu dropdown-info" >
+        <li>
+          <a href="{% url 'project:sprint_new' project.id %}">
+            New
+          </a>
+        </li>
+        <li>
+          <a href="{% url 'project:sprint_active' project.id %}">
+            Active
+          </a>
+        </li>
+        <li>
+          <a href="{% url 'project:sprints_list' project.id %}">
+            History
+          </a>
+        </li>
+      </ul>
     </li>
+
+
     <li {% if backlog %}class="active"{% endif %}>
       <a href="{% url 'project:backlog' project.id %}">
         Backlog
-      </a>
-    </li>
-    <li {% if sprint_list %}class="active" {% endif %}>
-      <a href="{% url 'project:sprints_list' project.id %}">
-        Sprint history
       </a>
     </li>
     <li {% if team %}class="active" {% endif %}>
@@ -30,11 +47,11 @@
       </a>
     </li>
     {% flag 'only_developer' %}
-    <li {% if notes %}class="active" {% endif %}>
-      <a href="{% url 'project:note' project.id %}">
-        Notes
-      </a>
-    </li>
+      <li {% if notes %}class="active" {% endif %}>
+        <a href="{% url 'project:note' project.id %}">
+          Notes
+        </a>
+      </li>
     {% endflag %}
   </ul>
 </div>

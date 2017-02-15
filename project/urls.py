@@ -26,6 +26,8 @@ urlpatterns = [
         views.SprintCreate.as_view(), name='sprint_create'),
     url(r'^(?P<project_id>\d+)/sprint/(?P<sprint_id>\d+)/$',
         views.SprintView.as_view(), name='sprint_detail'),
+    url(r'^(?P<project_id>\d+)/sprint/new/$',
+        views.NewSprintDetailView.as_view(), name='sprint_new'),
     url(r'^(?P<project_id>\d+)/sprint/(?P<sprint_id>\d+)/activate/$',
         views.SprintStatusUpdate.as_view(), name='sprint_activate'),
 

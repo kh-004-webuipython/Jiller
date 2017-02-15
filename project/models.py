@@ -191,9 +191,7 @@ class Issue(models.Model):
                             choices=ISSUE_TYPE_CHOICES, default=TASK,
                             max_length=255)
     estimation = models.PositiveIntegerField(verbose_name=_('Estimation'),
-                                             validators=[
-                                                 MaxValueValidator(240)],
-                                             null=True, blank=True)
+                                             validators=[MaxValueValidator(240)])
     order = models.PositiveIntegerField(verbose_name=_('Priority'), default=0,
                                         choices=ISSUE_PRIORITY)
 

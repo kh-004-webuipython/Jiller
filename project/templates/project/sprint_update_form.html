@@ -2,7 +2,7 @@
 
 {% block title %} Change status of sprint {% endblock %}
 {% block content %}
-  {% include 'project/project_navbar.html' %}
+  {% include 'project/project_navbar.html' with sprint=True%}
   {{ block.super }}
 
   <form role="form" action="" class="form-horizontal" method="post">
