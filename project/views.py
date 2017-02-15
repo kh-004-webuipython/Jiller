@@ -145,7 +145,7 @@ def team_view(request, project_id):
                 e_list.append({'id_team': team.id, 'id': employee.id,
                                'project': team.project, 'title': team.title,
                                'get_full_name': employee.get_full_name(),
-                               'role': employee.groups.get()})
+                               'role': employee.groups})
 
         table_cur = CurrentTeamTable(e_list)
         data.update({'table_cur': table_cur})
@@ -163,7 +163,7 @@ def team_view(request, project_id):
                                      #exclude(groups__name='product owner')
         for user in user_list:
             u_list.append({'id': user.id, 'get_full_name': user.get_full_name(),
-                           'role': user.groups.get()})
+                           'role': user.groups})
 
         table_add = AddTeamTable(u_list)
         data.update({'table_add': table_add})
