@@ -3,6 +3,7 @@ from django.test import TestCase, Client
 from django.core.management import call_command
 from django.http import Http404
 from django.urls import reverse
+from django.core.exceptions import ValidationError
 
 from employee.models import Employee
 from project.forms import ProjectForm
@@ -33,6 +34,24 @@ class TeamViewTest(LoginRequiredBase):
     def setUp(self):
         super(TeamViewTest, self).setUp()
         self.project = Project.objects.create(title="Pr1")
+        self.team = ProjectTeam.objects.create(project=self.project)
+        self.sprint = Sprint.objects.create(project=self.project,
+                                            status='active', duration=10)
+        self.employee = Employee.objects.create()
+        self.issue = Issue.objects.create(project=self.project,
+                                          author=self.employee, title='title',
+                                          status='new', sprint=self.sprint)
+
+    # it's a new test, don't delete
+    def test_on_create_2nd_team_on_project_at_time(self):
+        self.assertEqual(
+            ProjectTeam.objects.filter(project_id=self.project.id).count(), 1)
+        try:
+            ProjectTeam.objects.create(project=self.project)
+        except ValidationError:
+            self.assertEqual(
+                ProjectTeam.objects.filter(project_id=self.project.id).count(),
+                1)
 
     def test_team_view_list_view_with_no_team(self):
         """
@@ -40,7 +59,8 @@ class TeamViewTest(LoginRequiredBase):
         """
         try:
             response = self.client.post(
-                reverse('project:team', kwargs={'project_id': self.project.pk}))
+                reverse('project:team',
+                        kwargs={'project_id': self.project.pk}))
         except ProjectTeam.DoesNotExist:
             raise Http404("no team on project")
         self.assertContains(response, '', status_code=404)
@@ -67,7 +87,7 @@ class IssueFormTests(LoginRequiredBase):
         self.issue = Issue.objects.create(project=self.project,
                                           author=self.employee)
         self.sprint = Sprint.objects.create(title='title',
-                                            project=self.project)
+                                            project=self.project, duration=10)
         self.team = ProjectTeam.objects.create(project=self.project,
                                                title='title')
 
@@ -261,7 +281,7 @@ class BacklogViewTests(LoginRequiredBase):
                                              2017, 12, 14))
         employee = Employee.objects.create()
         team = ProjectTeam.objects.create(project=project, title='title')
-        sprint = Sprint.objects.create(title='title', project=project)
+        sprint = Sprint.objects.create(title='title', project=project, duration=10)
         Issue.objects.create(project=project, author=employee,
                              title='title', sprint=sprint)
         response = self.client.get(reverse('project:backlog',
@@ -290,7 +310,7 @@ class SprintsListViewTests(LoginRequiredBase):
         project = Project.objects.create(title='title',
                                          start_date=datetime.date(
                                              2017, 12, 14))
-        Sprint.objects.create(title='title', project=project)
+        Sprint.objects.create(title='title', project=project, duration=10)
         response = self.client.get(reverse('project:sprints_list',
                                            args=[project.id, ]))
         self.assertContains(response, "title", status_code=200)
@@ -301,7 +321,7 @@ class SprintsListViewTests(LoginRequiredBase):
                                              2017, 12, 14))
         team = ProjectTeam.objects.create(project=project, title='title')
         Sprint.objects.create(title='title', project=project,
-                              status=Sprint.ACTIVE)
+                              status=Sprint.ACTIVE, duration=10)
         response = self.client.get(reverse('project:sprints_list',
                                            args=[project.id, ]))
         self.assertContains(response, "", status_code=200)
@@ -435,7 +455,7 @@ class SprintResponseTests(LoginRequiredBase):
         project = Project.objects.create(title='Test Project')
         ProjectTeam.objects.create(project=project, title='Test Team')
         sprint = Sprint.objects.create(title='T_sprint', project_id=project.id,
-                                       status='new')
+                                       status='new', duration=10)
         url = reverse('project:sprint_detail',
                       kwargs={'project_id': sprint.project_id,
                               'sprint_id': sprint.id})
@@ -452,7 +472,7 @@ class SprintResponseTests(LoginRequiredBase):
         project = Project.objects.create(title='Test Project')
         team = ProjectTeam.objects.create(project=project, title='Test Team')
         sprint = Sprint.objects.create(title='T_sprint', project_id=project.id,
-                                       status='new')
+                                       status='new', duration=10)
         url = reverse('project:sprint_create',
                       kwargs={'project_id': sprint.project_id})
         response = self.client.get(url)
@@ -486,7 +506,7 @@ class IssueResponseTests(LoginRequiredBase):
         project = Project.objects.create(title='Test Project')
         team = ProjectTeam.objects.create(project=project, title='Test Team')
         Sprint.objects.create(title='T_sprint', project_id=project.id,
-                              status='new')
+                              status='new', duration=10)
         issue = Issue.objects.create(sprint_id=1, title='T_issue', author_id=1,
                                      project_id=1,
                                      status='new')
@@ -506,7 +526,7 @@ class IssueResponseTests(LoginRequiredBase):
         project = Project.objects.create(title='Test Project')
         team = ProjectTeam.objects.create(project=project, title='Test Team')
         Sprint.objects.create(title='T_sprint', project_id=project.id,
-                              status='new')
+                              status='new', duration=10)
         issue = Issue.objects.create(sprint_id=1, title='T_issue', author_id=1,
                                      project_id=1,
                                      status='new')
@@ -518,11 +538,31 @@ class IssueResponseTests(LoginRequiredBase):
 
 
 class ActiveSprintTests(LoginRequiredBase):
+    def setUp(self):
+        super(ActiveSprintTests, self).setUp()
+        self.project = Project.objects.create(title='pr1')
+        self.team = ProjectTeam.objects.create(project=self.project)
+        self.sprint = Sprint.objects.create(project=self.project,
+                                            status='active', duration=10)
+        self.employee = Employee.objects.create()
+        self.issue = Issue.objects.create(project=self.project,
+                                          author=self.employee, title='title',
+                                          status='new', sprint=self.sprint)
+
+        # it's a new test, don't delete
+    def test_on_create_two_active_sprints_at_time(self):
+        self.assertEqual(Sprint.objects.filter(status='active').count(), 1)
+        try:
+            Sprint.objects.create(project=self.project,
+                                  status='active', duration=10)
+        except ValidationError:
+            self.assertEqual(Sprint.objects.filter(status='active').count(), 1)
+
     def test_project_sprint_active_response_200(self):
         project = Project.objects.create(title='Test Project')
         team = ProjectTeam.objects.create(project=project, title='Test Team')
         sprint = Sprint.objects.create(title='T_sprint', project_id=project.id,
-                                       status='active')
+                                       status='active', duration=10)
         self.assertEqual(Sprint.objects.get(pk=1).status, 'active')
         url = reverse('project:sprint_active',
                       kwargs={'project_id': sprint.project_id})
@@ -539,7 +579,7 @@ class ActiveSprintTests(LoginRequiredBase):
         number_of_issues = 10
         project = Project.objects.create(title='Test Project')
         sprint = Sprint.objects.create(title='T_sprint', project_id=project.id,
-                                       status='active')
+                                       status='active', duration=10)
         for i in range(number_of_issues):
             Issue.objects.create(title='Test Issue {}'.format(i),
                                  project=project, order=Issue.MEDIUM,
@@ -613,7 +653,7 @@ class SprintDashboard(LoginRequiredBase):
         self.project = Project.objects.create(title='pr1')
         self.team = ProjectTeam.objects.create(project=self.project)
         self.sprint = Sprint.objects.create(project=self.project,
-                                            status='active')
+                                            status='active', duration=10)
         self.employee = Employee.objects.create()
         self.issue = Issue.objects.create(project=self.project,
                                           author=self.employee, title='title',
@@ -750,7 +790,7 @@ class WorkloadManagerTest(LoginRequiredBase):
                             status_code=200)
 
         sprint2 = Sprint.objects.create(project=self.project,
-                                        status='finished')
+                                        status='finished', duration=10)
         Issue.objects.create(project=self.project,
                              author=self.employee, title='title',
                              status='new', sprint=sprint2)
@@ -767,7 +807,7 @@ class ProjectNotes(LoginRequiredBase):
         self.project = Project.objects.create(title='pr1')
         self.team = ProjectTeam.objects.create(project=self.project)
         self.sprint = Sprint.objects.create(project=self.project,
-                                            status='active')
+                                            status='active', duration=10)
         self.employee = Employee.objects.create()
         self.issue = Issue.objects.create(project=self.project,
                                           author=self.employee, title='title',

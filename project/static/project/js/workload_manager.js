@@ -24,14 +24,6 @@ $(function() {
                 alterData['employee'] = ui.item.parent().data('employee');
                 var sprintStatus = $('#sprint-status').data('status');
 
-                $.ajaxSetup({
-                    beforeSend: function(xhr, settings) {
-                        if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
-                            xhr.setRequestHeader("X-CSRFToken", csrftoken);
-                        }
-                    }
-                });
-
                 $.ajax({
                     data: { data: JSON.stringify(alterData) },
                     type: 'POST',
