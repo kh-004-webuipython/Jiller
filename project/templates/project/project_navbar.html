@@ -34,11 +34,14 @@
         </li>
       </ul>
     </li>
-
-
     <li {% if backlog %}class="active"{% endif %}>
       <a href="{% url 'project:backlog' project.id %}">
         Backlog
+      </a>
+    </li>
+    <li {% if issues_tab %}class="active" {% endif %}>
+      <a href="{% url 'project:issue_search' project.id %}">
+        Issues
       </a>
     </li>
     <li {% if team %}class="active" {% endif %}>
