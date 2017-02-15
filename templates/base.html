@@ -18,8 +18,7 @@
 
   {# Block where global CSS will go. #}
   {% block styles %}
-    {#custom styles#}
-    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+
     <!-- bootstrap & fontawesome -->
     <link rel="stylesheet" href='{% static 'css/bootstrap.css' %}'
           type='text/css'/>
@@ -34,6 +33,13 @@
     <link href='{% static "css/ace.css" %}' rel='stylesheet' type='text/css'
           class="ace-main-stylesheet"
           id="main-ace-style"/>
+
+    <!-- table styles -->
+    <link rel="stylesheet" href="{% static 'css/table.css' %}"
+          type='text/css'/>
+
+    {#custom styles#}
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
   {% endblock %}
 
   {# Additional CSS - specific to certain pages #}
@@ -60,7 +66,8 @@
     <div class="navbar-header pull-left">
       <!-- #section:basics/navbar.layout.brand -->
       <a href="{% url 'general:home_page' %}" class="navbar-brand">
-        <small>Jiller</small>
+              <i class="fa fa-lightbulb-o orange2">  </i>
+              Jiller
       </a>
     </div>
 
@@ -118,10 +125,7 @@
   </script>
 
   <!-- #section:basics/sidebar -->
-  <div id="sidebar"
-       class="sidebar                  responsive                    ace-save-state">
-
-
+  <div id="sidebar" class="sidebar responsive ace-save-state">
     <div class="sidebar-shortcuts" id="sidebar-shortcuts">
       <div class="sidebar-shortcuts-large" id="sidebar-shortcuts-large">
 

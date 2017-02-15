@@ -1,11 +1,17 @@
-from django.shortcuts import render, get_object_or_404
+from django.http.response import JsonResponse
+from django.shortcuts import render, get_object_or_404, redirect
 
+from project.models import Issue
 from .models import Employee
+from .tables import EmployeeTable
+from django_tables2 import RequestConfig
+from django.conf import settings
 
 
 def employee_index_view(request):
-    employee_list = Employee.objects.all()
-    return render(request, 'employee/list.html', {'employee_list': employee_list})
+    table = EmployeeTable(Employee.objects.all())
+    RequestConfig(request, paginate={'per_page': settings.PAGINATION_PER_PAGE}).configure(table)
+    return render(request, 'employee/list.html', {'table': table})
 
 
 def employee_detail_view(request, employee_id):

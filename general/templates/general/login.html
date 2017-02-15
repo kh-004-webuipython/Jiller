@@ -1,55 +1,58 @@
+{% extends 'base_auth.html' %}
 {% load static %}
 
-{% block styles %}
-<link rel="stylesheet" href='{% static 'css/bootstrap.css' %}'
-type='text/css'/>
-<link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}"/>
-{% endblock %}
+{% block title %}Log in{% endblock %}
 
 {% block content %}
+  <div id="login-box" class="login-box visible widget-box no-border">
+    <div class="widget-body">
+      <div class="widget-main">
+        <h4 class="header blue lighter bigger text-center">
+          Please Enter Your Information
+        </h4>
 
+        <div class="space-6"></div>
 
-<div class="container">
-    <div class="row">
-        <div class="col-xs-12 col-sm-4 col-sm-offset-4">
-            <div class="panel panel-primary">
-                <div class="panel-heading">
-                    <h3 class="panel-title">Jiller</h3>
-                </div>
-                <div class="panel-body">
-                    <form class="form-signin" action="{% url 'general:login' %}"
-                          method="post">
-                        {% csrf_token %}
-                        <div class="form-group">
-                            <h3>Login</h3>
-                            <input name="username" type="text" class="form-control"
-                                   placeholder="Enter Login" required
-                                   class="btn-block">
-                        </div>
-                        <div class="form-group">
-                            <h3>Password</h3>
-                            <input name="password" type="password" class="form-control"
-                                   placeholder="Enter Password"
-                                   required class="btn-block">
-                        </div>
-                        <div class="col-md-12"></div>
-                        {% for message in messages %}
-                        <div class="col-md-12">
-                            <p><strong>{{ message }}</strong></p>
-                        </div>
-                        {% endfor %}
-
-                        <div class="form-group">
-                            <input class="btn btn-lg btn-primary btn-block" type="submit"
-                                   value="Log in">
-                            <div class="register-link">
-                                <a href="{% url 'general:registration' %}" class="center-block">Register</a>
-                            </div>
-                        </div>
-                    </form>
-                </div>
+        <form action="{% url 'general:login' %}" method='post'>
+          {% csrf_token %}
+          <fieldset>
+            {% for field in form %}
+              <label class="block clearfix">
+              <span class="block input-icon input-icon-right">
+                {{ field }}
+              </span>
+              </label>
+            {% endfor %}
+            {% if not messages %}
+              <div class="space"></div>
+            {% endif %}
+            {% for message in messages %}
+              <p class="red">
+                <i class="ace-icon fa fa-asterisk red"></i>
+                <strong {% if message.tags %} class="{{ message.tags }}"
+                {% endif %}>{{ message }}</strong></p>
+            {% endfor %}
+            <div class="clearfix">
+              <button type="submit" class="width-35 pull-right btn btn-sm btn-primary">
+                <i class="ace-icon fa fa-key"></i>
+                <span class="bigger-110">Login</span>
+              </button>
             </div>
+
+            <div class="space-4"></div>
+          </fieldset>
+        </form>
+      </div><!-- /.widget-main -->
+
+      <div class="toolbar clearfix">
+
+        <div class="pull-right">
+          <a href="{% url 'general:registration' %}" class="user-signup-link">
+            I want to register
+            <i class="ace-icon fa fa-arrow-right"></i>
+          </a>
         </div>
+      </div>
     </div>
-</div>
+  </div>
 {% endblock %}

@@ -13,7 +13,13 @@ https://docs.djangoproject.com/en/1.10/ref/settings/
 import os
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
+from datetime import timedelta
+
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+MEDIA_ROOT = os.path.join(BASE_DIR, 'public', 'media')
+
+MEDIA_URL = '/media/'
 
 
 # Quick-start development settings - unsuitable for production
@@ -25,7 +31,7 @@ SECRET_KEY = 'olj^%!kemjn61dic)!y3k!(51&vciz$2jf*w_mji-(f(nwz#7$'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['127.0.0.1', 'localhost', 'jiller-phobosprogrammer.rhcloud.com']
 
 
 # Application definition
@@ -42,7 +48,14 @@ INSTALLED_APPS = [
     'general',
     'sorl.thumbnail',
     'django_nose',
+    'waffle',
+    'simple_email_confirmation',
+    'django_tables2',
 ]
+
+MIDDLEWARE_CLASSES = (
+    'waffle.middleware.WaffleMiddleware',
+)
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -53,9 +66,14 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'Jiller.middleware.LoginRequiredMiddleware.LoginRequiredMiddleware',
+    'Jiller.middleware.CheckProjectRelationMiddleware.CheckProjectRelation',
 ]
 
 ROOT_URLCONF = 'Jiller.urls'
+
+TEMPLATE_CONTEXT_PROCESSORS = (
+    'django.core.context_processors.request',
+)
 
 TEMPLATES = [
     {
@@ -68,6 +86,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'django.template.context_processors.request',
             ],
         },
     },
@@ -135,6 +154,8 @@ LOGIN_URL = 'general:login'
 LOGIN_EXEMPT_URLS = (
  r'^login/$',
  r'^registration/$',
+ r'^confirmation/(?P<username>[a-zA-Z0-9]+)/(?P<key>[a-zA-Z0-9]+)/$',
+ r'^sender/(?P<username>[a-zA-Z0-9]+)/$'
 )
 
 
@@ -145,7 +166,29 @@ NOSE_ARGS = [
     '--cover-package=general,project,employee',
 ]
 
+PAGINATION_PER_PAGE = 10
+
 try:
-    from local_settings import *
+    from .local_settings import *
 except ImportError:
     pass
+
+# CELERY
+BROKER_URL = 'redis://localhost:6379'
+# CELERY_BROKER_URL = 'redis://localhost:6379'
+CELERY_RESULT_BACKEND = 'redis://localhost:6379'
+CELERY_ACCEPT_CONTENT = ['application/json']
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = 'json'
+CELERY_IMPORTS = ['general.tasks']
+CELERY_TIMEZONE = 'UTC'
+
+
+# EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+EMAIL_USE_TLS = True
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_HOST_USER = 'email.assign.python.webui@gmail.com'
+EMAIL_HOST_PASSWORD = 'Evrey123'
+EMAIL_PORT = 587
+DEFAULT_FROM_EMAIL = 'email.assign.python.webui@gmail.com'
+

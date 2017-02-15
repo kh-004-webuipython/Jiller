@@ -15253,7 +15253,7 @@ tr.detail-row > td {
 }
 
 .light-login {
-    background: #dfe0e2 url('images/pattern.jpg') repeat;
+    background: #dfe0e2 url('../img/pattern.jpg') repeat;
 }
 
 .light-login .widget-box {
@@ -15545,8 +15545,6 @@ tr.detail-row > td {
 
 .itemdiv > .user > img,
 .itemdiv > .user > .img {
-    border-radius: 100%;
-    border: 2px solid #5293C4;
     max-width: 40px;
     position: relative;
 }
@@ -15742,7 +15740,7 @@ tr.detail-row > td {
 .itemdiv .tools {
     position: absolute;
     right: 5px;
-    bottom: 10px;
+    bottom: 17px;
     display: none;
 }
 

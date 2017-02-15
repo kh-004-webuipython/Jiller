@@ -1,27 +1,21 @@
 from __future__ import unicode_literals
+from django.utils.encoding import python_2_unicode_compatible
 
+from django.core.exceptions import ValidationError
 from datetime import date, datetime
-
+from django.utils import timezone
 from django.contrib.auth.models import AbstractUser
+from simple_email_confirmation.models import SimpleEmailConfirmationUserMixin
 from django.utils.translation import ugettext_lazy as _
 from django.db import models
-from django.core.validators import MaxValueValidator
-
+from django.core.validators import MaxValueValidator, MinValueValidator
 from sorl.thumbnail import get_thumbnail
+from django.db.models.signals import pre_delete
+from django.dispatch import receiver
+from project.models import ProjectTeam
 
-
-class Employee(AbstractUser):
-    DEVELOPER = 'developer'
-    PRODUCT_OWNER = 'product owner'
-    SCRUM_MASTER = 'scrum master'
-    EMPLOYEE_ROLES_CHOICES = (
-        (DEVELOPER, _('Developer')),
-        (PRODUCT_OWNER, _('Product Owner')),
-        (SCRUM_MASTER, _('Scrum Master'))
-    )
-
-    role = models.CharField(max_length=255, choices=EMPLOYEE_ROLES_CHOICES,
-                            verbose_name=_('Role'))
+@python_2_unicode_compatible
+class Employee(SimpleEmailConfirmationUserMixin, AbstractUser):
     date_birth = models.DateField(verbose_name=_('Date birth'), null=True,
                                   blank=True)
     photo = models.ImageField(upload_to='avatars/', null=True, blank=True)
@@ -38,22 +32,35 @@ class Employee(AbstractUser):
         return False
 
     def get_pretty_date_joined(self):
-        return datetime.strftime(self.date_joined, "%d/%m/%y")
+        return datetime.strftime(self.date_joined, "%d.%m.%y")
 
     def get_cropped_photo(self, *args, **kwargs):
         return get_thumbnail(self.photo, '136x150', crop='center')
 
 
+# check users for for PM teams before delete
+@receiver(pre_delete, sender=Employee)
+def check_delete_user_in_team(instance, **kwargs):
+    from project.models import ProjectTeam
+    team = ProjectTeam.objects.filter(employees=instance.id)
+    team_list = ' '
+    if instance in Employee.objects.filter(groups=4) and team:
+        for cur_team in team:
+            team_list += '"' + str(cur_team) + '", '
+        team_list = team_list[:len(team_list) - 2]
+        raise ValidationError(
+            "This user can not be deleted, it has next team(s):" + team_list)
+
+
+@python_2_unicode_compatible
 class IssueLog(models.Model):
     issue = models.ForeignKey('project.Issue', verbose_name=_('Issue'))
     user = models.ForeignKey(Employee, verbose_name=_('Employee'))
     date_created = models.DateTimeField(verbose_name=_('Time'),
-                                        auto_now_add=True)
-    labor_costs = models.PositiveIntegerField(verbose_name=_('Labor costs'),
-                                              validators=[
-                                                  MaxValueValidator(240)], )
-    note = models.TextField(verbose_name=_('Note'))
+                                        default=timezone.now)
+    cost = models.FloatField(verbose_name=_('Cost'), default=0, validators=[MinValueValidator(0.0)])
+    note = models.TextField(verbose_name=_('Note'), null=True, blank=True)
 
     def __str__(self):
-        return "{} hours. {} - {}".format(self.labor_costs, self.issue.title,
+        return "{} hours. {} - {}".format(self.cost, self.issue.title,
                                           self.user.get_full_name())

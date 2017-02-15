@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load i18n %}
+{% load waffle_tags %}
+
+{% block styles %}
+  {{ block.super }}
+  <link rel="stylesheet" type="text/css"
+        href="{% static 'css/notes.css' %}"/>
+{% endblock %}
+
+{% block title %}Developer notes{% endblock %}
+
+{% block breadcrumbs %}
+  {{ block.super }}
+  <li>
+    <a href="{% url 'project:list' %}">Projects</a>
+  </li>
+  <li>
+    <a href="{% url 'project:detail' project.id %}">{{ project.title }}</a>
+  </li>
+  <li>
+    <span>{% trans 'Notes' %}</span>
+  </li>
+{% endblock %}
+
+{% block content %}
+  <button id="btnNew" class="btn btn-info pull-right">Create new note</button>
+
+  {% include 'project/project_navbar.html' with notes=True %}
+
+
+  <div class="notes" data-pr="{{ project.id }}">
+    {% for note in notes %}
+      <div class="note center" data-id="{{ note.id }}">
+        <textarea class="note-title text-center"
+                  maxlength='15'>{{ note.title }}</textarea>
+        <textarea class="note-content text-justify"
+                  maxlength='5000'>{{ note.content }}</textarea>
+        <div class="hide"><span class='glyphicon glyphicon-trash'></span>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+{% endblock %}
+
+{% block extrascripts %}
+  <script src="{% static 'js/ajax_csrf.js' %}"></script>
+  <script src="{% static 'project/js/notes.js' %}"></script>
+{% endblock %}

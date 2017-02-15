@@ -1,4 +1,5 @@
 {% load static %}
+{% load waffle_tags %}
 
 <div class="page-header"><h1>{{ project.title }}</h1></div>
 <div class="tabbable">
@@ -23,11 +24,23 @@
         Sprint history
       </a>
     </li>
+    <li {% if issues_tab %}class="active" {% endif %}>
+      <a href="{% url 'project:issue_search' project.id %}">
+        Issues
+      </a>
+    </li>
     <li {% if team %}class="active" {% endif %}>
       <a href="{% url 'project:team' project.id %}">
         Team
       </a>
     </li>
+    {% flag 'only_developer' %}
+    <li {% if notes %}class="active" {% endif %}>
+      <a href="{% url 'project:note' project.id %}">
+        Notes
+      </a>
+    </li>
+    {% endflag %}
   </ul>
 </div>
 <div class="clearfix navbar-margin-bottom"></div>
