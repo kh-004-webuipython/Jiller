@@ -31,6 +31,12 @@
           Projects
         </a>
       </li>
+      <li>
+        <a data-toggle="tab" href="#comments">
+          <span class="badge badge-danger">{{ user.issuecomment_set.count }}</span>
+          Comments
+        </a>
+      </li>
     </ul>
 
     <div class="tab-content no-border padding-24">
@@ -103,7 +109,7 @@
         {# end block user profile #}
         {#block user logs#}
 
-        <div id="logs" class="tab-pane fade in active">
+        <div id="logs" class="tab-pane fade">
           <table id="simple-table" class="table  table-bordered table-hover">
             <thead>
             <tr>
@@ -115,7 +121,11 @@
             <tbody>
             {% for log in user.issuelog_set.all %}
               <tr>
-                <td class="col-sm-2"><a href=".">{{ log.issue.title }}</a></td>
+                <td class="col-sm-2">
+                  <a href="{% url 'project:issue_detail' log.issue.project.id log.issue.id %}">
+                    {{ log.issue.title }}
+                  </a>
+                </td>
                 <td class="col-sm-1"><span>{{ log.cost }}</span></td>
                 <td class="col-sm-9"><span>{{ log.note }}</span></td>
               </tr>
@@ -163,7 +173,6 @@
           </table>
         </div>
 
-
         <div id="projects" class="tab-pane fade">
           <table id="simple-table" class="table  table-bordered table-hover">
             <thead>
@@ -185,6 +194,30 @@
           </table>
         </div>
 
+        <div id="comments" class="tab-pane fade">
+          <table id="simple-table" class="table  table-bordered table-hover">
+            <thead>
+            <tr>
+              <th>Issue</th>
+              <th>Text</th>
+              <th>Date created</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for comment in user.issuecomment_set.all %}
+              <tr>
+                <td class="col-sm-2">
+                  <a href="{% url 'project:issue_detail' comment.issue.project.id comment.issue.id %}">
+                    {{ comment.issue.title }}
+                  </a>
+                </td>
+                <td class="col-sm-1"><span>{{ comment.text }}</span></td>
+                <td class="col-sm-9"><span>{{ comment.get_pretty_date_created }}</span></td>
+              </tr>
+            {% endfor %}
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   </div>

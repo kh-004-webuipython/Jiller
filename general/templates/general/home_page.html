@@ -2,12 +2,7 @@
 {% load gravatar %}
 {% load i18n %}
 {% load thumbnail %}
-{% block title %}Profile{% endblock %}
-
-{% block breadcrumbs %}
-  {{ block.super }}
-  <li><span>{% trans 'Profile' %}</span></li>
-{% endblock %}
+{% block title %}Home{% endblock %}
 
 {% block content %}
 {% include 'general/general_employee_detail.html' with user=request.user %}
