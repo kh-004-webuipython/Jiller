@@ -304,9 +304,7 @@ class SprintsListViewTests(LoginRequiredBase):
                                              2017, 12, 14))
         response = self.client.get(reverse('project:sprints_list',
                                            args=[project.id, ]))
-        self.assertContains(response, "No sprints.")
         self.assertEqual(response.status_code, 200)
-        self.assertQuerysetEqual(response.context['sprints'], [])
 
     def test_sprints_list_view_with_sprint(self):
         project = Project.objects.create(title='title',
@@ -315,8 +313,7 @@ class SprintsListViewTests(LoginRequiredBase):
         Sprint.objects.create(title='title', project=project, duration=10)
         response = self.client.get(reverse('project:sprints_list',
                                            args=[project.id, ]))
-        self.assertQuerysetEqual(response.context['sprints'],
-                                 ['<Sprint: title>'])
+        self.assertContains(response, "title", status_code=200)
 
     def test_sprints_list_view_must_not_consist_active_sprint(self):
         project = Project.objects.create(title='title',
@@ -327,7 +324,7 @@ class SprintsListViewTests(LoginRequiredBase):
                               status=Sprint.ACTIVE, duration=10)
         response = self.client.get(reverse('project:sprints_list',
                                            args=[project.id, ]))
-        self.assertQuerysetEqual(response.context['sprints'], [])
+        self.assertContains(response, "", status_code=200)
 
     def test_sprints_list_view_with_nonexistent_project(self):
         project = Project.objects.create(title='title',
@@ -740,6 +737,45 @@ class ProjectNotes(LoginRequiredBase):
         response = self.client.post(url, data)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(ProjectNote.objects.all()), 2)
+
+
+class WorkloadManagerTest(LoginRequiredBase):
+    def setUp(self):
+        super(WorkloadManagerTest, self).setUp()
+        self.project = Project.objects.create()
+        self.team = ProjectTeam.objects.create(project=self.project, title='title')
+        self.team.employees.add(self.user)
+
+    def test_workload_view_with_no_sprint(self):
+        response = self.client.get(reverse('project:workload_manager',
+                                           kwargs={'project_id': self.project.id,
+                                                   'sprint_status': Sprint.ACTIVE}))
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'general/404.html')
+
+    def test_workload_view_with_empty_items(self):
+        sprint = Sprint.objects.create(title='title', project=self.project,
+                                       start_date=datetime.date(2017, 12, 14),
+                                       end_date=datetime.date(2017, 12, 21),
+                                       status=Sprint.ACTIVE)
+        response = self.client.get(reverse('project:workload_manager',
+                                           kwargs={'project_id': self.project.id,
+                                                   'sprint_status': Sprint.ACTIVE}))
+        self.assertContains(response, "No items.", status_code=200)
+        self.assertQuerysetEqual(response.context['items'], [])
+
+    def test_workload_view_with_items(self):
+        sprint = Sprint.objects.create(title='title', project=self.project,
+                                       start_date=datetime.date(2017, 12, 14),
+                                       end_date=datetime.date(2017, 12, 21),
+                                       status=Sprint.ACTIVE)
+        Issue.objects.create(project=self.project, author=self.user,
+                             sprint=sprint, employee=self.user)
+        response = self.client.get(reverse('project:workload_manager',
+                                           kwargs={'project_id': self.project.id,
+                                                   'sprint_status': Sprint.ACTIVE}))
+        self.assertContains(response, self.user.username, status_code=200)
+        self.assertQuerysetEqual(response.context['items'], [])
 
 
 class IssueSearchTest(LoginRequiredBase):
