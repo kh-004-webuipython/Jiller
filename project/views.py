@@ -30,6 +30,10 @@ from waffle.decorators import waffle_flag
 from .tables import ProjectTable, SprintsListTable, IssuesTable, CurrentTeamTable, AddTeamTable
 from django_tables2 import SingleTableView, RequestConfig
 import json
+from django.template.loader import render_to_string
+
+from .utils.workload_manager import put_issue_back_to_pool, \
+    assign_issue, get_pool, calc_work_hours
 
 
 class ProjectListView(SingleTableView):
@@ -503,6 +507,63 @@ def team_create(request, project_id):
         form = CreateTeamForm()
     return render(request, 'project/team_create.html', {'form': form,
                                                         'project': project})
+
+
+@waffle_flag('read_workflow_manager', 'project:list')
+def workload_manager(request, project_id, sprint_status):
+    if request.method == 'POST':
+        data = json.loads(request.POST.get('data'))
+
+        employee_id = data['employee']
+        issue = Issue.objects.get(pk=data['issue'])
+        # if issue was drugged into pool
+        if employee_id == 0:
+            put_issue_back_to_pool(project_id, issue, sprint_status)
+        else:
+            assign_issue(project_id, employee_id, issue, sprint_status)
+        issue.save()
+
+    project = get_object_or_404(Project, pk=project_id)
+    issues_log = get_pool(project_id, sprint_status)
+
+    try:
+        employees = ProjectTeam.objects.filter(project=project)[0]\
+            .employees.filter(groups__pk__in=[1, 2])
+    except ProjectTeam.DoesNotExist:
+        raise Http404("ProjectTeam does not exist")
+
+    items = []
+    for employee in employees:
+        issues = Issue.objects.filter(project=project_id) \
+            .filter(sprint__status=sprint_status, employee=employee).filter(~Q(status='deleted'))
+        items.append({'employee': employee, 'issues': issues})
+
+    try:
+        sprint = Sprint.objects.get(project=project_id, status=sprint_status)
+    except Sprint.DoesNotExist:
+        raise Http404("Sprint does not exist")
+
+    work_hours = calc_work_hours(sprint)
+    for item in items:
+        sum = 0
+        for issue in item['issues']:
+            if not issue.estimation:
+                return HttpResponse('The issue has to be estimated', status=401)
+            sum += issue.estimation
+
+        item['workload'] = sum * 100 / work_hours
+        item['free'] = work_hours - sum
+
+    context = {'items': items,
+               'project': project,
+               'issues_log': issues_log,
+               'sprint_status': sprint_status}
+
+    if request.is_ajax():
+        html = render_to_string('project/workload_template.html', context)
+        return HttpResponse(html)
+
+    return render(request, 'project/workload_manager.html', context)
 
 
 @waffle_flag('only_developer')

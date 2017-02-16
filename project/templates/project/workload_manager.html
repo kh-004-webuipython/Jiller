@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load waffle_tags %}
+{% load i18n %}
+{% load sprint_status %}
+
+
+{% block extrastyles %}
+  <link rel="stylesheet" href="{% static 'css/ace-fonts.css' %}"
+        type='text/css'/>
+  <link rel="stylesheet" type="text/css"
+        href="{% static 'css/jquery-ui.css' %}"/>
+  <link rel="stylesheet" type="text/css"
+        href="{% static 'css/style.css' %}"/>
+{% endblock %}
+
+{% block title %} Workload manager {% endblock %}
+
+{% block breadcrumbs %}
+  {{ block.super }}
+  <li>
+    <a href="{% url 'project:list' %}">Projects</a>
+  </li>
+  <li>
+    <a href="{% url 'project:detail' project.id %}">{{ project.title }}</a>
+  </li>
+  <li>
+    <a href="{% url 'project:sprint_active' project.id %}">Active sprint</a>
+  </li>
+  <li>
+    {% url 'project:workload_manager' project.id 'active'|sprint_status as active %}
+    {% if request.get_full_path == active %}
+      <span>{% trans 'Workload manager' %}</span>
+    {% endif %}
+
+    {% url 'project:workload_manager' project.id 'new'|sprint_status as new %}
+    {% if request.get_full_path == new %}
+      <span>{% trans 'Form sprint' %}</span>
+    {% endif %}
+  </li>
+{% endblock %}
+
+{% block content %}
+  {% include 'project/project_navbar.html' with sprint_detail=True %}
+
+    <div id="error-message"></div>
+
+  <div id="workload-template">
+    {% include 'project/workload_template.html' %}
+  </div>
+
+  {% block extrascripts %}
+
+    {% flag "update_workflow_manager" %}
+    <script defer type="text/javascript" src="{% static 'js/jquery-ui.min.js' %}"></script>
+    <script defer type="text/javascript" src="{% static 'js/ajax_csrf.js' %}"></script>
+    <script defer type="text/javascript" src="{% static 'project/js/workload_manager.js' %}"></script>
+    {% endflag %}
+
+  {% endblock %}
+{% endblock %}
