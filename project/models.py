@@ -12,6 +12,8 @@ from django.core.exceptions import ValidationError
 from django.core.validators import MaxValueValidator
 from django.contrib.auth.models import Group
 from sorl.thumbnail.shortcuts import get_thumbnail
+from django.db.models.signals import pre_save
+from django.dispatch import receiver
 
 
 class ProjectModelManager(models.Manager):
@@ -69,6 +71,9 @@ class Sprint(models.Model):
                               choices=SPRINT_STATUS_CHOICES, default=NEW,
                               max_length=255)
     duration = models.PositiveIntegerField(verbose_name=_('Duration'))
+    relies_link = models.URLField(blank=True, null=True)
+    feedback_text = models.TextField(verbose_name=_('Retrospective text'),
+                                     null=True, blank=True)
 
     def __str__(self):
         return self.title
@@ -119,8 +124,8 @@ class Sprint(models.Model):
         # disable 2 active sprints in project at time exclude self
         if self.status == Sprint.ACTIVE:
             if len(Sprint.objects.filter(
-                    project_id=self.project, status=Sprint.ACTIVE)
-                           .exclude(pk=self.id)) >= 1:
+                    project_id=self.project,
+                    status=Sprint.ACTIVE).exclude(pk=self.id)) >= 1:
                 raise ValidationError(
                     "Another active sprint already exists in this project")
 
@@ -219,7 +224,9 @@ class Issue(models.Model):
         return self.issuelog_set.aggregate(Sum('cost'))['cost__sum'] or 0
 
     def completion_rate(self):
-        return round((self.get_logs_sum() * 100) / self.estimation, 2)
+        if self.get_logs_sum():
+            return round((self.get_logs_sum() * 100) / self.estimation, 2)
+        return 0
 
     def save(self, *args, **kwargs):
         self.calculate_issue_priority()
@@ -258,6 +265,17 @@ class ProjectTeam(models.Model):
 
     def __str__(self):
         return self.title
+
+
+# check for 2nd team before create new
+@receiver(pre_save, sender=ProjectTeam)
+def check_for_only_one_team_in_project(instance, **kwargs):
+    team_in_project = ProjectTeam.objects.filter(project=instance.project_id)
+
+    if len(team_in_project) > 1 or (len(team_in_project) == 1
+                                    and instance not in team_in_project):
+        raise ValidationError(
+            "There is already another team in the project!")
 
 
 @python_2_unicode_compatible
