@@ -400,8 +400,8 @@ class ActiveSprintDetailView(SprintView):
 def push_issue_in_active_sprint(request):
     if request.method == 'POST':
         if 'table' in request.POST and 'id' in request.POST:
-            table = str(request.POST.get('table', None))
-            row = int(request.POST.get('id', None))
+            table = str(request.POST.get('table'))
+            row = int(request.POST.get('id'))
             current_issue = get_object_or_404(Issue, pk=row)
             sprint = get_object_or_404(Sprint, pk=current_issue.sprint_id)
             if sprint.status == Sprint.ACTIVE and table in [Issue.IN_PROGRESS,
@@ -576,9 +576,9 @@ def notes_view(request, project_id):
     if request.method == "POST":
         if 'id' in request.POST and 'title' in request.POST and 'content' \
                 in request.POST:
-            id = request.POST.get('id', None)
-            title = str(request.POST.get('title', None))
-            content = str(request.POST.get('content', None))
+            id = request.POST.get('id')
+            title = str(request.POST.get('title'))
+            content = str(request.POST.get('content'))
             if id == 'undefined' and len(content) <= 5000 and len(title) <= 15:
                 note = ProjectNote.objects.create(project_id=project.id)
                 note.title = title
@@ -598,12 +598,12 @@ def notes_view(request, project_id):
     if request.method == "DELETE":
         delete = QueryDict(request.body)
         if 'id' in delete:
-            id = int(delete.get('id', None))
+            id = int(delete.get('id'))
             note = get_object_or_404(ProjectNote, pk=id)
             note.delete()
             return HttpResponse()
         raise Http404("Wrong request")
-    return redirect(request, 'project:notes', {'project': project})
+    return redirect(request, 'project:note', {'project_id': project_id})
 
 
 @waffle_flag('edit_sprint')
