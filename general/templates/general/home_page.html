@@ -1,7 +1,14 @@
 {% extends 'base.html' %}
-{% load static %}
+{% load gravatar %}
+{% load i18n %}
+{% load thumbnail %}
+{% block title %}Profile{% endblock %}
+
+{% block breadcrumbs %}
+  {{ block.super }}
+  <li><span>{% trans 'Profile' %}</span></li>
+{% endblock %}
 
 {% block content %}
-  <h2>This is a our start page template</h2>
-   <a href="{% url 'project:list' %}">View projects</a>
+{% include 'general/general_employee_detail.html' with user=request.user %}
 {% endblock %}
