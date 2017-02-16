@@ -44,9 +44,8 @@ class IssueForm(forms.ModelForm):
             groups__pk__in=[1, 2])
         if user.groups.filter(id=3):
             self.fields['type'].choices = [('User story', 'User story'), ]
-        elif user.groups.filter(id__in=(1, 2, 4)) :
+        elif user.groups.filter(id__in=(1, 2, 4)):
             self.fields['type'].choices = [('Task', 'Task'), ('Bug', 'Bug'), ]
-
 
     def clean_status(self):
         cleaned_data = super(IssueForm, self).clean()
@@ -121,8 +120,9 @@ class SprintCreateForm(forms.ModelForm):
                 sprint=None)
 
     def clean_status(self):
-        if self.cleaned_data['status'] == Sprint.ACTIVE and self.project.sprint_set.filter(
-                status=Sprint.ACTIVE).exists():
+        if self.cleaned_data[
+            'status'] == Sprint.ACTIVE and self.project.sprint_set.filter(
+            status=Sprint.ACTIVE).exists():
             raise forms.ValidationError(
                 "You are already have an active sprint."
             )
@@ -163,9 +163,22 @@ class IssueLogForm(FormControlMixin, forms.ModelForm):
         if cost < 0:
             raise forms.ValidationError(_('Issue log can not be less than 0'))
         if cost + self.issue.get_logs_sum() > self.issue.estimation:
-            raise forms.ValidationError(_('Your log is greater than issue estimation'))
+            raise forms.ValidationError(
+                _('Your log is greater than issue estimation'))
         return cost
 
     class Meta:
         model = IssueLog
         fields = ['cost', 'note']
+
+
+class SprintFinishForm(forms.ModelForm):
+    class Meta:
+        model = Sprint
+        fields = ['feedback_text', 'relies_link']
+        widgets = {
+            'feedback_text': forms.Textarea(
+                attrs={'class': 'form-control', 'rows': '10',
+                       'style': 'resize: vertical;'}),
+            'relies_link': forms.URLInput(attrs={'class': 'form-control'})
+        }
