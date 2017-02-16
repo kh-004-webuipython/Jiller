@@ -61,6 +61,9 @@ class IssueLog(models.Model):
     cost = models.FloatField(verbose_name=_('Cost'), default=0, validators=[MinValueValidator(0.0)])
     note = models.TextField(verbose_name=_('Note'), null=True, blank=True)
 
+    def get_pretty_date_created(self):
+        return datetime.strftime(self.date_created, "%d.%m.%y")
+
     def __str__(self):
         return "{} hours. {} - {}".format(self.cost, self.issue.title,
                                           self.user.get_full_name())

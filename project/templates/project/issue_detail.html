@@ -43,7 +43,7 @@
          class="btn btn-success">Create sub issue</a>
     {% endflag %}
   </div>
-  {% include 'project/project_navbar.html' with sprint_detail=True %}
+  {% include 'project/project_navbar.html' with backlog=True %}
   <div class="col-sm-8">
     <div class="profile-user-info profile-user-info-striped">
       <div class="profile-info-row">
@@ -66,13 +66,15 @@
           <span>{{ issue.status }}</span>
         </div>
       </div>
-      <div class="profile-info-row">
-        <div class="profile-info-name"> Root</div>
-        <div class="profile-info-value">
-          <span>{{ issue.root }}</span>
+      {% if issue.root %}
+        <div class="profile-info-row">
+          <div class="profile-info-name"> Root</div>
+          <div class="profile-info-value">
+            <a href="{% url 'project:issue_detail' project.id issue.root.id %}">{{ issue.root }}</a>
+          </div>
         </div>
-      </div>
-    <div class="profile-info-row">
+      {% endif %}
+      <div class="profile-info-row">
         <div class="profile-info-name"> Type</div>
         <div class="profile-info-value">
           <span>{{ issue.type }}</span>
@@ -105,66 +107,113 @@
         </div>
       </div>
     </div>
-    <form method="post" action='{% url 'project:issue_detail' project.id issue.id %}'>
-      <input type='hidden' name="comment" value="1">
+    <div class="space-10"></div>
+    <div class="tabbable">
+      <ul class="nav nav-tabs padding-12 tab-color-blue background-blue" id="myTab4">
+        <li class="active">
+          <a data-toggle="tab" href="#comments-tab">Comments</a>
+        </li>
+        <li>
+          <a data-toggle="tab" href="#logs-tab">Logs</a>
+        </li>
+      </ul>
 
-    <form method="post" action='{% url "project:issue_detail" project.id issue.id %}'>
+      <div class="tab-content">
+        <div id="comments-tab" class="tab-pane in active">
+          <form method="post" action='{% url 'project:issue_detail' project.id issue.id %}'>
+            <input type='hidden' name="comment" value="1">
+            <div style='margin-top: 0' class="form-actions">
+              <div class="input-group">
+                {{ comment_form.text }}
+                <span class="input-group-btn">{% csrf_token %}
+                <button class="btn btn-sm btn-info no-radius" type="submit">
+                  <i class="ace-icon fa fa-share"></i>
+                  Comment
+                </button>
+                </span>
+              </div>
+            </div>
+          </form>
+          <div class="tab-pane">
+            <div class="comments">
+              {% for comment in issue.issuecomment_set.all %}
+                <div class="itemdiv commentdiv">
+                  <div class="user">
+                    <img {% if comment.author.photo %}
+                      src="{{ comment.author.get_cropped_photo.url }}"
+                    {% else %}
+                      src="{{ comment.author.email|gravatar_url:40 }}"
+                    {% endif %}/>
+                  </div>
+                  <div class="body">
+                    <div class="name">
+                      <a href="{% url 'employee:detail' comment.author.id %}">
+                        {{ comment.author.username }}
+                      </a>
+                    </div>
+                    <div class="time">
+                      <span>{{ comment.get_pretty_date_created }}</span>
+                    </div>
+                    <div class="text">
+                      {{ comment.text }}
+                    </div>
+                  </div>
+                  {% if request.user == comment.author %}
+                    <div class="tools">
+                      <div class="action-buttons bigger-125">
+                        <a href=".">
+                          <i class="ace-icon fa fa-pencil blue"></i>
+                        </a>
 
-      <div class="form-actions">
-        <div class="input-group">
-          {{ comment_form.text }}
-          <span class="input-group-btn">{% csrf_token %}
-            <button class="btn btn-sm btn-info no-radius" type="submit">
-              <i class="ace-icon fa fa-share"></i>
-              Comment
-            </button>
-          </span>
+                        <a href=".">
+                          <i class="ace-icon fa fa-trash-o red"></i>
+                        </a>
+                      </div>
+                    </div>
+                  {% endif %}
+                </div>
+              {% endfor %}
+            </div>
+          </div>
+        </div>
+        <div id="logs-tab" class="tab-pane">
+          {% if issue.issuelog_set.exists %}
+            <div class="comments">
+              {% for log in issue.issuelog_set.all %}
+                <div class="itemdiv commentdiv">
+                  <div class="user">
+                    <img {% if log.user.photo %}
+                      src="{{ log.user.get_cropped_photo.url }}"
+                    {% else %}
+                      src="{{ log.user.email|gravatar_url:40 }}"
+                    {% endif %}/>
+                  </div>
+                  <div class="body">
+                    <div class="name">
+                      <a href="{% url 'employee:detail' log.user.id %}">
+                        {{ log.user.get_full_name }}
+                      </a>
+                      <span>( {{ log.cost }} hours )</span>
+                    </div>
+                    <div class="time">
+                      <span>{{ log.get_pretty_date_created }}</span>
+                    </div>
+                    <div class="text">
+                      {{ log.note }}
+                    </div>
+                  </div>
+                </div>
+              {% endfor %}
+            </div>
+          {% else %}
+            <h4>No logs yet</h4>
+          {% endif %}
         </div>
       </div>
-    </form>
-    <div class="tab-pane">
-      <div class="comments">
-        {% for comment in issue.issuecomment_set.all %}
-          <div class="itemdiv commentdiv">
-            <div class="user">
-              <img {% if comment.author.photo %}
-                src="{{ comment.author.get_cropped_photo.url }}"
-              {% else %}
-                src="{{ comment.author.email|gravatar_url:40 }}"
-              {% endif %}/>
-            </div>
-            <div class="body">
-              <div class="name">
-                <a href="{% url 'employee:detail' comment.author.id %}">
-                  {{ comment.author.username }}
-                </a>
-              </div>
-              <div class="time">
-                <span>{{ comment.get_pretty_date_created }}</span>
-              </div>
-              <div class="text">
-                {{ comment.text }}
-              </div>
-            </div>
-            {% if request.user == comment.author %}
-              <div class="tools">
-                <div class="action-buttons bigger-125">
-                  <a href=".">
-                    <i class="ace-icon fa fa-pencil blue"></i>
-                  </a>
-
-                  <a href=".">
-                    <i class="ace-icon fa fa-trash-o red"></i>
-                  </a>
-                </div>
-              </div>
-            {% endif %}
-          </div>
-        {% endfor %}
-      </div>
     </div>
+  </div>
   <div class="col-sm-4">
-  {% if root_issue %}
+  {% if issue.root %}
     <div class="row">
     <div class="col-sm-12">
     <div class="widget-box widget-color-blue2">
@@ -186,11 +235,11 @@
             <tr>
               <td>1</td>
               <td>
-                <a href="{% url 'project:issue_detail' project.id root_issue.id %}">
-                  {{ root_issue.title }}</a>
+                <a href="{% url 'project:issue_detail' project.id issue.root.id %}">
+                  {{ issue.root.title }}</a>
               </td>
-              <td>{{ root_issue.status }}</td>
-              <td>{{ root_issue.estimation }}</td>
+              <td>{{ issue.root.status }}</td>
+              <td>{{ issue.root.estimation }}</td>
             </tr>
             </tbody>
           </table>
