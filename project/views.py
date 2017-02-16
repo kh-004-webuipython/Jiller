@@ -1,4 +1,6 @@
 import datetime
+import json
+
 from django.conf import settings
 from django.db.models import Q
 from django.http import HttpResponseRedirect, Http404, HttpResponse
@@ -6,30 +8,23 @@ from django.http.request import QueryDict
 from django.http.response import JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
-from django.views.generic import DetailView, ListView
-from django.urls import reverse
-
-from project.forms import IssueCommentCreateForm, IssueForm, CreateIssueForm, \
-    IssueFormForEditing
-from .forms import ProjectForm, SprintCreateForm, CreateTeamForm
-from .models import Project, ProjectTeam, Issue, Sprint, ProjectNote
-
-from employee.models import Employee
-
+from django.views.generic import DetailView
 from django.utils.decorators import method_decorator
 from django.urls import reverse
 
-from project.forms import IssueFormForEditing, SprintFinishForm
-from project.models import ProjectNote
+from django_tables2 import SingleTableView, RequestConfig
+from waffle.decorators import waffle_flag
+
 from .forms import ProjectForm, SprintCreateForm, CreateTeamForm, \
-    IssueCommentCreateForm, CreateIssueForm, IssueLogForm
-from .models import Project, ProjectTeam, Issue, Sprint
+    IssueCommentCreateForm, CreateIssueForm, IssueLogForm, \
+    IssueFormForEditing, SprintFinishForm
+from .models import Project, ProjectTeam, Issue, Sprint, ProjectNote
 from .decorators import delete_project, \
     edit_project_detail, create_project, create_sprint
-from waffle.decorators import waffle_flag
-from .tables import ProjectTable, SprintsListTable, IssuesTable, CurrentTeamTable, AddTeamTable
-from django_tables2 import SingleTableView, RequestConfig
-import json
+
+from .tables import ProjectTable, SprintsListTable, IssuesTable,  CurrentTeamTable, AddTeamTable
+
+from employee.models import Employee
 
 
 class ProjectListView(SingleTableView):
