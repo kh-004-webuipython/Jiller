@@ -19,7 +19,7 @@ from employee.models import Employee
 from django.utils.decorators import method_decorator
 from django.urls import reverse
 
-from project.forms import IssueFormForEditing, SprintFinishForm
+from project.forms import IssueFormForEditing
 from project.models import ProjectNote
 from .forms import ProjectForm, SprintCreateForm, CreateTeamForm, \
     IssueCommentCreateForm, CreateIssueForm, IssueLogForm
@@ -30,6 +30,7 @@ from waffle.decorators import waffle_flag
 from .tables import ProjectTable, SprintsListTable, IssuesTable, CurrentTeamTable, AddTeamTable
 from django_tables2 import SingleTableView, RequestConfig
 import json
+from employee.models import Employee
 
 
 class ProjectListView(SingleTableView):
@@ -145,7 +146,7 @@ def team_view(request, project_id):
                 e_list.append({'id_team': team.id, 'id': employee.id,
                                'project': team.project, 'title': team.title,
                                'get_full_name': employee.get_full_name(),
-                               'role': employee.groups})
+                               'role': employee.groups.get()})
 
         table_cur = CurrentTeamTable(e_list)
         data.update({'table_cur': table_cur})
@@ -159,18 +160,17 @@ def team_view(request, project_id):
 
     if request.user.groups.filter(name='project manager').exists():
         user_list = Employee.objects.exclude(groups__name='project manager').\
-                                     exclude(projectteam__project=project_id)
-                                     #exclude(groups__name='product owner')
+                                     exclude(projectteam__project=project_id). \
+                                     exclude(groups__name='product owner')
         for user in user_list:
             u_list.append({'id': user.id, 'get_full_name': user.get_full_name(),
-                           'role': user.groups})
+                           'role': user.groups.get()})
 
         table_add = AddTeamTable(u_list)
         data.update({'table_add': table_add})
         RequestConfig(request, paginate={'per_page': settings.PAGINATION_PER_PAGE}).\
                                          configure(table_add)
     else:
-        table_cur = CurrentTeamTable(e_list)
         table_cur.exclude = ('sub')
 
     return render(request, 'project/team.html', data)
@@ -252,9 +252,9 @@ class ProjectCreateView(CreateView):
     def form_valid(self, form, *args, **kwargs):
         project = form.save(commit=False)
         project.save()
+        team = ProjectTeam.objects.create(project=project,
+                                          title=project.title)
         if not ProjectTeam.objects.filter(project=project):
-            team = ProjectTeam.objects.create(project=project,
-                                              title=project.title)
             team.employees.add(self.request.user)
         return super(ProjectCreateView, self).form_valid(form, *args, **kwargs)
 
@@ -379,7 +379,6 @@ class SprintView(DeleteView):
             context['closed_issues'] = issues_from_this_sprint.filter(
                 status="closed")
             context['chart'] = self.object.chart()
-            context['form'] = SprintFinishForm()
         context['project'] = self.project
         return context
 
@@ -530,9 +529,7 @@ def notes_view(request, project_id):
                 note.title = title
                 note.content = content
                 note.save()
-                response = HttpResponse()
-                response.__setitem__('note_id', str(note.id))
-                return response
+                return HttpResponse()
             else:
                 note = get_object_or_404(ProjectNote, pk=int(id))
                 if len(content) <= 5000 and len(title) <= 15:
@@ -554,18 +551,8 @@ def notes_view(request, project_id):
 
 @waffle_flag('edit_sprint')
 def finish_active_sprint_view(request, project_id):
-    if request.method == "POST":
-        active_sprint = get_object_or_404(Sprint, project_id=project_id,
-                                          status=Sprint.ACTIVE)
-        form = SprintFinishForm(request.POST)
-        if form.is_valid():
-            relies = form.cleaned_data['relies_link']
-            feedback = form.cleaned_data['feedback_text']
-            active_sprint.relies_link = relies
-            active_sprint.feedback_text = feedback
-            active_sprint.status = Sprint.FINISHED
-            active_sprint.end_date = datetime.datetime.now()
-            active_sprint.save()
-            return HttpResponseRedirect(reverse('project:sprint_active',
-                                            kwargs={'project_id': project_id}))
-    raise Http404
+    active_sprint = Sprint.objects.get(project_id=project_id, status=Sprint.ACTIVE)
+    active_sprint.status = Sprint.FINISHED
+    active_sprint.end_date = datetime.datetime.now()
+    active_sprint.save()
+    return redirect('project:sprint_active', project_id)
