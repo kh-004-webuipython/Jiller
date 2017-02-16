@@ -3,10 +3,12 @@ from django.test import Client
 from django.test import TestCase
 from django.urls import reverse
 from django.utils.translation import ugettext_lazy as _
+from django.conf import settings
 
 from employee.models import Employee
+from general.tasks import send_assign_email_task
 from project.forms import IssueForm, IssueFormForEditing
-from project.models import Project, Issue
+from project.models import Project, Issue, ProjectTeam
 from project.tests import LoginRequiredBase
 
 
@@ -173,24 +175,19 @@ class ProfileViewTests(LoginRequiredBase):
         self.assertNotContains(response, 'Kiss')
 
 
-# class AssignEmailTests(LoginRequiredBase):
-#     def setUp(self):
-#         super(AssignEmailTests, self).setUp()
-#         self.project = Project.objects.create()
-#         self.employee = Employee.objects.create()
-#         self.issue = Issue.objects.create(project=self.project,
-#                                           author=self.employee)
-#
-#     def test_check_assign_email(self):
-#         form_data = {'root': self.issue, 'employee': self.user,
-#                      'title': 'new issue', 'description': 'description',
-#                      'status': Issue.IN_PROGRESS, 'sprint': None
-#                      }
-#         issue_form = IssueFormForEditing(project=self.project, data=form_data, instance=self.issue)
-#         issue_form.send_email(self.user.email, self.employee.id, self.issue.id)
-#         self.assertEqual(len(mail.outbox), 1)
-#         self.assertEqual(mail.outbox[0].subject, 'Jiller notification')
-#         self.assertEqual(mail.outbox[0].from_email, self.employee.email)
-#         self.assertEqual(mail.outbox[0].to, [self.user.email])
-#         # self.assertEqual(outbox[0].body,
-#         #                  'Your password reset token:\n\n\t%s' % token.key)
+class AssignEmailTests(LoginRequiredBase):
+    def setUp(self):
+        super(AssignEmailTests, self).setUp()
+
+
+    def test_check_assign_email(self):
+
+        self.project = Project.objects.create()
+
+        self.issue = Issue.objects.create(project=self.project,
+                                           author=self.user)
+        send_assign_email_task(self.user.email, self.user.id, self.issue.id)
+        self.assertEqual(len(mail.outbox), 1)
+        self.assertEqual(mail.outbox[0].subject, 'Jiller notification')
+        self.assertEqual(mail.outbox[0].from_email, settings.DEFAULT_FROM_EMAIL)
+        self.assertEqual(mail.outbox[0].to, [self.user.email])

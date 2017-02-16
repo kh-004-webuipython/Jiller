@@ -32,7 +32,9 @@ urlpatterns = [
     # active_sprint
     url(r'^(?P<project_id>\d+)/sprint/active/$',
         views.ActiveSprintDetailView.as_view(), name='sprint_active'),
-    url(r'^(?P<project_id>\d+)/(?P<issue_id>\d+)/push/$',
+    url(r'^(?P<project_id>\d+)/sprint/active/finish$',
+        views.finish_active_sprint_view, name='finish_active_sprint'),
+    url(r'^issue_push/$',
         views.push_issue_in_active_sprint, name='issue_push'),
 
     # issue
@@ -45,6 +47,7 @@ urlpatterns = [
     url(r'^(?P<project_id>[0-9]+)/issue/(?P<issue_id>[0-9]+)/delete/$',
         views.IssueDeleteView.as_view(),
         name='issue_delete'),
+    url(r'^(?P<project_id>[0-9]+)/issue/search/$', views.IssueSearchView.as_view(), name='issue_search'),
 
     # team
     url(r'^(?P<project_id>\d+)/team/$', views.team_view, name='team'),
