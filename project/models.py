@@ -221,9 +221,10 @@ class Issue(models.Model):
     def get_logs_sum(self):
         return self.issuelog_set.aggregate(Sum('cost'))['cost__sum'] or 0
 
-    # off, cuz make crush
-    #def completion_rate(self):
-        #return round((self.get_logs_sum() * 100) / self.estimation, 2)
+    def completion_rate(self):
+        if self.get_logs_sum():
+            return round((self.get_logs_sum() * 100) / self.estimation, 2)
+        return 0
 
     def save(self, *args, **kwargs):
         self.calculate_issue_priority()
