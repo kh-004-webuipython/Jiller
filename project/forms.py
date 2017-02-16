@@ -54,9 +54,6 @@ class IssueForm(forms.ModelForm):
         if not sprint and status != Issue.NEW:
             raise forms.ValidationError(
                 'The issue unrelated to sprint has to be NEW')
-        if sprint and status == Issue.NEW:
-            raise forms.ValidationError(
-                'The issue related to sprint has not to be NEW')
         return status
 
     def clean_estimation(self):
