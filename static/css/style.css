@@ -136,14 +136,14 @@ td.User_story a, td.Task a, td.Bug a  {
     color: #333;
 }
 
-tr.ui-sortable-handle.User_story {
+tr.User_story {
     background-color: #d9edf7;
 }
 
-tr.ui-sortable-handle.Task{
+tr.Task{
     background-color: #dff0d8;
 }
 
-tr.ui-sortable-handle.Bug {
+tr.Bug {
     background-color: #f2dede;
 }

@@ -47,6 +47,7 @@
         </div>
       </div>
 
+      {% if object.end_date %}
       <div class="profile-info-row">
         <div class="profile-info-name">End date</div>
 
@@ -54,7 +55,9 @@
           <span>{{ object.end_date|date:"d/m/Y" }}</span>
         </div>
       </div>
+      {% endif %}
     </div>
+
   </div>
   <span>{{ object.description }}</span>
   </p>

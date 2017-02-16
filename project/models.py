@@ -171,7 +171,7 @@ class Issue(models.Model):
     TASK = 'Task'
     BUG = 'Bug'
     ISSUE_TYPE_CHOICES = (
-        (USER_STORY, _('User_story')),
+        (USER_STORY, _('User story')),
         (TASK, _('Task')),
         (BUG, _('Bug')),
     )

@@ -71,9 +71,9 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'Jiller.urls'
 
-TEMPLATE_CONTEXT_PROCESSORS = (
-    'django.core.context_processors.request',
-)
+# TEMPLATE_CONTEXT_PROCESSORS = (
+#     'django.core.context_processors.request',
+# )
 
 TEMPLATES = [
     {
@@ -87,6 +87,7 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
                 'django.template.context_processors.request',
+                'Jiller.context_processors.project_list'
             ],
         },
     },
