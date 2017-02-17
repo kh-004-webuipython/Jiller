@@ -581,8 +581,8 @@ def notes_view(request, project_id):
         if 'id' in request.POST and 'title' in request.POST and 'content' \
                 in request.POST:
             id = request.POST.get('id')
-            title = str(request.POST.get('title'))
-            content = str(request.POST.get('content'))
+            title = (request.POST.get('title')).encode('utf-8').strip()
+            content = (request.POST.get('content')).encode('utf-8').strip()
             if id == 'undefined' and len(content) <= 5000 and len(title) <= 15:
                 note = ProjectNote.objects.create(project_id=project.id)
                 note.title = title
