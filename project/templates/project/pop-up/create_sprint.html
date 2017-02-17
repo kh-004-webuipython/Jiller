@@ -2,13 +2,12 @@
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h4 class="modal-title">Create New Sprint Confirmation</h4>
+        <h4 class="modal-title">Create New Sprint</h4>
       </div>
       <form action="{% url 'project:create_sprint' project.id %}"
             method="post">
         <div class="modal-body">
           <strong class="center">
-            <p>Do you really want to create sprint?</p>
             <p>To create sprint enter duration and title of the sprint</p>
           </strong>
           <br>

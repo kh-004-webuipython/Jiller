@@ -32,15 +32,28 @@
     </div>
   {% if forloop.counter == 3 %}
 
-    <div class="fixed-backlog-pool">
+    <div class="col-md-3 nav nav-stacked">
       <ul class="list-group">
         <li class="blue lighter bigger-120 list-group-item text-center">
-          {% if sprint_status == 'active'|sprint_status %}
-            <a class="no-underline" href="{% url 'project:backlog' project.id %}">
-              Backlog pool</a>
-          {% elif sprint_status == 'new'|sprint_status %}
+          <a class="no-underline" href="{% url 'project:backlog' project.id %}">
+            Backlog pool</a>
+        </li>
+        <div data-employee="0" class="sortable contant-box">
+        {% for issue in issues_log|dictsort:'order' %}
+          <li data-issue="{{ issue.id }}" class="list-group-item">
+            <a class="no-underline limit-text-width"
+               href="{% url 'project:issue_detail' project.id issue.id %}">
+                {{ issue.title }}</a>
+            {% if issue.estimation %}<span class="badge">
+              {{ issue.estimation }}</span>
+            {% endif %}</li>
+        {% endfor %}
+        </div>
+      </ul>
+
+      <ul class="list-group">
+        <li class="blue lighter bigger-120 list-group-item text-center">
             New sprint pool
-          {% endif %}
         </li>
         <div data-employee="0" class="sortable contant-box">
         {% for issue in issues_log|dictsort:'order' %}

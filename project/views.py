@@ -384,7 +384,7 @@ class SprintView(DeleteView):
                 status="closed")
             context['chart'] = self.object.chart()
             context['form'] = SprintFinishForm()
-            context['create_sprint_form'] = CreateSprintForm()
+        context['create_sprint_form'] = CreateSprintForm()
         context['project'] = self.project
         return context
 
@@ -527,7 +527,7 @@ def workload_manager(request, project_id, sprint_status):
         issue.save()
 
     project = get_object_or_404(Project, pk=project_id)
-    issues_log = get_pool(project_id, sprint_status)
+    issues_log = get_pool(project_id, Sprint.ACTIVE)
 
     try:
         employees = ProjectTeam.objects.filter(project=project)[0] \
@@ -563,6 +563,10 @@ def workload_manager(request, project_id, sprint_status):
                'project': project,
                'issues_log': issues_log,
                'sprint_status': sprint_status}
+
+    if sprint_status == Sprint.NEW:
+        new_sprint_log = get_pool(project_id, sprint_status)
+        context['new_sprint_log'] = new_sprint_log
 
     if request.is_ajax():
         html = render_to_string('project/workload_template.html', context)
