@@ -28,15 +28,25 @@ document.addEventListener("DOMContentLoaded", function () {
 
     function addNoteEvents(note) {
 
-        // make notes bigger after click
+        // make notes stay bigger after click
         note.onclick = function () {
             noteQuery.forEach(function (note) {
                 note.removeAttribute('id');
                 note.lastElementChild.classList.add('hide');
             });
+
             openedNote = this;
             this.id = ('clicked');
+            //show trash button
             this.lastElementChild.classList.remove('hide');
+
+            // makes content height depend from content lines
+            var content = this.getElementsByClassName('note-content')[0];
+            var textareaRows = content.value.split("\n");
+            if(textareaRows[0] != "undefined" && textareaRows.length
+                >= content.rows) {
+                content.rows = textareaRows.length;
+            }
         };
 
         // send data to server after changing text
@@ -108,10 +118,10 @@ document.addEventListener("DOMContentLoaded", function () {
         // add a new note to the end of the list
         var newNote = document.createElement('div');
         newNote.className = 'note center';
-        newNote.innerHTML = "<textarea class='note-title center " +
-            "text-center' maxlength='15'></textarea>" +
-            "<textarea class='note-content text-justify' " +
-            "maxlength='5000'></textarea>" +
+        newNote.innerHTML = "<textarea class='note-title" +
+            " text-center' maxlength='25' rows='1'></textarea>" +
+            "<textarea class='note-content text-justify'" +
+            " maxlength='5000' rows='20'></textarea>" +
             "<div class='hide'><span class='glyphicon glyphicon-trash'>" +
             "</span></div>";
         notes.appendChild(newNote);
