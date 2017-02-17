@@ -53,19 +53,19 @@ document.addEventListener("DOMContentLoaded", function () {
                 note.remove();
             } else {
                 var xhrd = new XMLHttpRequest();
-            var body = 'id=' + encodeURIComponent(note.dataset['id']);
-            xhrd.open("DELETE", '/project/' + notes.dataset['pr'] + '/note/',
-                true);
-            xhrd.setRequestHeader('Content-Type',
-                'application/x-www-form-urlencoded');
-            xhrd.setRequestHeader("X-CSRFTOKEN", csrftoken);
-            xhrd.onreadystatechange = function () {
-                if (xhrd.readyState == 4 && xhrd.status == 200) {
-                    // TODO confirm
-                    note.remove();
-                }
-            };
-            xhrd.send(body);
+                var body = 'id=' + encodeURIComponent(note.dataset['id']);
+                xhrd.open("DELETE", '/project/' + notes.dataset['pr'] +
+                    '/note/', true);
+                xhrd.setRequestHeader('Content-Type',
+                    'application/x-www-form-urlencoded');
+                xhrd.setRequestHeader("X-CSRFTOKEN", csrftoken);
+                xhrd.onreadystatechange = function () {
+                    if (xhrd.readyState == 4 && xhrd.status == 200) {
+                        // TODO confirm
+                        note.remove();
+                    }
+                };
+                xhrd.send(body);
             }
         });
     }
