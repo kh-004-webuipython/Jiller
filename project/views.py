@@ -17,7 +17,7 @@ from waffle.decorators import waffle_flag
 
 from .forms import ProjectForm, SprintCreateForm, CreateTeamForm, \
     IssueCommentCreateForm, CreateIssueForm, IssueLogForm, \
-    IssueFormForEditing, SprintFinishForm
+    IssueFormForEditing, SprintFinishForm, CreateSprintForm
 from .models import Project, ProjectTeam, Issue, Sprint, ProjectNote
 from .decorators import delete_project, \
     edit_project_detail, create_project, create_sprint
@@ -384,6 +384,7 @@ class SprintView(DeleteView):
                 status="closed")
             context['chart'] = self.object.chart()
             context['form'] = SprintFinishForm()
+            context['create_sprint_form'] = CreateSprintForm()
         context['project'] = self.project
         return context
 
@@ -627,4 +628,21 @@ def finish_active_sprint_view(request, project_id):
             return HttpResponseRedirect(reverse('project:sprint_active',
                                                 kwargs={
                                                     'project_id': project_id}))
+    raise Http404
+
+
+@waffle_flag('create_sprint')
+def create_sprint_view(request, project_id):
+    project = get_object_or_404(Project, pk=project_id)
+
+    if request.method == "POST":
+        form = CreateSprintForm(request.POST)
+
+        if form.is_valid():
+            new_sprint = form.save(commit=False)
+            new_sprint.project = project
+            new_sprint.status = Sprint.NEW
+            new_sprint.save()
+            return HttpResponseRedirect(reverse('project:workload_manager',
+                                                args=[project_id, Sprint.NEW]))
     raise Http404

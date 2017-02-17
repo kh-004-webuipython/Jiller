@@ -62,7 +62,8 @@ class Sprint(models.Model):
     )
     title = models.CharField(verbose_name=_('Title'), max_length=255)
     project = models.ForeignKey(Project, verbose_name=_('Project'))
-    start_date = models.DateField(verbose_name=_('Start date'), default=timezone.now)
+    start_date = models.DateField(verbose_name=_('Start date'),
+                                  null=True, blank=True)
     end_date = models.DateField(verbose_name=_('End date'), null=True,
                                 blank=True)
     order = models.PositiveIntegerField(verbose_name=_('Order'), null=True,

@@ -175,3 +175,13 @@ class SprintFinishForm(forms.ModelForm):
                        'style': 'resize: vertical;'}),
             'relies_link': forms.URLInput(attrs={'class': 'form-control'})
         }
+
+
+class CreateSprintForm(forms.ModelForm):
+    class Meta:
+        model = Sprint
+        fields = ['title', 'duration']
+        widgets = {
+            'title': forms.TextInput(attrs={'class': 'form-control'}),
+            'duration': forms.TextInput(attrs={'class': 'form-control'})
+        }
