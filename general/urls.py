@@ -7,7 +7,6 @@ urlpatterns = [
     url(r'^login/$', views.login_form_view, name='login'),
     url(r'^registration/$', views.registration_form_view, name='registration'),
     url(r'^logout/$', views.user_logout_view, name='logout'),
-    url(r'^profile/$', views.profile, name='profile'),
     url(r'^confirmation/(?P<username>[-.\w]+)/(?P<key>[a-zA-Z0-9]+)/$',
         views.email_confirmation, name='confirmation'),
     url(r'^sender/(?P<username>[-.\w]+)/$',

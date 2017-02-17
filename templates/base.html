@@ -63,7 +63,12 @@
     <!-- #section:basics/navbar.dropdown -->
     <div class="navbar-buttons navbar-header pull-right" role="navigation">
       <ul class="nav ace-nav">
-
+        <li class="green">
+          <a href="{% url 'employee:list' %}">
+            <i class="fa fa-users"></i>
+            <span>Employees</span>
+          </a>
+        </li>
         <!-- #section:basics/navbar.user_menu -->
         {% if request.user.is_authenticated %}
           <li class="light-blue">
@@ -77,12 +82,6 @@
                 <a href="{% url 'general:logout' %}">
                   <i class="ace-icon fa fa-power-off"></i>
                   Logout
-                </a>
-              </li>
-              <li>
-                <a href="{% url 'general:profile' %}">
-                  <i class="ace-icon fa fa-user"></i>
-                  Profile
                 </a>
               </li>
             </ul>
@@ -112,7 +111,7 @@
     <div class="sidebar-shortcuts" id="sidebar-shortcuts">
       <a href="{% url 'project:create' %}" class="btn btn-white btn-xlg btn-success btn-block">
         <span class="glyphicon glyphicon-plus"></span>
-         Create project</a>
+        Create project</a>
     </div><!-- /.sidebar-shortcuts -->
 
     <ul class="nav nav-list">

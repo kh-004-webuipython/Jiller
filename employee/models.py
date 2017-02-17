@@ -1,24 +1,31 @@
 from __future__ import unicode_literals
-from django.utils.encoding import python_2_unicode_compatible
-
-from django.core.exceptions import ValidationError
 from datetime import date, datetime
+
+from django.utils.encoding import python_2_unicode_compatible
 from django.utils import timezone
-from django.contrib.auth.models import AbstractUser
-from simple_email_confirmation.models import SimpleEmailConfirmationUserMixin
 from django.utils.translation import ugettext_lazy as _
-from django.db import models
-from django.core.validators import MaxValueValidator, MinValueValidator
-from sorl.thumbnail import get_thumbnail
+from django.core.exceptions import ValidationError
+from django.core.validators import MinValueValidator
 from django.db.models.signals import pre_delete
 from django.dispatch import receiver
-from project.models import ProjectTeam
+from django.contrib.auth.models import AbstractUser
+from django.db import models
+
+from simple_email_confirmation.models import SimpleEmailConfirmationUserMixin
+from sorl.thumbnail import get_thumbnail
+
+from project.models import ProjectTeam, Project
+
 
 @python_2_unicode_compatible
 class Employee(SimpleEmailConfirmationUserMixin, AbstractUser):
     date_birth = models.DateField(verbose_name=_('Date birth'), null=True,
                                   blank=True)
     photo = models.ImageField(upload_to='avatars/', null=True, blank=True)
+
+    def get_all_projects(self):
+        return Project.objects.get_user_projects(
+            self).order_by('-start_date')
 
     def __str__(self):
         return self.username

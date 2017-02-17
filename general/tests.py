@@ -27,7 +27,7 @@ class LoginViewTests(TestCase):
         self.assertEqual(response.status_code, 200)
         response = self.client.post(self.login_page, {'username': 'john',
                                                       'password': 'johnpassword'})
-        self.assertRedirects(response, reverse('general:profile'))
+        self.assertRedirects(response, reverse('general:Home_page'))
 
     def test_for_wrong_username(self):
         response = self.client.post(self.login_page,
@@ -163,7 +163,7 @@ class RegistrationViewTests(TestCase):
 
 class ProfileViewTests(LoginRequiredBase):
     def test_profile_view_with_correct_user(self):
-        response = self.client.get(reverse('general:profile'))
+        response = self.client.get(reverse('general:home_page'))
         self.assertContains(response, 'Miss', status_code=200)
 
     def test_profile_view_with_incorrect_user(self):
@@ -171,7 +171,7 @@ class ProfileViewTests(LoginRequiredBase):
                                                  'markpassword',
                                                  first_name='Kiss',
                                                  last_name='Dismiss')
-        response = self.client.get(reverse('general:profile'))
+        response = self.client.get(reverse('general:home_page'))
         self.assertNotContains(response, 'Kiss')
 
 
