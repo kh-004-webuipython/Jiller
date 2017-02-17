@@ -125,12 +125,13 @@ class SprintCreateForm(forms.ModelForm):
             )
         return self.cleaned_data['status']
 
+    """
     def clean_end_date(self):
         end_date = self.cleaned_data.get('end_date')
         if end_date and datetime.date.today() > end_date:
             self.add_error('end_date',
                            _('End date cant\'t be earlier than start date'))
-
+    """
     class Meta:
         model = Sprint
         fields = ['title', 'duration', 'status', 'issue']

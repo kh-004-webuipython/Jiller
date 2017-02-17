@@ -4,13 +4,13 @@ from django.core.management import call_command
 from django.http import Http404
 from django.urls import reverse
 from django.core.exceptions import ValidationError
+from django.shortcuts import get_object_or_404
+from urllib import urlencode
 
 from employee.models import Employee
-from project.forms import ProjectForm
 from .models import Project, Issue, Sprint, ProjectTeam, ProjectNote
 from .forms import IssueForm
-from django.shortcuts import get_object_or_404
-from django.utils.translation import ugettext_lazy as _
+
 
 
 class LoginRequiredBase(TestCase):
@@ -281,7 +281,8 @@ class BacklogViewTests(LoginRequiredBase):
                                              2017, 12, 14))
         employee = Employee.objects.create()
         team = ProjectTeam.objects.create(project=project, title='title')
-        sprint = Sprint.objects.create(title='title', project=project, duration=10)
+        sprint = Sprint.objects.create(title='title', project=project,
+                                       duration=10)
         Issue.objects.create(project=project, author=employee,
                              title='title', sprint=sprint)
         response = self.client.get(reverse('project:backlog',
@@ -451,90 +452,83 @@ class ProjectViewTests(LoginRequiredBase):
 
 
 class SprintResponseTests(LoginRequiredBase):
-    def test_project_sprint_response_200(self):
-        project = Project.objects.create(title='Test Project')
-        ProjectTeam.objects.create(project=project, title='Test Team')
-        sprint = Sprint.objects.create(title='T_sprint', project_id=project.id,
-                                       status='new', duration=10)
+    def setUp(self):
+        super(SprintResponseTests, self).setUp()
+        self.project = Project.objects.create(title='Pr1')
+        self.team = ProjectTeam.objects.create(project=self.project)
+        self.sprint = Sprint.objects.create(project=self.project,
+                                            status=Sprint.ACTIVE, duration=10)
+        self.employee = Employee.objects.create()
+        self.issue = Issue.objects.create(project=self.project,
+                                          author=self.employee, title='test',
+                                          status=Issue.NEW, sprint=self.sprint)
+
+    def test_sprint_response_200(self):
         url = reverse('project:sprint_detail',
-                      kwargs={'project_id': sprint.project_id,
-                              'sprint_id': sprint.id})
+                      kwargs={'project_id': self.sprint.project_id,
+                              'sprint_id': self.sprint.id})
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'project/sprint_detail.html')
 
-    def test_project_sprint_response_404(self):
-        url = reverse('project:sprint_detail', kwargs={'project_id': 100,
-                                                       'sprint_id': 100})
+    def test_sprint_response_404(self):
+        url = reverse('project:sprint_detail',
+                      kwargs={'project_id': self.sprint.project_id,
+                              'sprint_id': 1000})
         response = self.client.get(url)
-        self.assertEqual(response.status_code, 404)
+        self.assertTemplateUsed(response, 'general/404.html')
+        self.assertContains(response, "access not found: 404 ERROR",
+                            status_code=200)
 
-    def test_project_sprint_create(self):
-        project = Project.objects.create(title='Test Project')
-        team = ProjectTeam.objects.create(project=project, title='Test Team')
-        sprint = Sprint.objects.create(title='T_sprint', project_id=project.id,
-                                       status='new', duration=10)
+    def test_sprint_create(self):
+        sprint = Sprint.objects.create(title='T_sprint',
+                                       project_id=self.project.id,
+                                       status=Sprint.NEW, duration=10)
         url = reverse('project:sprint_create',
                       kwargs={'project_id': sprint.project_id})
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
         inst_count = len(Sprint.objects.all())
-        self.assertEqual(Sprint.objects.get(pk=1).status, 'new')
-        start_date = datetime.datetime.now().strftime("%Y-%m-%d")
-        end_date = datetime.datetime.now() + datetime.timedelta(days=14)
-        end_date = end_date.strftime("%Y-%m-%d")
-        data = {'title': "It's a New Sprint", 'project': project.id,
-                "start_date": start_date, "end_date": end_date,
-                'status': 'new'}
+        self.assertEqual(Sprint.objects.get(pk=sprint.id).status, Sprint.NEW)
+        data = {'title': "It's a New Sprint", 'project': self.project.id,
+                "duration": 7, 'status': Sprint.NEW}
         response = self.client.post(url, data)
-        new_sprint = Sprint.objects.get(pk=2)
-        self.assertEquals(new_sprint.start_date.strftime("%Y-%m-%d"),
-                          start_date)
-        # self.assertEquals(new_sprint.end_date.strftime("%Y-%m-%d"), end_date)
+        new_sprint = Sprint.objects.get(pk=inst_count + 1)
+        self.assertEquals(new_sprint.duration, 7)
+        self.assertEquals(new_sprint.title, "It's a New Sprint")
+        self.assertEquals(new_sprint.project, self.project)
+        self.assertEquals(new_sprint.status, Sprint.NEW)
         self.assertEquals(response.status_code, 302)
         self.assertEquals(len(Sprint.objects.all()), inst_count + 1)
 
-        # will not pass, cuz there no such functionality
-        """
-        self.assertEqual(Sprint.objects.get(pk=1).order, 1)
-        self.assertEqual(Sprint.objects.get(pk=2).order, 2)
-        self.assertEqual(Sprint.objects.get(pk=2).status, 'new')
-        """
-
 
 class IssueResponseTests(LoginRequiredBase):
-    def test_project_issue_response_200(self):
-        project = Project.objects.create(title='Test Project')
-        team = ProjectTeam.objects.create(project=project, title='Test Team')
-        Sprint.objects.create(title='T_sprint', project_id=project.id,
-                              status='new', duration=10)
-        issue = Issue.objects.create(sprint_id=1, title='T_issue', author_id=1,
-                                     project_id=1,
-                                     status='new')
+    def setUp(self):
+        super(IssueResponseTests, self).setUp()
+        self.project = Project.objects.create(title='Pr1')
+        self.team = ProjectTeam.objects.create(project=self.project)
+        self.sprint = Sprint.objects.create(project=self.project,
+                                            status=Sprint.ACTIVE, duration=10)
+        self.employee = Employee.objects.create()
+        self.issue = Issue.objects.create(project=self.project,
+                                          author=self.employee, title='test',
+                                          status=Issue.NEW, sprint=self.sprint)
+
+    def test_issue_response_200(self):
         url = reverse('project:issue_detail',
-                      kwargs={'project_id': issue.project_id,
-                              'issue_id': issue.id})
+                      kwargs={'project_id': self.issue.project_id,
+                              'issue_id': self.issue.id})
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
-
-    def test_project_issue_response_404(self):
-        url = reverse('project:issue_detail',
-                      kwargs={'project_id': 100, 'issue_id': 100})
-        response = self.client.get(url)
-        self.assertEqual(response.status_code, 404)
-
-    def test_using_html_on_issue(self):
-        project = Project.objects.create(title='Test Project')
-        team = ProjectTeam.objects.create(project=project, title='Test Team')
-        Sprint.objects.create(title='T_sprint', project_id=project.id,
-                              status='new', duration=10)
-        issue = Issue.objects.create(sprint_id=1, title='T_issue', author_id=1,
-                                     project_id=1,
-                                     status='new')
-        url = reverse('project:issue_detail',
-                      kwargs={'project_id': issue.project_id,
-                              'issue_id': issue.id})
-        response = self.client.get(url)
         self.assertTemplateUsed(response, 'project/issue_detail.html')
+
+    def test_issue_response_404(self):
+        url = reverse('project:issue_detail',
+                      kwargs={'project_id': self.project.id, 'issue_id': 1000})
+        response = self.client.get(url)
+        self.assertTemplateUsed(response, 'general/404.html')
+        self.assertContains(response, "access not found: 404 ERROR",
+                            status_code=200)
 
 
 class ActiveSprintTests(LoginRequiredBase):
@@ -543,13 +537,14 @@ class ActiveSprintTests(LoginRequiredBase):
         self.project = Project.objects.create(title='pr1')
         self.team = ProjectTeam.objects.create(project=self.project)
         self.sprint = Sprint.objects.create(project=self.project,
-                                            status='active', duration=10)
+                                            status=Sprint.ACTIVE, duration=10)
         self.employee = Employee.objects.create()
         self.issue = Issue.objects.create(project=self.project,
                                           author=self.employee, title='title',
-                                          status='new', sprint=self.sprint)
+                                          status=Issue.NEW, sprint=self.sprint)
 
         # it's a new test, don't delete
+
     def test_on_create_two_active_sprints_at_time(self):
         self.assertEqual(Sprint.objects.filter(status='active').count(), 1)
         try:
@@ -559,21 +554,19 @@ class ActiveSprintTests(LoginRequiredBase):
             self.assertEqual(Sprint.objects.filter(status='active').count(), 1)
 
     def test_project_sprint_active_response_200(self):
-        project = Project.objects.create(title='Test Project')
-        team = ProjectTeam.objects.create(project=project, title='Test Team')
-        sprint = Sprint.objects.create(title='T_sprint', project_id=project.id,
-                                       status='active', duration=10)
-        self.assertEqual(Sprint.objects.get(pk=1).status, 'active')
+        self.assertEqual(Sprint.objects.get(pk=self.sprint.id).status,
+                         Sprint.ACTIVE)
         url = reverse('project:sprint_active',
-                      kwargs={'project_id': sprint.project_id})
+                      kwargs={'project_id': self.sprint.project_id})
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'project/sprint_active.html')
 
     def test_project_sprint_active_response_404(self):
-        Project.objects.create(title='Test Project')
-        url = reverse('project:sprint_active', kwargs={'pk': 100})
+        url = reverse('project:sprint_active', kwargs={'project_id': 1000})
         response = self.client.get(url)
-        self.assertEqual(response.status_code, 404)
+        self.assertTemplateUsed(response, 'general/404.html')
+        self.assertEqual(response.status_code, 200)
 
     def test_all_unfinished_issues_after_sprint_ends_move_to_backlog(self):
         number_of_issues = 10
@@ -614,9 +607,7 @@ class ActiveSprintTests(LoginRequiredBase):
             issue.refresh_from_db()
         highest_backlog_issues = Issue.objects.filter(project=project.id,
                                                       sprint=None).order_by(
-            'order')[
-                                 :2 + len(issue_new) + len(issue_in_progress)]
-        print(highest_backlog_issues)
+            'order')[:2 + len(issue_new) + len(issue_in_progress)]
         for issue in issue_closed:
             self.assertTrue(issue.sprint == sprint)
             self.assertTrue(issue.status == Issue.CLOSED)
@@ -636,13 +627,16 @@ class ActiveSprintTests(LoginRequiredBase):
         project = Project.objects.create(title='Test Project')
         team = ProjectTeam.objects.create(project=project, title='Test Team')
         sprint = Sprint.objects.create(title='T_sprint', project_id=project.id,
-                                       status=Sprint.ACTIVE)
-        url = reverse('project:sprint_active',
+                                       status=Sprint.ACTIVE, duration=10)
+        url = reverse('project:finish_active_sprint',
                       kwargs={'project_id': sprint.project_id})
-        response = self.client.get(url)
-        url = reverse('project:finish_active_sprint', kwargs={'project_id': sprint.project_id})
-        response = self.client.post(url)
+        data = {'relies_link': 'http://127.0.0.1:8000/project/1/',
+                'feedback_text': 'some text'}
+        response = self.client.post(url, data)
         sprint.refresh_from_db()
+        self.assertEqual(sprint.relies_link,
+                         'http://127.0.0.1:8000/project/1/')
+        self.assertEqual(sprint.feedback_text, 'some text')
         self.assertEqual(sprint.status, Sprint.FINISHED)
         self.assertEqual(response.status_code, 302)
 
@@ -661,6 +655,7 @@ class SprintDashboard(LoginRequiredBase):
 
     def test_project_issue_push_responses(self):
         response = self.client.get(reverse('project:issue_push'))
+        self.assertTemplateUsed(response, 'general/404.html')
         self.assertContains(response, "access not found: 404 ERROR",
                             status_code=200)
 
@@ -680,6 +675,7 @@ class SprintDashboard(LoginRequiredBase):
         url = reverse('project:issue_push')
         data = {'table': 'new', 'id': 2}
         response = self.client.post(url, data)
+        self.assertTemplateUsed(response, 'general/404.html')
         self.assertContains(response, "access not found: 404 ERROR",
                             status_code=200)
 
@@ -691,6 +687,7 @@ class SprintDashboard(LoginRequiredBase):
         url = reverse('project:issue_push')
         data = {'table': 'resolved', 'id': 2}
         response = self.client.post(url, data)
+        self.assertTemplateUsed(response, 'general/404.html')
         self.assertContains(response, "access not found: 404 ERROR",
                             status_code=200)
 
@@ -718,6 +715,7 @@ class ProjectNotes(LoginRequiredBase):
 
         response = self.client.get(
             reverse('project:note', kwargs={'project_id': 2}))
+        self.assertTemplateUsed(response, 'general/404.html')
         self.assertContains(response, "access not found: 404 ERROR",
                             status_code=200)
 
@@ -729,38 +727,50 @@ class ProjectNotes(LoginRequiredBase):
 
         data = {'id': 2, 'title': 'title', 'content': 'SOME TEXT'}
         response = self.client.post(url, data)
+        self.assertTemplateUsed(response, 'general/404.html')
         self.assertContains(response, "access not found: 404 ERROR",
                             status_code=200)
 
         self.assertEqual(len(ProjectNote.objects.all()), 1)
         data = {'id': 'undefined', 'title': 'title', 'content': 'SOME TEXT'}
         response = self.client.post(url, data)
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual('note_id' in response, True)
         self.assertEqual(len(ProjectNote.objects.all()), 2)
+
+    def test_notes_delete_responses(self):
+        url = reverse('project:note', kwargs={'project_id': self.project.id})
+        data = urlencode({'id': 1})
+        self.assertEqual(len(ProjectNote.objects.all()), 1)
+        response = self.client.delete(url, data)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(ProjectNote.objects.all()), 0)
 
 
 class WorkloadManagerTest(LoginRequiredBase):
     def setUp(self):
         super(WorkloadManagerTest, self).setUp()
         self.project = Project.objects.create()
-        self.team = ProjectTeam.objects.create(project=self.project, title='title')
+        self.team = ProjectTeam.objects.create(project=self.project,
+                                               title='title')
         self.team.employees.add(self.user)
 
     def test_workload_view_with_no_sprint(self):
         response = self.client.get(reverse('project:workload_manager',
-                                           kwargs={'project_id': self.project.id,
-                                                   'sprint_status': Sprint.ACTIVE}))
+                                           kwargs={
+                                               'project_id': self.project.id,
+                                               'sprint_status': Sprint.ACTIVE}))
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'general/404.html')
 
     def test_workload_view_with_empty_items(self):
         sprint = Sprint.objects.create(title='title', project=self.project,
-                                       start_date=datetime.date(2017, 12, 14),
-                                       end_date=datetime.date(2017, 12, 21),
+
                                        status=Sprint.ACTIVE, duration=7)
         response = self.client.get(reverse('project:workload_manager',
-                                           kwargs={'project_id': self.project.id,
-                                                   'sprint_status': Sprint.ACTIVE}))
+                                           kwargs={
+                                               'project_id': self.project.id,
+                                               'sprint_status': Sprint.ACTIVE,
+                                               }))
         self.assertContains(response, "No items.", status_code=200)
         self.assertQuerysetEqual(response.context['items'], [])
 
@@ -772,8 +782,9 @@ class WorkloadManagerTest(LoginRequiredBase):
         Issue.objects.create(project=self.project, author=self.user,
                              sprint=sprint, employee=self.user)
         response = self.client.get(reverse('project:workload_manager',
-                                           kwargs={'project_id': self.project.id,
-                                                   'sprint_status': Sprint.ACTIVE}))
+                                           kwargs={
+                                               'project_id': self.project.id,
+                                               'sprint_status': Sprint.ACTIVE}))
         self.assertContains(response, self.user.username, status_code=200)
         self.assertQuerysetEqual(response.context['items'], [])
 
@@ -785,28 +796,18 @@ class IssueSearchTest(LoginRequiredBase):
         for status, _ in Issue.ISSUE_STATUS_CHOICES:
             for i in range(10):
                 Issue.objects.create(title='Title {} {}'.format(status, i),
-                                     description='Description {} {}'.format(status, i),
+                                     description='Description {} {}'.format(
+                                         status, i),
                                      author=self.user,
                                      status=status,
                                      estimation=2,
                                      project=self.project)
 
     def test_basic_search(self):
-        url = reverse('project:issue_search', kwargs={'project_id': self.project.id})
+        url = reverse('project:issue_search',
+                      kwargs={'project_id': self.project.id})
         response = self.client.get(url)
         response = self.client.get(url, {'s': 'Title NEW 1'})
         self.assertTrue(response.status_code == 200)
         self.assertContains(response, 'Title NEW 1')
         self.assertNotContains(response, 'Title NEW 2')
-
-    """ TODO: need to discuss!
-        def test_notes_delete_responses(self):
-            url = reverse('project:note', kwargs={'project_id': self.project.id})
-            data = {'id': 1}
-            self.assertEqual(len(ProjectNote.objects.all()), 1)
-            response = self.client.delete(url, data)
-            print self.note.id
-            print ProjectNote.objects.all(),ProjectNote.objects.get(pk=1)
-            self.assertEqual(response.status_code, 200)
-            self.assertEqual(len(ProjectNote.objects.all()), 0)
-    """
