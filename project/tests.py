@@ -757,7 +757,7 @@ class WorkloadManagerTest(LoginRequiredBase):
         sprint = Sprint.objects.create(title='title', project=self.project,
                                        start_date=datetime.date(2017, 12, 14),
                                        end_date=datetime.date(2017, 12, 21),
-                                       status=Sprint.ACTIVE, duration=10)
+                                       status=Sprint.ACTIVE, duration=7)
         response = self.client.get(reverse('project:workload_manager',
                                            kwargs={'project_id': self.project.id,
                                                    'sprint_status': Sprint.ACTIVE}))
@@ -768,7 +768,7 @@ class WorkloadManagerTest(LoginRequiredBase):
         sprint = Sprint.objects.create(title='title', project=self.project,
                                        start_date=datetime.date(2017, 12, 14),
                                        end_date=datetime.date(2017, 12, 21),
-                                       status=Sprint.ACTIVE, duration=10)
+                                       status=Sprint.ACTIVE, duration=7)
         Issue.objects.create(project=self.project, author=self.user,
                              sprint=sprint, employee=self.user)
         response = self.client.get(reverse('project:workload_manager',
