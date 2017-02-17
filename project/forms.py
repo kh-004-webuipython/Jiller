@@ -43,7 +43,7 @@ class IssueForm(forms.ModelForm):
             project=project)[0].employees.filter(
             groups__pk__in=[1, 2])
         if user.groups.filter(id=3):
-            self.fields['type'].choices = [('User story', 'User story'), ]
+            self.fields['type'].choices = [('User_story', 'User story'), ]
         elif user.groups.filter(id__in=(1, 2, 4)):
             self.fields['type'].choices = [('Task', 'Task'), ('Bug', 'Bug'), ]
 
