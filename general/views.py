@@ -23,7 +23,7 @@ def login_form_view(request):
             if user is not None:
                 if user.is_confirmed:
                     login(request, user)
-                    return redirect('general:profile')
+                    return redirect('general:home_page')
                 else:
                     return render(request, 'general/require_key.html', {'user': user})
 
