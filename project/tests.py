@@ -294,7 +294,7 @@ class BacklogViewTests(LoginRequiredBase):
                                              2017, 12, 14))
         response = self.client.get(reverse('project:backlog',
                                            args=[project.id + 1, ]))
-        self.assertEqual(response.status_code, 404)
+        self.assertTemplateUsed(response, 'general/404.html')
 
 
 class SprintsListViewTests(LoginRequiredBase):
@@ -332,7 +332,7 @@ class SprintsListViewTests(LoginRequiredBase):
                                              2017, 12, 14))
         response = self.client.get(reverse('project:sprints_list',
                                            args=[project.id + 1, ]))
-        self.assertEqual(response.status_code, 404)
+        self.assertTemplateUsed(response, 'general/404.html')
 
 
 class ProjectViewTests(LoginRequiredBase):
