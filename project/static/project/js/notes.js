@@ -10,7 +10,7 @@ document.addEventListener("DOMContentLoaded", function () {
         addNewNote();
     });
 
-    // make openNote smalle on offset clicks
+    // make openNote smaller on offset clicks
     window.addEventListener('click', cancelSize, false);
 
     function cancelSize(e) {
@@ -49,7 +49,10 @@ document.addEventListener("DOMContentLoaded", function () {
 
         // delete note event
         note.lastElementChild.addEventListener('click', function () {
-            var xhrd = new XMLHttpRequest();
+            if (!note.dataset['id']){
+                note.remove();
+            } else {
+                var xhrd = new XMLHttpRequest();
             var body = 'id=' + encodeURIComponent(note.dataset['id']);
             xhrd.open("DELETE", '/project/' + notes.dataset['pr'] + '/note/',
                 true);
@@ -63,6 +66,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 }
             };
             xhrd.send(body);
+            }
         });
     }
 
@@ -111,6 +115,7 @@ document.addEventListener("DOMContentLoaded", function () {
             "<div class='hide'><span class='glyphicon glyphicon-trash'>" +
             "</span></div>";
         notes.appendChild(newNote);
+        noteQuery = document.querySelectorAll('.note');
         addNoteEvents(newNote);
     }
 });

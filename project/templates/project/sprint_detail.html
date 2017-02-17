@@ -56,8 +56,28 @@
         </div>
       </div>
       {% endif %}
-    </div>
 
+      {% if object.feedback_text %}
+      <div class="profile-info-row">
+        <div class="profile-info-name">Feedback</div>
+
+        <div class="profile-info-value">
+          <span>{{ object.feedback_text }}</span>
+        </div>
+      </div>
+      {% endif %}
+
+      {% if object.feedback_text %}
+      <div class="profile-info-row">
+        <div class="profile-info-name">Relies</div>
+
+        <div class="profile-info-value">
+          <span> <a href="{{ object.relies_link }}">Link on repository</a>
+          </span>
+        </div>
+      </div>
+      {% endif %}
+    </div>
   </div>
   <span>{{ object.description }}</span>
   </p>
