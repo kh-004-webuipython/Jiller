@@ -6,7 +6,8 @@ from django.utils.translation import ugettext_lazy as _
 from general.tasks import send_assign_email_task
 from employee.models import IssueLog
 from general.forms import FormControlMixin
-from .models import Project, Sprint, Issue, ProjectTeam, IssueComment
+from .models import Project, Sprint, Issue, ProjectTeam, IssueComment, \
+    ProjectNote
 
 
 class DateInput(forms.DateInput):
@@ -43,7 +44,7 @@ class IssueForm(forms.ModelForm):
             project=project)[0].employees.filter(
             groups__pk__in=[1, 2])
         if user.groups.filter(id=3):
-            self.fields['type'].choices = [('User story', 'User story'), ]
+            self.fields['type'].choices = [('User_story', 'User story'), ]
         elif user.groups.filter(id__in=(1, 2, 4)):
             self.fields['type'].choices = [('Task', 'Task'), ('Bug', 'Bug'), ]
 
@@ -54,9 +55,6 @@ class IssueForm(forms.ModelForm):
         if not sprint and status != Issue.NEW:
             raise forms.ValidationError(
                 'The issue unrelated to sprint has to be NEW')
-        if sprint and status == Issue.NEW:
-            raise forms.ValidationError(
-                'The issue related to sprint has not to be NEW')
         return status
 
     def clean_estimation(self):
@@ -128,12 +126,13 @@ class SprintCreateForm(forms.ModelForm):
             )
         return self.cleaned_data['status']
 
+    """
     def clean_end_date(self):
         end_date = self.cleaned_data.get('end_date')
         if end_date and datetime.date.today() > end_date:
             self.add_error('end_date',
                            _('End date cant\'t be earlier than start date'))
-
+    """
     class Meta:
         model = Sprint
         fields = ['title', 'duration', 'status', 'issue']
@@ -177,3 +176,10 @@ class SprintFinishForm(forms.ModelForm):
                        'style': 'resize: vertical;'}),
             'relies_link': forms.URLInput(attrs={'class': 'form-control'})
         }
+
+
+class NoteForm(forms.ModelForm):
+    class Meta:
+        model = ProjectNote
+        fields = ['title', 'content']
+

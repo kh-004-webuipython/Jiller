@@ -1,4 +1,6 @@
 import datetime
+import json
+
 from django.conf import settings
 from django.db.models import Q
 from django.http import HttpResponseRedirect, Http404, HttpResponse
@@ -6,31 +8,27 @@ from django.http.request import QueryDict
 from django.http.response import JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
-from django.views.generic import DetailView, ListView
+from django.views.generic import DetailView
 from django.views.decorators.csrf import csrf_protect
-from django.urls import reverse
-
-from project.forms import IssueCommentCreateForm, IssueForm, CreateIssueForm, \
-    IssueFormForEditing
-from .forms import ProjectForm, SprintCreateForm, CreateTeamForm
-from .models import Project, ProjectTeam, Issue, Sprint, ProjectNote
-
-from employee.models import Employee
-
 from django.utils.decorators import method_decorator
 from django.urls import reverse
 
-from project.forms import IssueFormForEditing, SprintFinishForm
-from project.models import ProjectNote
+from django_tables2 import SingleTableView, RequestConfig
+from waffle.decorators import waffle_flag
+
 from .forms import ProjectForm, SprintCreateForm, CreateTeamForm, \
-    IssueCommentCreateForm, CreateIssueForm, IssueLogForm
-from .models import Project, ProjectTeam, Issue, Sprint
+    IssueCommentCreateForm, CreateIssueForm, IssueLogForm, \
+    IssueFormForEditing, SprintFinishForm, NoteForm
+from .models import Project, ProjectTeam, Issue, Sprint, ProjectNote
 from .decorators import delete_project, \
     edit_project_detail, create_project, create_sprint
-from waffle.decorators import waffle_flag
-from .tables import ProjectTable, SprintsListTable, IssuesTable, ProjectTeamTable
-from django_tables2 import SingleTableView, RequestConfig
-import json
+from .tables import ProjectTable, SprintsListTable, IssuesTable, \
+    ProjectTeamTable
+from django.template.loader import render_to_string
+from .utils.workload_manager import put_issue_back_to_pool, \
+    calc_work_hours, assign_issue, get_pool
+
+from employee.models import Employee
 
 
 class ProjectListView(SingleTableView):
@@ -109,7 +107,7 @@ def issue_edit_view(request, project_id, issue_id):
                                       project=current_project.id)
     if request.method == "POST":
         form = IssueFormForEditing(project=current_project, data=request.POST,
-                         instance=current_issue, user=request.user)
+                                   instance=current_issue, user=request.user)
         if form.is_valid():
             current_issue = form.save(commit=False)
             current_issue.project = current_project
@@ -119,7 +117,7 @@ def issue_edit_view(request, project_id, issue_id):
             return redirect('project:backlog', current_project.id)
     else:
         form = IssueFormForEditing(project=current_project,
-                                   instance=current_issue,user=request.user)
+                                   instance=current_issue, user=request.user)
     return render(request, 'project/issue_edit.html',
                   {'form': form,
                    'project': current_project,
@@ -129,7 +127,6 @@ def issue_edit_view(request, project_id, issue_id):
 @csrf_protect
 def team_view(request, project_id):
     data = {}
-
     current_project = get_object_or_404(Project, pk=project_id)
     data.update({'project': current_project})
 
@@ -207,8 +204,10 @@ def issue_detail_view(request, project_id, issue_id):
                 log.issue = current_issue
                 log.user = request.user
                 log.save()
-                return JsonResponse({'success': True, 'errors': None}, status=201)
-            return JsonResponse({'success': False, 'error': form.errors}, status=400)
+                return JsonResponse({'success': True, 'errors': None},
+                                    status=201)
+            return JsonResponse({'success': False, 'error': form.errors},
+                                status=400)
 
     if current_issue.project_id != project.id:
         raise Http404("Issue does not exist")
@@ -351,7 +350,8 @@ class SprintCreate(CreateView):
         project = Project.objects.get(id=self.kwargs['project_id'])
         context = super(SprintCreate, self).get_context_data(**kwargs)
         context['project'] = self.project
-        context['issue_list'] = project.issue_set.filter(sprint=None).order_by(
+        context['issue_list'] = project.issue_set.filter(sprint=None).filter(
+            status='new').order_by(
             'order')
         return context
 
@@ -380,7 +380,8 @@ class SprintView(DeleteView):
         context = super(SprintView, self).get_context_data(**kwargs)
         if self.object:
             issues_from_this_sprint = self.object.issue_set.all()
-            context['new_issues'] = issues_from_this_sprint.filter(status="new")
+            context['new_issues'] = issues_from_this_sprint.filter(
+                status="new")
             context['in_progress_issues'] = \
                 issues_from_this_sprint.filter(status="in progress")
             context['resolved_issues'] = \
@@ -405,8 +406,8 @@ class ActiveSprintDetailView(SprintView):
 def push_issue_in_active_sprint(request):
     if request.method == 'POST':
         if 'table' in request.POST and 'id' in request.POST:
-            table = str(request.POST.get('table', None))
-            row = int(request.POST.get('id', None))
+            table = str(request.POST.get('table'))
+            row = int(request.POST.get('id'))
             current_issue = get_object_or_404(Issue, pk=row)
             sprint = get_object_or_404(Sprint, pk=current_issue.sprint_id)
             if sprint.status == Sprint.ACTIVE and table in [Issue.IN_PROGRESS,
@@ -435,10 +436,12 @@ class IssueSearchView(SingleTableView):
         query_expr = Issue.objects.filter(project_id=self.kwargs['project_id'])
         if type:
             query_expr = query_expr.filter(type=type)  # Not Implemented
-        if status and status!='all':
+        if status and status != 'all':
             query_expr = query_expr.filter(status=status)
         if search_string:
-            query_expr = query_expr.filter(Q(title__contains=search_string) | Q(description__contains=search_string))
+            query_expr = query_expr.filter(
+                Q(title__contains=search_string) | Q(
+                    description__contains=search_string))
         return query_expr
 
     def get_context_data(self, **kwargs):
@@ -514,44 +517,102 @@ def team_create(request, project_id):
                                                         'project': project})
 
 
-@waffle_flag('only_developer')
+@waffle_flag('read_workflow_manager', 'project:list')
+def workload_manager(request, project_id, sprint_status):
+    if request.method == 'POST':
+        data = json.loads(request.POST.get('data'))
+
+        employee_id = data['employee']
+        issue = Issue.objects.get(pk=data['issue'])
+        # if issue was drugged into pool
+        if employee_id == 0:
+            put_issue_back_to_pool(project_id, issue, sprint_status)
+        else:
+            assign_issue(project_id, employee_id, issue, sprint_status)
+        issue.save()
+
+    project = get_object_or_404(Project, pk=project_id)
+    issues_log = get_pool(project_id, sprint_status)
+
+    try:
+        employees = ProjectTeam.objects.filter(project=project)[0] \
+            .employees.filter(groups__pk__in=[1, 2])
+    except ProjectTeam.DoesNotExist:
+        raise Http404("ProjectTeam does not exist")
+
+    items = []
+    for employee in employees:
+        issues = Issue.objects.filter(project=project_id) \
+            .filter(sprint__status=sprint_status, employee=employee).filter(
+            ~Q(status='deleted'))
+        items.append({'employee': employee, 'issues': issues})
+
+    try:
+        sprint = Sprint.objects.get(project=project_id, status=sprint_status)
+    except Sprint.DoesNotExist:
+        raise Http404("Sprint does not exist")
+
+    work_hours = calc_work_hours(sprint)
+    for item in items:
+        sum = 0
+        for issue in item['issues']:
+            if not issue.estimation:
+                return HttpResponse('The issue has to be estimated',
+                                    status=401)
+            sum += issue.estimation
+
+        item['workload'] = sum * 100 / work_hours
+        item['free'] = work_hours - sum
+
+    context = {'items': items,
+               'project': project,
+               'issues_log': issues_log,
+               'sprint_status': sprint_status}
+
+    if request.is_ajax():
+        html = render_to_string('project/workload_template.html', context)
+        return HttpResponse(html)
+
+    return render(request, 'project/workload_manager.html', context)
+
+
 def notes_view(request, project_id):
     project = get_object_or_404(Project, pk=project_id)
+
     if request.method == "GET":
         notes = ProjectNote.objects.filter(project_id=project_id)
         return render(request, 'project/notes.html', {'project': project,
                                                       'notes': notes})
-    if request.method == "POST":
-        if 'id' in request.POST and 'title' in request.POST and 'content' \
-                in request.POST:
-            id = request.POST.get('id', None)
-            title = str(request.POST.get('title', None))
-            content = str(request.POST.get('content', None))
-            if id == 'undefined' and len(content) <= 5000 and len(title) <= 15:
-                note = ProjectNote.objects.create(project_id=project.id)
-                note.title = title
-                note.content = content
+
+    if request.method == "POST" and 'id' in request.POST:
+        form = NoteForm(request.POST)
+        if form.is_valid():
+            id_val = request.POST.get('id')
+            note = form.save(commit=False)
+            note.project_id = project.id
+            note.title = form.cleaned_data['title']
+            note.content = form.cleaned_data['content']
+
+            if id_val == 'undefined':
                 note.save()
                 response = HttpResponse()
                 response.__setitem__('note_id', str(note.id))
                 return response
             else:
-                note = get_object_or_404(ProjectNote, pk=int(id))
-                if len(content) <= 5000 and len(title) <= 15:
-                    note.title = title
-                    note.content = content
-                    note.save()
-                    return HttpResponse()
-            raise Http404("Wrong request")
+                note.id = int(id_val)
+                get_object_or_404(ProjectNote, pk=note.id)
+                note.save()
+                return HttpResponse()
+
     if request.method == "DELETE":
         delete = QueryDict(request.body)
         if 'id' in delete:
-            id = int(delete.get('id', None))
-            note = get_object_or_404(ProjectNote, pk=id)
+            id_val = int(delete.get('id'))
+            note = get_object_or_404(ProjectNote, pk=id_val)
             note.delete()
             return HttpResponse()
         raise Http404("Wrong request")
-    return redirect(request, 'project:notes', {'project': project})
+    return redirect(request, 'project:note', {'project_id': project_id})
 
 
 @waffle_flag('edit_sprint')
@@ -561,13 +622,12 @@ def finish_active_sprint_view(request, project_id):
                                           status=Sprint.ACTIVE)
         form = SprintFinishForm(request.POST)
         if form.is_valid():
-            relies = form.cleaned_data['relies_link']
-            feedback = form.cleaned_data['feedback_text']
-            active_sprint.relies_link = relies
-            active_sprint.feedback_text = feedback
+            active_sprint.relies_link = form.cleaned_data['relies_link']
+            active_sprint.feedback_text = form.cleaned_data['feedback_text']
             active_sprint.status = Sprint.FINISHED
             active_sprint.end_date = datetime.datetime.now()
             active_sprint.save()
             return HttpResponseRedirect(reverse('project:sprint_active',
-                                            kwargs={'project_id': project_id}))
+                                                kwargs={
+                                                    'project_id': project_id}))
     raise Http404

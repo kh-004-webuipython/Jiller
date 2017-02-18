@@ -16,7 +16,7 @@
     "created": "2017-01-30T15:10:08.958Z",
     "modified": "2017-01-30T15:10:08.958Z",
     "groups": [
-      3
+      3,4
     ],
     "users": []
   }
@@ -38,8 +38,7 @@
     "created": "2017-01-30T15:10:08.981Z",
     "modified": "2017-01-30T15:10:08.981Z",
     "groups": [
-      2,
-      3
+      2,3
     ],
     "users": []
   }
@@ -61,7 +60,7 @@
     "created": "2017-01-30T15:10:08.993Z",
     "modified": "2017-01-30T15:10:08.993Z",
     "groups": [
-      2
+      4
     ],
     "users": []
   }
@@ -83,8 +82,7 @@
     "created": "2017-01-30T15:10:09.003Z",
     "modified": "2017-01-30T15:10:09.003Z",
     "groups": [
-      2,
-      3
+      1, 2, 3
     ],
     "users": []
   }
@@ -106,7 +104,6 @@
     "created": "2017-01-30T16:11:37Z",
     "modified": "2017-01-30T16:12:29.133Z",
     "groups": [
-      1,
       2
     ],
     "users": []
@@ -151,8 +148,7 @@
     "created": "2017-01-30T16:12:35Z",
     "modified": "2017-01-30T16:13:03.933Z",
     "groups": [
-      1,
-      2
+      1, 2, 4
     ],
     "users": []
   }
@@ -173,7 +169,9 @@
     "note": "",
     "created": "2017-01-30T16:12:35Z",
     "modified": "2017-01-30T16:13:03.933Z",
-    "groups": [3],
+    "groups": [
+      3, 4
+    ],
     "users": []
   }
 },
@@ -181,7 +179,95 @@
   "model": "waffle.flag",
   "pk": 8,
   "fields": {
-    "name": "only_developer",
+    "name": "prioritize_issue",
+    "everyone": null,
+    "percent": null,
+    "testing": false,
+    "superusers": true,
+    "staff": true,
+    "authenticated": false,
+    "languages": "",
+    "rollout": false,
+    "note": "",
+    "created": "2017-01-30T16:12:35Z",
+    "modified": "2017-01-30T16:13:03.933Z",
+    "groups": [
+      3
+    ],
+    "users": []
+  }
+},
+{
+  "model": "waffle.flag",
+  "pk": 9,
+  "fields": {
+    "name": "update_team",
+    "everyone": null,
+    "percent": null,
+    "testing": false,
+    "superusers": true,
+    "staff": true,
+    "authenticated": false,
+    "languages": "",
+    "rollout": false,
+    "note": "",
+    "created": "2017-01-30T16:12:35Z",
+    "modified": "2017-01-30T16:13:03.933Z",
+    "groups": [
+      4
+    ],
+    "users": []
+  }
+},
+{
+  "model": "waffle.flag",
+  "pk": 10,
+  "fields": {
+    "name": "company_employees_view",
+    "everyone": null,
+    "percent": null,
+    "testing": false,
+    "superusers": true,
+    "staff": true,
+    "authenticated": false,
+    "languages": "",
+    "rollout": false,
+    "note": "",
+    "created": "2017-01-30T16:12:35Z",
+    "modified": "2017-01-30T16:13:03.933Z",
+    "groups": [
+      4
+    ],
+    "users": []
+  }
+},
+{
+  "model": "waffle.flag",
+  "pk": 11,
+  "fields": {
+    "name": "create_team",
+    "everyone": null,
+    "percent": null,
+    "testing": false,
+    "superusers": true,
+    "staff": true,
+    "authenticated": false,
+    "languages": "",
+    "rollout": false,
+    "note": "",
+    "created": "2017-01-30T16:12:35Z",
+    "modified": "2017-01-30T16:13:03.933Z",
+    "groups": [
+      4
+    ],
+    "users": []
+  }
+},
+{
+  "model": "waffle.flag",
+  "pk": 13,
+  "fields": {
+    "name": "read_workflow_manager",
     "everyone": null,
     "percent": null,
     "testing": false,
@@ -194,7 +280,29 @@
     "created": "2017-02-07T16:12:35Z",
     "modified": "2017-02-08T16:13:03.933Z",
     "groups": [
-      1
+      1,2,3,4
+    ],
+    "users": []
+  }
+},
+{
+  "model": "waffle.flag",
+  "pk": 14,
+  "fields": {
+    "name": "update_workflow_manager",
+    "everyone": null,
+    "percent": null,
+    "testing": false,
+    "superusers": true,
+    "staff": true,
+    "authenticated": false,
+    "languages": "",
+    "rollout": false,
+    "note": "",
+    "created": "2017-02-07T16:12:35Z",
+    "modified": "2017-02-08T16:13:03.933Z",
+    "groups": [
+      1,2
     ],
     "users": []
   }

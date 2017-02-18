@@ -171,7 +171,7 @@ class Issue(models.Model):
     TASK = 'Task'
     BUG = 'Bug'
     ISSUE_TYPE_CHOICES = (
-        (USER_STORY, _('User_story')),
+        (USER_STORY, _('User story')),
         (TASK, _('Task')),
         (BUG, _('Bug')),
     )
@@ -197,8 +197,7 @@ class Issue(models.Model):
                             max_length=255)
     estimation = models.PositiveIntegerField(verbose_name=_('Estimation'),
                                              validators=[
-                                                 MaxValueValidator(240)],
-                                             null=True, blank=True)
+                                                 MaxValueValidator(240)])
     order = models.PositiveIntegerField(verbose_name=_('Priority'), default=0,
                                         choices=ISSUE_PRIORITY)
 
@@ -223,9 +222,10 @@ class Issue(models.Model):
     def get_logs_sum(self):
         return self.issuelog_set.aggregate(Sum('cost'))['cost__sum'] or 0
 
-    # off, cuz make crush
-    #def completion_rate(self):
-        #return round((self.get_logs_sum() * 100) / self.estimation, 2)
+    def completion_rate(self):
+        if self.get_logs_sum():
+            return round((self.get_logs_sum() * 100) / self.estimation, 2)
+        return 0
 
     def save(self, *args, **kwargs):
         self.calculate_issue_priority()
@@ -280,9 +280,10 @@ def check_for_only_one_team_in_project(instance, **kwargs):
 @python_2_unicode_compatible
 class ProjectNote(models.Model):
     project = models.ForeignKey(Project, verbose_name=_('Project'))
-    title = models.CharField(max_length=255, verbose_name=_('Title'))
-    content = models.TextField(verbose_name=_('Note text'), null=True,
-                               blank=True)
+    title = models.CharField(max_length=25, verbose_name=_('Title'),
+                             null=True, blank=True)
+    content = models.TextField(max_length=5000, verbose_name=_('Note text'),
+                               null=True, blank=True)
 
     def __str__(self):
         return self.title
