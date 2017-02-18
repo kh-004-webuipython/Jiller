@@ -3,6 +3,14 @@
 
 <div class="page-header" data-project="{{ project.id }}">
     <h1>{{ project.title }}</h1></div>
+
+{% for message in messages %}
+  <p class="red pull-right">
+    <i class="ace-icon fa fa-asterisk red"></i>
+    <strong {% if message.tags %} class="{{ message.tags }}"
+    {% endif %}>{{ message }}</strong></p>
+{% endfor %}
+
 <div class="tabbable">
   <ul class="nav nav-tabs" id="myTab">
     <li {% if detail %}class="active"{% endif %}>
@@ -44,4 +52,5 @@
     {% endflag %}
   </ul>
 </div>
+
 <div class="clearfix navbar-margin-bottom"></div>

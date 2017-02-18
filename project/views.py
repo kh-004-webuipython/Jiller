@@ -1,5 +1,6 @@
 import datetime
 import json
+from django.contrib import messages
 
 from django.conf import settings
 from django.db.models import Q
@@ -11,6 +12,7 @@ from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.views.generic import DetailView
 from django.utils.decorators import method_decorator
 from django.urls import reverse
+from django.core.exceptions import ValidationError
 
 from django_tables2 import SingleTableView, RequestConfig
 from waffle.decorators import waffle_flag
@@ -473,15 +475,16 @@ def workload_manager(request, project_id, sprint_status):
 
         relate = data['relate']
         issue = Issue.objects.get(pk=data['issue'])
-        # if issue was drugged into pool
-        if relate in ['backlog', 'new_sprint']:
+        # if issue was drugged into backlog or sprint pool
+        if relate in ['backlog', 'new_sprint', 'active_sprint']:
             put_issue_back_to_pool(project_id, issue, relate)
         else:
             assign_issue(project_id, relate, issue, sprint_status)
         issue.save()
 
     project = get_object_or_404(Project, pk=project_id)
-    issues_log = get_pool(project_id, Sprint.ACTIVE)
+    issues_log = get_pool(project_id, 'backlog')
+    sprint_log = get_pool(project_id, sprint_status)
 
     try:
         employees = ProjectTeam.objects.get(project=project) \
@@ -505,9 +508,6 @@ def workload_manager(request, project_id, sprint_status):
     for item in items:
         sum = 0
         for issue in item['issues']:
-            if not issue.estimation:
-                return HttpResponse('The issue has to be estimated',
-                                    status=401)
             sum += issue.estimation
 
         item['workload'] = sum * 100 / work_hours
@@ -516,11 +516,8 @@ def workload_manager(request, project_id, sprint_status):
     context = {'items': items,
                'project': project,
                'issues_log': issues_log,
-               'sprint_status': sprint_status}
-
-    if sprint_status == Sprint.NEW:
-        new_sprint_log = get_pool(project_id, sprint_status)
-        context['new_sprint_log'] = new_sprint_log
+               'sprint_status': sprint_status,
+               'sprint_log': sprint_log}
 
     if request.is_ajax():
         html = render_to_string('project/workload_template.html', context)
@@ -603,4 +600,23 @@ def sprint_create_view(request, project_id):
             new_sprint.save()
             return HttpResponseRedirect(reverse('project:workload_manager',
                                                 args=[project_id, Sprint.NEW]))
+    raise Http404
+
+
+@waffle_flag('edit_sprint')
+def sprint_start_view(request, project_id):
+    if request.method == "POST":
+        current_sprint = get_object_or_404(Sprint, project_id=project_id,
+                                           status=Sprint.NEW)
+        current_sprint.status = Sprint.ACTIVE
+        current_sprint.start_date = datetime.datetime.now()
+        try:
+            current_sprint.save()
+        except ValidationError:
+            message = 'to start sprint you need to finish active one'
+            messages.add_message(request, messages.INFO, message)
+            return HttpResponseRedirect(reverse('project:sprint_active',
+                                                args=[project_id, ]))
+        return HttpResponseRedirect(reverse('project:workload_manager',
+                                            args=[project_id, Sprint.ACTIVE]))
     raise Http404

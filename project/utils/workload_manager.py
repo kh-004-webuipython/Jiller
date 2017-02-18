@@ -12,6 +12,9 @@ def put_issue_back_to_pool(pk, issue, relate):
     current_sprint = None
     if relate == 'new_sprint':
         current_sprint = Sprint.objects.get(project=pk, status=Sprint.NEW)
+    elif relate == 'active_sprint':
+        current_sprint = Sprint.objects.get(project=pk, status=Sprint.ACTIVE)
+    issue.status = Issue.NEW
     issue.sprint = current_sprint
     issue.employee = None
 
@@ -19,17 +22,20 @@ def put_issue_back_to_pool(pk, issue, relate):
 def assign_issue(pk, employee, issue, sprint_status):
     employee = Employee.objects.get(pk=employee)
     issue.employee = employee
+    if issue.type == Issue.USER_STORY:
+        issue.type = Issue.TASK
     if not issue.sprint:
         sprint = Sprint.objects.get(project=pk, status=sprint_status)
         issue.sprint = sprint
 
 
 def get_pool(pk, sprint_status):
-    if sprint_status == Sprint.NEW:
+    issues_log = None
+    if sprint_status in [Sprint.NEW, Sprint.ACTIVE]:
         issues_log = Issue.objects.filter(project=pk)\
-                         .filter(sprint__status=Sprint.NEW) \
+                         .filter(sprint__status=sprint_status) \
                          .filter(employee__isnull=True).order_by("order")[:10]
-    else:
+    if sprint_status == 'backlog':
         issues_log = Issue.objects.filter(project=pk).filter(sprint__isnull=True) \
                          .filter(~Q(status='deleted')).order_by("order")[:10]
 
