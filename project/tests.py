@@ -268,7 +268,7 @@ class BacklogViewTests(LoginRequiredBase):
                                          start_date=datetime.date(
                                              2017, 12, 14))
         employee = Employee.objects.create()
-        Issue.objects.create(project=project,
+        Issue.objects.create(project=project, estimation=1,
                              author=employee, title='title')
         response = self.client.get(reverse('project:backlog',
                                            args=[project.id, ]))
@@ -284,7 +284,7 @@ class BacklogViewTests(LoginRequiredBase):
         sprint = Sprint.objects.create(title='title', project=project,
                                        duration=10)
         Issue.objects.create(project=project, author=employee,
-                             title='title', sprint=sprint)
+                             title='title', sprint=sprint, estimation=1)
         response = self.client.get(reverse('project:backlog',
                                            args=[project.id, ]))
         self.assertQuerysetEqual(response.context['issues'], [])
@@ -780,7 +780,7 @@ class WorkloadManagerTest(LoginRequiredBase):
                                        end_date=datetime.date(2017, 12, 21),
                                        status=Sprint.ACTIVE, duration=7)
         Issue.objects.create(project=self.project, author=self.user,
-                             sprint=sprint, employee=self.user)
+                             sprint=sprint, employee=self.user, estimation=1)
         response = self.client.get(reverse('project:workload_manager',
                                            kwargs={
                                                'project_id': self.project.id,
@@ -811,3 +811,27 @@ class IssueSearchTest(LoginRequiredBase):
         self.assertTrue(response.status_code == 200)
         self.assertContains(response, 'Title NEW 1')
         self.assertNotContains(response, 'Title NEW 2')
+
+
+class CreateSprintTests(LoginRequiredBase):
+    def setUp(self):
+        super(CreateSprintTests, self).setUp()
+        self.project = Project.objects.create(title='title',
+                                              start_date=datetime.date(2017, 12, 14))
+        self.team = ProjectTeam.objects.create(project=self.project,
+                                               title='title')
+        self.team.employees.add(self.user)
+
+    def test_create_sprint_with_valid_data(self):
+        form_data = {'title': 'title', 'duration': 7}
+        response = self.client.post(reverse('project:sprint_create',
+                                            args=[self.project.id]), data=form_data)
+        self.assertRedirects(response, reverse('project:workload_manager',
+                                               args=[self.project.id, Sprint.NEW]),
+                             status_code=302, target_status_code=200)
+
+    def test_create_sprint_with_invalid_data(self):
+        form_data = {'title': 'title', 'duration': 'word'}
+        response = self.client.post(reverse('project:sprint_create',
+                                            args=[self.project.id]), data=form_data)
+        self.assertTemplateUsed(response, 'general/404.html')

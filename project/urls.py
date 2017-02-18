@@ -23,12 +23,8 @@ urlpatterns = [
     # sprint
     url(r'^(?P<project_id>\d+)/sprint/$',
         views.sprints_list, name='sprints_list'),
-    # url(r'^(?P<project_id>\d+)/sprint/create/$',
-    #     views.SprintCreate.as_view(), name='sprint_create'),
-
-    url(r'^(?P<project_id>\d+)/create_sprint/$',
-        views.create_sprint_view, name='create_sprint'),
-
+    url(r'^(?P<project_id>\d+)/sprint_create/$',
+        views.sprint_create_view, name='sprint_create'),
     url(r'^(?P<project_id>\d+)/sprint/(?P<sprint_id>\d+)/$',
         views.SprintView.as_view(), name='sprint_detail'),
     url(r'^(?P<project_id>\d+)/sprint/(?P<sprint_id>\d+)/activate/$',

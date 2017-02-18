@@ -8,9 +8,9 @@ WORK_DAYS = 5
 WORK_HOURS = 8
 
 
-def put_issue_back_to_pool(pk, issue, sprint_status):
+def put_issue_back_to_pool(pk, issue, relate):
     current_sprint = None
-    if sprint_status == Sprint.NEW:
+    if relate == 'new_sprint':
         current_sprint = Sprint.objects.get(project=pk, status=Sprint.NEW)
     issue.sprint = current_sprint
     issue.employee = None

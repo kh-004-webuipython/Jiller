@@ -22,7 +22,7 @@ $(function() {
             remove: function (event, ui) {
                 var alterData = {};
                 alterData['issue'] = ui.item.data('issue');
-                alterData['employee'] = ui.item.parent().data('employee');
+                alterData['relate'] = ui.item.parent().data('relate');
                 var sprintStatus = $('#sprint-status').data('status');
 
                 $.ajax({
