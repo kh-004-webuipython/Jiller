@@ -69,7 +69,8 @@ def backlog(request, project_id):
     except Project.DoesNotExist:
         raise Http404("Project does not exist")
     issues = Issue.objects.filter(project=project_id) \
-        .filter(sprint__isnull=True).filter(~Q(status='deleted'))
+        .filter(sprint__isnull=True).filter(~Q(status='deleted')).filter(
+        ~Q(status='closed'))
 
     return render(request, 'project/backlog.html', {'project': project,
                                                     'issues': issues})
