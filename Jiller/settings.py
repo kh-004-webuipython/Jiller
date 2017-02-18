@@ -189,7 +189,7 @@ CELERY_TIMEZONE = 'UTC'
 EMAIL_USE_TLS = True
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_HOST_USER = 'email.assign.python.webui@gmail.com'
-EMAIL_HOST_PASSWORD = 'Evrey123'
+EMAIL_HOST_PASSWORD = 'Kh004Python'
 EMAIL_PORT = 587
 DEFAULT_FROM_EMAIL = 'email.assign.python.webui@gmail.com'
 
