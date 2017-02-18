@@ -268,7 +268,7 @@ class BacklogViewTests(LoginRequiredBase):
                                          start_date=datetime.date(
                                              2017, 12, 14))
         employee = Employee.objects.create()
-        Issue.objects.create(project=project,
+        Issue.objects.create(project=project, estimation=1,
                              author=employee, title='title')
         response = self.client.get(reverse('project:backlog',
                                            args=[project.id, ]))
@@ -284,7 +284,7 @@ class BacklogViewTests(LoginRequiredBase):
         sprint = Sprint.objects.create(title='title', project=project,
                                        duration=10)
         Issue.objects.create(project=project, author=employee,
-                             title='title', sprint=sprint)
+                             title='title', sprint=sprint, estimation=1)
         response = self.client.get(reverse('project:backlog',
                                            args=[project.id, ]))
         self.assertQuerysetEqual(response.context['issues'], [])
@@ -816,3 +816,62 @@ class IssueSearchTest(LoginRequiredBase):
         self.assertTrue(response.status_code == 200)
         self.assertContains(response, 'Title NEW 1')
         self.assertNotContains(response, 'Title NEW 2')
+
+
+class CreateSprintTests(LoginRequiredBase):
+    def setUp(self):
+        super(CreateSprintTests, self).setUp()
+        self.project = Project.objects.create(title='title',
+                                              start_date=datetime.date(2017, 02, 02))
+        self.team = ProjectTeam.objects.create(project=self.project,
+                                               title='title')
+        self.team.employees.add(self.user)
+
+    def test_create_sprint_with_valid_data(self):
+        form_data = {'title': 'title', 'duration': 7}
+        response = self.client.post(reverse('project:sprint_create',
+                                            args=[self.project.id]), data=form_data)
+        self.assertRedirects(response, reverse('project:workload_manager',
+                                               args=[self.project.id, Sprint.NEW]),
+                             status_code=302, target_status_code=200)
+
+    def test_create_sprint_with_invalid_data(self):
+        form_data = {'title': 'title', 'duration': 'word'}
+        response = self.client.post(reverse('project:sprint_create',
+                                            args=[self.project.id]), data=form_data)
+        self.assertTemplateUsed(response, 'general/404.html')
+
+
+class StartSprintTests(LoginRequiredBase):
+    def setUp(self):
+        super(StartSprintTests, self).setUp()
+        self.project = Project.objects.create(title='title',
+                                              start_date=datetime.date(2017, 02, 02))
+        self.sprint = Sprint.objects.create(project=self.project, title='title',
+                                            status=Sprint.NEW, duration=10)
+        self.team = ProjectTeam.objects.create(project=self.project,
+                                               title='title')
+        self.team.employees.add(self.user)
+
+    def test_start_sprint_if_active_one_does_not_exists(self):
+        response = self.client.post(reverse('project:sprint_start',
+                                            args=[self.project.id]))
+        self.assertRedirects(response, reverse('project:sprint_active',
+                                               args=[self.project.id, ]),
+                             status_code=302, target_status_code=200)
+        response = self.client.get(reverse('project:sprint_active',
+                                           args=[self.project.id, ]))
+        self.assertContains(response, 'Workload Manager', status_code=200)
+
+    def test_start_sprint_if_active_one_exists(self):
+        Sprint.objects.create(project=self.project, title='title',
+                              start_date=datetime.date(2017, 02, 02),
+                              status=Sprint.ACTIVE, duration=10)
+        response = self.client.post(reverse('project:sprint_start',
+                                            args=[self.project.id]))
+        self.assertRedirects(response, reverse('project:sprint_active',
+                                               args=[self.project.id, ]),
+                             status_code=302, target_status_code=200)
+        response = self.client.get(reverse('project:sprint_active',
+                                           args=[self.project.id, ]))
+        self.assertContains(response, 'Finish Sprint', status_code=200)
