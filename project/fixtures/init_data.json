@@ -126,7 +126,7 @@
       "created": "2017-01-30T16:12:35Z",
       "modified": "2017-01-30T16:13:03.933Z",
       "groups": [
-        1, 2
+        1, 2, 4
       ],
       "users": []
     }
@@ -237,28 +237,6 @@
       "modified": "2017-01-30T16:13:03.933Z",
       "groups": [
         4
-      ],
-      "users": []
-    }
-  },
-  {
-    "model": "waffle.flag",
-    "pk": 12,
-    "fields": {
-      "name": "only_developer",
-      "everyone": null,
-      "percent": null,
-      "testing": false,
-      "superusers": true,
-      "staff": true,
-      "authenticated": false,
-      "languages": "",
-      "rollout": false,
-      "note": "",
-      "created": "2017-02-07T16:12:35Z",
-      "modified": "2017-02-08T16:13:03.933Z",
-      "groups": [
-        1
       ],
       "users": []
     }

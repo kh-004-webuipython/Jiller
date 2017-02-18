@@ -6,7 +6,8 @@ from django.utils.translation import ugettext_lazy as _
 from general.tasks import send_assign_email_task
 from employee.models import IssueLog
 from general.forms import FormControlMixin
-from .models import Project, Sprint, Issue, ProjectTeam, IssueComment
+from .models import Project, Sprint, Issue, ProjectTeam, IssueComment, \
+    ProjectNote
 
 
 class DateInput(forms.DateInput):
@@ -149,3 +150,9 @@ class SprintCreateForm(FormControlMixin, forms.ModelForm):
     class Meta:
         model = Sprint
         fields = ['title', 'duration']
+
+
+class NoteForm(forms.ModelForm):
+    class Meta:
+        model = ProjectNote
+        fields = ['title', 'content']
