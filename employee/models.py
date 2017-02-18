@@ -37,6 +37,14 @@ class Employee(SimpleEmailConfirmationUserMixin, AbstractUser):
     def get_cropped_photo(self, *args, **kwargs):
         return get_thumbnail(self.photo, '136x150', crop='center')
 
+    @property
+    def get_role(self):
+        try:
+            role = self.groups.get()
+        except:
+            role = 'admin'
+        return role
+
 
 # check users for for PM teams before delete
 @receiver(pre_delete, sender=Employee)

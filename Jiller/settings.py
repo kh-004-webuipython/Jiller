@@ -166,7 +166,7 @@ NOSE_ARGS = [
     '--cover-package=general,project,employee',
 ]
 
-PAGINATION_PER_PAGE = 10
+PAGINATION_PER_PAGE = 20
 
 try:
     from .local_settings import *
