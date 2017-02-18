@@ -581,19 +581,19 @@ def notes_view(request, project_id):
     if request.method == "POST" and 'id' in request.POST:
         form = NoteForm(request.POST)
         if form.is_valid():
-            id = request.POST.get('id')
+            id_val = request.POST.get('id')
             note = form.save(commit=False)
             note.project_id = project.id
             note.title = form.cleaned_data['title']
             note.content = form.cleaned_data['content']
 
-            if id == 'undefined':
+            if id_val == 'undefined':
                 note.save()
                 response = HttpResponse()
                 response.__setitem__('note_id', str(note.id))
                 return response
             else:
-                note.id = int(id)
+                note.id = int(id_val)
                 get_object_or_404(ProjectNote, pk=note.id)
                 note.save()
                 return HttpResponse()
@@ -601,8 +601,8 @@ def notes_view(request, project_id):
     if request.method == "DELETE":
         delete = QueryDict(request.body)
         if 'id' in delete:
-            id = int(delete.get('id'))
-            note = get_object_or_404(ProjectNote, pk=id)
+            id_val = int(delete.get('id'))
+            note = get_object_or_404(ProjectNote, pk=id_val)
             note.delete()
             return HttpResponse()
         raise Http404("Wrong request")
