@@ -12,7 +12,7 @@ from django.core.exceptions import ValidationError
 from django.core.validators import MaxValueValidator
 from django.contrib.auth.models import Group
 from sorl.thumbnail.shortcuts import get_thumbnail
-from django.db.models.signals import pre_save
+from django.db.models.signals import pre_save, post_save
 from django.dispatch import receiver
 
 
@@ -86,7 +86,8 @@ class Sprint(models.Model):
 
     def get_chart_data(self, date):
         return self.issue_set.filter(
-            issuelog__date_created__range=[self.start_date, date + datetime.timedelta(days=1)]).extra(
+            issuelog__date_created__range=[self.start_date, date + datetime.timedelta(days=1)]).exclude(
+            status=Issue.CLOSED).extra(
             {'date_created': "date(date_created)"}).values('date_created').annotate(
             sum=Sum('issuelog__cost')).order_by()
 
@@ -232,6 +233,18 @@ class Issue(models.Model):
         if self.sprint and self.sprint.project != self.project:
             raise ValidationError("Sprint is incorrect")
         super(Issue, self).save(*args, **kwargs)
+
+
+@receiver(pre_save, sender=Issue)
+def change_sprint_status(instance, **kwargs):
+    from employee.models import IssueLog
+    if instance.status == Issue.RESOLVED:
+        now = datetime.datetime.now()
+        log_cost_left = instance.estimation - instance.get_logs_sum()
+        note = '({}) was changed status to resolved at {}. Employee: {}'.format(instance.title, now, instance.employee)
+        IssueLog.objects.create(issue=instance, user=instance.author, cost=log_cost_left, note=note, is_hidden=True)
+    else:
+        instance.issuelog_set.filter(is_hidden=True).delete()
 
 
 @python_2_unicode_compatible
