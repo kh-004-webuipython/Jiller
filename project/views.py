@@ -198,7 +198,8 @@ def issue_detail_view(request, project_id, issue_id):
                 log.issue = current_issue
                 log.user = request.user
                 log.save()
-                return JsonResponse({'success': True, 'errors': None},
+                return JsonResponse({'success': True, 'errors': None,
+                                     'completion_rate': current_issue.completion_rate()},
                                     status=201)
             return JsonResponse({'success': False, 'error': form.errors},
                                 status=400)
