@@ -20,6 +20,6 @@ td a {
     text-decoration: none !important;
 }
 
-[data-issueType].over {
+.over {
   border: 2px dashed #000;
 }

@@ -35,13 +35,11 @@
         Team
       </a>
     </li>
-    {% flag 'only_developer' %}
     <li {% if notes %}class="active" {% endif %}>
       <a href="{% url 'project:note' project.id %}">
         Notes
       </a>
     </li>
-    {% endflag %}
   </ul>
 </div>
 <div class="clearfix navbar-margin-bottom"></div>

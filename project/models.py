@@ -280,9 +280,10 @@ def check_for_only_one_team_in_project(instance, **kwargs):
 @python_2_unicode_compatible
 class ProjectNote(models.Model):
     project = models.ForeignKey(Project, verbose_name=_('Project'))
-    title = models.CharField(max_length=255, verbose_name=_('Title'))
-    content = models.TextField(verbose_name=_('Note text'), null=True,
-                               blank=True)
+    title = models.CharField(max_length=25, verbose_name=_('Title'),
+                             null=True, blank=True)
+    content = models.TextField(max_length=5000, verbose_name=_('Note text'),
+                               null=True, blank=True)
 
     def __str__(self):
         return self.title

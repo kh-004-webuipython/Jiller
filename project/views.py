@@ -17,7 +17,7 @@ from waffle.decorators import waffle_flag
 
 from .forms import ProjectForm, SprintCreateForm, CreateTeamForm, \
     IssueCommentCreateForm, CreateIssueForm, IssueLogForm, \
-    IssueFormForEditing, SprintFinishForm
+    IssueFormForEditing, SprintFinishForm, NoteForm
 from .models import Project, ProjectTeam, Issue, Sprint, ProjectNote
 from .decorators import delete_project, \
     edit_project_detail, create_project, create_sprint
@@ -570,40 +570,39 @@ def workload_manager(request, project_id, sprint_status):
     return render(request, 'project/workload_manager.html', context)
 
 
-@waffle_flag('only_developer')
 def notes_view(request, project_id):
     project = get_object_or_404(Project, pk=project_id)
+
     if request.method == "GET":
         notes = ProjectNote.objects.filter(project_id=project_id)
         return render(request, 'project/notes.html', {'project': project,
                                                       'notes': notes})
-    if request.method == "POST":
-        if 'id' in request.POST and 'title' in request.POST and 'content' \
-                in request.POST:
-            id = request.POST.get('id')
-            title = str(request.POST.get('title'))
-            content = str(request.POST.get('content'))
-            if id == 'undefined' and len(content) <= 5000 and len(title) <= 15:
-                note = ProjectNote.objects.create(project_id=project.id)
-                note.title = title
-                note.content = content
+
+    if request.method == "POST" and 'id' in request.POST:
+        form = NoteForm(request.POST)
+        if form.is_valid():
+            id_val = request.POST.get('id')
+            note = form.save(commit=False)
+            note.project_id = project.id
+            note.title = form.cleaned_data['title']
+            note.content = form.cleaned_data['content']
+
+            if id_val == 'undefined':
                 note.save()
                 response = HttpResponse()
                 response.__setitem__('note_id', str(note.id))
                 return response
             else:
-                note = get_object_or_404(ProjectNote, pk=int(id))
-                if len(content) <= 5000 and len(title) <= 15:
-                    note.title = title
-                    note.content = content
-                    note.save()
-                    return HttpResponse()
-            raise Http404("Wrong request")
+                note.id = int(id_val)
+                get_object_or_404(ProjectNote, pk=note.id)
+                note.save()
+                return HttpResponse()
+
     if request.method == "DELETE":
         delete = QueryDict(request.body)
         if 'id' in delete:
-            id = int(delete.get('id'))
-            note = get_object_or_404(ProjectNote, pk=id)
+            id_val = int(delete.get('id'))
+            note = get_object_or_404(ProjectNote, pk=id_val)
             note.delete()
             return HttpResponse()
         raise Http404("Wrong request")
@@ -617,10 +616,8 @@ def finish_active_sprint_view(request, project_id):
                                           status=Sprint.ACTIVE)
         form = SprintFinishForm(request.POST)
         if form.is_valid():
-            relies = form.cleaned_data['relies_link']
-            feedback = form.cleaned_data['feedback_text']
-            active_sprint.relies_link = relies
-            active_sprint.feedback_text = feedback
+            active_sprint.relies_link = form.cleaned_data['relies_link']
+            active_sprint.feedback_text = form.cleaned_data['feedback_text']
             active_sprint.status = Sprint.FINISHED
             active_sprint.end_date = datetime.datetime.now()
             active_sprint.save()

@@ -1,7 +1,8 @@
 document.addEventListener("DOMContentLoaded", function () {
     var csrftoken = getCookie('csrftoken');
-    var tables = document.querySelectorAll('[data-issueType]');
-    var dragSrcRow;
+    var tables = document.querySelectorAll('.drop');
+    var startRow;
+    var startTable;
     var curDragOverTable;
 
     tables.forEach(
@@ -20,14 +21,31 @@ document.addEventListener("DOMContentLoaded", function () {
 
     function handleDragStart(e) {
         this.classList.add('chosen');
-        dragSrcRow = e.target;   // remember start drag row
-        curDragOverTable = dragSrcRow.offsetParent;
+        startRow = e.target;   // remember start drag row
+        startTable = startRow.offsetParent.offsetParent;
+        curDragOverTable = startTable;
+        makeTableBackgroundBigger();
+    }
+
+    function makeTableBackgroundBigger() {
+        tables.forEach(function (table) {
+            if (table != startTable) {
+                var position = table.getBoundingClientRect();
+                var windowHeight = document.documentElement.clientHeight;
+                var additionalHeight = windowHeight - position.top;
+                //check need to prevent sub-scroll bar thru table borders
+                if (additionalHeight > table.clientHeight) {
+                    table.style.height = additionalHeight + 'px';
+                }
+             }
+        });
     }
 
     // mark tables borders over drag
     function handleDragEnter(e) {
         tables.forEach(function (table) {
-            if (table.contains(e.target) && table != curDragOverTable) {
+            if (table.contains(e.target) && table != curDragOverTable &&
+                table != startTable) {
                 curDragOverTable.classList.remove('over');
                 curDragOverTable = table;
                 curDragOverTable.classList.add('over');
@@ -44,6 +62,7 @@ document.addEventListener("DOMContentLoaded", function () {
     function handleDragEnd(e) {
         tables.forEach(function (table) {
             table.classList.remove('over');
+            table.style.height = '';
             e.target.classList.remove('chosen');
         });
     }
@@ -55,11 +74,8 @@ document.addEventListener("DOMContentLoaded", function () {
         e.preventDefault();
         tables.forEach(
             function (table) {
-                if (table != dragSrcRow.offsetParent) {
-                    if (table.contains(e.target)) {
-                        makePost(table);
-                    }
-
+                if (table != startTable && table.contains(e.target)) {
+                    makePost(table.children[0]);
                 }
             }
         );
@@ -69,7 +85,7 @@ document.addEventListener("DOMContentLoaded", function () {
     function makePost(table) {
         var xhr = new XMLHttpRequest();
         var body = 'table=' + encodeURIComponent(table.dataset['issuetype']) +
-            '&id=' + encodeURIComponent(dragSrcRow.dataset['id']);
+            '&id=' + encodeURIComponent(startRow.dataset['id']);
         xhr.open("POST", '/project/issue_push/', true);
         xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
         xhr.setRequestHeader("X-CSRFTOKEN", csrftoken);
@@ -86,15 +102,15 @@ document.addEventListener("DOMContentLoaded", function () {
         var tableBody = table.getElementsByTagName('tbody')[0];
         var rows = tableBody.children;
         if (!rows.length) {
-            tableBody.append(dragSrcRow);
+            tableBody.append(startRow);
         } else {
             for (var i = 0; i < rows.length; i++) {
-                if (rows[i].dataset['id'] > dragSrcRow.dataset['id']) {
-                    tableBody.insertBefore(dragSrcRow, tableBody.children[i]);
+                if (rows[i].dataset['id'] > startRow.dataset['id']) {
+                    tableBody.insertBefore(startRow, tableBody.children[i]);
                     return
                 }
             }
-            tableBody.append(dragSrcRow);
+            tableBody.append(startRow);
         }
     }
 });
