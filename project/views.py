@@ -570,7 +570,6 @@ def workload_manager(request, project_id, sprint_status):
     return render(request, 'project/workload_manager.html', context)
 
 
-@waffle_flag('only_developer')
 def notes_view(request, project_id):
     project = get_object_or_404(Project, pk=project_id)
 
