@@ -822,7 +822,7 @@ class CreateSprintTests(LoginRequiredBase):
     def setUp(self):
         super(CreateSprintTests, self).setUp()
         self.project = Project.objects.create(title='title',
-                                              start_date=datetime.date(2017, 12, 14))
+                                              start_date=datetime.date(2017, 02, 02))
         self.team = ProjectTeam.objects.create(project=self.project,
                                                title='title')
         self.team.employees.add(self.user)
@@ -846,7 +846,7 @@ class StartSprintTests(LoginRequiredBase):
     def setUp(self):
         super(StartSprintTests, self).setUp()
         self.project = Project.objects.create(title='title',
-                                              start_date=datetime.date(2017, 12, 14))
+                                              start_date=datetime.date(2017, 02, 02))
         self.sprint = Sprint.objects.create(project=self.project, title='title',
                                             status=Sprint.NEW, duration=10)
         self.team = ProjectTeam.objects.create(project=self.project,
@@ -856,16 +856,22 @@ class StartSprintTests(LoginRequiredBase):
     def test_start_sprint_if_active_one_does_not_exists(self):
         response = self.client.post(reverse('project:sprint_start',
                                             args=[self.project.id]))
-        self.assertRedirects(response, reverse('project:workload_manager',
-                                               args=[self.project.id, Sprint.ACTIVE]),
+        self.assertRedirects(response, reverse('project:sprint_active',
+                                               args=[self.project.id, ]),
                              status_code=302, target_status_code=200)
+        response = self.client.get(reverse('project:sprint_active',
+                                           args=[self.project.id, ]))
+        self.assertContains(response, 'Workload Manager', status_code=200)
 
     def test_start_sprint_if_active_one_exists(self):
         Sprint.objects.create(project=self.project, title='title',
-                              start_date=datetime.date(2017, 12, 14),
+                              start_date=datetime.date(2017, 02, 02),
                               status=Sprint.ACTIVE, duration=10)
         response = self.client.post(reverse('project:sprint_start',
                                             args=[self.project.id]))
         self.assertRedirects(response, reverse('project:sprint_active',
                                                args=[self.project.id, ]),
                              status_code=302, target_status_code=200)
+        response = self.client.get(reverse('project:sprint_active',
+                                           args=[self.project.id, ]))
+        self.assertContains(response, 'Finish Sprint', status_code=200)

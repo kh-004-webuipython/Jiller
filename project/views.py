@@ -614,6 +614,6 @@ def sprint_start_view(request, project_id):
             messages.add_message(request, messages.INFO, message)
             return HttpResponseRedirect(reverse('project:sprint_active',
                                                 args=[project_id, ]))
-        return HttpResponseRedirect(reverse('project:workload_manager',
-                                            args=[project_id, Sprint.ACTIVE]))
+        return HttpResponseRedirect(reverse('project:sprint_active',
+                                            args=[project_id, ]))
     raise Http404
