@@ -82,7 +82,8 @@ class Sprint(models.Model):
         return self.start_date + datetime.timedelta(days=self.duration)
 
     def calculate_estimation_sum(self):
-        return self.issue_set.aggregate(Sum('estimation'))['estimation__sum'] or 0
+        return self.issue_set.exclude(
+            status=Issue.CLOSED).aggregate(Sum('estimation'))['estimation__sum'] or 0
 
     def get_chart_data(self, date):
         return self.issue_set.filter(
