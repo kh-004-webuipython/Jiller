@@ -20,6 +20,8 @@ def put_issue_back_to_pool(pk, issue, relate):
 
 
 def assign_issue(pk, employee, issue, sprint_status):
+    if not issue.estimation:
+        return HttpResponse('The issue has to be estimated', status=401)
     employee = Employee.objects.get(pk=employee)
     issue.employee = employee
     if issue.type == Issue.USER_STORY:
