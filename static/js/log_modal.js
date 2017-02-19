@@ -11,6 +11,8 @@ jQuery(function ($) {
                     $('.modal-body').empty();
                     $('.modal-footer').empty();
                     $('.modal-body').append('<h3>' + $('#log-modal').attr('data-success-title') + '</h3>');
+                    $('div.progress-bar').css('width', data.completion_rate + '%');
+                    $('div.progress.pos-rel').attr('data-percent', data.completion_rate + '%')
                 },
                 400: function (data) {
                     $('#log-modal-form').addClass('has-error');
