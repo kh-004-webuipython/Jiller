@@ -4,6 +4,10 @@ html, body {
     padding: 0;
 }
 
+*:focus {
+    outline: none!important;
+}
+
 /* some elements used in demo only */
 .spinner-preview {
     width: 100px;

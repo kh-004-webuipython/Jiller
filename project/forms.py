@@ -84,6 +84,12 @@ class IssueFormForEditing(IssueForm):
         self.fields.pop('order')
 
 
+class IssueFormForSprint(IssueForm):
+    def __init__(self, *args, **kwargs):
+        super(IssueFormForSprint, self).__init__(*args, **kwargs)
+        self.fields.pop('sprint')
+
+
 class CreateIssueForm(IssueForm):
     def clean_title(self):
         cleaned_data = super(IssueForm, self).clean()
