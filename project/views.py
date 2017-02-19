@@ -147,7 +147,6 @@ def team_view(request, project_id):
     table_attrs_data = {"class": "table table-bordered table-striped "
                                  "table-hover table-sm"}
 
-    #if team.employees.count() != 1:
     employee = Employee.objects.filter(projectteam__project=project_id). \
                                 exclude(groups__name='project manager')
 

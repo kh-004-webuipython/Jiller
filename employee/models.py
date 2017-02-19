@@ -46,11 +46,7 @@ class Employee(SimpleEmailConfirmationUserMixin, AbstractUser):
 
     @property
     def get_role(self):
-        try:
-            role = self.groups.get()
-        except:
-            role = 'admin'
-        return role
+        return self.groups.first() or 'admin'
 
 
 # check users for for PM teams before delete

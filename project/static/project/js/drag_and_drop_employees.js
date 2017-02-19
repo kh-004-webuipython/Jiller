@@ -2,7 +2,7 @@ document.addEventListener("DOMContentLoaded", function () {
     var csrftoken = getCookie('csrftoken');
     var tables = document.querySelectorAll('[data-table]');
     var rows = document.querySelectorAll('[data-id]')
-    var srcRow;
+    var srcRow, srcTable;
 
     tables.forEach(
         function (table) {
@@ -29,6 +29,7 @@ document.addEventListener("DOMContentLoaded", function () {
     function drag(ev) {
         this.style.opacity = '0.4';
         srcRow = this;
+        srcTable = srcRow.offsetParent;
         ev.dataTransfer.effectAllowed = 'move';
         ev.dataTransfer.setData("text/html", this);
     }
@@ -39,12 +40,14 @@ document.addEventListener("DOMContentLoaded", function () {
         }
         this.style.opacity = '1';
 
+        if (! srcTable.contains(ev.target)) {
         tables.forEach(
             function (table) {
-                if (srcRow.offsetParent != ev.target.offsetParent && table.contains(ev.target)) {
+                 if (table != srcTable && table.contains(ev.target)) {
                     sendRow();
                 }
             });
+        }
     }
 
     function sendRow() {
