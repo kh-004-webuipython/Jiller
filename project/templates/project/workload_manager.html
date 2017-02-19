@@ -41,6 +41,13 @@
 {% endblock %}
 
 {% block content %}
+  {% if sprint_status == 'new'|sprint_status %}
+    {% flag 'edit_sprint' %}
+      <button class="btn btn-primary pull-right" data-toggle="modal"
+              data-target="#confirm_start_modal">Start Sprint</button>
+    {% endflag %}
+  {% endif %}
+
   {% include 'project/project_navbar.html' with sprint_detail=True %}
 
     <div id="error-message"></div>
@@ -48,6 +55,10 @@
   <div id="workload-template">
     {% include 'project/workload_template.html' %}
   </div>
+
+  {% if sprint_status == 'new'|sprint_status %}
+    {% include 'project/pop-up/sprint_start.html' %}
+  {% endif %}
 
   {% block extrascripts %}
 
