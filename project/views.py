@@ -54,7 +54,7 @@ def sprints_list(request, project_id):
     except Project.DoesNotExist:
         raise Http404("Project does not exist")
     sprints = Sprint.objects.filter(project=project_id) \
-        .exclude(status=Sprint.ACTIVE)
+        .exclude(status__in=[Sprint.ACTIVE, Sprint.NEW])
 
     table = SprintsListTable(sprints)
     RequestConfig(request,
