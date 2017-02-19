@@ -158,7 +158,8 @@ LOGIN_EXEMPT_URLS = (
  r'^login/$',
  r'^registration/$',
  r'^confirmation/(?P<username>[a-zA-Z0-9]+)/(?P<key>[a-zA-Z0-9]+)/$',
- r'^sender/(?P<username>[a-zA-Z0-9]+)/$'
+ r'^sender/(?P<username>[a-zA-Z0-9]+)/$',
+ r'^accounts/github/login/$',
 )
 
 
