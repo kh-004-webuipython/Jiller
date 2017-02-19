@@ -32,28 +32,29 @@
 
 {% block content %}
   <div class='btn-group pull-right'>
-  {% if project.id|sprint_exist:'new' %}
-    {% flag "read_workflow_manager" %}
-      <a href="{% url 'project:workload_manager' project.id 'new'|sprint_status %}"
-         class="btn btn-primary pull-right">Form Sprint</a>
-    {% endflag %}
-  {% endif %}
+    {% if project.id|sprint_exist:'new' %}
+      {% flag "read_workflow_manager" %}
+        <a href="{% url 'project:workload_manager' project.id 'new'|sprint_status %}"
+           class="btn btn-success pull-right">Form Sprint</a>
+      {% endflag %}
+    {% endif %}
 
-  {% if active_sprint %}
+    {% if active_sprint %}
 
-  {% flag "read_workflow_manager" %}
-    <a href="{% url 'project:workload_manager' project.id 'active'|sprint_status %}"
-       class="btn btn-primary pull-right">Workload Manager</a>
-  {% endflag %}
+      {% flag "read_workflow_manager" %}
+        <a href="{% url 'project:workload_manager' project.id 'active'|sprint_status %}"
+           class="btn btn-primary pull-right">Workload Manager</a>
+      {% endflag %}
 
-  <a href="#chart-modal" role="button" data-toggle="modal"
+      <a href="#chart-modal" role="button" data-toggle="modal"
          class="btn btn-info pull-right">Burndown chart</a>
 
-  {% flag 'edit_sprint' %}
-    <button class="btn btn-primary" data-toggle="modal"
-            data-target="#confirm_finish_modal">Finish Sprint</button>
-  {% endflag %}
-  {% endif %}
+      {% flag 'edit_sprint' %}
+        <button class="btn btn-danger" data-toggle="modal"
+                data-target="#confirm_finish_modal">Finish Sprint
+        </button>
+      {% endflag %}
+    {% endif %}
 
   {% if not project.id|sprint_exist:'new' %}
     {% flag 'create_sprint' %}
@@ -105,8 +106,13 @@
                 ondragstart="event.dataTransfer.setData('text/plain',null)">
               <td class="{{ new_iss.type }}">
                 <a draggable="false" class="align-middle" href="
-{% url 'project:issue_detail' new_iss.project_id new_iss.id %}">
-                  {{ new_iss.title }}</a>
+                  {% url 'project:issue_detail' new_iss.project_id new_iss.id %}">
+                  <ul class="list-unstyled" style="margin-bottom: 0">
+                    <li>{{ new_iss.title }} ( {{ new_iss.estimation }} hours )</li>
+                    <li>Assigned to: {{ new_iss.employee.get_full_name }}</li>
+                    <li>Completion: {{ new_iss.completion_rate }}%</li>
+                  </ul>
+                </a>
             </tr>
           {% endfor %}
           </tbody>
@@ -127,7 +133,12 @@
               <td class="{{ progress.type }}">
                 <a draggable="false" class="align-middle" href="
 {% url 'project:issue_detail' progress.project_id progress.id %}">
-                  {{ progress.title }}</a>
+                  <ul class="list-unstyled" style="margin-bottom: 0">
+                    <li>{{ progress.title }} ( {{ progress.estimation }} hours )</li>
+                    <li>Assigned to: {{ progress.employee.get_full_name }}</li>
+                    <li>Completion: {{ progress.completion_rate }}%</li>
+                  </ul>
+                </a>
               </td>
             </tr>
           {% endfor %}
@@ -149,7 +160,13 @@
               <td class="{{ resolved.type }}">
                 <a draggable="false" class="align-middle" href="
 {% url 'project:issue_detail' resolved.project_id resolved.id %}">
-                  {{ resolved.title }}</a></td>
+                  <ul class="list-unstyled" style="margin-bottom: 0">
+                    <li>{{ resolved.title }} ( {{ resolved.estimation }} hours )</li>
+                    <li>Assigned to: {{ resolved.employee.get_full_name }}</li>
+                    <li>Completion: {{ resolved.completion_rate }}%</li>
+                  </ul>
+                </a>
+              </td>
             </tr>
           {% endfor %}
           </tbody>
