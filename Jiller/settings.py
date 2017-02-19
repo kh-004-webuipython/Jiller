@@ -14,6 +14,7 @@ import os
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 from datetime import timedelta
+from django.urls.base import reverse_lazy
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -52,19 +53,21 @@ INSTALLED_APPS = [
     'waffle',
     'simple_email_confirmation',
     'django_tables2',
-
     'allauth',
-    #'allauth.account',
+    'allauth.account',
     'allauth.socialaccount',
     'allauth.socialaccount.providers.twitter',
+    'allauth.socialaccount.providers.github',
 ]
 
-SITE_ID = 1
+SITE_ID = 3
+"""
 ACCOUNT_USERNAME_REQUIRED = False
 ACCOUNT_EMAIL_VERIFICATION = "none"
 SOCIALACCOUNT_QUERY_EMAIL = True
 LOGIN_REDIRECT_URL = "/"
-
+"""
+LOGIN_REDIRECT_URL = reverse_lazy('general:home_page')
 
 MIDDLEWARE_CLASSES = (
     'waffle.middleware.WaffleMiddleware',
@@ -84,9 +87,6 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'Jiller.urls'
 
-# TEMPLATE_CONTEXT_PROCESSORS = (
-#     'django.core.context_processors.request',
-# )
 
 TEMPLATES = [
     {
@@ -99,7 +99,6 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
-                'django.template.context_processors.request',
                 'Jiller.context_processors.project_list'
             ],
         },
@@ -139,11 +138,7 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 AUTHENTICATION_BACKENDS = (
-
-    # Needed to login by username in Django admin, regardless of `allauth`
     'django.contrib.auth.backends.ModelBackend',
-
-    # `allauth` specific authentication methods, such as login by e-mail
     'allauth.account.auth_backends.AuthenticationBackend',
 
 )
@@ -180,6 +175,9 @@ LOGIN_EXEMPT_URLS = (
  r'^registration/$',
  r'^confirmation/(?P<username>[a-zA-Z0-9]+)/(?P<key>[a-zA-Z0-9]+)/$',
  r'^sender/(?P<username>[a-zA-Z0-9]+)/$'
+ r'^accounts/twitter/login/$',
+ r'^accounts/github/login/$',
+ r'^accounts/social/connections/',
 )
 
 
