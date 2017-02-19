@@ -3,7 +3,6 @@
 {% load i18n %}
 {% load static %}
 {% load gravatar %}
-{% load visible_logs %}
 
 {% block title %}Issue detail{% endblock %}
 
@@ -178,9 +177,9 @@
           </div>
         </div>
         <div id="logs-tab" class="tab-pane">
-          {% if issue.issuelog_set.all|visible_logs %}
+          {% if issue.issuelog_set.exists %}
             <div class="comments">
-              {% for log in issue.issuelog_set.all|visible_logs %}
+              {% for log in issue.issuelog_set.all %}
                 <div class="itemdiv commentdiv">
                   <div class="user">
                     <img {% if log.user.photo %}
