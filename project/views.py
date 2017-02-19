@@ -1,5 +1,6 @@
 import datetime
 import json
+from django.contrib import messages
 
 from django.conf import settings
 from django.db.models import Q
@@ -11,6 +12,7 @@ from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.views.generic import DetailView
 from django.utils.decorators import method_decorator
 from django.urls import reverse
+from django.core.exceptions import ValidationError
 
 from django_tables2 import SingleTableView, RequestConfig
 from waffle.decorators import waffle_flag
@@ -199,7 +201,8 @@ def issue_detail_view(request, project_id, issue_id):
                 log.issue = current_issue
                 log.user = request.user
                 log.save()
-                return JsonResponse({'success': True, 'errors': None},
+                return JsonResponse({'success': True, 'errors': None,
+                                     'completion_rate': current_issue.completion_rate()},
                                     status=201)
             return JsonResponse({'success': False, 'error': form.errors},
                                 status=400)
@@ -314,52 +317,6 @@ class ProjectDeleteView(DeleteView):
         return super(ProjectDeleteView, self).dispatch(*args, **kwargs)
 
 
-class SprintCreate(CreateView):
-    model = Sprint
-    form_class = SprintCreateForm
-    query_pk_and_slug = True
-    pk_url_kwarg = 'project_id'
-    template_name_suffix = '_create_form'
-
-    def get_form_kwargs(self, *args, **kwargs):
-        kwargs = super(SprintCreate, self).get_form_kwargs()
-        kwargs.pop('instance', None)
-        kwargs['project'] = self.project
-        return kwargs
-
-    def get_initial(self):
-        return {'status': Sprint.NEW}
-
-    def form_valid(self, form):
-        sprint = form.save(commit=False)
-        sprint.project = self.project
-        sprint.start_date = datetime.datetime.now()
-        sprint.save()
-        issue = form.cleaned_data['issue']
-        issue.update(sprint=sprint)
-        self.object = sprint
-        return redirect(
-            reverse('project:sprint_active', args=(self.object.project.id,)))
-
-    def get_context_data(self, **kwargs):
-        project = Project.objects.get(id=self.kwargs['project_id'])
-        context = super(SprintCreate, self).get_context_data(**kwargs)
-        context['project'] = self.project
-        context['issue_list'] = project.issue_set.filter(sprint=None).filter(
-            status='new').order_by(
-            'order')
-        return context
-
-    def get_success_url(self):
-        return reverse('project:sprint_detail', args=(self.object.project.id,
-                                                      self.object.id))
-
-    @method_decorator(create_sprint)
-    def dispatch(self, *args, **kwargs):
-        self.project = get_object_or_404(Project, pk=self.kwargs['project_id'])
-        return super(SprintCreate, self).dispatch(*args, **kwargs)
-
-
 class SprintView(DeleteView):
     model = Sprint
     template_name = 'project/sprint_detail.html'
@@ -385,6 +342,7 @@ class SprintView(DeleteView):
                 status="closed")
             context['chart'] = self.object.chart()
             context['form'] = SprintFinishForm()
+        context['create_sprint_form'] = SprintCreateForm()
         context['project'] = self.project
         return context
 
@@ -517,20 +475,21 @@ def workload_manager(request, project_id, sprint_status):
     if request.method == 'POST':
         data = json.loads(request.POST.get('data'))
 
-        employee_id = data['employee']
+        relate = data['relate']
         issue = Issue.objects.get(pk=data['issue'])
-        # if issue was drugged into pool
-        if employee_id == 0:
-            put_issue_back_to_pool(project_id, issue, sprint_status)
+        # if issue was drugged into backlog or sprint pool
+        if relate in ['backlog', 'new_sprint', 'active_sprint']:
+            put_issue_back_to_pool(project_id, issue, relate)
         else:
-            assign_issue(project_id, employee_id, issue, sprint_status)
+            assign_issue(project_id, relate, issue, sprint_status)
         issue.save()
 
     project = get_object_or_404(Project, pk=project_id)
-    issues_log = get_pool(project_id, sprint_status)
+    issues_log = get_pool(project_id, 'backlog')
+    sprint_log = get_pool(project_id, sprint_status)
 
     try:
-        employees = ProjectTeam.objects.filter(project=project)[0] \
+        employees = ProjectTeam.objects.get(project=project) \
             .employees.filter(groups__pk__in=[1, 2])
     except ProjectTeam.DoesNotExist:
         raise Http404("ProjectTeam does not exist")
@@ -551,9 +510,6 @@ def workload_manager(request, project_id, sprint_status):
     for item in items:
         sum = 0
         for issue in item['issues']:
-            if not issue.estimation:
-                return HttpResponse('The issue has to be estimated',
-                                    status=401)
             sum += issue.estimation
 
         item['workload'] = sum * 100 / work_hours
@@ -562,7 +518,8 @@ def workload_manager(request, project_id, sprint_status):
     context = {'items': items,
                'project': project,
                'issues_log': issues_log,
-               'sprint_status': sprint_status}
+               'sprint_status': sprint_status,
+               'sprint_log': sprint_log}
 
     if request.is_ajax():
         html = render_to_string('project/workload_template.html', context)
@@ -625,4 +582,40 @@ def finish_active_sprint_view(request, project_id):
             return HttpResponseRedirect(reverse('project:sprint_active',
                                                 kwargs={
                                                     'project_id': project_id}))
+    raise Http404
+
+
+@waffle_flag('create_sprint')
+def sprint_create_view(request, project_id):
+    project = get_object_or_404(Project, pk=project_id)
+
+    if request.method == "POST":
+        form = SprintCreateForm(request.POST)
+
+        if form.is_valid():
+            new_sprint = form.save(commit=False)
+            new_sprint.project = project
+            new_sprint.status = Sprint.NEW
+            new_sprint.save()
+            return HttpResponseRedirect(reverse('project:workload_manager',
+                                                args=[project_id, Sprint.NEW]))
+    raise Http404
+
+
+@waffle_flag('edit_sprint')
+def sprint_start_view(request, project_id):
+    if request.method == "POST":
+        current_sprint = get_object_or_404(Sprint, project_id=project_id,
+                                           status=Sprint.NEW)
+        current_sprint.status = Sprint.ACTIVE
+        current_sprint.start_date = datetime.datetime.now()
+        try:
+            current_sprint.save()
+        except ValidationError:
+            message = 'to start sprint you need to finish active one'
+            messages.add_message(request, messages.INFO, message)
+            return HttpResponseRedirect(reverse('project:sprint_active',
+                                                args=[project_id, ]))
+        return HttpResponseRedirect(reverse('project:sprint_active',
+                                            args=[project_id, ]))
     raise Http404
