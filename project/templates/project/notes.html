@@ -34,9 +34,9 @@
     {% for note in notes %}
       <div class="note center" data-id="{{ note.id }}">
         <textarea class="note-title text-center"
-                  maxlength='15'>{{ note.title }}</textarea>
+                  maxlength='25' rows='1'>{{ note.title }}</textarea>
         <textarea class="note-content text-justify"
-                  maxlength='5000'>{{ note.content }}</textarea>
+                  maxlength='5000' rows='20'>{{ note.content }}</textarea>
         <div class="hide"><span class='glyphicon glyphicon-trash'></span>
         </div>
       </div>

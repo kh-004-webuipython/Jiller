@@ -47,7 +47,7 @@
     resize: none;
     padding: 0 10px;
     overflow: hidden;
-    border: 1px dotted rgba(247, 241, 176, 0.1)
+    border: 1px dotted rgba(247, 241, 176, 0.1);
 }
 
 .note-title {
@@ -59,6 +59,7 @@
     width: 25%;
     overflow: hidden;
     background: #bdcae2;
+    white-space: nowrap;
 }
 
 .note-content {
@@ -95,20 +96,9 @@
     transform: scale(1);
     position: relative;
     width: 60%;
-    height: 500px;
+    height: auto;
     transition: 1s;
     float: left;
     top: 0;
     clear: left;
-}
-
-.notes > #controls img {
-    width: 30px;
-    height: 30px;
-    background: rgba(0, 0, 0, 0);
-}
-
-.notes > #controls img:hover, #controls img:focus {
-    transform: scale(1.2);
-    position: relative;
 }

@@ -23,17 +23,19 @@ urlpatterns = [
     # sprint
     url(r'^(?P<project_id>\d+)/sprint/$',
         views.sprints_list, name='sprints_list'),
-    url(r'^(?P<project_id>\d+)/sprint/create/$',
-        views.SprintCreate.as_view(), name='sprint_create'),
+    url(r'^(?P<project_id>\d+)/sprint_create/$',
+        views.sprint_create_view, name='sprint_create'),
     url(r'^(?P<project_id>\d+)/sprint/(?P<sprint_id>\d+)/$',
         views.SprintView.as_view(), name='sprint_detail'),
     url(r'^(?P<project_id>\d+)/sprint/(?P<sprint_id>\d+)/activate/$',
         views.SprintStatusUpdate.as_view(), name='sprint_activate'),
+    url(r'^(?P<project_id>\d+)/sprint_start/$',
+        views.sprint_start_view, name='sprint_start'),
 
     # active_sprint
     url(r'^(?P<project_id>\d+)/sprint/active/$',
         views.ActiveSprintDetailView.as_view(), name='sprint_active'),
-    url(r'^(?P<project_id>\d+)/sprint/active/finish$',
+    url(r'^(?P<project_id>\d+)/sprint/active/finish/$',
         views.finish_active_sprint_view, name='finish_active_sprint'),
     url(r'^issue_push/$',
         views.push_issue_in_active_sprint, name='issue_push'),

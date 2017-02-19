@@ -106,9 +106,19 @@ div.project-detail {
 }
 
 .fixed-backlog-pool {
+    height: calc(100%);
+    position: static;
+    width: calc(100% + 32px);
+    padding-right: 20px;
+    overflow-y: scroll;
+}
+
+.backlog-wrap {
     position: fixed;
-    right: 20px;
-    width: 18.7%;
+    width: calc((100% - 196px)* 0.25);
+    padding: 0 15px 0;
+    height: calc(100% - 235px);
+    right: 0;
 }
 
 .limit-text-width {

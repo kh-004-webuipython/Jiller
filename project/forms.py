@@ -6,7 +6,8 @@ from django.utils.translation import ugettext_lazy as _
 from general.tasks import send_assign_email_task
 from employee.models import IssueLog
 from general.forms import FormControlMixin
-from .models import Project, Sprint, Issue, ProjectTeam, IssueComment
+from .models import Project, Sprint, Issue, ProjectTeam, IssueComment, \
+    ProjectNote
 
 
 class DateInput(forms.DateInput):
@@ -105,38 +106,6 @@ class CreateTeamForm(forms.ModelForm):
         return title
 
 
-class SprintCreateForm(forms.ModelForm):
-    issue = forms.ModelMultipleChoiceField(queryset=Issue.objects.all(),
-                                           required=False)
-
-    def __init__(self, *args, **kwargs):
-        self.project = kwargs.pop('project', None)
-        super(SprintCreateForm, self).__init__(*args, **kwargs)
-        if self.project:
-            self.fields['issue'].queryset = self.project.issue_set.filter(
-                sprint=None)
-
-    def clean_status(self):
-        if self.cleaned_data[
-            'status'] == Sprint.ACTIVE and self.project.sprint_set.filter(
-            status=Sprint.ACTIVE).exists():
-            raise forms.ValidationError(
-                "You are already have an active sprint."
-            )
-        return self.cleaned_data['status']
-
-    """
-    def clean_end_date(self):
-        end_date = self.cleaned_data.get('end_date')
-        if end_date and datetime.date.today() > end_date:
-            self.add_error('end_date',
-                           _('End date cant\'t be earlier than start date'))
-    """
-    class Meta:
-        model = Sprint
-        fields = ['title', 'duration', 'status', 'issue']
-
-
 class IssueCommentCreateForm(forms.ModelForm):
     class Meta:
         model = IssueComment
@@ -175,3 +144,15 @@ class SprintFinishForm(forms.ModelForm):
                        'style': 'resize: vertical;'}),
             'relies_link': forms.URLInput(attrs={'class': 'form-control'})
         }
+
+
+class SprintCreateForm(FormControlMixin, forms.ModelForm):
+    class Meta:
+        model = Sprint
+        fields = ['title', 'duration']
+
+
+class NoteForm(forms.ModelForm):
+    class Meta:
+        model = ProjectNote
+        fields = ['title', 'content']
