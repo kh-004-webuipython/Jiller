@@ -409,7 +409,8 @@ def push_issue_in_active_sprint(request):
                                                             Issue.RESOLVED]:
                 current_issue.status = table
                 current_issue.save()
-                return HttpResponse()
+                return HttpResponseRedirect(reverse('project:sprint_active',
+                       kwargs={'project_id': sprint.project_id}))
             raise Http404("Wrong request")
     else:
         raise Http404("Wrong request")
