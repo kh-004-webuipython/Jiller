@@ -619,15 +619,23 @@
     "confirmed_at": "2017-02-05T13:32:43.555Z"
   }
 },
-  {
-    "model": "sites.site",
-    "pk": 1,
-    "fields": {
-      "domain": "http://127.0.0.1:8000/",
-      "name": "http://127.0.0.1:8000/"
-    }
-  },
-  {
+{
+   "model": "sites.site",
+   "pk": 1,
+   "fields": {
+     "domain": "http://127.0.0.1:8000/",
+     "name": "127.0.0.1"
+   }
+ },
+ {
+   "model": "sites.site",
+   "pk": 2,
+   "fields": {
+     "domain": "http://jiller-phobosprogrammer.rhcloud.com/",
+     "name": "rhcloud.com"
+   }
+ },
+ {
     "model": "socialaccount.socialapp",
     "pk": 1,
     "fields": {
@@ -640,6 +648,20 @@
         1
       ]
     }
+  },
+  {
+  "model": "socialaccount.socialapp",
+  "pk": 2,
+  "fields": {
+    "provider": "twitter",
+    "name": "twitter",
+    "client_id": "GAT7O6dpfG28y0SN7XIjYuE4l",
+    "secret": "r5J0jRP4egjPucTWTgtqc7DNjFLuTzIAfqLGwTZwmHoXOCdAW8",
+    "key": "",
+    "sites": [
+      1, 2
+    ]
   }
+}
 ]
 

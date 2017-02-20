@@ -49,6 +49,8 @@ INSTALLED_APPS = [
     'allauth.account',
     'allauth.socialaccount',
     'allauth.socialaccount.providers.github',
+    'allauth.socialaccount.providers.twitter',
+
 ]
 
 SITE_ID = 1
@@ -71,9 +73,6 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'Jiller.urls'
 
-# TEMPLATE_CONTEXT_PROCESSORS = (
-#     'django.core.context_processors.request',
-# )
 
 TEMPLATES = [
     {
@@ -86,7 +85,6 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
-                'django.template.context_processors.request',
                 'Jiller.context_processors.project_list'
             ],
         },
@@ -165,6 +163,10 @@ LOGIN_EXEMPT_URLS = (
  r'^confirmation/(?P<username>[a-zA-Z0-9]+)/(?P<key>[a-zA-Z0-9]+)/$',
  r'^sender/(?P<username>[a-zA-Z0-9]+)/$',
  r'^accounts/github/login/$',
+ r'^accounts/twitter/login/$',
+ # need for edit social accounts in user profile
+ r'^accounts/social/connections/$',
+ r'^accounts/twitter/login/callback/$',
 )
 
 

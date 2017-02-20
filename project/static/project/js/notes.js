@@ -45,7 +45,7 @@ document.addEventListener("DOMContentLoaded", function () {
             var textareaRows = content.value.split("\n");
             if(textareaRows[0] != "undefined" && textareaRows.length
                 >= content.rows) {
-                content.rows = textareaRows.length;
+                content.rows = textareaRows.length + 5;
             }
         };
 

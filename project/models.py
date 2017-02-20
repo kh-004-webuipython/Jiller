@@ -72,7 +72,7 @@ class Sprint(models.Model):
                               choices=SPRINT_STATUS_CHOICES, default=NEW,
                               max_length=255)
     duration = models.PositiveIntegerField(verbose_name=_('Duration'))
-    relies_link = models.URLField(blank=True, null=True)
+    release_link = models.URLField(blank=True, null=True)
     feedback_text = models.TextField(verbose_name=_('Retrospective text'),
                                      null=True, blank=True)
 
