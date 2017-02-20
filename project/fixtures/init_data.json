@@ -662,6 +662,21 @@
       1, 2
     ]
   }
+},
+  {
+  "model": "socialaccount.socialapp",
+  "pk": 3,
+  "fields": {
+    "provider": "Google",
+    "name": "google",
+    "client_id": "784981461724-948617b5eqranrplbdd8c6tjd2uo9njr.apps.googleusercontent.com",
+    "secret": "OsTvsqytJH4mBLVMWeiXP4UW",
+    "key": "",
+    "sites": [
+      1, 2
+    ]
+  }
 }
+
 ]
 
