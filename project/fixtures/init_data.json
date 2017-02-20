@@ -596,6 +596,28 @@
     "set_at": "2017-02-05T13:31:54.091Z",
     "confirmed_at": "2017-02-05T13:32:43.555Z"
   }
-}
+},
+  {
+    "model": "sites.site",
+    "pk": 1,
+    "fields": {
+      "domain": "http://127.0.0.1:8000/",
+      "name": "http://127.0.0.1:8000/"
+    }
+  },
+  {
+    "model": "socialaccount.socialapp",
+    "pk": 1,
+    "fields": {
+      "provider": "github",
+      "name": "JIller",
+      "client_id": "96092648587d4e095e20",
+      "secret": "beec855b67d82989a2e02396174915ea2e93c433",
+      "key": "",
+      "sites": [
+        1
+      ]
+    }
+  }
 ]
 
