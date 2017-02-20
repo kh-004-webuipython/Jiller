@@ -1,6 +1,7 @@
 {% load gravatar %}
 {% load i18n %}
 {% load thumbnail %}
+{% load visible_logs %}
 
 {# block user profile #}
 <div class="page-header"><h1>{{ user.get_full_name }}</h1></div>
@@ -119,7 +120,7 @@
             </tr>
             </thead>
             <tbody>
-            {% for log in user.issuelog_set.all %}
+            {% for log in user.issuelog_set.all|visible_logs %}
               <tr>
                 <td class="col-sm-2">
                   <a href="{% url 'project:issue_detail' log.issue.project.id log.issue.id %}">

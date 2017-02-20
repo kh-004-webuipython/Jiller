@@ -18,6 +18,8 @@ from datetime import timedelta
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
+DATA_DIR = os.environ.get('OPENSHIFT_DATA_DIR', BASE_DIR)
+
 MEDIA_ROOT = os.path.join(BASE_DIR, 'public', 'media')
 
 MEDIA_URL = '/media/'
@@ -32,7 +34,8 @@ SECRET_KEY = 'olj^%!kemjn61dic)!y3k!(51&vciz$2jf*w_mji-(f(nwz#7$'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['127.0.0.1', 'localhost', 'jiller-phobosprogrammer.rhcloud.com']
+from socket import gethostname
+ALLOWED_HOSTS = ['127.0.0.1', 'localhost', gethostname(), os.environ.get('OPENSHIFT_APP_DNS')]
 
 
 # Application definition
@@ -112,7 +115,7 @@ LOGIN_REDIRECT_URL = reverse_lazy('general:home_page')
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'NAME': os.path.join(DATA_DIR, 'db.sqlite3'),
     }
 }
 
@@ -158,6 +161,8 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/1.10/howto/static-files/
 
 STATIC_URL = '/static/'
+
+STATIC_ROOT = os.path.join('../static')
 
 STATICFILES_DIRS = (os.path.join(BASE_DIR, 'static'),)
 
