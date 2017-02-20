@@ -375,7 +375,8 @@ def push_issue_in_active_sprint(request):
                 current_issue.status = table
                 current_issue.save()
                 return HttpResponseRedirect(reverse('project:sprint_active',
-                       kwargs={'project_id': sprint.project_id}))
+                                                    kwargs={
+                                                        'project_id': sprint.project_id}))
             raise Http404("Wrong request")
     else:
         raise Http404("Wrong request")
@@ -619,19 +620,20 @@ def sprint_start_view(request, project_id):
         current_sprint.status = Sprint.ACTIVE
         current_sprint.start_date = datetime.datetime.now()
         try:
-            user_id = request.user.id
-            sprint_id = current_sprint.id
-            employees = ProjectTeam.objects.get(project_id=project_id).employees.all()
-            for member in employees:
-                send_email_after_sprint_start_task.delay(member.email, user_id,
-                                                         sprint_id)
-
             current_sprint.save()
         except ValidationError:
             message = 'to start sprint you need to finish active one'
             messages.add_message(request, messages.INFO, message)
             return HttpResponseRedirect(reverse('project:sprint_active',
                                                 args=[project_id, ]))
+        else:
+            user_id = request.user.id
+            sprint_id = current_sprint.id
+            employees = ProjectTeam.objects.get(
+                project_id=project_id).employees.all()
+            for member in employees:
+                send_email_after_sprint_start_task.delay(member.email, user_id,
+                                                         sprint_id)
         return HttpResponseRedirect(reverse('project:sprint_active',
                                             args=[project_id, ]))
     raise Http404
@@ -652,5 +654,6 @@ def issue_create_workload(request, project_id, sprint_status):
             current_issue.author = request.user
             current_issue.save()
             return HttpResponseRedirect(reverse('project:workload_manager',
-                                                args=[project_id, sprint_status]))
+                                                args=[project_id,
+                                                      sprint_status]))
     raise Http404
