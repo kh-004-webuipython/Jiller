@@ -620,20 +620,6 @@
   }
 },
 {
-  "model": "socialaccount.socialapp",
-  "pk": 2,
-  "fields": {
-    "provider": "twitter",
-    "name": "twitter",
-    "client_id": "GAT7O6dpfG28y0SN7XIjYuE4l",
-    "secret": "r5J0jRP4egjPucTWTgtqc7DNjFLuTzIAfqLGwTZwmHoXOCdAW8",
-    "key": "",
-    "sites": [
-      1, 2
-    ]
-  }
-},
-{
    "model": "sites.site",
    "pk": 1,
    "fields": {
@@ -648,7 +634,34 @@
      "domain": "http://jiller-phobosprogrammer.rhcloud.com/",
      "name": "rhcloud.com"
    }
- }
-
+ },
+ {
+    "model": "socialaccount.socialapp",
+    "pk": 1,
+    "fields": {
+      "provider": "github",
+      "name": "JIller",
+      "client_id": "96092648587d4e095e20",
+      "secret": "beec855b67d82989a2e02396174915ea2e93c433",
+      "key": "",
+      "sites": [
+        1
+      ]
+    }
+  },
+  {
+  "model": "socialaccount.socialapp",
+  "pk": 2,
+  "fields": {
+    "provider": "twitter",
+    "name": "twitter",
+    "client_id": "GAT7O6dpfG28y0SN7XIjYuE4l",
+    "secret": "r5J0jRP4egjPucTWTgtqc7DNjFLuTzIAfqLGwTZwmHoXOCdAW8",
+    "key": "",
+    "sites": [
+      1, 2
+    ]
+  }
+}
 ]
 

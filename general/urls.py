@@ -10,6 +10,4 @@ urlpatterns = [
     url(r'^confirmation/(?P<username>[-.\w]+)/(?P<key>[a-zA-Z0-9]+)/$',
         views.email_confirmation, name='confirmation'),
     url(r'^sender/(?P<username>[-.\w]+)/$', views.send_to, name='sender'),
-
-
 ]
