@@ -186,10 +186,6 @@ except ImportError:
     pass
 
 # CELERY
-# BROKER_URL = 'redis://localhost:6379'
-# BROKER_URL = os.environ.get('CLOUDAMQP_URL', 'amqp://guest:guest@localhost/%2f')
-# CELERY_BROKER_URL = 'redis://localhost:6379'
-# CELERY_RESULT_BACKEND = 'None'#'redis://localhost:6379'
 
 REDIS_DB_PATH = os.path.join('/tmp/my_redis.db')
 rdb = Redis(REDIS_DB_PATH, serverconfig={'port': '1116'})
@@ -204,7 +200,6 @@ CELERY_IMPORTS = ['general.tasks']
 CELERY_TIMEZONE = 'UTC'
 
 
-# EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 EMAIL_USE_TLS = True
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_HOST_USER = 'email.assign.python.webui@gmail.com'
