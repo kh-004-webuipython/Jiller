@@ -2,7 +2,7 @@ from django.conf import settings
 from django.core.mail import EmailMessage
 from django.template import Context
 from django.template.loader import render_to_string, get_template
-
+from django.urls import reverse
 from employee.models import Employee
 from project.models import Issue, Sprint
 
@@ -10,11 +10,9 @@ from project.models import Issue, Sprint
 def send_assign_email(email, user_id, issue_id):
     user = Employee.objects.get(pk=user_id)
     issue = Issue.objects.get(pk=issue_id)
-
-    # message = str(user.first_name) + ' ' + str(
-    #     user.last_name) + ' assigned you to issue : ' + issue.title
+    issue_url = settings.JILLER_HOST + reverse('project:issue_detail', kwargs={'project_id':issue.project_id, 'issue_id':issue.id})
     user_name = str(user.first_name) + ' ' + str(user.last_name)
-    c = Context({'email': email, 'user': user_name, 'issue': issue})
+    c = Context({'email': email, 'user': user_name, 'issue': issue, 'issue_url':issue_url})
 
     email_subject = render_to_string(
         'email/email_subject.txt', c).replace('\n', '')
@@ -33,11 +31,10 @@ def send_assign_email(email, user_id, issue_id):
 def send_email_after_sprint_start(email, user_id, sprint_id):
     user = Employee.objects.get(pk=user_id)
     sprint = Sprint.objects.get(pk=sprint_id)
-
-    # message = str(user.first_name) + ' ' + str(
-    #     user.last_name) + ' assigned you to issue : ' + issue.title
+    sprint_url = settings.JILLER_HOST + reverse('project:sprint_active', kwargs={
+        'project_id': sprint.project_id})
     user_name = str(user.first_name) + ' ' + str(user.last_name)
-    c = Context({'email': email, 'user': user_name, 'sprint': sprint})
+    c = Context({'email': email, 'user': user_name, 'sprint': sprint, 'sprint_url': sprint_url})
 
     email_subject = render_to_string(
         'email/email_subject.txt', c).replace('\n', '')

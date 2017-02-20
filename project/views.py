@@ -102,7 +102,7 @@ def issue_create_view(request, project_id):
             form = CreateIssueForm(project=current_project, initial=initial,
                                    user=request.user)
     return render(request, 'project/issue_create.html',
-                          {'form': form, 'project': current_project})
+                  {'form': form, 'project': current_project})
 
 
 @waffle_flag('edit_issue', 'project:list')
@@ -144,7 +144,7 @@ def team_view(request, project_id):
     team = get_object_or_404(ProjectTeam, project_id=current_project)
     data.update({'team': team})
 
-    row_attrs_data = {'data-pr_id': project_id,\
+    row_attrs_data = {'data-pr_id': project_id, \
                       'data-id': lambda record: record.pk,
                       'data-team_id': team.pk,
                       'draggable': 'True'}
@@ -153,35 +153,35 @@ def team_view(request, project_id):
                                  "table-hover table-sm"}
 
     employee = Employee.objects.filter(projectteam__project=project_id). \
-                                exclude(groups__name='project manager')
+        exclude(groups__name='project manager')
 
     table_attrs_data.update({"data-table": "table_cur"})
     table_cur = ProjectTeamTable(employee, prefix='1-',
-                                           row_attrs=row_attrs_data,
-                                           attrs=table_attrs_data)
+                                 row_attrs=row_attrs_data,
+                                 attrs=table_attrs_data)
 
     table_cur.base_columns['get_full_name'].verbose_name = 'Current employees'
 
     data.update({'table_cur': table_cur})
     RequestConfig(request,
-                  paginate={'per_page': settings.PAGINATION_PER_PAGE}).\
-                                                     configure(table_cur)
+                  paginate={'per_page': settings.PAGINATION_PER_PAGE}). \
+        configure(table_cur)
 
     # hide PMs on "global" team board
     if request.user.groups.filter(name='project manager').exists():
-        user_list = Employee.objects.exclude(groups__name='project manager').\
-                                     exclude(projectteam__project=project_id)
+        user_list = Employee.objects.exclude(groups__name='project manager'). \
+            exclude(projectteam__project=project_id)
 
         table_attrs_data.update({"data-table": "table_add"})
         table_add = ProjectTeamTable(user_list, prefix='2-',
-                                                row_attrs=row_attrs_data,
-                                                attrs=table_attrs_data)
+                                     row_attrs=row_attrs_data,
+                                     attrs=table_attrs_data)
         table_add.base_columns['get_full_name'].verbose_name = 'Free employees'
 
         data.update({'table_add': table_add})
         RequestConfig(request,
-                      paginate={'per_page': settings.PAGINATION_PER_PAGE}).\
-                                                        configure(table_add)
+                      paginate={'per_page': settings.PAGINATION_PER_PAGE}). \
+            configure(table_add)
 
     return render(request, 'project/team.html', data)
 
@@ -617,10 +617,12 @@ def sprint_start_view(request, project_id):
         current_sprint.status = Sprint.ACTIVE
         current_sprint.start_date = datetime.datetime.now()
         try:
-            email = request.user.email
             user_id = request.user.id
             sprint_id = current_sprint.id
-            send_email_after_sprint_start_task.delay(email, user_id, sprint_id)
+            employees = ProjectTeam.objects.get(project_id=project_id).employees.all()
+            for member in employees:
+                send_email_after_sprint_start_task.delay(member.email, user_id,
+                                                         sprint_id)
 
             current_sprint.save()
         except ValidationError:

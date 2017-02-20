@@ -12,3 +12,4 @@ django-simple-email-confirmation==0.21
 django_tables2==1.3.0
 celery==4.0.2
 redis==2.10.5
+redislite==3.2.311
