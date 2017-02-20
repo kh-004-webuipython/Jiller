@@ -84,6 +84,12 @@ class IssueFormForEditing(IssueForm):
         self.fields.pop('order')
 
 
+class IssueFormForSprint(IssueForm):
+    def __init__(self, *args, **kwargs):
+        super(IssueFormForSprint, self).__init__(*args, **kwargs)
+        self.fields.pop('sprint')
+
+
 class CreateIssueForm(IssueForm):
     def clean_title(self):
         cleaned_data = super(IssueForm, self).clean()
@@ -137,12 +143,12 @@ class IssueLogForm(FormControlMixin, forms.ModelForm):
 class SprintFinishForm(forms.ModelForm):
     class Meta:
         model = Sprint
-        fields = ['feedback_text', 'relies_link']
+        fields = ['feedback_text', 'release_link']
         widgets = {
             'feedback_text': forms.Textarea(
                 attrs={'class': 'form-control', 'rows': '10',
                        'style': 'resize: vertical;'}),
-            'relies_link': forms.URLInput(attrs={'class': 'form-control'})
+            'release_link': forms.URLInput(attrs={'class': 'form-control'})
         }
 
 

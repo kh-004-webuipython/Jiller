@@ -20,13 +20,12 @@ from waffle.decorators import waffle_flag
 
 from .forms import ProjectForm, SprintCreateForm, CreateTeamForm, \
     IssueCommentCreateForm, CreateIssueForm, IssueLogForm, \
-    IssueFormForEditing, SprintFinishForm, NoteForm
+    IssueFormForEditing, SprintFinishForm, NoteForm, IssueFormForSprint
 from .models import Project, ProjectTeam, Issue, Sprint, ProjectNote
 from .decorators import delete_project, \
     edit_project_detail, create_project, create_sprint
 from .tables import ProjectTable, SprintsListTable, IssuesTable, \
     ProjectTeamTable
-from django.template.loader import render_to_string
 from .utils.workload_manager import put_issue_back_to_pool, \
     calc_work_hours, assign_issue, get_pool
 
@@ -58,7 +57,7 @@ def sprints_list(request, project_id):
     except Project.DoesNotExist:
         raise Http404("Project does not exist")
     sprints = Sprint.objects.filter(project=project_id) \
-        .exclude(status=Sprint.ACTIVE)
+        .exclude(status__in=[Sprint.ACTIVE, Sprint.NEW])
 
     table = SprintsListTable(sprints)
     RequestConfig(request,
@@ -375,7 +374,8 @@ def push_issue_in_active_sprint(request):
                                                             Issue.RESOLVED]:
                 current_issue.status = table
                 current_issue.save()
-                return HttpResponse()
+                return HttpResponseRedirect(reverse('project:sprint_active',
+                       kwargs={'project_id': sprint.project_id}))
             raise Http404("Wrong request")
     else:
         raise Http404("Wrong request")
@@ -522,14 +522,16 @@ def workload_manager(request, project_id, sprint_status):
         item['workload'] = sum * 100 / work_hours
         item['free'] = work_hours - sum
 
+    form = IssueFormForSprint(project=project, initial={}, user=request.user)
     context = {'items': items,
                'project': project,
                'issues_log': issues_log,
                'sprint_status': sprint_status,
-               'sprint_log': sprint_log}
+               'sprint_log': sprint_log,
+               'form': form}
 
     if request.is_ajax():
-        html = render_to_string('project/workload_template.html', context)
+        html = render(request, 'project/workload_template.html', context)
         return HttpResponse(html)
 
     return render(request, 'project/workload_manager.html', context)
@@ -632,4 +634,23 @@ def sprint_start_view(request, project_id):
                                                 args=[project_id, ]))
         return HttpResponseRedirect(reverse('project:sprint_active',
                                             args=[project_id, ]))
+    raise Http404
+
+
+@waffle_flag('create_task', 'project:list')
+def issue_create_workload(request, project_id, sprint_status):
+    if request.method == "POST":
+        project = get_object_or_404(Project, pk=project_id)
+        form = IssueFormForEditing(project=project, data=request.POST,
+                                   user=request.user)
+        if form.is_valid():
+            sprint = get_object_or_404(Sprint, project_id=project_id,
+                                       status=sprint_status)
+            current_issue = form.save(commit=False)
+            current_issue.project = project
+            current_issue.sprint = sprint
+            current_issue.author = request.user
+            current_issue.save()
+            return HttpResponseRedirect(reverse('project:workload_manager',
+                                                args=[project_id, sprint_status]))
     raise Http404
