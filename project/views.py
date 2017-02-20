@@ -31,6 +31,8 @@ from .utils.workload_manager import put_issue_back_to_pool, \
 
 from employee.models import Employee
 
+from general.tasks import send_email_after_sprint_start_task
+
 
 class ProjectListView(SingleTableView):
     model = Project
@@ -610,6 +612,11 @@ def sprint_start_view(request, project_id):
         current_sprint.status = Sprint.ACTIVE
         current_sprint.start_date = datetime.datetime.now()
         try:
+            email = request.user.email
+            user_id = request.user.id
+            sprint_id = current_sprint.id
+            send_email_after_sprint_start_task.delay(email, user_id, sprint_id)
+
             current_sprint.save()
         except ValidationError:
             message = 'to start sprint you need to finish active one'
