@@ -137,12 +137,12 @@ class IssueLogForm(FormControlMixin, forms.ModelForm):
 class SprintFinishForm(forms.ModelForm):
     class Meta:
         model = Sprint
-        fields = ['feedback_text', 'relies_link']
+        fields = ['feedback_text', 'release_link']
         widgets = {
             'feedback_text': forms.Textarea(
                 attrs={'class': 'form-control', 'rows': '10',
                        'style': 'resize: vertical;'}),
-            'relies_link': forms.URLInput(attrs={'class': 'form-control'})
+            'release_link': forms.URLInput(attrs={'class': 'form-control'})
         }
 
 
