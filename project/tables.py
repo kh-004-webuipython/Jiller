@@ -53,32 +53,11 @@ class IssuesTable(tables.Table):
         fields = ['title', 'description', 'root', 'author', 'status', 'order']
 
 
-class ProjectTeamTable(tables.Table):
-    id_team = tables.Column()
-    project = tables.Column()
-    title = tables.Column()
-    id = tables.Column()
-    role = tables.Column(attrs={'td': {'width': '20%'}})
+class ProjectTeamTable(EmployeeTable):
+    get_role = tables.Column(attrs={'td': {'width': '20%'}}, verbose_name='Role')
 
     class Meta:
-        model = ProjectTeam
-        exclude = ('title', 'project', 'id_team', 'id', 'email', 'date_joined', 'is_active')
-        fields = ['get_full_name', 'role']
+        exclude = ('id', 'email', 'date_joined', 'is_active')
+        fields = ['get_full_name', 'get_role']
 
 
-class CurrentTeamTable(ProjectTeamTable):
-    get_full_name = tables.LinkColumn('employee:detail', kwargs={"employee_id": A('id')},\
-                                      order_by=('get_full_name'), verbose_name='Current employees')
-    sub = tables.Column(attrs={'td': {'width': '10%'}}, verbose_name='Del')
-
-    class Meta:
-        attrs = {"class": "table table-bordered table-striped table-hover table-sm"}
-
-
-class AddTeamTable(ProjectTeamTable):
-    get_full_name = tables.LinkColumn('employee:detail', kwargs={"employee_id": A('id')},\
-                                      order_by=('get_full_name'), verbose_name='Free employees')
-    add = tables.Column(attrs={'td': {'width': '10%'}})
-
-    class Meta:
-        attrs = {"class": "table table-bordered table-striped table-hover table-sm"}

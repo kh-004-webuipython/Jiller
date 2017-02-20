@@ -10,6 +10,7 @@ from django.http.response import JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.views.generic import DetailView
+from django.views.decorators.csrf import csrf_protect
 from django.utils.decorators import method_decorator
 from django.urls import reverse
 from django.core.exceptions import ValidationError
@@ -24,7 +25,7 @@ from .models import Project, ProjectTeam, Issue, Sprint, ProjectNote
 from .decorators import delete_project, \
     edit_project_detail, create_project, create_sprint
 from .tables import ProjectTable, SprintsListTable, IssuesTable, \
-    CurrentTeamTable, AddTeamTable
+    ProjectTeamTable
 from django.template.loader import render_to_string
 from .utils.workload_manager import put_issue_back_to_pool, \
     calc_work_hours, assign_issue, get_pool
@@ -97,8 +98,8 @@ def issue_create_view(request, project_id):
             initial['root'] = request.GET['root']
             form = CreateIssueForm(project=current_project, initial=initial,
                                    user=request.user)
-    return render(request, 'project/issue_create.html', {'form': form,
-                                                         'project': current_project})
+    return render(request, 'project/issue_create.html',
+                          {'form': form, 'project': current_project})
 
 
 @waffle_flag('edit_issue', 'project:list')
@@ -125,6 +126,7 @@ def issue_edit_view(request, project_id, issue_id):
                    'issue': Issue.objects.get(pk=current_issue.id)})
 
 
+@csrf_protect
 def team_view(request, project_id):
     data = {}
     current_project = get_object_or_404(Project, pk=project_id)
@@ -138,42 +140,45 @@ def team_view(request, project_id):
     # for one project it could be only one team
     team = get_object_or_404(ProjectTeam, project_id=current_project)
     data.update({'team': team})
-    e_list = []
-    if team.employees.count() != 1:
-        for employee in team.employees.all():
-            if employee not in project_managers:
-                e_list.append({'id_team': team.id, 'id': employee.id,
-                               'project': team.project, 'title': team.title,
-                               'get_full_name': employee.get_full_name(),
-                               'role': employee.groups})
 
-        table_cur = CurrentTeamTable(e_list)
-        data.update({'table_cur': table_cur})
-        RequestConfig(request,
-                      paginate={'per_page': settings.PAGINATION_PER_PAGE}). \
-            configure(table_cur)
+    row_attrs_data = {'data-pr_id': project_id,\
+                      'data-id': lambda record: record.pk,
+                      'data-team_id': team.pk,
+                      'draggable': 'True'}
+
+    table_attrs_data = {"class": "table table-bordered table-striped "
+                                 "table-hover table-sm"}
+
+    employee = Employee.objects.filter(projectteam__project=project_id). \
+                                exclude(groups__name='project manager')
+
+    table_attrs_data.update({"data-table": "table_cur"})
+    table_cur = ProjectTeamTable(employee, prefix='1-',
+                                           row_attrs=row_attrs_data,
+                                           attrs=table_attrs_data)
+
+    table_cur.base_columns['get_full_name'].verbose_name = 'Current employees'
+
+    data.update({'table_cur': table_cur})
+    RequestConfig(request,
+                  paginate={'per_page': settings.PAGINATION_PER_PAGE}).\
+                                                     configure(table_cur)
 
     # hide PMs on "global" team board
-    u_list = []
-    user_list = 'None'
-
     if request.user.groups.filter(name='project manager').exists():
-        user_list = Employee.objects.exclude(groups__name='project manager'). \
-            exclude(projectteam__project=project_id)
-        # exclude(groups__name='product owner')
-        for user in user_list:
-            u_list.append(
-                {'id': user.id, 'get_full_name': user.get_full_name(),
-                 'role': user.groups})
+        user_list = Employee.objects.exclude(groups__name='project manager').\
+                                     exclude(projectteam__project=project_id)
 
-        table_add = AddTeamTable(u_list)
+        table_attrs_data.update({"data-table": "table_add"})
+        table_add = ProjectTeamTable(user_list, prefix='2-',
+                                                row_attrs=row_attrs_data,
+                                                attrs=table_attrs_data)
+        table_add.base_columns['get_full_name'].verbose_name = 'Free employees'
+
         data.update({'table_add': table_add})
         RequestConfig(request,
-                      paginate={'per_page': settings.PAGINATION_PER_PAGE}). \
-            configure(table_add)
-    else:
-        table_cur = CurrentTeamTable(e_list)
-        table_cur.exclude = ('sub')
+                      paginate={'per_page': settings.PAGINATION_PER_PAGE}).\
+                                                        configure(table_add)
 
     return render(request, 'project/team.html', data)
 
