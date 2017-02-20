@@ -5,12 +5,17 @@ html, body {
     padding: 0;
 }
 
+*:focus {
+    outline: none!important;
+}
+
 #main-container{
     min-height: 100%;
     position: relative;
     padding-bottom: 56px;
     margin: 0;
 }
+
 /* some elements used in demo only */
 .spinner-preview {
     width: 100px;
@@ -117,7 +122,7 @@ div.project-detail {
     position: fixed;
     width: calc((100% - 196px)* 0.25);
     padding: 0 15px 0;
-    height: calc(100% - 235px);
+    height: calc(100% - 260px);
     right: 0;
 }
 

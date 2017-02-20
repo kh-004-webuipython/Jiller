@@ -311,7 +311,8 @@ class SprintsListViewTests(LoginRequiredBase):
         project = Project.objects.create(title='title',
                                          start_date=datetime.date(
                                              2017, 12, 14))
-        Sprint.objects.create(title='title', project=project, duration=10)
+        Sprint.objects.create(title='title', project=project, duration=10,
+                              start_date=datetime.date(2017, 02, 02))
         response = self.client.get(reverse('project:sprints_list',
                                            args=[project.id, ]))
         self.assertContains(response, "title", status_code=200)
@@ -322,7 +323,20 @@ class SprintsListViewTests(LoginRequiredBase):
                                              2017, 12, 14))
         team = ProjectTeam.objects.create(project=project, title='title')
         Sprint.objects.create(title='title', project=project,
+                              start_date=datetime.date(2017, 02, 02),
                               status=Sprint.ACTIVE, duration=10)
+        response = self.client.get(reverse('project:sprints_list',
+                                           args=[project.id, ]))
+        self.assertContains(response, "", status_code=200)
+
+    def test_sprints_list_view_must_not_consist_new_sprint(self):
+        project = Project.objects.create(title='title',
+                                         start_date=datetime.date(
+                                             2017, 12, 14))
+        team = ProjectTeam.objects.create(project=project, title='title')
+        Sprint.objects.create(title='title', project=project,
+                              start_date=datetime.date(2017, 02, 02),
+                              status=Sprint.NEW, duration=10)
         response = self.client.get(reverse('project:sprints_list',
                                            args=[project.id, ]))
         self.assertContains(response, "", status_code=200)
