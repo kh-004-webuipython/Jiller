@@ -44,6 +44,10 @@ class Employee(SimpleEmailConfirmationUserMixin, AbstractUser):
     def get_cropped_photo(self, *args, **kwargs):
         return get_thumbnail(self.photo, '136x150', crop='center')
 
+    @property
+    def get_role(self):
+        return self.groups.first() or 'admin'
+
 
 # check users for for PM teams before delete
 @receiver(pre_delete, sender=Employee)
@@ -67,7 +71,14 @@ class IssueLog(models.Model):
                                         default=timezone.now)
     cost = models.FloatField(verbose_name=_('Cost'), default=0, validators=[MinValueValidator(0.0)])
     note = models.TextField(verbose_name=_('Note'), null=True, blank=True)
+    is_hidden = models.BooleanField(default=False)
 
     def __str__(self):
         return "{} hours. {} - {}".format(self.cost, self.issue.title,
                                           self.user.get_full_name())
+
+    def get_pretty_date_created(self):
+        return datetime.strftime(self.date_created, "%d.%m.%y %H:%M")
+
+    class Meta:
+        ordering = ['-date_created']
