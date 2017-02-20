@@ -60,7 +60,7 @@
         <td width="48%">
           <div>
             {% if table_cur %}
-              {% render_table table_cur "base_table_team.html" %}
+              {% render_table table_cur "base_table.html" %}
             {% endif %}
           </div>
         </td>
@@ -69,11 +69,19 @@
         <td width="48%">
           <div>
             {% if table_add %}
-              {% render_table table_add "base_table_team.html" %}
+              {% render_table table_add "base_table.html" %}
             {% endif %}
           </div>
         </td>
       </tr>
     </table>
   </div>
+{% endblock %}
+
+{% block extrascripts %}
+  {% flag "update_team" %}
+    <script src="{% static 'js/ajax_csrf.js' %}"></script>
+    <script
+        src="{% static 'project/js/drag_and_drop_employees.js' %}"></script>
+  {% endflag %}
 {% endblock %}
