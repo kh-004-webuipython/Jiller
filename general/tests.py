@@ -179,15 +179,14 @@ class AssignEmailTests(LoginRequiredBase):
     def setUp(self):
         super(AssignEmailTests, self).setUp()
 
-
     def test_check_assign_email(self):
-
         self.project = Project.objects.create()
 
         self.issue = Issue.objects.create(project=self.project,
-                                           author=self.user)
+                                          author=self.user, estimation=1)
         send_assign_email_task(self.user.email, self.user.id, self.issue.id)
         self.assertEqual(len(mail.outbox), 1)
         self.assertEqual(mail.outbox[0].subject, 'Jiller notification')
-        self.assertEqual(mail.outbox[0].from_email, settings.DEFAULT_FROM_EMAIL)
+        self.assertEqual(mail.outbox[0].from_email,
+                         settings.DEFAULT_FROM_EMAIL)
         self.assertEqual(mail.outbox[0].to, [self.user.email])
