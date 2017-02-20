@@ -1,8 +1,8 @@
 <strong>{{ user }}</strong> just started the sprint :
 
-<a href='{{ sprint_url }}'>{{ sprint.title }}</a>
+<a href='{{ base_url }}{{ sprint_url }}'>{{ sprint.title }}</a>
 
-<p>You can check it at http://jiller-phobosprogrammer.rhcloud.com</p>
+<p>You can check it at {{ base_url }}</p>
 
 <p><p> -- </p>
 <p> Have a nice day! </p>
