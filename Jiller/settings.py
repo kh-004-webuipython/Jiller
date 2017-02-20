@@ -57,16 +57,11 @@ INSTALLED_APPS = [
     'allauth.account',
     'allauth.socialaccount',
     'allauth.socialaccount.providers.twitter',
-    'allauth.socialaccount.providers.github',
+
 ]
 
-SITE_ID = 3
-"""
-ACCOUNT_USERNAME_REQUIRED = False
-ACCOUNT_EMAIL_VERIFICATION = "none"
-SOCIALACCOUNT_QUERY_EMAIL = True
-LOGIN_REDIRECT_URL = "/"
-"""
+SITE_ID = 1
+
 LOGIN_REDIRECT_URL = reverse_lazy('general:home_page')
 
 MIDDLEWARE_CLASSES = (
@@ -174,10 +169,12 @@ LOGIN_EXEMPT_URLS = (
  r'^login/$',
  r'^registration/$',
  r'^confirmation/(?P<username>[a-zA-Z0-9]+)/(?P<key>[a-zA-Z0-9]+)/$',
- r'^sender/(?P<username>[a-zA-Z0-9]+)/$'
+ r'^sender/(?P<username>[a-zA-Z0-9]+)/$',
  r'^accounts/twitter/login/$',
  r'^accounts/github/login/$',
- r'^accounts/social/connections/',
+ # need for edit social accounts in user profile
+ r'^accounts/social/connections/$',
+ r'^accounts/twitter/login/callback/$',
 )
 
 
