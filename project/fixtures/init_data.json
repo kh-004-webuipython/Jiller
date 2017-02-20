@@ -662,6 +662,20 @@
       1, 2
     ]
   }
+},
+  {
+  "model": "socialaccount.socialapp",
+  "pk": 3,
+  "fields": {
+    "provider": "linkedin",
+    "name": "linkedin",
+    "client_id": "862ijafk6skhzz",
+    "secret": "0cPfkLYK2YqvELKn",
+    "key": "",
+    "sites": [
+      1, 2, 3
+    ]
+  }
 }
 ]
 
