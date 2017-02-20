@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/1.10/ref/settings/
 """
 
 import os
+from django.urls.base import reverse_lazy
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 from datetime import timedelta
@@ -43,6 +44,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.sites',
     'project',
     'employee',
     'general',
@@ -51,7 +53,13 @@ INSTALLED_APPS = [
     'waffle',
     'simple_email_confirmation',
     'django_tables2',
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
+    'allauth.socialaccount.providers.instagram',
 ]
+
+SITE_ID = 1
 
 MIDDLEWARE_CLASSES = (
     'waffle.middleware.WaffleMiddleware',
@@ -87,7 +95,8 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
                 'django.template.context_processors.request',
-                'Jiller.context_processors.project_list'
+                'Jiller.context_processors.project_list',
+                'django.template.context_processors.request',
             ],
         },
     },
@@ -95,6 +104,7 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'Jiller.wsgi.application'
 
+LOGIN_REDIRECT_URL = reverse_lazy('general:home_page')
 
 # Database
 # https://docs.djangoproject.com/en/1.10/ref/settings/#databases
@@ -125,6 +135,10 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+AUTHENTICATION_BACKENDS = (
+    'django.contrib.auth.backends.ModelBackend',
+    'allauth.account.auth_backends.AuthenticationBackend',
+)
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.10/topics/i18n/
@@ -156,7 +170,8 @@ LOGIN_EXEMPT_URLS = (
  r'^login/$',
  r'^registration/$',
  r'^confirmation/(?P<username>[a-zA-Z0-9]+)/(?P<key>[a-zA-Z0-9]+)/$',
- r'^sender/(?P<username>[a-zA-Z0-9]+)/$'
+ r'^sender/(?P<username>[a-zA-Z0-9]+)/$',
+ r'^accounts/instagram/login',
 )
 
 
