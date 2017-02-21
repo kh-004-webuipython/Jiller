@@ -52,9 +52,9 @@ class IssueForm(forms.ModelForm):
         cleaned_data = super(IssueForm, self).clean()
         status = cleaned_data.get('status')
         sprint = cleaned_data.get('sprint')
-        if not sprint and status != Issue.NEW:
+        if not sprint and status == (Issue.IN_PROGRESS or Issue.RESOLVED):
             raise forms.ValidationError(
-                'The issue unrelated to sprint has to be NEW')
+                'The issue unrelated to sprint can\'t be in progress or resolved.')
         return status
 
     def clean_estimation(self):
@@ -82,6 +82,12 @@ class IssueFormForEditing(IssueForm):
     def __init__(self, *args, **kwargs):
         super(IssueFormForEditing, self).__init__(*args, **kwargs)
         self.fields.pop('order')
+
+
+class IssueFormForSprint(IssueForm):
+    def __init__(self, *args, **kwargs):
+        super(IssueFormForSprint, self).__init__(*args, **kwargs)
+        self.fields.pop('sprint')
 
 
 class CreateIssueForm(IssueForm):
@@ -137,12 +143,12 @@ class IssueLogForm(FormControlMixin, forms.ModelForm):
 class SprintFinishForm(forms.ModelForm):
     class Meta:
         model = Sprint
-        fields = ['feedback_text', 'relies_link']
+        fields = ['feedback_text', 'release_link']
         widgets = {
             'feedback_text': forms.Textarea(
                 attrs={'class': 'form-control', 'rows': '10',
                        'style': 'resize: vertical;'}),
-            'relies_link': forms.URLInput(attrs={'class': 'form-control'})
+            'release_link': forms.URLInput(attrs={'class': 'form-control'})
         }
 
 

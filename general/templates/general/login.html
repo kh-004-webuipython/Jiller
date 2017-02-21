@@ -55,14 +55,27 @@
             <i class="ace-icon fa fa-github" aria-hidden="true"></i>
           </a>
 
-          <a class="btn btn-info">
+          <a href="{% provider_login_url "twitter" process="login" %}"
+             class="btn btn-inverse">
             <i class="ace-icon fa fa-twitter"></i>
           </a>
 
-          <a class="btn btn-danger">
+          <a href="{% provider_login_url "linkedin" process="login" %}"
+             class="btn btn-inverse">
+            <i class="ace-icon fa fa-linkedin"></i>
+          </a>
+
+          <a href="{% provider_login_url "vk" process="login" %}"
+             class="btn btn-inverse">
+            <i class="ace-icon fa fa-vk"></i>
+          </a>
+
+          <a href="{% provider_login_url "google" process="login" %}"
+             class="btn btn-inverse">
             <i class="ace-icon fa fa-google-plus"></i>
           </a>
-        </div>
+
+         </div>
       </div><!-- /.widget-main -->
 
       <div class="toolbar clearfix">

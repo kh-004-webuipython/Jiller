@@ -10,6 +10,7 @@ from django.http.response import JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.views.generic import DetailView
+from django.views.decorators.csrf import csrf_protect
 from django.utils.decorators import method_decorator
 from django.urls import reverse
 from django.core.exceptions import ValidationError
@@ -19,17 +20,18 @@ from waffle.decorators import waffle_flag
 
 from .forms import ProjectForm, SprintCreateForm, CreateTeamForm, \
     IssueCommentCreateForm, CreateIssueForm, IssueLogForm, \
-    IssueFormForEditing, SprintFinishForm, NoteForm
+    IssueFormForEditing, SprintFinishForm, NoteForm, IssueFormForSprint
 from .models import Project, ProjectTeam, Issue, Sprint, ProjectNote
 from .decorators import delete_project, \
     edit_project_detail, create_project, create_sprint
 from .tables import ProjectTable, SprintsListTable, IssuesTable, \
-    CurrentTeamTable, AddTeamTable
-from django.template.loader import render_to_string
+    ProjectTeamTable
 from .utils.workload_manager import put_issue_back_to_pool, \
     calc_work_hours, assign_issue, get_pool
 
 from employee.models import Employee
+
+from general.tasks import send_email_after_sprint_start_task
 
 
 class ProjectListView(SingleTableView):
@@ -55,7 +57,7 @@ def sprints_list(request, project_id):
     except Project.DoesNotExist:
         raise Http404("Project does not exist")
     sprints = Sprint.objects.filter(project=project_id) \
-        .exclude(status=Sprint.ACTIVE)
+        .exclude(status__in=[Sprint.ACTIVE, Sprint.NEW])
 
     table = SprintsListTable(sprints)
     RequestConfig(request,
@@ -71,7 +73,8 @@ def backlog(request, project_id):
     except Project.DoesNotExist:
         raise Http404("Project does not exist")
     issues = Issue.objects.filter(project=project_id) \
-        .filter(sprint__isnull=True).filter(~Q(status='deleted'))
+        .filter(sprint__isnull=True).filter(~Q(status='deleted')).filter(
+        ~Q(status='closed'))
 
     return render(request, 'project/backlog.html', {'project': project,
                                                     'issues': issues})
@@ -97,8 +100,8 @@ def issue_create_view(request, project_id):
             initial['root'] = request.GET['root']
             form = CreateIssueForm(project=current_project, initial=initial,
                                    user=request.user)
-    return render(request, 'project/issue_create.html', {'form': form,
-                                                         'project': current_project})
+    return render(request, 'project/issue_create.html',
+                  {'form': form, 'project': current_project})
 
 
 @waffle_flag('edit_issue', 'project:list')
@@ -125,6 +128,7 @@ def issue_edit_view(request, project_id, issue_id):
                    'issue': Issue.objects.get(pk=current_issue.id)})
 
 
+@csrf_protect
 def team_view(request, project_id):
     data = {}
     current_project = get_object_or_404(Project, pk=project_id)
@@ -138,42 +142,45 @@ def team_view(request, project_id):
     # for one project it could be only one team
     team = get_object_or_404(ProjectTeam, project_id=current_project)
     data.update({'team': team})
-    e_list = []
-    if team.employees.count() != 1:
-        for employee in team.employees.all():
-            if employee not in project_managers:
-                e_list.append({'id_team': team.id, 'id': employee.id,
-                               'project': team.project, 'title': team.title,
-                               'get_full_name': employee.get_full_name(),
-                               'role': employee.groups})
 
-        table_cur = CurrentTeamTable(e_list)
-        data.update({'table_cur': table_cur})
-        RequestConfig(request,
-                      paginate={'per_page': settings.PAGINATION_PER_PAGE}). \
-            configure(table_cur)
+    row_attrs_data = {'data-pr_id': project_id, \
+                      'data-id': lambda record: record.pk,
+                      'data-team_id': team.pk,
+                      'draggable': 'True'}
+
+    table_attrs_data = {"class": "table table-bordered table-striped "
+                                 "table-hover table-sm"}
+
+    employee = Employee.objects.filter(projectteam__project=project_id). \
+        exclude(groups__name='project manager')
+
+    table_attrs_data.update({"data-table": "table_cur"})
+    table_cur = ProjectTeamTable(employee, prefix='1-',
+                                 row_attrs=row_attrs_data,
+                                 attrs=table_attrs_data)
+
+    table_cur.base_columns['get_full_name'].verbose_name = 'Current employees'
+
+    data.update({'table_cur': table_cur})
+    RequestConfig(request,
+                  paginate={'per_page': settings.PAGINATION_PER_PAGE}). \
+        configure(table_cur)
 
     # hide PMs on "global" team board
-    u_list = []
-    user_list = 'None'
-
     if request.user.groups.filter(name='project manager').exists():
         user_list = Employee.objects.exclude(groups__name='project manager'). \
             exclude(projectteam__project=project_id)
-        # exclude(groups__name='product owner')
-        for user in user_list:
-            u_list.append(
-                {'id': user.id, 'get_full_name': user.get_full_name(),
-                 'role': user.groups})
 
-        table_add = AddTeamTable(u_list)
+        table_attrs_data.update({"data-table": "table_add"})
+        table_add = ProjectTeamTable(user_list, prefix='2-',
+                                     row_attrs=row_attrs_data,
+                                     attrs=table_attrs_data)
+        table_add.base_columns['get_full_name'].verbose_name = 'Free employees'
+
         data.update({'table_add': table_add})
         RequestConfig(request,
                       paginate={'per_page': settings.PAGINATION_PER_PAGE}). \
             configure(table_add)
-    else:
-        table_cur = CurrentTeamTable(e_list)
-        table_cur.exclude = ('sub')
 
     return render(request, 'project/team.html', data)
 
@@ -367,7 +374,9 @@ def push_issue_in_active_sprint(request):
                                                             Issue.RESOLVED]:
                 current_issue.status = table
                 current_issue.save()
-                return HttpResponse()
+                return HttpResponseRedirect(reverse('project:sprint_active',
+                                                    kwargs={
+                                                        'project_id': sprint.project_id}))
             raise Http404("Wrong request")
     else:
         raise Http404("Wrong request")
@@ -514,14 +523,16 @@ def workload_manager(request, project_id, sprint_status):
         item['workload'] = sum * 100 / work_hours
         item['free'] = work_hours - sum
 
+    form = IssueFormForSprint(project=project, initial={}, user=request.user)
     context = {'items': items,
                'project': project,
                'issues_log': issues_log,
                'sprint_status': sprint_status,
-               'sprint_log': sprint_log}
+               'sprint_log': sprint_log,
+               'form': form}
 
     if request.is_ajax():
-        html = render_to_string('project/workload_template.html', context)
+        html = render(request, 'project/workload_template.html', context)
         return HttpResponse(html)
 
     return render(request, 'project/workload_manager.html', context)
@@ -615,6 +626,34 @@ def sprint_start_view(request, project_id):
             messages.add_message(request, messages.INFO, message)
             return HttpResponseRedirect(reverse('project:sprint_active',
                                                 args=[project_id, ]))
+        else:
+            user_id = request.user.id
+            sprint_id = current_sprint.id
+            employees = ProjectTeam.objects.get(
+                project_id=project_id).employees.all()
+            for member in employees:
+                send_email_after_sprint_start_task.delay(member.email, user_id,
+                                                         sprint_id)
         return HttpResponseRedirect(reverse('project:sprint_active',
                                             args=[project_id, ]))
+    raise Http404
+
+
+@waffle_flag('create_task', 'project:list')
+def issue_create_workload(request, project_id, sprint_status):
+    if request.method == "POST":
+        project = get_object_or_404(Project, pk=project_id)
+        form = IssueFormForEditing(project=project, data=request.POST,
+                                   user=request.user)
+        if form.is_valid():
+            sprint = get_object_or_404(Sprint, project_id=project_id,
+                                       status=sprint_status)
+            current_issue = form.save(commit=False)
+            current_issue.project = project
+            current_issue.sprint = sprint
+            current_issue.author = request.user
+            current_issue.save()
+            return HttpResponseRedirect(reverse('project:workload_manager',
+                                                args=[project_id,
+                                                      sprint_status]))
     raise Http404
