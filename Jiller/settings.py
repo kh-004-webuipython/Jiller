@@ -57,6 +57,7 @@ INSTALLED_APPS = [
     'allauth.socialaccount.providers.google',
     'allauth.socialaccount.providers.facebook',
 
+    'allauth.socialaccount.providers.instagram',
 ]
 
 SITE_ID = 1
@@ -179,6 +180,7 @@ LOGIN_EXEMPT_URLS = (
  r'^accounts/social/connections/$',
  r'^accounts/twitter/login/callback/$',
  r'^accounts/facebook/login/$',
+ r'^accounts/instagram/login',
 )
 
 
