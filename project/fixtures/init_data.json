@@ -662,8 +662,7 @@
        1, 2
      ]
    }
- }
-},
+ },
 {
   "model": "socialaccount.socialapp",
   "pk": 2,
