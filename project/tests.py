@@ -6,6 +6,7 @@ from django.urls import reverse
 from django.core.exceptions import ValidationError
 from django.shortcuts import get_object_or_404
 from django.contrib.auth.models import Group
+
 try:
     from urllib import urlencode
 except:
@@ -14,7 +15,6 @@ except:
 from employee.models import Employee
 from .models import Project, Issue, Sprint, ProjectTeam, ProjectNote
 from .forms import IssueForm
-
 
 
 class LoginRequiredBase(TestCase):
@@ -43,7 +43,8 @@ class TeamViewTest(LoginRequiredBase):
         self.employee = Employee.objects.create()
         self.issue = Issue.objects.create(project=self.project,
                                           author=self.employee, title='title',
-                                          status='new', sprint=self.sprint, estimation=1)
+                                          status='new', sprint=self.sprint,
+                                          estimation=1)
 
     # it's a new test, don't delete
     def test_on_create_2nd_team_on_project_at_time(self):
@@ -92,7 +93,8 @@ class IssueFormTests(LoginRequiredBase):
                                           author=self.employee, estimation=1)
         self.sprint = Sprint.objects.create(title='title',
                                             project=self.project, duration=10)
-        self.new_group, self.created = Group.objects.get_or_create(name='developer')
+        self.new_group, self.created = Group.objects.get_or_create(
+            name='developer')
         self.employee.groups.add(1)
         self.team = ProjectTeam.objects.create(project=self.project,
                                                title='title')
@@ -109,7 +111,8 @@ class IssueFormTests(LoginRequiredBase):
         """
              method should return True if required fields are full
         """
-        form_data = {'project': self.project, 'title': 'new issue', 'estimation': 1,
+        form_data = {'project': self.project, 'title': 'new issue',
+                     'estimation': 1,
                      'author': self.employee, 'status': Issue.NEW,
                      'type': Issue.TASK, 'order': Issue.HIGH}
 
@@ -130,9 +133,11 @@ class IssueFormTests(LoginRequiredBase):
         """
              method should return True if all fields are full right
         """
-        form_data = {'project': self.project, 'title': 'new issue', 'estimation': 1,
+        form_data = {'project': self.project, 'title': 'new issue',
+                     'estimation': 1,
                      'author': self.employee, 'status': Issue.RESOLVED,
-                     'type': Issue.TASK, 'order': Issue.HIGH, 'description': 'description', 'sprint': 1}
+                     'type': Issue.TASK, 'order': Issue.HIGH,
+                     'description': 'description', 'sprint': 1}
 
         form = IssueForm(project=self.project, data=form_data,
                          user=self.employee)
@@ -192,11 +197,15 @@ class IssueFormTests(LoginRequiredBase):
 class IssueEditViewTests(LoginRequiredBase):
     def setUp(self):
         super(IssueEditViewTests, self).setUp()
-        self.client = Client()
-        self.project = Project.objects.create()
-        self.employee = Employee.oteambjects.create()
+        self.project = Project.objects.create(title='title')
+        self.employee = Employee.objects.create()
         self.issue = Issue.objects.create(project=self.project,
-                                          author=self.employee, title='title')
+                                          author=self.employee, estimation=1)
+        self.sprint = Sprint.objects.create(title='title',
+                                            project=self.project, duration=10)
+        self.new_group, self.created = Group.objects.get_or_create(
+            name='developer')
+        self.employee.groups.add(1)
         self.team = ProjectTeam.objects.create(project=self.project,
                                                title='title')
         self.team.employees.add(self.user)
@@ -215,29 +224,26 @@ class IssueEditViewTests(LoginRequiredBase):
             method should be True and return title if it can get an object
         """
         issue = get_object_or_404(Issue, pk=self.issue.pk,
-                                  project=self.project.pk)
+                                  project=self.project.pk, estimation=1)
         self.assertTrue(isinstance(issue, Issue))
         self.assertEqual(issue.__str__(), issue.title)
-
-        # def test_issue_edit_view_cant_get_object(self):
-        #     """
-        #         method should return False if it cant get an object
-        #     """
-        #     try:
-        #         issue = get_object_or_404(Issue, pk=0, project=0)
-        #     except Issue.DoesNotExist:
-        #         raise Http404("Project does not exist")
-        #     self.assertTrue(isinstance(issue, Issue), False)
 
 
 class IssueCreateViewTests(LoginRequiredBase):
     def setUp(self):
         super(IssueCreateViewTests, self).setUp()
-        self.client = Client()
-        self.project = Project.objects.create()
+        self.project = Project.objects.create(title='title')
         self.employee = Employee.objects.create()
         self.issue = Issue.objects.create(project=self.project,
-                                          author=self.employee, title='title')
+                                          author=self.employee, estimation=1)
+        self.sprint = Sprint.objects.create(title='title',
+                                            project=self.project, duration=10)
+        self.new_group, self.created = Group.objects.get_or_create(
+            name='developer')
+        self.employee.groups.add(1)
+        self.team = ProjectTeam.objects.create(project=self.project,
+                                               title='title')
+        self.team.employees.add(self.user)
 
     def test_issue_create_view_use_right_template(self):
         """
@@ -799,7 +805,7 @@ class WorkloadManagerTest(LoginRequiredBase):
                                            kwargs={
                                                'project_id': self.project.id,
                                                'sprint_status': Sprint.ACTIVE,
-                                               }))
+                                           }))
         self.assertContains(response, "No items.", status_code=200)
         self.assertQuerysetEqual(response.context['items'], [])
 
@@ -846,7 +852,8 @@ class CreateSprintTests(LoginRequiredBase):
     def setUp(self):
         super(CreateSprintTests, self).setUp()
         self.project = Project.objects.create(title='title',
-                                              start_date=datetime.date(2017, 2, 2))
+                                              start_date=datetime.date(2017, 2,
+                                                                       2))
         self.team = ProjectTeam.objects.create(project=self.project,
                                                title='title')
         self.team.employees.add(self.user)
@@ -854,15 +861,18 @@ class CreateSprintTests(LoginRequiredBase):
     def test_create_sprint_with_valid_data(self):
         form_data = {'title': 'title', 'duration': 7}
         response = self.client.post(reverse('project:sprint_create',
-                                            args=[self.project.id]), data=form_data)
+                                            args=[self.project.id]),
+                                    data=form_data)
         self.assertRedirects(response, reverse('project:workload_manager',
-                                               args=[self.project.id, Sprint.NEW]),
+                                               args=[self.project.id,
+                                                     Sprint.NEW]),
                              status_code=302, target_status_code=200)
 
     def test_create_sprint_with_invalid_data(self):
         form_data = {'title': 'title', 'duration': 'word'}
         response = self.client.post(reverse('project:sprint_create',
-                                            args=[self.project.id]), data=form_data)
+                                            args=[self.project.id]),
+                                    data=form_data)
         self.assertTemplateUsed(response, 'general/404.html')
 
 
@@ -870,8 +880,10 @@ class StartSprintTests(LoginRequiredBase):
     def setUp(self):
         super(StartSprintTests, self).setUp()
         self.project = Project.objects.create(title='title',
-                                              start_date=datetime.date(2017, 2, 2))
-        self.sprint = Sprint.objects.create(project=self.project, title='title',
+                                              start_date=datetime.date(2017, 2,
+                                                                       2))
+        self.sprint = Sprint.objects.create(project=self.project,
+                                            title='title',
                                             status=Sprint.NEW, duration=10)
         self.team = ProjectTeam.objects.create(project=self.project,
                                                title='title')
