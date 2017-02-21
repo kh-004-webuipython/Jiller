@@ -46,20 +46,8 @@ class CheckProjectRelation(object):
                 response = self.get_response(request)
                 return response
 
-        if request.method == 'POST' and ISSUE_ORDER.match(path):
-            issue_ids = [int(id) for id in
-                         json.loads(request.POST.get('data')).keys()]
-            for issue_id in issue_ids:
-                try:
-                    issue = Issue.objects.get(pk=issue_id)
-                except Issue.DoesNotExist:
-                    break
-                else:
-                    if not self.is_user_attached_to_project(request.user.id,
-                                                            issue.project_id):
-                        break
-            else:
-                response = self.get_response(request)
-                return response
+        if request.method == 'POST':
+            response = self.get_response(request)
+            return response
 
         return HttpResponseForbidden()

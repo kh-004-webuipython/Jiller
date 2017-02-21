@@ -11,7 +11,7 @@
           New User Registration
         </h4>
         <div class="space-6"></div>
-        <form action="{% url 'general:registration' %}" method="post">{% csrf_token %}
+        <form action="{% url 'general:registration' %}" enctype="multipart/form-data" method="post">{% csrf_token %}
           <fieldset>
             {% for field in form %}
                 <label class="block clearfix">

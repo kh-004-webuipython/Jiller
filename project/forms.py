@@ -37,7 +37,7 @@ class IssueForm(forms.ModelForm):
     def __init__(self, user, project, *args, **kwargs):
         super(IssueForm, self).__init__(*args, **kwargs)
         self.fields['sprint'].queryset = Sprint.objects.filter(
-            project=project.id)
+            project=project.id).exclude(status=Sprint.FINISHED)
         self.fields['root'].queryset = Issue.objects.filter(
             project=project.id).filter(status=('new' or 'in progress'))
         self.fields['employee'].queryset = ProjectTeam.objects.filter(
@@ -52,9 +52,9 @@ class IssueForm(forms.ModelForm):
         cleaned_data = super(IssueForm, self).clean()
         status = cleaned_data.get('status')
         sprint = cleaned_data.get('sprint')
-        if not sprint and status != Issue.NEW:
+        if not sprint and status == (Issue.IN_PROGRESS or Issue.RESOLVED):
             raise forms.ValidationError(
-                'The issue unrelated to sprint has to be NEW')
+                'The issue unrelated to sprint can\'t be in progress or resolved.')
         return status
 
     def clean_estimation(self):

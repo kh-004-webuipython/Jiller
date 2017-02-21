@@ -21,7 +21,7 @@ document.addEventListener("DOMContentLoaded", function () {
         if (ev.preventDefault) {
             ev.preventDefault();
         }
-
+        ev.preventDefault();
         ev.dataTransfer.dropEffect = 'move';
         return false;
     }

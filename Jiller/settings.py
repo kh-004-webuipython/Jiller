@@ -2,6 +2,7 @@ import os
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 from datetime import timedelta
+from redislite import Redis
 
 from django.urls.base import reverse_lazy
 
@@ -24,8 +25,9 @@ SECRET_KEY = 'olj^%!kemjn61dic)!y3k!(51&vciz$2jf*w_mji-(f(nwz#7$'
 DEBUG = True
 
 from socket import gethostname
-ALLOWED_HOSTS = ['127.0.0.1', 'localhost', gethostname(), os.environ.get('OPENSHIFT_APP_DNS')]
 
+ALLOWED_HOSTS = ['127.0.0.1', 'localhost', gethostname(),
+                 os.environ.get('OPENSHIFT_APP_DNS')]
 
 # Application definition
 
@@ -50,6 +52,11 @@ INSTALLED_APPS = [
     'allauth.socialaccount',
     'allauth.socialaccount.providers.github',
     'allauth.socialaccount.providers.twitter',
+    'allauth.socialaccount.providers.linkedin',
+    'allauth.socialaccount.providers.vk',
+    'allauth.socialaccount.providers.google',
+    'allauth.socialaccount.providers.facebook',
+
     'allauth.socialaccount.providers.instagram',
 ]
 
@@ -85,10 +92,9 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
-                'django.template.context_processors.request',
-                'Jiller.context_processors.project_list',
-                'django.template.context_processors.request',
+                'Jiller.context_processors.project_list'
             ],
+            'debug': True,
         },
     },
 ]
@@ -160,18 +166,35 @@ AUTH_USER_MODEL = 'employee.Employee'
 LOGIN_URL = 'general:login'
 
 LOGIN_EXEMPT_URLS = (
+
  r'^login/$',
  r'^registration/$',
  r'^confirmation/(?P<username>[a-zA-Z0-9]+)/(?P<key>[a-zA-Z0-9]+)/$',
  r'^sender/(?P<username>[a-zA-Z0-9]+)/$',
  r'^accounts/github/login/$',
  r'^accounts/twitter/login/$',
+ r'^accounts/vk/login/$',
+ r'^accounts/google/login/$',
+ r'^accounts/linkedin/login/$',
  # need for edit social accounts in user profile
  r'^accounts/social/connections/$',
  r'^accounts/twitter/login/callback/$',
+ r'^accounts/facebook/login/$',
  r'^accounts/instagram/login',
 )
 
+
+
+SOCIALACCOUNT_PROVIDERS = \
+    {'linkedin':
+         {'SCOPE': ['r_emailaddress']},
+    'facebook':
+        {'METHOD': 'oauth2',
+         'SCOPE': ['email'],
+         'AUTH_PARAMS': {'auth_type': 'reauthenticate'},
+         'LOCALE_FUNC': lambda request: 'en_US',
+         'VERSION': 'v2.4'}
+     }
 
 TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
 
@@ -188,9 +211,13 @@ except ImportError:
     pass
 
 # CELERY
-BROKER_URL = 'redis://localhost:6379'
-# CELERY_BROKER_URL = 'redis://localhost:6379'
-CELERY_RESULT_BACKEND = 'redis://localhost:6379'
+
+REDIS_DB_PATH = os.path.join(DATA_DIR,'my_redis.db')
+rdb = Redis(REDIS_DB_PATH, serverconfig={'port': '1116'})
+REDIS_SOCKET_PATH = 'redis+socket://%s' % (rdb.socket_file, )
+BROKER_URL = REDIS_SOCKET_PATH
+CELERY_RESULT_BACKEND = REDIS_SOCKET_PATH
+
 CELERY_ACCEPT_CONTENT = ['application/json']
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'
@@ -199,10 +226,14 @@ CELERY_TIMEZONE = 'UTC'
 
 
 # EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+
 EMAIL_USE_TLS = True
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_HOST_USER = 'email.assign.python.webui@gmail.com'
-EMAIL_HOST_PASSWORD = 'Evrey123'
+EMAIL_HOST_PASSWORD = 'Kh004Python'
 EMAIL_PORT = 587
 DEFAULT_FROM_EMAIL = 'email.assign.python.webui@gmail.com'
+
+JILLER_HOST = 'http://jiller-phobosprogrammer.rhcloud.com'
 
