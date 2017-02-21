@@ -5,6 +5,7 @@ from django.http import Http404
 from django.urls import reverse
 from django.core.exceptions import ValidationError
 from django.shortcuts import get_object_or_404
+from django.contrib.auth.models import Group
 try:
     from urllib import urlencode
 except:
@@ -37,16 +38,16 @@ class TeamViewTest(LoginRequiredBase):
     def setUp(self):
         super(TeamViewTest, self).setUp()
         self.project = Project.objects.create(title="Pr1")
-        self.team = ProjectTeam.objects.create(project=self.project)
         self.sprint = Sprint.objects.create(project=self.project,
                                             status='active', duration=10)
         self.employee = Employee.objects.create()
         self.issue = Issue.objects.create(project=self.project,
                                           author=self.employee, title='title',
-                                          status='new', sprint=self.sprint)
+                                          status='new', sprint=self.sprint, estimation=1)
 
     # it's a new test, don't delete
     def test_on_create_2nd_team_on_project_at_time(self):
+        team = ProjectTeam.objects.create(project=self.project, title='title')
         self.assertEqual(
             ProjectTeam.objects.filter(project_id=self.project.id).count(), 1)
         try:
@@ -66,7 +67,7 @@ class TeamViewTest(LoginRequiredBase):
                         kwargs={'project_id': self.project.pk}))
         except ProjectTeam.DoesNotExist:
             raise Http404("no team on project")
-        self.assertContains(response, '', status_code=404)
+        self.assertTemplateUsed(response, 'general/404.html')
 
     def test_team_view_list_view_with_one_team(self):
         """
@@ -85,14 +86,17 @@ class TeamViewTest(LoginRequiredBase):
 class IssueFormTests(LoginRequiredBase):
     def setUp(self):
         super(IssueFormTests, self).setUp()
-        self.project = Project.objects.create()
+        self.project = Project.objects.create(title='title')
         self.employee = Employee.objects.create()
         self.issue = Issue.objects.create(project=self.project,
-                                          author=self.employee)
+                                          author=self.employee, estimation=1)
         self.sprint = Sprint.objects.create(title='title',
                                             project=self.project, duration=10)
+        self.new_group, self.created = Group.objects.get_or_create(name='developer')
+        self.employee.groups.add(1)
         self.team = ProjectTeam.objects.create(project=self.project,
                                                title='title')
+        self.team.employees.add(self.user)
 
     def test_form_is_valid_with_empty_fields(self):
         """
@@ -105,9 +109,12 @@ class IssueFormTests(LoginRequiredBase):
         """
              method should return True if required fields are full
         """
-        form_data = {'title': 'new issue'}
+        form_data = {'project': self.project, 'title': 'new issue', 'estimation': 1,
+                     'author': self.employee, 'status': Issue.NEW,
+                     'type': Issue.TASK, 'order': Issue.HIGH}
+
         form = IssueForm(project=self.project, data=form_data,
-                         user=self.user)
+                         user=self.employee)
         self.assertEqual(form.is_valid(), True)
 
     def test_form_is_valid_with_not_null_some_required_fields(self):
@@ -123,12 +130,12 @@ class IssueFormTests(LoginRequiredBase):
         """
              method should return True if all fields are full right
         """
-        form_data = {'root': self.issue.pk, 'employee': self.employee.pk,
-                     'title': 'new issue', 'description': 'description',
-                     'status': self.issue.status, 'estimation': 2
-                     }
+        form_data = {'project': self.project, 'title': 'new issue', 'estimation': 1,
+                     'author': self.employee, 'status': Issue.RESOLVED,
+                     'type': Issue.TASK, 'order': Issue.HIGH, 'description': 'description', 'sprint': 1}
+
         form = IssueForm(project=self.project, data=form_data,
-                         user=self.user)
+                         user=self.employee)
         self.assertEqual(form.is_valid(), True)
 
     def test_form_is_not_valid_with_no_sprint_and_status_distinct_new(self):
@@ -187,7 +194,7 @@ class IssueEditViewTests(LoginRequiredBase):
         super(IssueEditViewTests, self).setUp()
         self.client = Client()
         self.project = Project.objects.create()
-        self.employee = Employee.objects.create()
+        self.employee = Employee.oteambjects.create()
         self.issue = Issue.objects.create(project=self.project,
                                           author=self.employee, title='title')
         self.team = ProjectTeam.objects.create(project=self.project,
