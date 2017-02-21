@@ -600,7 +600,7 @@ def finish_active_sprint_view(request, project_id):
             return HttpResponseRedirect(reverse('project:sprint_active',
                                                 kwargs={
                                                     'project_id': project_id}))
-    raise Http404
+    raise Http404("Wrong request")
 
 
 @waffle_flag('create_sprint')
