@@ -107,8 +107,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'Jiller.wsgi.application'
 
-LOGIN_REDIRECT_URL = reverse_lazy('general:home_page')
-
 # Database
 # https://docs.djangoproject.com/en/1.10/ref/settings/#databases
 
@@ -119,6 +117,13 @@ DATABASES = {
     }
 }
 
+
+TEMPLATE_CONTEXT_PROCESSORS = (
+    'django.core.context_processors.request',
+    'django.contrib.auth.context_processors.auth',
+    'allauth.account.context_processors.account',
+    'allauth.socialaccount.context_processors.socialaccount',
+)
 
 # Password validation
 # https://docs.djangoproject.com/en/1.10/ref/settings/#auth-password-validators
@@ -171,6 +176,10 @@ AUTH_USER_MODEL = 'employee.Employee'
 
 LOGIN_URL = 'general:login'
 
+LOGOUT_URL = 'general:login'
+
+LOGIN_REDIRECT_URL = reverse_lazy('general:home_page')
+
 LOGIN_EXEMPT_URLS = (
  r'^login/$',
  r'^registration/$',
@@ -187,7 +196,7 @@ NOSE_ARGS = [
     '--cover-package=general,project,employee',
 ]
 
-PAGINATION_PER_PAGE = 10
+PAGINATION_PER_PAGE = 20
 
 try:
     from .local_settings import *
