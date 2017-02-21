@@ -704,6 +704,22 @@
       1, 2
     ]
   }
+},
+{
+  "model": "socialaccount.socialapp",
+  "pk": 9,
+  "fields": {
+    "provider": "facebook",
+    "name": "facebook",
+    "client_id": "429621090715221",
+    "secret": "ff664b954a857fc0553752617b8d2e8b",
+    "key": "",
+    "sites": [
+      1,
+      2,
+      3
+    ]
+  }
 }
 ]
 
