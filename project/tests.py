@@ -209,16 +209,6 @@ class IssueEditViewTests(LoginRequiredBase):
         self.assertTrue(isinstance(issue, Issue))
         self.assertEqual(issue.__str__(), issue.title)
 
-        # def test_issue_edit_view_cant_get_object(self):
-        #     """
-        #         method should return False if it cant get an object
-        #     """
-        #     try:
-        #         issue = get_object_or_404(Issue, pk=0, project=0)
-        #     except Issue.DoesNotExist:
-        #         raise Http404("Project does not exist")
-        #     self.assertTrue(isinstance(issue, Issue), False)
-
 
 class IssueCreateViewTests(LoginRequiredBase):
     def setUp(self):
