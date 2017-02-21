@@ -647,11 +647,11 @@ class ActiveSprintTests(LoginRequiredBase):
                                        status=Sprint.ACTIVE, duration=10)
         url = reverse('project:finish_active_sprint',
                       kwargs={'project_id': sprint.project_id})
-        data = {'relies_link': 'http://127.0.0.1:8000/project/1/',
+        data = {'release_link': 'http://127.0.0.1:8000/project/1/',
                 'feedback_text': 'some text'}
         response = self.client.post(url, data)
         sprint.refresh_from_db()
-        self.assertEqual(sprint.relies_link,
+        self.assertEqual(sprint.release_link,
                          'http://127.0.0.1:8000/project/1/')
         self.assertEqual(sprint.feedback_text, 'some text')
         self.assertEqual(sprint.status, Sprint.FINISHED)
@@ -681,7 +681,7 @@ class SprintDashboard(LoginRequiredBase):
         data = {'table': 'in progress', 'id': 1}
         self.assertEqual(Issue.objects.get(pk=self.issue.id).status, 'new')
         response = self.client.post(url, data)
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, 302)
         self.assertEqual(Issue.objects.get(pk=self.issue.id).status,
                          'in progress')
 

@@ -584,7 +584,7 @@ def finish_active_sprint_view(request, project_id):
                                           status=Sprint.ACTIVE)
         form = SprintFinishForm(request.POST)
         if form.is_valid():
-            active_sprint.relies_link = form.cleaned_data['relies_link']
+            active_sprint.release_link = form.cleaned_data['release_link']
             active_sprint.feedback_text = form.cleaned_data['feedback_text']
             active_sprint.status = Sprint.FINISHED
             active_sprint.end_date = datetime.datetime.now()
