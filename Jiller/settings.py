@@ -2,6 +2,7 @@ import os
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 from datetime import timedelta
+from redislite import Redis
 
 from django.urls.base import reverse_lazy
 
@@ -12,6 +13,7 @@ DATA_DIR = os.environ.get('OPENSHIFT_DATA_DIR', BASE_DIR)
 MEDIA_ROOT = os.path.join(BASE_DIR, 'public', 'media')
 
 MEDIA_URL = '/media/'
+
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.10/howto/deployment/checklist/
@@ -174,8 +176,8 @@ LOGIN_EXEMPT_URLS = (
  # need for edit social accounts in user profile
  r'^accounts/social/connections/$',
  r'^accounts/twitter/login/callback/$',
-
 )
+
 SOCIALACCOUNT_PROVIDERS = \
     {'linkedin':
          {'SCOPE': ['r_emailaddress']},}
@@ -195,19 +197,29 @@ except ImportError:
     pass
 
 # CELERY
-BROKER_URL = 'redis://localhost:6379'
-# CELERY_BROKER_URL = 'redis://localhost:6379'
-CELERY_RESULT_BACKEND = 'redis://localhost:6379'
+
+REDIS_DB_PATH = os.path.join(DATA_DIR,'my_redis.db')
+rdb = Redis(REDIS_DB_PATH, serverconfig={'port': '1116'})
+REDIS_SOCKET_PATH = 'redis+socket://%s' % (rdb.socket_file, )
+BROKER_URL = REDIS_SOCKET_PATH
+CELERY_RESULT_BACKEND = REDIS_SOCKET_PATH
+
 CELERY_ACCEPT_CONTENT = ['application/json']
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'
 CELERY_IMPORTS = ['general.tasks']
 CELERY_TIMEZONE = 'UTC'
 
+
 # EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+
 EMAIL_USE_TLS = True
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_HOST_USER = 'email.assign.python.webui@gmail.com'
-EMAIL_HOST_PASSWORD = 'Evrey123'
+EMAIL_HOST_PASSWORD = 'Kh004Python'
 EMAIL_PORT = 587
 DEFAULT_FROM_EMAIL = 'email.assign.python.webui@gmail.com'
+
+JILLER_HOST = 'http://jiller-phobosprogrammer.rhcloud.com'
+
