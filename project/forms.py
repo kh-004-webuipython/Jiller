@@ -37,7 +37,7 @@ class IssueForm(forms.ModelForm):
     def __init__(self, user, project, *args, **kwargs):
         super(IssueForm, self).__init__(*args, **kwargs)
         self.fields['sprint'].queryset = Sprint.objects.filter(
-            project=project.id)
+            project=project.id).exclude(status=Sprint.FINISHED)
         self.fields['root'].queryset = Issue.objects.filter(
             project=project.id).filter(status=('new' or 'in progress'))
         self.fields['employee'].queryset = ProjectTeam.objects.filter(
