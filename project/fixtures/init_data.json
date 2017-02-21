@@ -648,8 +648,23 @@
         1, 2
       ]
     }
-  },
-  {
+ },
+ {
+   "model": "socialaccount.socialapp",
+   "pk": 8,
+   "fields": {
+     "provider": "vk",
+     "name": "vk",
+     "client_id": "AXpSs0hcqnM9OAE9lJzU",
+     "secret": "ca066f45ca066f45cac443f05cca5fbb93cca06ca066f4592aa7b79da226077dc2f9386",
+     "key": "",
+     "sites": [
+       1, 2
+     ]
+   }
+ }
+},
+{
   "model": "socialaccount.socialapp",
   "pk": 2,
   "fields": {
@@ -657,6 +672,20 @@
     "name": "twitter",
     "client_id": "GAT7O6dpfG28y0SN7XIjYuE4l",
     "secret": "r5J0jRP4egjPucTWTgtqc7DNjFLuTzIAfqLGwTZwmHoXOCdAW8",
+    "key": "",
+    "sites": [
+      1, 2
+    ]
+  }
+},
+{
+  "model": "socialaccount.socialapp",
+  "pk": 3,
+  "fields": {
+    "provider": "google",
+    "name": "google",
+    "client_id": "784981461724-948617b5eqranrplbdd8c6tjd2uo9njr.apps.googleusercontent.com",
+    "secret": "OsTvsqytJH4mBLVMWeiXP4UW",
     "key": "",
     "sites": [
       1, 2
