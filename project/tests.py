@@ -166,27 +166,25 @@ class IssueFormTests(LoginRequiredBase):
                          user=self.user)
         self.assertEqual(form.is_valid(), False)
 
-    def test_form_is_not_valid_with_not_po_make_user_story(self):
-        self.user.groups.id = 2
-        form_data = {'root': self.issue, 'employee': self.user,
-                     'title': 'new issue', 'description': 'description',
-                     'type': Issue.USER_STORY, 'status': Issue.IN_PROGRESS,
-                     'sprint': self.sprint, 'estimation': 2
-                     }
+    def test_form_is_valid_with_po_make_user_story(self):
+        self.employee.groups.remove()
+        self.employee.groups.add(3)
+        form_data = {'project': self.project, 'title': 'new issue', 'estimation': 1,
+                     'author': self.employee, 'status': Issue.NEW,
+                     'type': Issue.USER_STORY, 'order': Issue.HIGH,
+                     'description': 'description', 'sprint': 1}
         form = IssueForm(project=self.project, data=form_data,
                          user=self.user)
-        self.assertEqual(form.is_valid(), False)
+        self.assertEqual(form.is_valid(), True)
 
-    def test_form_is_not_valid_with_po_make_not_user_story(self):
-        self.user.groups.id = 3
-        form_data = {'root': self.issue, 'employee': self.user,
-                     'title': 'new issue', 'description': 'description',
-                     'type': Issue.TASK, 'status': Issue.IN_PROGRESS,
-                     'sprint': self.sprint, 'estimation': 2
-                     }
+    def test_form_is_valid_with_dev_make_task(self):
+        form_data = {'project': self.project, 'title': 'new issue', 'estimation': 1,
+                     'author': self.employee, 'status': Issue.NEW,
+                     'type': Issue.TASK, 'order': Issue.HIGH,
+                     'description': 'description', 'sprint': 1}
         form = IssueForm(project=self.project, data=form_data,
                          user=self.user)
-        self.assertEqual(form.is_valid(), False)
+        self.assertEqual(form.is_valid(), True)
 
 
 class IssueEditViewTests(LoginRequiredBase):
@@ -194,7 +192,7 @@ class IssueEditViewTests(LoginRequiredBase):
         super(IssueEditViewTests, self).setUp()
         self.client = Client()
         self.project = Project.objects.create()
-        self.employee = Employee.oteambjects.create()
+        self.employee = Employee.objects.create()
         self.issue = Issue.objects.create(project=self.project,
                                           author=self.employee, title='title')
         self.team = ProjectTeam.objects.create(project=self.project,
@@ -246,20 +244,6 @@ class IssueCreateViewTests(LoginRequiredBase):
         response = self.client.post(
             reverse('project:issue_create', args=[self.project.pk]))
         self.assertTemplateUsed(response, 'project/issue_create.html')
-
-
-class ProjectsListViewTests(LoginRequiredBase):
-    def test_projectlist_view_with_no_projects(self):
-        response = self.client.get(reverse('project:list'))
-        self.assertContains(response, "There is no projects yet.",
-                            status_code=200)
-        self.assertQuerysetEqual(response.context['project_list'], [])
-
-    def test_projectlist_view_with_projects(self):
-        project = Project.objects.create(title='title')
-        response = self.client.get(reverse('project:list'))
-        self.assertQuerysetEqual(response.context['project_list'],
-                                 ['<Project: title>'])
 
 
 class BacklogViewTests(LoginRequiredBase):
