@@ -21,28 +21,26 @@
     {% include 'project/project_navbar.html' with issues_tab=True %}
     <div class="container-fluid">
         <form action="{% url 'project:issue_search' project.id %}" method="get">
+
             <div class="row">
-                <div class="col-md-5 col-md-offset-3">
-                    <div class="btn-group">
+                <div class="col-md-12 ">
+                    <div class="input-group">
+                    <input name="s" type="text" class="form-control" placeholder="Search" value="{{ request.GET.s }}">
+                    <span class="input-group-btn">
+                        <button class="btn btn-sm btn-info no-radius" type="submit" name="status"   value="{% if request.GET.status %}{{ request.GET.status }}{% else %}all{% endif %}">
+                            <i class="ace-icon fa fa-share"></i>
+                            Search
+                        </button>
                         <button type="submit" name="status" value="all"
-                                class="btn btn-primary{% if request.GET.status == 'all' or not request.GET.status %} active{% endif %}">
+                                class="btn btn-sm btn-primary{% if request.GET.status == 'all' or not request.GET.status %} active{% endif %}">
                             All
                         </button>
                         {% for value, name in issues_status %}
                             <button type="submit" name="status" value="{{ value }}"
-                                    class="btn btn-primary{% if request.GET.status == value %} active{% endif %}">{{ name }}</button>
+                                    class="btn btn-sm btn-primary{% if request.GET.status == value %} active{% endif %}">{{ name }}</button>
                         {% endfor %}
+                    </span>
                     </div>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-md-5">
-                    <input name="s" type="text" placeholder="Search" value="{{ request.GET.s }}">
-                </div>
-                <div class="col-md-2">
-                    <button type="submit" name="status" class="btn btn-primary"
-                            value="{% if request.GET.status %}{{ request.GET.status }}{% else %}all{% endif %}">Search
-                    </button>
                 </div>
             </div>
         </form>
