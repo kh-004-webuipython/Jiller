@@ -1,5 +1,7 @@
 {% load i18n %}
 {% load static %}
+{% load navbar_active %}
+{% load waffle_tags %}
 <!DOCTYPE html>
 <html>
 <head>
@@ -109,20 +111,32 @@
   <!-- #section:basics/sidebar -->
   <div id="sidebar" class="sidebar responsive ace-save-state">
     <div class="sidebar-shortcuts" id="sidebar-shortcuts">
+      {% flag "create_project" %}
       <a href="{% url 'project:create' %}" class="btn btn-white btn-xlg btn-success btn-block">
         <span class="glyphicon glyphicon-plus"></span>
-        Create project</a>
+        Create project
+      </a>
+      {% endflag %}
     </div><!-- /.sidebar-shortcuts -->
 
     <ul class="nav nav-list">
       {% for project in project_list %}
-        <li class="hover">
+        {% if request|navbar_active:project.id %}
+          <li class="hover active">
           <a href="{% url 'project:detail' project.id %}">
-            <i class="menu-icon fa  fa-check-square-o"></i>
             <span class="menu-text">
 								{{ project.title }}
 							</span>
-            <b class="arrow fa fa-angle-down"></b>
+          </a>
+          <b class="arrow"></b>
+          </li>
+        {% else %}
+        <li class="hover">
+          <a href="{% url 'project:detail' project.id %}">
+            <span class="menu-text">
+								{{ project.title }}
+							</span>
+            <b class="arrow fa fa-angle-right"></b>
           </a>
           <b class="arrow"></b>
           <ul class="submenu">
@@ -184,6 +198,7 @@
             </li>
           </ul>
         </li>
+        {% endif %}
       {% endfor %}
     </ul><!-- /.nav-list -->
     <!-- /section:basics/sidebar.layout.minimize -->
@@ -212,9 +227,6 @@
           <div class="col-xs-12">
             <!-- PAGE CONTENT BEGINS -->
             {% block content %}
-
-
-
             {% endblock %}
             <!-- PAGE CONTENT ENDS -->
           </div><!-- /.col -->
