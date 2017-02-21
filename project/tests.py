@@ -197,11 +197,15 @@ class IssueFormTests(LoginRequiredBase):
 class IssueEditViewTests(LoginRequiredBase):
     def setUp(self):
         super(IssueEditViewTests, self).setUp()
-        self.client = Client()
-        self.project = Project.objects.create()
+        self.project = Project.objects.create(title='title')
         self.employee = Employee.objects.create()
         self.issue = Issue.objects.create(project=self.project,
-                                          author=self.employee, title='title')
+                                          author=self.employee, estimation=1)
+        self.sprint = Sprint.objects.create(title='title',
+                                            project=self.project, duration=10)
+        self.new_group, self.created = Group.objects.get_or_create(
+            name='developer')
+        self.employee.groups.add(1)
         self.team = ProjectTeam.objects.create(project=self.project,
                                                title='title')
         self.team.employees.add(self.user)
@@ -220,7 +224,7 @@ class IssueEditViewTests(LoginRequiredBase):
             method should be True and return title if it can get an object
         """
         issue = get_object_or_404(Issue, pk=self.issue.pk,
-                                  project=self.project.pk)
+                                  project=self.project.pk, estimation=1)
         self.assertTrue(isinstance(issue, Issue))
         self.assertEqual(issue.__str__(), issue.title)
 
@@ -228,12 +232,18 @@ class IssueEditViewTests(LoginRequiredBase):
 class IssueCreateViewTests(LoginRequiredBase):
     def setUp(self):
         super(IssueCreateViewTests, self).setUp()
-        self.client = Client()
-        self.project = Project.objects.create()
+        self.project = Project.objects.create(title='title')
         self.employee = Employee.objects.create()
         self.issue = Issue.objects.create(project=self.project,
-                                          author=self.employee, title='title',
-                                          estimation=1)
+                                          author=self.employee, estimation=1)
+        self.sprint = Sprint.objects.create(title='title',
+                                            project=self.project, duration=10)
+        self.new_group, self.created = Group.objects.get_or_create(
+            name='developer')
+        self.employee.groups.add(1)
+        self.team = ProjectTeam.objects.create(project=self.project,
+                                               title='title')
+        self.team.employees.add(self.user)
 
     def test_issue_create_view_use_right_template(self):
         """
