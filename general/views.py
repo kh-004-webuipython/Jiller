@@ -36,7 +36,7 @@ def login_form_view(request):
 
 def registration_form_view(request):
     if request.method == 'POST':
-        form = RegistrationForm(request.POST)
+        form = RegistrationForm(request.POST, request.FILES)
         if form.is_valid():
             username = form.cleaned_data['username']
             password = form.cleaned_data['password']
@@ -44,9 +44,11 @@ def registration_form_view(request):
             first_name = form.cleaned_data['first_name']
             email = form.cleaned_data['email']
             role = form.cleaned_data['role']
+            photo = form.cleaned_data['photo']
             employee = Employee.objects.create_user(username, email, password,
                                                     last_name=last_name,
-                                                    first_name=first_name)
+                                                    first_name=first_name,
+                                                    photo=photo)
             if role != RegistrationForm.PROJECT_MANAGER:
                 employee.groups.add(Group.objects.get(name=role))
             return HttpResponseRedirect(reverse('general:sender',

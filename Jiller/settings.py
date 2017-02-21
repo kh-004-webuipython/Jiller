@@ -13,6 +13,7 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'public', 'media')
 
 MEDIA_URL = '/media/'
 
+TEMPLATE_DEBUG = True
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.10/howto/deployment/checklist/
