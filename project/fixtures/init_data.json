@@ -645,7 +645,7 @@
       "secret": "beec855b67d82989a2e02396174915ea2e93c433",
       "key": "",
       "sites": [
-        1
+        1, 2
       ]
     }
   },
@@ -665,7 +665,7 @@
 },
   {
   "model": "socialaccount.socialapp",
-  "pk": 3,
+  "pk": 4,
   "fields": {
     "provider": "linkedin",
     "name": "linkedin",
@@ -673,7 +673,7 @@
     "secret": "0cPfkLYK2YqvELKn",
     "key": "",
     "sites": [
-      1, 2, 3
+      1, 2
     ]
   }
 }
