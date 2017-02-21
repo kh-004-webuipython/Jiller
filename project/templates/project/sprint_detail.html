@@ -59,17 +59,17 @@
 
       {% if object.feedback_text %}
       <div class="profile-info-row">
-        <div class="profile-info-name">Feedback</div>
+        <div class="profile-info-name">Review</div>
 
         <div class="profile-info-value">
-          <span>{{ object.feedback_text }}</span>
+          <span>{{ object.feedback_text|linebreaks }}</span>
         </div>
       </div>
       {% endif %}
 
       {% if object.release_link %}
       <div class="profile-info-row">
-        <div class="profile-info-name">Relies</div>
+        <div class="profile-info-name">Release</div>
 
         <div class="profile-info-value">
           <span> <a href="{{ object.release_link }}">Link on repository</a>
