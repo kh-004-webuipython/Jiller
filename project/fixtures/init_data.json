@@ -648,8 +648,23 @@
         1
       ]
     }
-  },
-  {
+ },
+ {
+   "model": "socialaccount.socialapp",
+   "pk": 8,
+   "fields": {
+     "provider": "vk",
+     "name": "vk",
+     "client_id": "AXpSs0hcqnM9OAE9lJzU",
+     "secret": "ca066f45ca066f45cac443f05cca5fbb93cca06ca066f4592aa7b79da226077dc2f9386",
+     "key": "",
+     "sites": [
+       1, 2
+     ]
+   }
+ }
+},
+{
   "model": "socialaccount.socialapp",
   "pk": 2,
   "fields": {
@@ -663,7 +678,7 @@
     ]
   }
 },
-  {
+{
   "model": "socialaccount.socialapp",
   "pk": 3,
   "fields": {
@@ -677,6 +692,5 @@
     ]
   }
 }
-
 ]
 

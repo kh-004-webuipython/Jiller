@@ -49,6 +49,7 @@ INSTALLED_APPS = [
     'allauth.socialaccount',
     'allauth.socialaccount.providers.github',
     'allauth.socialaccount.providers.twitter',
+    'allauth.socialaccount.providers.vk',
     'allauth.socialaccount.providers.google',
 
 ]
@@ -153,16 +154,19 @@ AUTH_USER_MODEL = 'employee.Employee'
 LOGIN_URL = 'general:login'
 
 LOGIN_EXEMPT_URLS = (
-    r'^login/$',
-    r'^registration/$',
-    r'^confirmation/(?P<username>[a-zA-Z0-9]+)/(?P<key>[a-zA-Z0-9]+)/$',
-    r'^sender/(?P<username>[a-zA-Z0-9]+)/$',
-    r'^accounts/github/login/$',
-    r'^accounts/twitter/login/$',
-    r'^accounts/google/login/$',
-    # need for edit social accounts in user profile
-    r'^accounts/social/connections/$',
-    r'^accounts/twitter/login/callback/$',
+
+ r'^login/$',
+ r'^registration/$',
+ r'^confirmation/(?P<username>[a-zA-Z0-9]+)/(?P<key>[a-zA-Z0-9]+)/$',
+ r'^sender/(?P<username>[a-zA-Z0-9]+)/$',
+ r'^accounts/github/login/$',
+ r'^accounts/twitter/login/$',
+ r'^accounts/vk/login/$',
+ r'^accounts/google/login/$',
+ # need for edit social accounts in user profile
+ r'^accounts/social/connections/$',
+ r'^accounts/twitter/login/callback/$',
+  
 )
 
 TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
