@@ -24,17 +24,17 @@ django-admin.py --version
 
 In our environment it should be 1.10.5
 
-6) To make role permissions and other flag depending features work :
-$ python manage.py migrate
+6) To make role permissions and other flag depending features work :\n
+$ python manage.py migrate\n
 $ python manage.py loaddata project/fixtures/init_data.json
 
 (You get 4 users: admin, developer, scrum_master, product_owner
 password for all: test)
 
-To check and run celery for sending async emails:
+To check and run celery for sending async emails:\n
 $ celery -A Jiller worker -l info
 
-To make working photo uploading wright:
-1) python manage.py makemigrations thumbnail
-2) python manage.py migrate thumbnail
+To make working photo uploading wright:\n
+1) python manage.py makemigrations thumbnail\n
+2) python manage.py migrate thumbnail\n
 
