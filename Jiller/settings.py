@@ -14,7 +14,6 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'public', 'media')
 
 MEDIA_URL = '/media/'
 
-
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.10/howto/deployment/checklist/
 
@@ -74,7 +73,6 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'Jiller.urls'
 
-
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
@@ -105,7 +103,6 @@ DATABASES = {
     }
 }
 
-
 # Password validation
 # https://docs.djangoproject.com/en/1.10/ref/settings/#auth-password-validators
 
@@ -129,7 +126,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
 # Internationalization
 # https://docs.djangoproject.com/en/1.10/topics/i18n/
 
@@ -143,7 +139,6 @@ USE_L10N = True
 
 USE_TZ = True
 
-
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.10/howto/static-files/
 
@@ -152,7 +147,6 @@ STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join('../static')
 
 STATICFILES_DIRS = (os.path.join(BASE_DIR, 'static'),)
-
 
 AUTH_USER_MODEL = 'employee.Employee'
 
@@ -187,7 +181,7 @@ except ImportError:
 
 # CELERY
 
-REDIS_DB_PATH = os.path.join('/tmp/my_redis.db')
+REDIS_DB_PATH = os.path.join(DATA_DIR,'my_redis.db')
 rdb = Redis(REDIS_DB_PATH, serverconfig={'port': '1116'})
 REDIS_SOCKET_PATH = 'redis+socket://%s' % (rdb.socket_file, )
 BROKER_URL = REDIS_SOCKET_PATH
@@ -198,6 +192,8 @@ CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'
 CELERY_IMPORTS = ['general.tasks']
 CELERY_TIMEZONE = 'UTC'
+
+# EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 
 EMAIL_USE_TLS = True
