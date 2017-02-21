@@ -720,6 +720,20 @@
       3
     ]
   }
+},
+{
+  "model": "socialaccount.socialapp",
+  "pk": 10,
+  "fields": {
+    "provider": "instagram",
+    "name": "instagram",
+    "client_id": "a31f856c1aeb4646aa66dc4b11e1f866",
+    "secret": "b16fa6aeff47430c94d2761b385f2474",
+    "key": "",
+    "sites": [
+      1, 2
+    ]
+  }
 }
 ]
 
