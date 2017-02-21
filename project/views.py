@@ -31,7 +31,7 @@ from .utils.workload_manager import put_issue_back_to_pool, \
 
 from employee.models import Employee
 
-from general.tasks import send_email_after_sprint_start_task
+from general.tasks import send_email_after_sprint_start_task, send_email_after_sprint_finish_task
 
 
 class ProjectListView(SingleTableView):
@@ -584,15 +584,23 @@ def finish_active_sprint_view(request, project_id):
                                           status=Sprint.ACTIVE)
         form = SprintFinishForm(request.POST)
         if form.is_valid():
+            user_id = request.user.id
+            sprint_id = active_sprint.id
+            employees = ProjectTeam.objects.get(
+                project_id=project_id).employees.all()
             active_sprint.release_link = form.cleaned_data['release_link']
             active_sprint.feedback_text = form.cleaned_data['feedback_text']
             active_sprint.status = Sprint.FINISHED
             active_sprint.end_date = datetime.datetime.now()
             active_sprint.save()
+            for member in employees:
+                send_email_after_sprint_finish_task.delay(member.email, user_id,
+                                                          sprint_id, active_sprint.release_link,
+                                                          active_sprint.feedback_text)
             return HttpResponseRedirect(reverse('project:sprint_active',
                                                 kwargs={
                                                     'project_id': project_id}))
-    raise Http404
+    raise Http404("Wrong request")
 
 
 @waffle_flag('create_sprint')

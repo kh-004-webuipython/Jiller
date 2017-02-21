@@ -54,3 +54,29 @@ def send_email_after_sprint_start(email, user_id, sprint_id):
     email.content_subtype = 'html'
 
     return email.send(fail_silently=False)
+
+
+def send_email_after_sprint_finish(email, user_id, sprint_id,
+                                   release_link, feedback_text):
+    user = Employee.objects.get(pk=user_id)
+    sprint = Sprint.objects.get(pk=sprint_id)
+    sprint_url = reverse('project:sprint_active', kwargs={
+        'project_id': sprint.project_id})
+    user_name = str(user.first_name) + ' ' + str(user.last_name)
+    c = Context({'email': email, 'user': user_name, 'sprint': sprint,
+                 'sprint_url': sprint_url, 'base_url': settings.JILLER_HOST,
+                 "release_link": release_link, "feedback_text": feedback_text})
+
+    email_subject = render_to_string(
+        'email/email_subject.txt', c).replace('\n', '')
+    email_body = get_template(
+        'email/after_sprint_finish_email_template.html').render(Context(c))
+
+    email = EmailMessage(
+        email_subject, email_body, settings.DEFAULT_FROM_EMAIL,
+        [email], [],
+        headers={'Reply-To': email}
+    )
+    email.content_subtype = 'html'
+
+    return email.send(fail_silently=False)
