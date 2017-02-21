@@ -55,6 +55,7 @@ INSTALLED_APPS = [
     'allauth.socialaccount.providers.linkedin',
     'allauth.socialaccount.providers.vk',
     'allauth.socialaccount.providers.google',
+    'allauth.socialaccount.providers.facebook',
 
 ]
 
@@ -177,11 +178,21 @@ LOGIN_EXEMPT_URLS = (
  # need for edit social accounts in user profile
  r'^accounts/social/connections/$',
  r'^accounts/twitter/login/callback/$',
+ r'^accounts/facebook/login/$',
 )
+
+
 
 SOCIALACCOUNT_PROVIDERS = \
     {'linkedin':
-         {'SCOPE': ['r_emailaddress']},}
+         {'SCOPE': ['r_emailaddress']},
+    'facebook':
+        {'METHOD': 'oauth2',
+         'SCOPE': ['email'],
+         'AUTH_PARAMS': {'auth_type': 'reauthenticate'},
+         'LOCALE_FUNC': lambda request: 'en_US',
+         'VERSION': 'v2.4'}
+     }
 
 TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
 
