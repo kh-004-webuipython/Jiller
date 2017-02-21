@@ -1,10 +1,11 @@
 *.pyc
 *.pyo
 *.sqlite3
-my_redis.db
+my_redis.db*
 .idea
 local_settings.py
 venv
 htmlcov
 .coverage
 /public
+

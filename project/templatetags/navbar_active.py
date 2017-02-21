@@ -5,9 +5,13 @@ register = template.Library()
 
 @register.filter(name='navbar_active')
 def navbar_active(request, id):
+    try:
+        project_id = request.path[9]
+    except IndexError:
+        return False
     if request.path.startswith('/project/') \
-            and request.path[9].isdigit() \
-            and int(request.path[9]) == id:
+            and project_id.isdigit() \
+            and int(project_id) == id:
         return True
     return False
 
