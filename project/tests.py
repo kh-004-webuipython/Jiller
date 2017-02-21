@@ -5,7 +5,10 @@ from django.http import Http404
 from django.urls import reverse
 from django.core.exceptions import ValidationError
 from django.shortcuts import get_object_or_404
-from urllib import urlencode
+try:
+    from urllib import urlencode
+except:
+    from urllib.parse import urlencode
 
 from employee.models import Employee
 from .models import Project, Issue, Sprint, ProjectTeam, ProjectNote
@@ -302,7 +305,7 @@ class SprintsListViewTests(LoginRequiredBase):
                                          start_date=datetime.date(
                                              2017, 12, 14))
         Sprint.objects.create(title='title', project=project, duration=10,
-                              start_date=datetime.date(2017, 02, 02))
+                              start_date=datetime.date(2017, 2, 2))
         response = self.client.get(reverse('project:sprints_list',
                                            args=[project.id, ]))
         self.assertContains(response, "title", status_code=200)
@@ -313,7 +316,7 @@ class SprintsListViewTests(LoginRequiredBase):
                                              2017, 12, 14))
         team = ProjectTeam.objects.create(project=project, title='title')
         Sprint.objects.create(title='title', project=project,
-                              start_date=datetime.date(2017, 02, 02),
+                              start_date=datetime.date(2017, 2, 2),
                               status=Sprint.ACTIVE, duration=10)
         response = self.client.get(reverse('project:sprints_list',
                                            args=[project.id, ]))
@@ -325,7 +328,7 @@ class SprintsListViewTests(LoginRequiredBase):
                                              2017, 12, 14))
         team = ProjectTeam.objects.create(project=project, title='title')
         Sprint.objects.create(title='title', project=project,
-                              start_date=datetime.date(2017, 02, 02),
+                              start_date=datetime.date(2017, 2, 2),
                               status=Sprint.NEW, duration=10)
         response = self.client.get(reverse('project:sprints_list',
                                            args=[project.id, ]))
@@ -826,7 +829,7 @@ class CreateSprintTests(LoginRequiredBase):
     def setUp(self):
         super(CreateSprintTests, self).setUp()
         self.project = Project.objects.create(title='title',
-                                              start_date=datetime.date(2017, 02, 02))
+                                              start_date=datetime.date(2017, 2, 2))
         self.team = ProjectTeam.objects.create(project=self.project,
                                                title='title')
         self.team.employees.add(self.user)
@@ -850,7 +853,7 @@ class StartSprintTests(LoginRequiredBase):
     def setUp(self):
         super(StartSprintTests, self).setUp()
         self.project = Project.objects.create(title='title',
-                                              start_date=datetime.date(2017, 02, 02))
+                                              start_date=datetime.date(2017, 2, 2))
         self.sprint = Sprint.objects.create(project=self.project, title='title',
                                             status=Sprint.NEW, duration=10)
         self.team = ProjectTeam.objects.create(project=self.project,
@@ -869,7 +872,7 @@ class StartSprintTests(LoginRequiredBase):
 
     def test_start_sprint_if_active_one_exists(self):
         Sprint.objects.create(project=self.project, title='title',
-                              start_date=datetime.date(2017, 02, 02),
+                              start_date=datetime.date(2017, 2, 2),
                               status=Sprint.ACTIVE, duration=10)
         response = self.client.post(reverse('project:sprint_start',
                                             args=[self.project.id]))
