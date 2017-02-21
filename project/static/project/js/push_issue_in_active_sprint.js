@@ -90,9 +90,13 @@ document.addEventListener("DOMContentLoaded", function () {
         xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
         xhr.setRequestHeader("X-CSRFTOKEN", csrftoken);
         xhr.onreadystatechange = function () {
-            if (xhr.readyState == 4 && xhr.status == 200) {
-                // make change in page on post 200
-                remakePage(table);
+            if (xhr.readyState == 4) {
+                if (xhr.status == 200) {
+                    // make change in page on post 200
+                    remakePage(table);
+                } else {
+                    alert("Push hasn't taken effect!")
+                }
             }
         };
         xhr.send(body);

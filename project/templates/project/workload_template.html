@@ -1,3 +1,5 @@
+{% load waffle_tags %}
+
 {% if items %}
 <div id="sprint-status" data-status="{{ sprint_status }}"></div>
 <div class="row">
@@ -34,8 +36,16 @@
     <div class="nav-stacked fixed-backlog-pool">
 
       <ul class="list-group">
-        <li class="blue lighter bigger-120 list-group-item text-center">
-          {{ sprint_status|title }} sprint pool
+        <li class="blue lighter bigger-120 list-group-item
+        {% flag 'create_task' %}{% else %}text-center{% endflag %}">
+          {% flag 'create_task' %}
+          <a href="#create_task" title="Create issue"
+             role="button" data-toggle="modal">
+            <span class="ace-icon fa fa-plus"></span>
+          </a>
+          {% endflag %}
+          <span {% flag 'create_task' %}class="pull-right"{% endflag %}>
+            {{ sprint_status|title }} sprint pool</span>
         </li>
         <div data-relate="{{ sprint_status }}_sprint" class="sortable contant-box">
         {% for issue in sprint_log|dictsort:'order' %}
@@ -77,6 +87,7 @@
   {% endif %}
 {% endfor %}
 </div>
+{% include 'project/pop-up/create_task.html' %}
 
 {% else %}
   <h3>No items.</h3>
