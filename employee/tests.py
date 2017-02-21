@@ -1,5 +1,6 @@
 from django.core.urlresolvers import reverse
 
+from employee.tables import EmployeeTable
 from project.models import Project, Issue
 from .models import Employee
 from project.tests import LoginRequiredBase
@@ -10,9 +11,9 @@ class EmployeeTest(LoginRequiredBase):
         self.client.login(username='user', password='test')
         response = self.client.get(reverse('employee:list'))
         self.assertEquals(response.status_code, 200)
-        employee_list = Employee.objects.all()
-        employee_context_list = response.context['employee_list']
-        self.assertListEqual(sorted(employee_list), sorted(employee_context_list))
+        table = EmployeeTable(Employee.objects.all())
+        context_table = response.context['table']
+        self.assertListEqual(table.as_values(), context_table.as_values())
 
     def test_employee_detail_view(self):
         employee = Employee.objects.first()
