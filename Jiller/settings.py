@@ -13,7 +13,6 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'public', 'media')
 
 MEDIA_URL = '/media/'
 
-
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.10/howto/deployment/checklist/
 
@@ -24,8 +23,8 @@ SECRET_KEY = 'olj^%!kemjn61dic)!y3k!(51&vciz$2jf*w_mji-(f(nwz#7$'
 DEBUG = True
 
 from socket import gethostname
-ALLOWED_HOSTS = ['127.0.0.1', 'localhost', gethostname(), os.environ.get('OPENSHIFT_APP_DNS')]
 
+ALLOWED_HOSTS = ['127.0.0.1', 'localhost', gethostname(), os.environ.get('OPENSHIFT_APP_DNS')]
 
 # Application definition
 
@@ -51,6 +50,7 @@ INSTALLED_APPS = [
     'allauth.socialaccount.providers.github',
     'allauth.socialaccount.providers.twitter',
     'allauth.socialaccount.providers.vk',
+    'allauth.socialaccount.providers.google',
 
 ]
 
@@ -73,7 +73,6 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = 'Jiller.urls'
-
 
 TEMPLATES = [
     {
@@ -105,7 +104,6 @@ DATABASES = {
     }
 }
 
-
 # Password validation
 # https://docs.djangoproject.com/en/1.10/ref/settings/#auth-password-validators
 
@@ -129,7 +127,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
 # Internationalization
 # https://docs.djangoproject.com/en/1.10/topics/i18n/
 
@@ -143,7 +140,6 @@ USE_L10N = True
 
 USE_TZ = True
 
-
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.10/howto/static-files/
 
@@ -153,12 +149,12 @@ STATIC_ROOT = os.path.join('../static')
 
 STATICFILES_DIRS = (os.path.join(BASE_DIR, 'static'),)
 
-
 AUTH_USER_MODEL = 'employee.Employee'
 
 LOGIN_URL = 'general:login'
 
 LOGIN_EXEMPT_URLS = (
+
  r'^login/$',
  r'^registration/$',
  r'^confirmation/(?P<username>[a-zA-Z0-9]+)/(?P<key>[a-zA-Z0-9]+)/$',
@@ -166,11 +162,12 @@ LOGIN_EXEMPT_URLS = (
  r'^accounts/github/login/$',
  r'^accounts/twitter/login/$',
  r'^accounts/vk/login/$',
+ r'^accounts/google/login/$',
  # need for edit social accounts in user profile
  r'^accounts/social/connections/$',
  r'^accounts/twitter/login/callback/$',
+  
 )
-
 
 TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
 
@@ -196,7 +193,6 @@ CELERY_RESULT_SERIALIZER = 'json'
 CELERY_IMPORTS = ['general.tasks']
 CELERY_TIMEZONE = 'UTC'
 
-
 # EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 EMAIL_USE_TLS = True
 EMAIL_HOST = 'smtp.gmail.com'
@@ -204,4 +200,3 @@ EMAIL_HOST_USER = 'email.assign.python.webui@gmail.com'
 EMAIL_HOST_PASSWORD = 'Evrey123'
 EMAIL_PORT = 587
 DEFAULT_FROM_EMAIL = 'email.assign.python.webui@gmail.com'
-
