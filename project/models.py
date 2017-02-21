@@ -73,7 +73,7 @@ class Sprint(models.Model):
                               max_length=255)
     duration = models.PositiveIntegerField(verbose_name=_('Duration'))
     release_link = models.URLField(blank=True, null=True)
-    feedback_text = models.TextField(max_length=5000, verbose_name=_('Retrospective text'),
+    feedback_text = models.TextField(max_length=5000, verbose_name=_('Sprint review'),
                                      null=True, blank=True)
 
     def __str__(self):
