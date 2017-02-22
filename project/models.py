@@ -88,7 +88,7 @@ class Sprint(models.Model):
 
     def get_chart_data(self, date):
         return self.issue_set.filter(
-            issuelog__date_created__range=[self.start_date, date + datetime.timedelta(days=1)]).exclude(
+            issuelog__date_created__range=[self.start_date, date]).exclude(
             status=Issue.CLOSED).extra(
             {'date_created': "date(date_created)"}).values('date_created').annotate(
             sum=Sum('issuelog__cost')).order_by()
@@ -106,7 +106,7 @@ class Sprint(models.Model):
         res = dict((x['date_created'], x['sum']) for x in data)
         estimation_sum = self.calculate_estimation_sum()
         total_date_range = [day for day in self.sprint_daterange()]
-        perfect_line = [None for _ in range(len(total_date_range) + 1)]
+        perfect_line = [None for _ in range(len(total_date_range))]
         perfect_line[0] = estimation_sum
         perfect_line[-1] = 0
         chart_data = [estimation_sum]
