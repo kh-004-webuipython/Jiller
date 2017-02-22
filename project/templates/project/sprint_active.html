@@ -84,7 +84,7 @@
         <tr>
           <td>{{ object.title }}</td>
           <td>{{ object.start_date|date:"d/m/Y" }}</td>
-          <td>{{ object.end_date|date:"d/m/Y" }}</td>
+          <td>{{ object.get_expected_end_date|date:"d/m/Y" }}</td>
         </tr>
         </tbody>
       </table>
@@ -108,9 +108,14 @@
                 <a draggable="false" class="align-middle" href="
                   {% url 'project:issue_detail' new_iss.project_id new_iss.id %}">
                   <ul class="list-unstyled" style="margin-bottom: 0">
-                    <li>{{ new_iss.title }} ( {{ new_iss.estimation }} hours )</li>
-                    <li>Assigned to: {{ new_iss.employee.get_full_name }}</li>
-                    <li>Completion: {{ new_iss.completion_rate }}%</li>
+{#                    {% if new_iss.completion_rate %}#}
+{#                    <li>#}
+{#                      <div class="progress pos-rel" style="margin-bottom: 0; height: 3px">#}
+{#                        <div class="progress-bar" style="width:{{ new_iss.completion_rate }}%"></div>#}
+{#                      </div>#}
+{#                    </li>#}
+{#                    {% endif %}#}
+                    <li>{{ new_iss.title }} ({{ new_iss.estimation }} hours) | {{ new_iss.employee.get_full_name }}</li>
                   </ul>
                 </a>
             </tr>
@@ -134,9 +139,14 @@
                 <a draggable="false" class="align-middle" href="
 {% url 'project:issue_detail' progress.project_id progress.id %}">
                   <ul class="list-unstyled" style="margin-bottom: 0">
-                    <li>{{ progress.title }} ( {{ progress.estimation }} hours )</li>
-                    <li>Assigned to: {{ progress.employee.get_full_name }}</li>
-                    <li>Completion: {{ progress.completion_rate }}%</li>
+{#                    {% if progress.completion_rate %}#}
+{#                    <li>#}
+{#                      <div class="progress pos-rel" style="margin-bottom: 0; height: 3px">#}
+{#                        <div class="progress-bar" style="width:{{ progress.completion_rate }}%"></div>#}
+{#                      </div>#}
+{#                    </li>#}
+{#                    {% endif %}#}
+                    <li>{{ progress.title }} ({{ progress.estimation }} hours) | {{ progress.employee.get_full_name }}</li>
                   </ul>
                 </a>
               </td>
@@ -161,9 +171,15 @@
                 <a draggable="false" class="align-middle" href="
 {% url 'project:issue_detail' resolved.project_id resolved.id %}">
                   <ul class="list-unstyled" style="margin-bottom: 0">
-                    <li>{{ resolved.title }} ( {{ resolved.estimation }} hours )</li>
-                    <li>Assigned to: {{ resolved.employee.get_full_name }}</li>
-                    <li>Completion: {{ resolved.completion_rate }}%</li>
+{#                    {% if resolved.completion_rate %}#}
+{#                    <li>#}
+{#                      <div class="progress pos-rel" style="margin-bottom: 0; height: 3px">#}
+{#                        <div class="progress-bar" style="width:{{ resolved.completion_rate }}%"></div>#}
+{#                      </div>#}
+{#                    </li>#}
+{#                    {% endif %}#}
+                    <li>{{ resolved.title }} ({{ resolved.estimation }} hours) | {{ resolved.employee.get_full_name }}</li>
+
                   </ul>
                 </a>
               </td>
