@@ -18,7 +18,7 @@ $(function() {
             cursor: 'move',
             tolerance: 'pointer',
             dropOnEmpty: true,
-            containment: 'window',
+            containment: 'document',
             remove: function (event, ui) {
                 var alterData = {};
                 alterData['issue'] = ui.item.data('issue');
