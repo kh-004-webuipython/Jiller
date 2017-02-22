@@ -1,5 +1,7 @@
 {% load i18n %}
 {% load static %}
+{% load navbar_active %}
+{% load waffle_tags %}
 <!DOCTYPE html>
 <html>
 <head>
@@ -50,31 +52,25 @@
 <!-- #section:basics/navbar.layout -->
 <div id="navbar" class="navbar navbar-default          ace-save-state">
   <div class="navbar-container ace-save-state" id="navbar-container">
-    <!-- #section:basics/sidebar.mobile.toggle -->
-    <button type="button" class="navbar-toggle menu-toggler pull-left"
-            id="menu-toggler" data-target="#sidebar">
-      <span class="sr-only">Toggle sidebar</span>
-
-      <span class="icon-bar"></span>
-
-      <span class="icon-bar"></span>
-
-      <span class="icon-bar"></span>
-    </button>
 
     <!-- /section:basics/sidebar.mobile.toggle -->
     <div class="navbar-header pull-left">
       <!-- #section:basics/navbar.layout.brand -->
       <a href="{% url 'general:home_page' %}" class="navbar-brand">
-              <i class="fa fa-lightbulb-o orange2">  </i>
-              Jiller
+        <i class="fa fa-lightbulb-o orange2"> </i>
+        Jiller
       </a>
     </div>
 
     <!-- #section:basics/navbar.dropdown -->
     <div class="navbar-buttons navbar-header pull-right" role="navigation">
       <ul class="nav ace-nav">
-
+        <li class="green">
+          <a href="{% url 'employee:list' %}">
+            <i class="fa fa-users"></i>
+            <span>Employees</span>
+          </a>
+        </li>
         <!-- #section:basics/navbar.user_menu -->
         {% if request.user.is_authenticated %}
           <li class="light-blue">
@@ -83,19 +79,13 @@
                 {{ request.user }}</span>
               <i class="ace-icon fa fa-caret-down"></i>
             </a>
-              <ul class="user-menu dropdown-menu-right dropdown-menu dropdown-yellow dropdown-caret dropdown-close">
-                  <li>
-                      <a href="{% url 'general:logout' %}">
-                          <i class="ace-icon fa fa-power-off"></i>
-                          Logout
-                      </a>
-                  </li>
-                  <li>
-                      <a href="{% url 'general:profile' %}">
-                          <i class="ace-icon fa fa-user"></i>
-                          Profile
-                      </a>
-                  </li>
+            <ul class="user-menu dropdown-menu-right dropdown-menu dropdown-yellow dropdown-caret dropdown-close">
+              <li>
+                <a href="{% url 'general:logout' %}">
+                  <i class="ace-icon fa fa-power-off"></i>
+                  Logout
+                </a>
+              </li>
             </ul>
           </li>
         {% else %}
@@ -117,71 +107,100 @@
 
 <!-- /section:basics/navbar.layout -->
 <div class="main-container ace-save-state" id="main-container">
-  <script type="text/javascript">
-      try {
-          ace.settings.loadState('main-container')
-      } catch (e) {
-      }
-  </script>
 
   <!-- #section:basics/sidebar -->
   <div id="sidebar" class="sidebar responsive ace-save-state">
     <div class="sidebar-shortcuts" id="sidebar-shortcuts">
-      <div class="sidebar-shortcuts-large" id="sidebar-shortcuts-large">
-
-        <!-- /section:basics/sidebar.layout.shortcuts -->
-      </div>
-
+      {% flag "create_project" %}
+      <a href="{% url 'project:create' %}" class="btn btn-white btn-xlg btn-success btn-block">
+        <span class="glyphicon glyphicon-plus"></span>
+        Create project
+      </a>
+      {% endflag %}
     </div><!-- /.sidebar-shortcuts -->
+
     <ul class="nav nav-list">
-      <li class="">
-        <a href="{% url 'employee:list' %}">
-          <i class="menu-icon"> <span class="glyphicon glyphicon-user"></span></i>
-          <span class="menu-text">{% trans 'Employee' %}</span>
-        </a>
-        <b class="arrow"></b>
-      </li>
-      <li class="">
-        <a href="{% url 'project:list' %}">
-          <i class="menu-icon"> <span class="glyphicon glyphicon-flag"></span></i>
-          <span class="menu-text">{% trans 'Projects' %}</span>
-        </a>
-        <b class="arrow"></b>
-      </li>
-      {#      <li class="">#}
-      {#        <a href=".">#}
-      {#          <i class="menu-icon"><span class="glyphicon glyphicon-star"></span></i>#}
-      {#          <span class="menu-text"> Sprints </span>#}
-      {#        </a>#}
-      {##}
-      {#        <b class="arrow"></b>#}
-      {#      </li>#}
-      {#      <li class="">#}
-      {#        <a href=".">#}
-      {#          <i class="menu-icon"><span class="glyphicon glyphicon-flag"></span></i>#}
-      {#          <span class="menu-text"> Employee </span>#}
-      {#        </a>#}
-      {##}
-      {#        <b class="arrow"></b>#}
-      {#      </li>#}
-      {#      <li class="">#}
-      {#        <a href=".">#}
-      {#          <i class="menu-icon"><span class="glyphicon glyphicon-flag"></span></i>#}
-      {#          <span class="menu-text"> Employee </span>#}
-      {#        </a>#}
-      {##}
-      {#        <b class="arrow"></b>#}
-      {#      </li>#}
+      {% for project in project_list %}
+        {% if request|navbar_active:project.id %}
+          <li class="hover active">
+          <a href="{% url 'project:detail' project.id %}">
+            <span class="menu-text">
+								{{ project.title }}
+							</span>
+          </a>
+          <b class="arrow"></b>
+          </li>
+        {% else %}
+        <li class="hover">
+          <a href="{% url 'project:detail' project.id %}">
+            <span class="menu-text">
+								{{ project.title }}
+							</span>
+            <b class="arrow fa fa-angle-right"></b>
+          </a>
+          <b class="arrow"></b>
+          <ul class="submenu">
+
+            <li class="hover">
+              <a href="{% url 'project:detail' project.id %}">
+                <i class="menu-icon fa fa-caret-right"></i>
+                Detail
+              </a>
+              <b class="arrow"></b>
+            </li>
+
+            <li class="hover">
+              <a href="{% url 'project:sprint_active' project.id %}">
+                <i class="menu-icon fa fa-caret-right"></i>
+                Active sprint
+              </a>
+              <b class="arrow"></b>
+            </li>
+
+            <li class="hover">
+              <a href="{% url 'project:sprints_list' project.id %}">
+                <i class="menu-icon fa fa-caret-right"></i>
+                Sprint history
+              </a>
+              <b class="arrow"></b>
+            </li>
+
+            <li class="hover">
+              <a href="{% url 'project:backlog' project.id %}">
+                <i class="menu-icon fa fa-caret-right"></i>
+                Backlog
+              </a>
+              <b class="arrow"></b>
+            </li>
+
+            <li class="hover">
+              <a href="{% url 'project:issue_search' project.id %}">
+                <i class="menu-icon fa fa-caret-right"></i>
+                Issues
+              </a>
+              <b class="arrow"></b>
+            </li>
+
+            <li class="hover">
+              <a href="{% url 'project:team' project.id %}">
+                <i class="menu-icon fa fa-caret-right"></i>
+                Team
+              </a>
+              <b class="arrow"></b>
+            </li>
+
+            <li class="hover">
+              <a href="{% url 'project:note' project.id %}">
+                <i class="menu-icon fa fa-caret-right"></i>
+                Notes
+              </a>
+              <b class="arrow"></b>
+            </li>
+          </ul>
+        </li>
+        {% endif %}
+      {% endfor %}
     </ul><!-- /.nav-list -->
-
-    <!-- #section:basics/sidebar.layout.minimize -->
-    <div class="sidebar-toggle sidebar-collapse" id="sidebar-collapse">
-      <i id="sidebar-toggle-icon"
-         class="ace-icon fa fa-angle-double-left ace-save-state"
-         data-icon1="ace-icon fa fa-angle-double-left"
-         data-icon2="ace-icon fa fa-angle-double-right"></i>
-    </div>
-
     <!-- /section:basics/sidebar.layout.minimize -->
   </div>
 
@@ -208,9 +227,6 @@
           <div class="col-xs-12">
             <!-- PAGE CONTENT BEGINS -->
             {% block content %}
-
-
-
             {% endblock %}
             <!-- PAGE CONTENT ENDS -->
           </div><!-- /.col -->
@@ -219,12 +235,18 @@
     </div>
   </div><!-- /.main-content -->
   <div class="footer">
-    <div class="container">
-        <span class="bigger-120">
-          Jiller
-        </span>
-    </div>
-  </div>
+				<div class="footer-inner">
+					<!-- #section:basics/footer -->
+					<div class="footer-content">
+						<span class="bigger-120">
+							<span class="blue bolder">Jiller</span>
+							Application &copy; 2017
+						</span>
+					</div>
+
+					<!-- /section:basics/footer -->
+				</div>
+			</div>
 
   <a href="#" id="btn-scroll-up" class="btn-scroll-up btn btn-sm btn-inverse">
     <i class="ace-icon fa fa-angle-double-up icon-only bigger-110"></i>

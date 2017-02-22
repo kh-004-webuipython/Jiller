@@ -10,7 +10,7 @@ document.addEventListener("DOMContentLoaded", function () {
         addNewNote();
     });
 
-    // make openNote smalle on offset clicks
+    // make openNote smaller on offset clicks
     window.addEventListener('click', cancelSize, false);
 
     function cancelSize(e) {
@@ -28,15 +28,25 @@ document.addEventListener("DOMContentLoaded", function () {
 
     function addNoteEvents(note) {
 
-        // make notes bigger after click
+        // make notes stay bigger after click
         note.onclick = function () {
             noteQuery.forEach(function (note) {
                 note.removeAttribute('id');
                 note.lastElementChild.classList.add('hide');
             });
+
             openedNote = this;
             this.id = ('clicked');
+            //show trash button
             this.lastElementChild.classList.remove('hide');
+
+            // makes content height depend from content lines
+            var content = this.getElementsByClassName('note-content')[0];
+            var textareaRows = content.value.split("\n");
+            if(textareaRows[0] != "undefined" && textareaRows.length
+                >= content.rows) {
+                content.rows = textareaRows.length + 5;
+            }
         };
 
         // send data to server after changing text
@@ -49,20 +59,24 @@ document.addEventListener("DOMContentLoaded", function () {
 
         // delete note event
         note.lastElementChild.addEventListener('click', function () {
-            var xhrd = new XMLHttpRequest();
-            var body = 'id=' + encodeURIComponent(note.dataset['id']);
-            xhrd.open("DELETE", '/project/' + notes.dataset['pr'] + '/note/',
-                true);
-            xhrd.setRequestHeader('Content-Type',
-                'application/x-www-form-urlencoded');
-            xhrd.setRequestHeader("X-CSRFTOKEN", csrftoken);
-            xhrd.onreadystatechange = function () {
-                if (xhrd.readyState == 4 && xhrd.status == 200) {
-                    // TODO confirm
-                    note.remove();
-                }
-            };
-            xhrd.send(body);
+            if (!note.dataset['id']){
+                note.remove();
+            } else {
+                var xhrd = new XMLHttpRequest();
+                var body = 'id=' + encodeURIComponent(note.dataset['id']);
+                xhrd.open("DELETE", '/project/' + notes.dataset['pr'] +
+                    '/note/', true);
+                xhrd.setRequestHeader('Content-Type',
+                    'application/x-www-form-urlencoded');
+                xhrd.setRequestHeader("X-CSRFTOKEN", csrftoken);
+                xhrd.onreadystatechange = function () {
+                    if (xhrd.readyState == 4 && xhrd.status == 200) {
+                        // TODO confirm
+                        note.remove();
+                    }
+                };
+                xhrd.send(body);
+            }
         });
     }
 
@@ -104,13 +118,14 @@ document.addEventListener("DOMContentLoaded", function () {
         // add a new note to the end of the list
         var newNote = document.createElement('div');
         newNote.className = 'note center';
-        newNote.innerHTML = "<textarea class='note-title center " +
-            "text-center' maxlength='15'></textarea>" +
-            "<textarea class='note-content text-justify' " +
-            "maxlength='5000'></textarea>" +
+        newNote.innerHTML = "<textarea class='note-title" +
+            " text-center' maxlength='25' rows='1'></textarea>" +
+            "<textarea class='note-content text-justify'" +
+            " maxlength='5000' rows='20'></textarea>" +
             "<div class='hide'><span class='glyphicon glyphicon-trash'>" +
             "</span></div>";
         notes.appendChild(newNote);
+        noteQuery = document.querySelectorAll('.note');
         addNoteEvents(newNote);
     }
 });

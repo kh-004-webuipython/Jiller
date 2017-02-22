@@ -1,24 +1,31 @@
 from __future__ import unicode_literals
-from django.utils.encoding import python_2_unicode_compatible
-
-from django.core.exceptions import ValidationError
 from datetime import date, datetime
+
+from django.utils.encoding import python_2_unicode_compatible
 from django.utils import timezone
-from django.contrib.auth.models import AbstractUser
-from simple_email_confirmation.models import SimpleEmailConfirmationUserMixin
 from django.utils.translation import ugettext_lazy as _
-from django.db import models
-from django.core.validators import MaxValueValidator, MinValueValidator
-from sorl.thumbnail import get_thumbnail
+from django.core.exceptions import ValidationError
+from django.core.validators import MinValueValidator
 from django.db.models.signals import pre_delete
 from django.dispatch import receiver
-from project.models import ProjectTeam
+from django.contrib.auth.models import AbstractUser
+from django.db import models
+
+from simple_email_confirmation.models import SimpleEmailConfirmationUserMixin
+from sorl.thumbnail import get_thumbnail
+
+from project.models import ProjectTeam, Project
+
 
 @python_2_unicode_compatible
 class Employee(SimpleEmailConfirmationUserMixin, AbstractUser):
     date_birth = models.DateField(verbose_name=_('Date birth'), null=True,
                                   blank=True)
     photo = models.ImageField(upload_to='avatars/', null=True, blank=True)
+
+    def get_all_projects(self):
+        return Project.objects.get_user_projects(
+            self).order_by('-start_date')
 
     def __str__(self):
         return self.username
@@ -36,6 +43,10 @@ class Employee(SimpleEmailConfirmationUserMixin, AbstractUser):
 
     def get_cropped_photo(self, *args, **kwargs):
         return get_thumbnail(self.photo, '136x150', crop='center')
+
+    @property
+    def get_role(self):
+        return self.groups.first() or 'admin'
 
 
 # check users for for PM teams before delete
@@ -60,7 +71,14 @@ class IssueLog(models.Model):
                                         default=timezone.now)
     cost = models.FloatField(verbose_name=_('Cost'), default=0, validators=[MinValueValidator(0.0)])
     note = models.TextField(verbose_name=_('Note'), null=True, blank=True)
+    is_hidden = models.BooleanField(default=False)
 
     def __str__(self):
         return "{} hours. {} - {}".format(self.cost, self.issue.title,
                                           self.user.get_full_name())
+
+    def get_pretty_date_created(self):
+        return datetime.strftime(self.date_created, "%d.%m.%y %H:%M")
+
+    class Meta:
+        ordering = ['-date_created']

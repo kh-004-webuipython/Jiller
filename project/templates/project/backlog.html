@@ -14,6 +14,7 @@
   {% endflag %}
 {% endblock %}
 
+{% block title %} Backlog {% endblock %}
 
 {% block breadcrumbs %}
   {{ block.super }}
@@ -56,7 +57,7 @@
         {% for issue in issues|dictsort:'order' %}
           <tr data-id="{{ issue.id }}" data-order="{{ issue.order }}" class="{{issue.type}}">
             <td>{{ forloop.counter }}</td>
-            <td>{{ issue.author }}</td>
+            <td>{{ issue.employee.first_name }} {{ issue.employee.last_name }}</td>
             <td><a href="{% url 'project:issue_detail' project.id issue.id %}">
               {{ issue.title }}</a></td>
             {% flag "edit_issue" %}
@@ -74,9 +75,9 @@
 
   {% block extrascripts %}
     {% flag "prioritize_issue" %}
-      <script src="{% static 'js/jquery-ui.min.js' %}"></script>
-      <script src="{% static 'js/ajax_csrf.js' %}"></script>
-      <script src="{% static 'project/js/prioritize_issue.js' %}"></script>
+      <script defer src="{% static 'js/jquery-ui.min.js' %}"></script>
+      <script defer src="{% static 'js/ajax_csrf.js' %}"></script>
+      <script defer src="{% static 'project/js/prioritize_issue.js' %}"></script>
     {% endflag %}
   {% endblock %}
 {% endblock %}

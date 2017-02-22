@@ -6,7 +6,8 @@ from django.utils.translation import ugettext_lazy as _
 from general.tasks import send_assign_email_task
 from employee.models import IssueLog
 from general.forms import FormControlMixin
-from .models import Project, Sprint, Issue, ProjectTeam, IssueComment
+from .models import Project, Sprint, Issue, ProjectTeam, IssueComment, \
+    ProjectNote
 
 
 class DateInput(forms.DateInput):
@@ -36,14 +37,14 @@ class IssueForm(forms.ModelForm):
     def __init__(self, user, project, *args, **kwargs):
         super(IssueForm, self).__init__(*args, **kwargs)
         self.fields['sprint'].queryset = Sprint.objects.filter(
-            project=project.id)
+            project=project.id).exclude(status=Sprint.FINISHED)
         self.fields['root'].queryset = Issue.objects.filter(
             project=project.id).filter(status=('new' or 'in progress'))
         self.fields['employee'].queryset = ProjectTeam.objects.filter(
             project=project)[0].employees.filter(
             groups__pk__in=[1, 2])
         if user.groups.filter(id=3):
-            self.fields['type'].choices = [('User story', 'User story'), ]
+            self.fields['type'].choices = [('User_story', 'User story'), ]
         elif user.groups.filter(id__in=(1, 2, 4)):
             self.fields['type'].choices = [('Task', 'Task'), ('Bug', 'Bug'), ]
 
@@ -51,12 +52,9 @@ class IssueForm(forms.ModelForm):
         cleaned_data = super(IssueForm, self).clean()
         status = cleaned_data.get('status')
         sprint = cleaned_data.get('sprint')
-        if not sprint and status != Issue.NEW:
+        if not sprint and status == (Issue.IN_PROGRESS or Issue.RESOLVED):
             raise forms.ValidationError(
-                'The issue unrelated to sprint has to be NEW')
-        if sprint and status == Issue.NEW:
-            raise forms.ValidationError(
-                'The issue related to sprint has not to be NEW')
+                'The issue unrelated to sprint can\'t be in progress or resolved.')
         return status
 
     def clean_estimation(self):
@@ -86,6 +84,12 @@ class IssueFormForEditing(IssueForm):
         self.fields.pop('order')
 
 
+class IssueFormForSprint(IssueForm):
+    def __init__(self, *args, **kwargs):
+        super(IssueFormForSprint, self).__init__(*args, **kwargs)
+        self.fields.pop('sprint')
+
+
 class CreateIssueForm(IssueForm):
     def clean_title(self):
         cleaned_data = super(IssueForm, self).clean()
@@ -106,37 +110,6 @@ class CreateTeamForm(forms.ModelForm):
         if ProjectTeam.objects.filter(title=title):
             raise forms.ValidationError('This title is already use')
         return title
-
-
-class SprintCreateForm(forms.ModelForm):
-    issue = forms.ModelMultipleChoiceField(queryset=Issue.objects.all(),
-                                           required=False)
-
-    def __init__(self, *args, **kwargs):
-        self.project = kwargs.pop('project', None)
-        super(SprintCreateForm, self).__init__(*args, **kwargs)
-        if self.project:
-            self.fields['issue'].queryset = self.project.issue_set.filter(
-                sprint=None)
-
-    def clean_status(self):
-        if self.cleaned_data[
-            'status'] == Sprint.ACTIVE and self.project.sprint_set.filter(
-            status=Sprint.ACTIVE).exists():
-            raise forms.ValidationError(
-                "You are already have an active sprint."
-            )
-        return self.cleaned_data['status']
-
-    def clean_end_date(self):
-        end_date = self.cleaned_data.get('end_date')
-        if end_date and datetime.date.today() > end_date:
-            self.add_error('end_date',
-                           _('End date cant\'t be earlier than start date'))
-
-    class Meta:
-        model = Sprint
-        fields = ['title', 'duration', 'status', 'issue']
 
 
 class IssueCommentCreateForm(forms.ModelForm):
@@ -170,10 +143,22 @@ class IssueLogForm(FormControlMixin, forms.ModelForm):
 class SprintFinishForm(forms.ModelForm):
     class Meta:
         model = Sprint
-        fields = ['feedback_text', 'relies_link']
+        fields = ['feedback_text', 'release_link']
         widgets = {
             'feedback_text': forms.Textarea(
                 attrs={'class': 'form-control', 'rows': '10',
                        'style': 'resize: vertical;'}),
-            'relies_link': forms.URLInput(attrs={'class': 'form-control'})
+            'release_link': forms.URLInput(attrs={'class': 'form-control'})
         }
+
+
+class SprintCreateForm(FormControlMixin, forms.ModelForm):
+    class Meta:
+        model = Sprint
+        fields = ['title', 'duration']
+
+
+class NoteForm(forms.ModelForm):
+    class Meta:
+        model = ProjectNote
+        fields = ['title', 'content']

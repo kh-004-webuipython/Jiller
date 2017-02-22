@@ -14,10 +14,6 @@ def home_page(request):
     return render(request, 'general/home_page.html')
 
 
-def profile(request):
-    return render(request, 'general/profile.html')
-
-
 def login_form_view(request):
     if request.method == 'POST':
         form = LoginForm(request.POST)
@@ -27,7 +23,7 @@ def login_form_view(request):
             if user is not None:
                 if user.is_confirmed:
                     login(request, user)
-                    return redirect('general:profile')
+                    return redirect('general:home_page')
                 else:
                     return render(request, 'general/require_key.html', {'user': user})
 
@@ -40,7 +36,7 @@ def login_form_view(request):
 
 def registration_form_view(request):
     if request.method == 'POST':
-        form = RegistrationForm(request.POST)
+        form = RegistrationForm(request.POST, request.FILES)
         if form.is_valid():
             username = form.cleaned_data['username']
             password = form.cleaned_data['password']
@@ -48,9 +44,11 @@ def registration_form_view(request):
             first_name = form.cleaned_data['first_name']
             email = form.cleaned_data['email']
             role = form.cleaned_data['role']
+            photo = form.cleaned_data['photo']
             employee = Employee.objects.create_user(username, email, password,
                                                     last_name=last_name,
-                                                    first_name=first_name)
+                                                    first_name=first_name,
+                                                    photo=photo)
             if role != RegistrationForm.PROJECT_MANAGER:
                 employee.groups.add(Group.objects.get(name=role))
             return HttpResponseRedirect(reverse('general:sender',

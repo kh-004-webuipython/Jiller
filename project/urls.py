@@ -1,4 +1,5 @@
 from django.conf.urls import url
+from .models import Sprint
 from . import views
 
 app_name = 'project'
@@ -22,17 +23,19 @@ urlpatterns = [
     # sprint
     url(r'^(?P<project_id>\d+)/sprint/$',
         views.sprints_list, name='sprints_list'),
-    url(r'^(?P<project_id>\d+)/sprint/create/$',
-        views.SprintCreate.as_view(), name='sprint_create'),
+    url(r'^(?P<project_id>\d+)/sprint_create/$',
+        views.sprint_create_view, name='sprint_create'),
     url(r'^(?P<project_id>\d+)/sprint/(?P<sprint_id>\d+)/$',
         views.SprintView.as_view(), name='sprint_detail'),
     url(r'^(?P<project_id>\d+)/sprint/(?P<sprint_id>\d+)/activate/$',
         views.SprintStatusUpdate.as_view(), name='sprint_activate'),
+    url(r'^(?P<project_id>\d+)/sprint_start/$',
+        views.sprint_start_view, name='sprint_start'),
 
     # active_sprint
     url(r'^(?P<project_id>\d+)/sprint/active/$',
         views.ActiveSprintDetailView.as_view(), name='sprint_active'),
-    url(r'^(?P<project_id>\d+)/sprint/active/finish$',
+    url(r'^(?P<project_id>\d+)/sprint/active/finish/$',
         views.finish_active_sprint_view, name='finish_active_sprint'),
     url(r'^issue_push/$',
         views.push_issue_in_active_sprint, name='issue_push'),
@@ -47,7 +50,10 @@ urlpatterns = [
     url(r'^(?P<project_id>[0-9]+)/issue/(?P<issue_id>[0-9]+)/delete/$',
         views.IssueDeleteView.as_view(),
         name='issue_delete'),
-    url(r'^(?P<project_id>[0-9]+)/issue/search/$', views.IssueSearchView.as_view(), name='issue_search'),
+    url(r'^(?P<project_id>[0-9]+)/issue/search/$',
+        views.IssueSearchView.as_view(), name='issue_search'),
+    url(r'^(?P<project_id>[0-9]+)/issue_create/(?P<sprint_status>\w+)/$',
+        views.issue_create_workload, name='issue_create_workload'),
 
     # team
     url(r'^(?P<project_id>\d+)/team/$', views.team_view, name='team'),
@@ -58,6 +64,8 @@ urlpatterns = [
 
     # processing AJAX
     url(r'^issue_order/$', views.issue_order, name='issue_order'),
+    url(r'^(?P<project_id>\d+)/workload_manager/(?P<sprint_status>\w+)/$',
+        views.workload_manager, name='workload_manager'),
 
     # note
     url(r'^(?P<project_id>\d+)/note/$', views.notes_view, name='note'),

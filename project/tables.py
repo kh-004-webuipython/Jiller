@@ -8,9 +8,12 @@ class ProjectTable(tables.Table):
     id = tables.Column()
     title = tables.LinkColumn('project:detail', kwargs={"project_id": A('id')},
                               attrs={'td': {'width': '30%'}})
-    start_date = tables.DateColumn(attrs={'td': {'align': 'center', 'width': '2%'}})
-    end_date = tables.DateColumn(attrs={'td': {'align': 'center', 'width': '2%'}})
-    is_active = tables.BooleanColumn(attrs={'td': {'align': 'center', 'width': '10%'}})
+    start_date = tables.DateColumn(attrs={'td': {'align': 'center',
+                                                 'width': '2%'}})
+    end_date = tables.DateColumn(attrs={'td': {'align': 'center',
+                                               'width': '2%'}})
+    is_active = tables.BooleanColumn(attrs={'td': {'align': 'center',
+                                                   'width': '10%'}})
 
     class Meta:
         model = Project
@@ -21,29 +24,34 @@ class ProjectTable(tables.Table):
 class SprintsListTable(tables.Table):
     id = tables.Column()
     project = tables.Column()
-    title = tables.LinkColumn('project:sprint_detail', kwargs={"project_id": A('project.id'),
-                              "sprint_id": A('id')}, attrs={'td': {'width': '30%'}})
-    team = tables.LinkColumn('project:team', kwargs={"project_id": A('project.id')},
-                             attrs={'td': {'width': '30%'}})
-    start_date = tables.DateColumn(attrs={'td': {'align': 'center', 'width': '10%'}})
-    end_date = tables.DateColumn(attrs={'td': {'align': 'center', 'width': '10%'}})
+    title = tables.LinkColumn('project:sprint_detail',
+                              kwargs={"project_id": A('project.id'),
+                              "sprint_id": A('id')},
+                              attrs={'td': {'width': '30%'}})
+    start_date = tables.DateColumn(attrs={'td': {'align': 'center',
+                                                 'width': '10%'}})
+    end_date = tables.DateColumn(attrs={'td': {'align': 'center',
+                                               'width': '10%'}})
     status = tables.Column(attrs={'td': {'align': 'center', 'width': '10%'}})
 
     class Meta:
         model = Sprint
         attrs = {"class": "table table-bordered table-striped table-hover"}
         exclude = ('id', 'project', 'order')
-        fields = ['title', 'team', 'start_date', 'end_date', 'status']
+        fields = ['title', 'start_date', 'end_date', 'status']
 
 
 class IssuesTable(tables.Table):
     id = tables.Column()
     root = tables.Column(attrs={'td': {'width': '10%'}})
     project = tables.Column()
-    author = tables.LinkColumn('employee:detail', kwargs={"employee_id": A('author.id')},
-                             attrs={'td': {'width': '20%'}})
-    title = tables.LinkColumn('project:issue_detail', kwargs={"project_id": A('project.id'),
-                              "issue_id": A('id')}, attrs={'td': {'width': '20%'}})
+    author = tables.LinkColumn('employee:detail',
+                               kwargs={"employee_id": A('author.id')},
+                               attrs={'td': {'width': '20%'}})
+    title = tables.LinkColumn('project:issue_detail',
+                              kwargs={"project_id": A('project.id'),
+                              "issue_id": A('id')},
+                              attrs={'td': {'width': '20%'}})
     description = tables.Column(attrs={'td': {'width': '30%'}})
     status = tables.Column(attrs={'td': {'width': '10%'}})
     order = tables.Column(attrs={'td': {'width': '10%'}})
@@ -55,32 +63,13 @@ class IssuesTable(tables.Table):
         fields = ['title', 'description', 'root', 'author', 'status', 'order']
 
 
-class ProjectTeamTable(tables.Table):
-    id_team = tables.Column()
-    project = tables.Column()
-    title = tables.Column()
-    id = tables.Column()
-    role = tables.Column(attrs={'td': {'width': '20%'}})
+class ProjectTeamTable(EmployeeTable):
+    get_role = tables.Column(attrs={'td': {'width': '20%'}},
+                             verbose_name='Role',
+                             order_by=('groups',))
 
     class Meta:
-        model = ProjectTeam
-        exclude = ('title', 'project', 'id_team', 'id', 'email', 'date_joined', 'is_active')
-        fields = ['get_full_name', 'role']
+        exclude = ('id', 'email', 'date_joined', 'is_active')
+        fields = ['get_full_name', 'get_role']
 
 
-class CurrentTeamTable(ProjectTeamTable):
-    get_full_name = tables.LinkColumn('employee:detail', kwargs={"employee_id": A('id')},\
-                                      order_by=('get_full_name'), verbose_name='Current employees')
-    sub = tables.Column(attrs={'td': {'width': '10%'}}, verbose_name='Del')
-
-    class Meta:
-        attrs = {"class": "table table-bordered table-striped table-hover table-sm"}
-
-
-class AddTeamTable(ProjectTeamTable):
-    get_full_name = tables.LinkColumn('employee:detail', kwargs={"employee_id": A('id')},\
-                                      order_by=('get_full_name'), verbose_name='Free employees')
-    add = tables.Column(attrs={'td': {'width': '10%'}})
-
-    class Meta:
-        attrs = {"class": "table table-bordered table-striped table-hover table-sm"}

@@ -47,6 +47,7 @@
         </div>
       </div>
 
+      {% if object.end_date %}
       <div class="profile-info-row">
         <div class="profile-info-name">End date</div>
 
@@ -54,6 +55,28 @@
           <span>{{ object.end_date|date:"d/m/Y" }}</span>
         </div>
       </div>
+      {% endif %}
+
+      {% if object.feedback_text %}
+      <div class="profile-info-row">
+        <div class="profile-info-name">Review</div>
+
+        <div class="profile-info-value">
+          <span>{{ object.feedback_text|linebreaks }}</span>
+        </div>
+      </div>
+      {% endif %}
+
+      {% if object.release_link %}
+      <div class="profile-info-row">
+        <div class="profile-info-name">Release</div>
+
+        <div class="profile-info-value">
+          <span> <a href="{{ object.release_link }}">Link on repository</a>
+          </span>
+        </div>
+      </div>
+      {% endif %}
     </div>
   </div>
   <span>{{ object.description }}</span>

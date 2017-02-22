@@ -12,7 +12,7 @@ from django.core.exceptions import ValidationError
 from django.core.validators import MaxValueValidator
 from django.contrib.auth.models import Group
 from sorl.thumbnail.shortcuts import get_thumbnail
-from django.db.models.signals import pre_save
+from django.db.models.signals import pre_save, post_save
 from django.dispatch import receiver
 
 
@@ -62,7 +62,8 @@ class Sprint(models.Model):
     )
     title = models.CharField(verbose_name=_('Title'), max_length=255)
     project = models.ForeignKey(Project, verbose_name=_('Project'))
-    start_date = models.DateField(verbose_name=_('Start date'), default=timezone.now)
+    start_date = models.DateField(verbose_name=_('Start date'),
+                                  null=True, blank=True)
     end_date = models.DateField(verbose_name=_('End date'), null=True,
                                 blank=True)
     order = models.PositiveIntegerField(verbose_name=_('Order'), null=True,
@@ -71,8 +72,8 @@ class Sprint(models.Model):
                               choices=SPRINT_STATUS_CHOICES, default=NEW,
                               max_length=255)
     duration = models.PositiveIntegerField(verbose_name=_('Duration'))
-    relies_link = models.URLField(blank=True, null=True)
-    feedback_text = models.TextField(verbose_name=_('Retrospective text'),
+    release_link = models.URLField(blank=True, null=True)
+    feedback_text = models.TextField(max_length=5000, verbose_name=_('Sprint review'),
                                      null=True, blank=True)
 
     def __str__(self):
@@ -82,11 +83,13 @@ class Sprint(models.Model):
         return self.start_date + datetime.timedelta(days=self.duration)
 
     def calculate_estimation_sum(self):
-        return self.issue_set.aggregate(Sum('estimation'))['estimation__sum'] or 0
+        return self.issue_set.exclude(
+            status=Issue.CLOSED).aggregate(Sum('estimation'))['estimation__sum'] or 0
 
     def get_chart_data(self, date):
         return self.issue_set.filter(
-            issuelog__date_created__range=[self.start_date, date + datetime.timedelta(days=1)]).extra(
+            issuelog__date_created__range=[self.start_date, date + datetime.timedelta(days=1)]).exclude(
+            status=Issue.CLOSED).extra(
             {'date_created': "date(date_created)"}).values('date_created').annotate(
             sum=Sum('issuelog__cost')).order_by()
 
@@ -171,7 +174,7 @@ class Issue(models.Model):
     TASK = 'Task'
     BUG = 'Bug'
     ISSUE_TYPE_CHOICES = (
-        (USER_STORY, _('User_story')),
+        (USER_STORY, _('User story')),
         (TASK, _('Task')),
         (BUG, _('Bug')),
     )
@@ -197,8 +200,7 @@ class Issue(models.Model):
                             max_length=255)
     estimation = models.PositiveIntegerField(verbose_name=_('Estimation'),
                                              validators=[
-                                                 MaxValueValidator(240)],
-                                             null=True, blank=True)
+                                                 MaxValueValidator(240)])
     order = models.PositiveIntegerField(verbose_name=_('Priority'), default=0,
                                         choices=ISSUE_PRIORITY)
 
@@ -223,15 +225,28 @@ class Issue(models.Model):
     def get_logs_sum(self):
         return self.issuelog_set.aggregate(Sum('cost'))['cost__sum'] or 0
 
-    # off, cuz make crush
-    #def completion_rate(self):
-        #return round((self.get_logs_sum() * 100) / self.estimation, 2)
+    def completion_rate(self):
+        if self.get_logs_sum():
+            return round((self.get_logs_sum() * 100) / self.estimation, 2)
+        return 0
 
     def save(self, *args, **kwargs):
         self.calculate_issue_priority()
         if self.sprint and self.sprint.project != self.project:
             raise ValidationError("Sprint is incorrect")
         super(Issue, self).save(*args, **kwargs)
+
+
+@receiver(pre_save, sender=Issue)
+def change_sprint_status(instance, **kwargs):
+    from employee.models import IssueLog
+    if instance.status == Issue.RESOLVED:
+        now = datetime.datetime.now()
+        log_cost_left = instance.estimation - instance.get_logs_sum()
+        note = '({}) was changed status to resolved at {}. Employee: {}'.format(instance.title, now, instance.employee)
+        IssueLog.objects.create(issue=instance, user=instance.author, cost=log_cost_left, note=note, is_hidden=True)
+    else:
+        instance.issuelog_set.filter(is_hidden=True).delete()
 
 
 @python_2_unicode_compatible
@@ -280,9 +295,10 @@ def check_for_only_one_team_in_project(instance, **kwargs):
 @python_2_unicode_compatible
 class ProjectNote(models.Model):
     project = models.ForeignKey(Project, verbose_name=_('Project'))
-    title = models.CharField(max_length=255, verbose_name=_('Title'))
-    content = models.TextField(verbose_name=_('Note text'), null=True,
-                               blank=True)
+    title = models.CharField(max_length=25, verbose_name=_('Title'),
+                             null=True, blank=True)
+    content = models.TextField(max_length=5000, verbose_name=_('Note text'),
+                               null=True, blank=True)
 
     def __str__(self):
         return self.title
