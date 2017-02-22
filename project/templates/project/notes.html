@@ -38,15 +38,13 @@
           <span>Upload img</span>
           <input type="file" name="picture" class="note-upload" />
         </div>
-
         <textarea class="note-title text-center" maxlength='25' rows='1'>
           {{ note.title }}
         </textarea>
-        <div class="note-content">
+        <div class="note-content" contenteditable="true">
           <img class="note-picture hide" src="{% if note.picture %}{{ note.picture.url}}{% endif %}">
-          <div contenteditable="true" class="content-text">{{ note.content}}</div>
+        {{ note.content|linebreaks}}
         </div>
-
         <div class="hide trash"><span class='glyphicon glyphicon-trash'></span></div>
       </div>
     {% endfor %}

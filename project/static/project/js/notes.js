@@ -46,15 +46,6 @@ document.addEventListener("DOMContentLoaded", function () {
             this.lastElementChild.classList.remove('hide');
             this.getElementsByClassName('fileUpload')[0].classList.remove('hide');
             this.getElementsByClassName('note-picture')[0].classList.remove('hide');
-/*
-            // makes content height depend from content lines
-            var content = this.getElementsByClassName('content-text')[0];
-            console.log(content.innerText);
-            var textareaRows = content.innertext.split("\n");
-            if(textareaRows[0] != "undefined" && textareaRows.length
-                >= content.rows) {
-                content.rows = textareaRows.length + 5;
-            }*/
         };
 
         // send data to server after changing text
@@ -105,7 +96,7 @@ document.addEventListener("DOMContentLoaded", function () {
         function sendToServer() {
             var xhr = new XMLHttpRequest();
             var title = note.getElementsByClassName('note-title')[0];
-            var content = note.getElementsByClassName('content-text')[0];
+            var content = note.getElementsByClassName('note-content')[0];
             var formData = new FormData();
             formData.append("id", note.dataset['id']);
             formData.append("title",title.value);

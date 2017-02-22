@@ -31,7 +31,7 @@
     overflow: hidden;
 }
 
-.note textarea, .note .content {
+.note textarea,.note-content {
     font-family: arial, sans-serif;
     background: rgba(0, 0, 0, 0.02); /* transparent background */
     resize: none;
@@ -59,6 +59,8 @@
     width: 100%;
     overflow: hidden;
     min-height: 500px;
+    text-align: left;
+
 }
 
 .note:nth-child(even) {
