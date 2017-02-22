@@ -584,10 +584,12 @@ def finish_active_sprint_view(request, project_id):
                                           status=Sprint.ACTIVE)
         form = SprintFinishForm(request.POST)
         if form.is_valid():
+
             user_id = request.user.id
             sprint_id = active_sprint.id
             employees = ProjectTeam.objects.get(
                 project_id=project_id).employees.all()
+
             active_sprint.release_link = form.cleaned_data['release_link']
             active_sprint.feedback_text = form.cleaned_data['feedback_text']
             active_sprint.status = Sprint.FINISHED
