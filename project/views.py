@@ -83,6 +83,7 @@ def backlog(request, project_id):
 @waffle_flag('create_issue', 'project:list')
 def issue_create_view(request, project_id):
     current_project = get_object_or_404(Project, pk=project_id)
+
     if request.method == "POST":
         form = CreateIssueForm(project=current_project, data=request.POST,
                                user=request.user)
@@ -97,8 +98,8 @@ def issue_create_view(request, project_id):
         initial = {}
         if request.GET.get('root', False):
             initial['root'] = request.GET['root']
-        form = CreateIssueForm(project=current_project, initial=initial,
-                               user=request.user)
+            form = CreateIssueForm(project=current_project, initial=initial,
+                                   user=request.user)
     return render(request, 'project/issue_create.html',
                   {'form': form, 'project': current_project})
 
@@ -546,13 +547,62 @@ def notes_view(request, project_id):
                                                       'notes': notes})
 
     if request.method == "POST" and 'id' in request.POST:
-        form = NoteForm(request.POST)
+        id_val = request.POST.get('id')
+        if id_val == 'undefined':
+            form = NoteForm(request.POST, request.FILES)
+            note = form.save(commit=False)
+            note.save()
+            response = HttpResponse()
+            response.__setitem__('note_id', str(note.id))
+            return response
+        else:
+            note = get_object_or_404(ProjectNote, pk=int(id_val))
+            form = NoteForm(request.POST, request.FILES, instance=note)
+            if form.is_valid():
+                note.save()
+                return HttpResponse()
+
+
+
+
+
+
+        """
+        form = NoteForm(request.POST, request.FILES)
         if form.is_valid():
             id_val = request.POST.get('id')
             note = form.save(commit=False)
             note.project_id = project.id
+            if form.cleaned_data['picture']:
+                note.picture = form.cleaned_data['picture']
+                print ###
+            else:
+
             note.title = form.cleaned_data['title']
             note.content = form.cleaned_data['content']
+            #note.picture = form.cleaned_data['picture']
+            if request.FILES:
+                print request.FILES
+                note.picture = request.FILES.get('picture')
+            print '_____________',note.picture
+
+
+
+
+
+            obj = get_object_or_404(Location, pk=pk)
+            form = LocationForm(request.POST or None,
+                                request.FILES or None, instance=obj)
+            if request.method == 'POST':
+                if form.is_valid():
+                    form.save()
+
+
+
+
+
+
+
 
             if id_val == 'undefined':
                 note.save()
@@ -563,7 +613,19 @@ def notes_view(request, project_id):
                 note.id = int(id_val)
                 get_object_or_404(ProjectNote, pk=note.id)
                 note.save()
-                return HttpResponse()
+                return HttpResponse()"""
+
+
+
+
+
+
+
+
+
+
+
+
 
     if request.method == "DELETE":
         delete = QueryDict(request.body)

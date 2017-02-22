@@ -18,6 +18,8 @@ document.addEventListener("DOMContentLoaded", function () {
             !openedNote.contains(e.target)) {
             openedNote.removeAttribute('id');
             openedNote.lastElementChild.classList.add('hide');
+            openedNote.getElementsByClassName('fileUpload')[0].classList.add('hide');
+            openedNote.getElementsByClassName('note-picture')[0].classList.add('hide');
         }
     }
 
@@ -33,28 +35,37 @@ document.addEventListener("DOMContentLoaded", function () {
             noteQuery.forEach(function (note) {
                 note.removeAttribute('id');
                 note.lastElementChild.classList.add('hide');
+                note.getElementsByClassName('fileUpload')[0].classList.add('hide');
+                note.getElementsByClassName('note-picture')[0].classList.add('hide');
             });
 
             openedNote = this;
             this.id = ('clicked');
             //show trash button
             this.lastElementChild.classList.remove('hide');
-
+            this.lastElementChild.classList.remove('hide');
+            this.getElementsByClassName('fileUpload')[0].classList.remove('hide');
+            this.getElementsByClassName('note-picture')[0].classList.remove('hide');
+/*
             // makes content height depend from content lines
-            var content = this.getElementsByClassName('note-content')[0];
-            var textareaRows = content.value.split("\n");
+            var content = this.getElementsByClassName('content-text')[0];
+            console.log(content.innerText);
+            var textareaRows = content.innertext.split("\n");
             if(textareaRows[0] != "undefined" && textareaRows.length
                 >= content.rows) {
                 content.rows = textareaRows.length + 5;
-            }
+            }*/
         };
 
         // send data to server after changing text
-        note.children[0].addEventListener('input', function () {
+        note.getElementsByClassName('note-title')[0].addEventListener('input', function () {
             sendData(note);
         });
-        note.children[1].addEventListener('input', function () {
+        note.getElementsByClassName('note-content')[0].addEventListener('input', function () {
             sendData(note);
+        });
+         note.getElementsByClassName('note-upload')[0].addEventListener('input', function () {
+            sendPicture(note);
         });
 
         // delete note event
@@ -93,13 +104,14 @@ document.addEventListener("DOMContentLoaded", function () {
 
         function sendToServer() {
             var xhr = new XMLHttpRequest();
-            var body = 'id=' + encodeURIComponent(note.dataset['id']) +
-                '&title=' + encodeURIComponent(note.children[0].value) +
-                '&content=' + encodeURIComponent(note.children[1].value);
+            var title = note.getElementsByClassName('note-title')[0];
+            var content = note.getElementsByClassName('content-text')[0];
+            var formData = new FormData();
+            formData.append("id", note.dataset['id']);
+            formData.append("title",title.value);
+            formData.append("content", content.innerText);
             xhr.open("POST", '/project/' + notes.dataset['pr'] + '/note/',
                 true);
-            xhr.setRequestHeader('Content-Type',
-                'application/x-www-form-urlencoded');
             xhr.setRequestHeader("X-CSRFTOKEN", csrftoken);
             xhr.onreadystatechange = function () {
                 if (xhr.readyState == 4 && xhr.status == 200) {
@@ -109,9 +121,37 @@ document.addEventListener("DOMContentLoaded", function () {
                     //TODO: show that data is saved
                 }
             };
-            xhr.send(body);
+            xhr.send(formData);
         }
     }
+
+    function sendPicture(note){
+        var file  = note.getElementsByClassName('note-upload')[0].files[0];
+        if (file) {
+            var xhr = new XMLHttpRequest();
+            var title = note.getElementsByClassName('note-title')[0];
+            var content = note.getElementsByClassName('note-content')[0];
+            var formData = new FormData();
+            formData.append("title",title.value);
+            formData.append("content",content.innerText);
+            formData.append("picture", file);
+            formData.append("id", note.dataset['id']);
+            xhr.open("POST", '/project/' + notes.dataset['pr'] + '/note/', true);
+            xhr.setRequestHeader("X-CSRFTOKEN", csrftoken);
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState == 4 && xhr.status == 200) {
+                    if (!note.dataset['id']) {
+                        note.dataset['id'] = xhr.getResponseHeader('note_id');
+                    }
+                    location.reload();
+                    //TODO: show that data is saved
+                }
+            };
+            xhr.send(formData);
+        }
+    }
+
+
 
     //  adds a new note to the 'notes' list
     function addNewNote() {

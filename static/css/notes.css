@@ -2,26 +2,15 @@
     display: none;
 }
 
-.note div:last-child {
+.note .trash {
     position: absolute;
     top: 0;;
     left: 0;
     color: #b41d00;
 }
 
-.note div:last-child:hover {
+.note .trash:hover {
     transform: scale(1.25);
-}
-
-
-.notes img {
-    position: absolute;
-    top: 0;
-    right: 0;
-}
-
-.hide {
-    display: none;
 }
 
 .note {
@@ -39,9 +28,10 @@
     box-shadow: 5px 5px 7px rgba(33, 33, 33, .8);
     transition: transform .15s linear;
     border: 1px solid gainsboro;
+    overflow: hidden;
 }
 
-.note textarea {
+.note textarea, .note .content {
     font-family: arial, sans-serif;
     background: rgba(0, 0, 0, 0.02); /* transparent background */
     resize: none;
@@ -63,12 +53,12 @@
 }
 
 .note-content {
-    border-radius: 25px;
     margin-top: 2%;
     font-size: 110%;
     height: 82%;
     width: 100%;
     overflow: hidden;
+    min-height: 500px;
 }
 
 .note:nth-child(even) {
@@ -101,4 +91,41 @@
     float: left;
     top: 0;
     clear: left;
+}
+
+.note-picture {
+    float: right;
+    top: 0px;
+    height: 150px;
+    width: auto;
+    clear: left;
+    margin: 5px 15px;
+}
+
+.fileUpload {
+    position: absolute;
+    right: 0;
+    top: 0;
+    overflow: hidden;
+    margin: 10px;
+}
+.fileUpload input.note-upload {
+    position: absolute;
+    top: 0;
+    right: 0;
+    margin: 0;
+    padding: 0;
+    font-size: 20px;
+    cursor: pointer;
+    opacity: 0;
+    filter: alpha(opacity=0);
+}
+
+div.content-text  {
+    text-align: left;
+    overflow: hidden;
+    -webkit-appearance: textarea;
+    white-space: pre-wrap;
+    min-height: 450px;
+
 }

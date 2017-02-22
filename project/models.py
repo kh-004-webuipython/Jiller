@@ -299,6 +299,7 @@ class ProjectNote(models.Model):
                              null=True, blank=True)
     content = models.TextField(max_length=5000, verbose_name=_('Note text'),
                                null=True, blank=True)
+    picture = models.ImageField(upload_to='notes/', null=True, blank=True)
 
     def __str__(self):
         return self.title

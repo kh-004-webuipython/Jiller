@@ -161,4 +161,4 @@ class SprintCreateForm(FormControlMixin, forms.ModelForm):
 class NoteForm(forms.ModelForm):
     class Meta:
         model = ProjectNote
-        fields = ['title', 'content']
+        fields = ['title', 'content', 'picture']
