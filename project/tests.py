@@ -826,14 +826,13 @@ class IssueSearchTest(LoginRequiredBase):
                                      project=self.project)
 
     def test_basic_search(self):
-        if self.id:
-            url = reverse('project:issue_search',
-                          kwargs={'project_id': self.project.id})
-            # response = self.client.get(url)
-            response = self.client.get(url, {'s': 'Title NEW 1'})
-            self.assertTrue(response.status_code == 200)
-            self.assertContains(response, 'Title NEW 1')
-            self.assertNotContains(response, 'Title NEW 2')
+        url = reverse('project:issue_search',
+                      kwargs={'project_id': self.project.id})
+        # response = self.client.get(url)
+        response = self.client.get(url, {'s': 'Title NEW 1'})
+        self.assertTrue(response.status_code == 200)
+        self.assertContains(response, 'Title NEW 1')
+        self.assertNotContains(response, 'Title NEW 2')
 
 
 class CreateSprintTests(LoginRequiredBase):
