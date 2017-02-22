@@ -57,6 +57,7 @@ INSTALLED_APPS = [
     'allauth.socialaccount.providers.google',
     'allauth.socialaccount.providers.facebook',
 
+    'allauth.socialaccount.providers.instagram',
 ]
 
 SITE_ID = 1
@@ -179,6 +180,7 @@ LOGIN_EXEMPT_URLS = (
  r'^accounts/social/connections/$',
  r'^accounts/twitter/login/callback/$',
  r'^accounts/facebook/login/$',
+ r'^accounts/instagram/login',
 )
 
 
@@ -191,7 +193,19 @@ SOCIALACCOUNT_PROVIDERS = \
          'SCOPE': ['email'],
          'AUTH_PARAMS': {'auth_type': 'reauthenticate'},
          'LOCALE_FUNC': lambda request: 'en_US',
-         'VERSION': 'v2.4'}
+         'VERSION': 'v2.4'},
+    'vk':
+         {'SCOPE':['email'],
+          'FIELDS': [
+              'id',
+              'email',
+              'name',
+              'first_name',
+              'last_name'
+          ],
+          'AUTH_PARAMS': {'auth_type': 'reauthenticate'},
+          'METHOD':'oauth2',
+          }
      }
 
 TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
