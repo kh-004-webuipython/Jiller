@@ -19,6 +19,12 @@ $(function() {
             tolerance: 'pointer',
             dropOnEmpty: true,
             containment: 'document',
+            over: function( event, ui ) {
+                ui.placeholder.closest('ul').addClass('drag over');
+            },
+            out: function( event, ui ) {
+                ui.placeholder.closest('ul').removeClass( "drag over" )
+            },
             remove: function (event, ui) {
                 var alterData = {};
                 alterData['issue'] = ui.item.data('issue');

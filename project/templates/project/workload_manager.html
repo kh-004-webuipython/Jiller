@@ -12,6 +12,11 @@
         href="{% static 'css/jquery-ui.css' %}"/>
   <link rel="stylesheet" type="text/css"
         href="{% static 'css/style.css' %}"/>
+
+  {% flag "update_workflow_manager" %}
+    <link rel="stylesheet" type="text/css"
+          href="{% static 'css/push-issue.css' %}"/>
+  {% endflag %}
 {% endblock %}
 
 {% block title %} Workload manager {% endblock %}
