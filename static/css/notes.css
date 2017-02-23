@@ -29,6 +29,7 @@
     transition: transform .15s linear;
     border: 1px solid gainsboro;
     overflow: hidden;
+    color: #5b5b5b;
 }
 
 .note textarea,.note-content {
@@ -93,6 +94,7 @@
     float: left;
     top: 0;
     clear: left;
+    font-size: 13px;
 }
 
 .note-picture {
@@ -101,6 +103,7 @@
     width: auto;
     clear: left;
     margin: 0 0 15px 10px;
+    -moz-user-select: none
 }
 
 .fileUpload {
@@ -128,9 +131,17 @@ div.content-text  {
     -webkit-appearance: textarea;
     white-space: pre-wrap;
     min-height: 450px;
-
 }
 
 img[src=""] {
     display: none;
+}
+
+.big-image {
+    float: none;
+    width: 100%;
+    height: auto;
+    z-index: 1000;
+    margin: 0;
+    -moz-user-select: none
 }

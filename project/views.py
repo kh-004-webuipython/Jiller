@@ -4,7 +4,7 @@ from django.contrib import messages
 
 from django.conf import settings
 from django.db.models import Q
-from django.http import HttpResponseRedirect, Http404, HttpResponse
+from django.http import HttpResponseRedirect, Http404, HttpResponse, HttpResponseBadRequest
 from django.http.request import QueryDict
 from django.http.response import JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
@@ -555,12 +555,22 @@ def notes_view(request, project_id):
             note.save()
             response = HttpResponse()
             response.__setitem__('note_id', str(note.id))
+            #print '1', request.POST,request.FILES
             return response
         else:
             note = get_object_or_404(ProjectNote, pk=int(id_val))
+            old_title = request.POST.get('oldTitle')
+            old_content = request.POST.get('oldContent')
+            if note.content != old_content or note.title != old_title:
+                response = HttpResponseBadRequest()
+                response.__setitem__('refresh', 'true')
+                print 'Error! resp'
+                return response
             form = NoteForm(request.POST, request.FILES, instance=note)
+            print old_title, note.title, old_content, note.content
             if form.is_valid():
                 note.save()
+                #print '1', request.POST, request.FILES
                 return HttpResponse()
     if request.method == "DELETE":
         delete = QueryDict(request.body)

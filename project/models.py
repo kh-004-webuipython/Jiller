@@ -297,7 +297,7 @@ class ProjectNote(models.Model):
     project = models.ForeignKey(Project, verbose_name=_('Project'))
     title = models.CharField(max_length=25, verbose_name=_('Title'),
                              null=True, blank=True)
-    content = models.TextField(max_length=5000, verbose_name=_('Note text'),
+    content = models.TextField(max_length=10000, verbose_name=_('Note text'),
                                null=True, blank=True)
     picture = models.ImageField(upload_to='notes/', null=True, blank=True)
 

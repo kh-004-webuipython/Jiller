@@ -5,6 +5,7 @@ document.addEventListener("DOMContentLoaded", function () {
     var noteQuery = document.querySelectorAll('.note');
     var openedNote;
 
+
     // event on button to create new notes
     document.getElementById('btnNew').addEventListener('click', function () {
         addNewNote();
@@ -26,13 +27,13 @@ document.addEventListener("DOMContentLoaded", function () {
         newNote.className = 'note center';
         newNote.innerHTML =
             "<div class='fileUpload btn btn-link hide'>" +
-                "<span>Add picture</span>" +
+            "<span>Add picture</span>" +
             "<input type='file' name='picture' class='note-upload'/></div>" +
             "<textarea class='note-title" +
             " text-center' maxlength='25' rows='1'></textarea>" +
             "<div class='note-content' contenteditable='true'" +
-            " maxlength='5000'>" +
-            "<img class='note-picture hide' src=''></div>" +
+            " maxlength='10000'>" +
+            "<img class='note-picture hide' src='' draggable='false'></div>" +
             "<div class='trash hide'>" +
             "<span class='glyphicon glyphicon-trash'></span></div>";
         notes.appendChild(newNote);
@@ -56,21 +57,46 @@ document.addEventListener("DOMContentLoaded", function () {
             //show trash button
             this.lastElementChild.classList.remove('hide');
             this.getElementsByClassName('fileUpload')[0].classList.remove('hide');
-            this.getElementsByClassName('note-picture')[0].classList.remove('hide');
+            var image = this.getElementsByClassName('note-picture')[0];
+            image.classList.remove('hide');
+            image.onclick = function () {
+                image.classList.toggle('big-image');
+            }
         };
 
+
+
+
+
+
+
+        // remember old data for future checks to prevent overwriting data
+        note.oldText= {};
+        var title = note.getElementsByClassName('note-title')[0];
+        var content = note.getElementsByClassName('note-content')[0];
+        note.oldText['title'] = title.value;
+        note.oldText['content'] = content.innerText;
+
         // send data to server after changing text
-        note.getElementsByClassName('note-title')[0].addEventListener(
+        title.addEventListener(
             'input', function () {
-            sendData(note);
+                console.log(note.getElementsByClassName('note-title')[0].value);
+                console.log(note.oldText['title']);
+                console.log(note.oldText['content']);
+                sendData(note);
         });
-        note.getElementsByClassName('note-content')[0].addEventListener(
+
+        content.addEventListener(
             'input', function () {
-            sendData(note);
+                console.log(note.getElementsByClassName('note-title')[0].innerText);
+                console.log(note.oldText['title']);
+                console.log(note.oldText['content']);
+                sendData(note);
         });
+
          note.getElementsByClassName('note-upload')[0].addEventListener(
-             'input', function () {
-            sendPicture(note);
+             'change', function () {
+                sendPicture(note);
         });
 
         // delete note event
@@ -86,10 +112,14 @@ document.addEventListener("DOMContentLoaded", function () {
                     'application/x-www-form-urlencoded');
                 xhrd.setRequestHeader("X-CSRFTOKEN", csrftoken);
                 xhrd.onreadystatechange = function () {
-                    if (xhrd.readyState == 4 && xhrd.status == 200) {
-                        // TODO confirm
-                        note.remove();
+                    if (xhrd.readyState == 4) {
+                        if (xhrd.status == 200) {
+                            note.remove();
+                        } else {
+                            alert("Error, this note hasn't been deleted!")
+                        }
                     }
+
                 };
                 xhrd.send(body);
             }
@@ -114,16 +144,28 @@ document.addEventListener("DOMContentLoaded", function () {
             var formData = new FormData();
             formData.append("id", note.dataset['id']);
             formData.append("title",title.value);
+            formData.append("oldTitle", note.oldText['title']);
             formData.append("content", content.innerText);
+            formData.append("oldContent", note.oldText['content']);
             xhr.open("POST", '/project/' + notes.dataset['pr'] + '/note/',
                 true);
             xhr.setRequestHeader("X-CSRFTOKEN", csrftoken);
             xhr.onreadystatechange = function () {
-                if (xhr.readyState == 4 && xhr.status == 200) {
-                    if (!note.dataset['id']) {
-                        note.dataset['id'] = xhr.getResponseHeader('note_id');
+                if (xhr.readyState == 4) {
+                    if (xhr.status == 200) {
+                        note.oldText['title'] = title.value;
+                        note.oldText['content'] = content.innerText;
+                        if (!note.dataset['id']) {
+                            note.dataset['id'] = xhr.getResponseHeader('note_id');
+                        }
+                    } else {
+                        if (xhr.getResponseHeader('refresh')) {
+                            alert('Oops, someone has updated this note before you, please refresh page and then write new changes!')
+                        } else {
+                            alert("Error, this note hasn't been saved!")
+                        }
+
                     }
-                    //TODO: show that data is saved
                 }
             };
             xhr.send(formData);
@@ -138,13 +180,17 @@ document.addEventListener("DOMContentLoaded", function () {
             var content = note.getElementsByClassName('note-content')[0];
             var formData = new FormData();
             formData.append("title",title.value);
-            formData.append("content",content.innerText);
+            formData.append("oldTitle", note.oldText['title']);
+            formData.append("content", content.innerText);
+            formData.append("oldContent", note.oldText['content']);
             formData.append("picture", file);
             formData.append("id", note.dataset['id']);
             xhr.open("POST", '/project/' + notes.dataset['pr'] + '/note/', true);
             xhr.setRequestHeader("X-CSRFTOKEN", csrftoken);
             xhr.onreadystatechange = function () {
                 if (xhr.readyState == 4 && xhr.status == 200) {
+                    note.oldText['title'] = title.value;
+                    note.oldText['content'] = content.innerText;
                     if (!note.dataset['id']) {
                         note.dataset['id'] = xhr.getResponseHeader('note_id');
                     }
