@@ -35,13 +35,13 @@
     {% for note in notes %}
       <div class="note center" data-id="{{ note.id }}">
         <div class="fileUpload btn btn-link hide">
-          <span>Upload img</span>
+          <span>Add picture</span>
           <input type="file" name="picture" class="note-upload" />
         </div>
         <textarea class="note-title text-center" maxlength='25' rows='1'>
           {{ note.title }}
         </textarea>
-        <div class="note-content" contenteditable="true">
+        <div class="note-content" contenteditable="true" maxlength="5000">
           <img class="note-picture hide" src="{% if note.picture %}{{ note.picture.url}}{% endif %}">
         {{ note.content|linebreaks}}
         </div>

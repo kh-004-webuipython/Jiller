@@ -551,6 +551,7 @@ def notes_view(request, project_id):
         if id_val == 'undefined':
             form = NoteForm(request.POST, request.FILES)
             note = form.save(commit=False)
+            note.project_id = project_id
             note.save()
             response = HttpResponse()
             response.__setitem__('note_id', str(note.id))
@@ -561,72 +562,6 @@ def notes_view(request, project_id):
             if form.is_valid():
                 note.save()
                 return HttpResponse()
-
-
-
-
-
-
-        """
-        form = NoteForm(request.POST, request.FILES)
-        if form.is_valid():
-            id_val = request.POST.get('id')
-            note = form.save(commit=False)
-            note.project_id = project.id
-            if form.cleaned_data['picture']:
-                note.picture = form.cleaned_data['picture']
-                print ###
-            else:
-
-            note.title = form.cleaned_data['title']
-            note.content = form.cleaned_data['content']
-            #note.picture = form.cleaned_data['picture']
-            if request.FILES:
-                print request.FILES
-                note.picture = request.FILES.get('picture')
-            print '_____________',note.picture
-
-
-
-
-
-            obj = get_object_or_404(Location, pk=pk)
-            form = LocationForm(request.POST or None,
-                                request.FILES or None, instance=obj)
-            if request.method == 'POST':
-                if form.is_valid():
-                    form.save()
-
-
-
-
-
-
-
-
-            if id_val == 'undefined':
-                note.save()
-                response = HttpResponse()
-                response.__setitem__('note_id', str(note.id))
-                return response
-            else:
-                note.id = int(id_val)
-                get_object_or_404(ProjectNote, pk=note.id)
-                note.save()
-                return HttpResponse()"""
-
-
-
-
-
-
-
-
-
-
-
-
-
     if request.method == "DELETE":
         delete = QueryDict(request.body)
         if 'id' in delete:

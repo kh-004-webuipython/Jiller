@@ -10,26 +10,38 @@ document.addEventListener("DOMContentLoaded", function () {
         addNewNote();
     });
 
-    // make openNote smaller on offset clicks
-    window.addEventListener('click', cancelSize, false);
-
-    function cancelSize(e) {
-        if (openedNote && e.target != openedNote &&
-            !openedNote.contains(e.target)) {
-            openedNote.removeAttribute('id');
-            openedNote.lastElementChild.classList.add('hide');
-            openedNote.getElementsByClassName('fileUpload')[0].classList.add('hide');
-            openedNote.getElementsByClassName('note-picture')[0].classList.add('hide');
-        }
-    }
-
-    // add event handlers on all notes
+    // add event handlers on all exist notes
     noteQuery.forEach(function (note) {
         addNoteEvents(note);
     });
 
-    function addNoteEvents(note) {
+    // make openNote smaller on offset clicks
+    window.addEventListener('click', cancelSize, false);
 
+
+    //  adds a new note to the 'notes' list
+    function addNewNote() {
+        // add a new note to the end of the list
+        var newNote = document.createElement('div');
+        newNote.className = 'note center';
+        newNote.innerHTML =
+            "<div class='fileUpload btn btn-link hide'>" +
+                "<span>Add picture</span>" +
+            "<input type='file' name='picture' class='note-upload'/></div>" +
+            "<textarea class='note-title" +
+            " text-center' maxlength='25' rows='1'></textarea>" +
+            "<div class='note-content' contenteditable='true'" +
+            " maxlength='5000'>" +
+            "<img class='note-picture hide' src=''></div>" +
+            "<div class='trash hide'>" +
+            "<span class='glyphicon glyphicon-trash'></span></div>";
+        notes.appendChild(newNote);
+        noteQuery = document.querySelectorAll('.note');
+        addNoteEvents(newNote);
+    }
+
+
+    function addNoteEvents(note) {
         // make notes stay bigger after click
         note.onclick = function () {
             noteQuery.forEach(function (note) {
@@ -43,19 +55,21 @@ document.addEventListener("DOMContentLoaded", function () {
             this.id = ('clicked');
             //show trash button
             this.lastElementChild.classList.remove('hide');
-            this.lastElementChild.classList.remove('hide');
             this.getElementsByClassName('fileUpload')[0].classList.remove('hide');
             this.getElementsByClassName('note-picture')[0].classList.remove('hide');
         };
 
         // send data to server after changing text
-        note.getElementsByClassName('note-title')[0].addEventListener('input', function () {
+        note.getElementsByClassName('note-title')[0].addEventListener(
+            'input', function () {
             sendData(note);
         });
-        note.getElementsByClassName('note-content')[0].addEventListener('input', function () {
+        note.getElementsByClassName('note-content')[0].addEventListener(
+            'input', function () {
             sendData(note);
         });
-         note.getElementsByClassName('note-upload')[0].addEventListener('input', function () {
+         note.getElementsByClassName('note-upload')[0].addEventListener(
+             'input', function () {
             sendPicture(note);
         });
 
@@ -142,21 +156,13 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     }
 
-
-
-    //  adds a new note to the 'notes' list
-    function addNewNote() {
-        // add a new note to the end of the list
-        var newNote = document.createElement('div');
-        newNote.className = 'note center';
-        newNote.innerHTML = "<textarea class='note-title" +
-            " text-center' maxlength='25' rows='1'></textarea>" +
-            "<textarea class='note-content text-justify'" +
-            " maxlength='5000' rows='20'></textarea>" +
-            "<div class='hide'><span class='glyphicon glyphicon-trash'>" +
-            "</span></div>";
-        notes.appendChild(newNote);
-        noteQuery = document.querySelectorAll('.note');
-        addNoteEvents(newNote);
+    function cancelSize(e) {
+        if (openedNote && e.target != openedNote &&
+            !openedNote.contains(e.target)) {
+            openedNote.removeAttribute('id');
+            openedNote.lastElementChild.classList.add('hide');
+            openedNote.getElementsByClassName('fileUpload')[0].classList.add('hide');
+            openedNote.getElementsByClassName('note-picture')[0].classList.add('hide');
+        }
     }
 });

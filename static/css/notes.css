@@ -89,7 +89,7 @@
     position: relative;
     width: 60%;
     height: auto;
-    transition: 1s;
+    transition: transform .25s ease-out;
     float: left;
     top: 0;
     clear: left;
@@ -97,11 +97,10 @@
 
 .note-picture {
     float: right;
-    top: 0px;
     height: 150px;
     width: auto;
     clear: left;
-    margin: 5px 15px;
+    margin: 0 0 15px 10px;
 }
 
 .fileUpload {
@@ -130,4 +129,8 @@ div.content-text  {
     white-space: pre-wrap;
     min-height: 450px;
 
+}
+
+img[src=""] {
+    display: none;
 }
