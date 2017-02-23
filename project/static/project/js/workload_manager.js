@@ -19,6 +19,15 @@ $(function() {
             tolerance: 'pointer',
             dropOnEmpty: true,
             containment: 'document',
+            out: function (event, ui) {
+                ui.placeholder.closest('ul').removeClass('drop over');
+            },
+            over: function (event, ui) {
+                ui.placeholder.closest('ul').addClass('drop over');
+            },
+            beforeStop: function (event, ui) {
+                ui.placeholder.closest('ul').removeClass('drop over');
+            },
             remove: function (event, ui) {
                 var alterData = {};
                 alterData['issue'] = ui.item.data('issue');
