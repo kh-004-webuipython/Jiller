@@ -92,5 +92,9 @@ $(function() {
             }, animationLength);
         })
     }
+
+    function addContainBox() {
+
+    }
 });
 
