@@ -20,23 +20,29 @@ $(function() {
             dropOnEmpty: true,
             containment: 'document',
             start: function (event, ui) {
-                var placeToDrop = $('#workload-template .list-group');
-                for(var i = 0; i < placeToDrop.length; i++)
+                var placeToDrop = $('#workload-template .sortable');
+                for(var i = 0; i < placeToDrop.length; i++) {
+                    placeToDrop[i].classList.add('contain-box');
                     $(placeToDrop[i]).addClass('drop over');
-                ui.item.closest('ul').removeClass('drop over');
+                }
+
+                ui.item.closest('div').removeClass('drop over');
             },
             out: function () {
-                var placeToDrop = $('#workload-template .list-group');
+                var placeToDrop = $('#workload-template .sortable');
                 for(var i = 0; i < placeToDrop.length; i++)
                     $(placeToDrop[i]).removeClass('drop over');
 
                 placeToDrop.on("sortover", function ( event, ui ) {
-                    ui.placeholder.closest('ul').addClass('drop over');
+                    ui.placeholder.closest('div').addClass('drop over');
                 });
             },
             stop: function (event, ui) {
-                var placeToDrop = $('#workload-template .list-group');
+                var placeToDrop = $('#workload-template .sortable');
                 placeToDrop.off('sortover');
+
+                for(var i = 0; i < placeToDrop.length; i++)
+                    placeToDrop[i].classList.remove('contain-box');
             },
             remove: function (event, ui) {
                 var alterData = {};
