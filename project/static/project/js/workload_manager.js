@@ -19,14 +19,24 @@ $(function() {
             tolerance: 'pointer',
             dropOnEmpty: true,
             containment: 'document',
-            out: function (event, ui) {
-                ui.placeholder.closest('ul').removeClass('drop over');
+            start: function (event, ui) {
+                var placeToDrop = $('#workload-template .list-group');
+                for(var i = 0; i < placeToDrop.length; i++)
+                    $(placeToDrop[i]).addClass('drop over');
+                ui.item.closest('ul').removeClass('drop over');
             },
-            over: function (event, ui) {
-                ui.placeholder.closest('ul').addClass('drop over');
+            out: function () {
+                var placeToDrop = $('#workload-template .list-group');
+                for(var i = 0; i < placeToDrop.length; i++)
+                    $(placeToDrop[i]).removeClass('drop over');
+
+                placeToDrop.on("sortover", function ( event, ui ) {
+                    ui.placeholder.closest('ul').addClass('drop over');
+                });
             },
-            beforeStop: function (event, ui) {
-                ui.placeholder.closest('ul').removeClass('drop over');
+            stop: function (event, ui) {
+                var placeToDrop = $('#workload-template .list-group');
+                placeToDrop.off('sortover');
             },
             remove: function (event, ui) {
                 var alterData = {};
