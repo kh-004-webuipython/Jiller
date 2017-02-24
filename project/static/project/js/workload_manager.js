@@ -1,6 +1,5 @@
 $(function() {
     moveProgressBar();
-    // on browser resize...
     $(window).resize(function() {
         moveProgressBar();
     });
