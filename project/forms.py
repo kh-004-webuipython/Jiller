@@ -2,6 +2,7 @@ import datetime
 
 from django import forms
 from django.utils.translation import ugettext_lazy as _
+from PIL import Image
 
 from general.tasks import send_assign_email_task
 from employee.models import IssueLog
@@ -161,4 +162,33 @@ class SprintCreateForm(FormControlMixin, forms.ModelForm):
 class NoteForm(forms.ModelForm):
     class Meta:
         model = ProjectNote
-        fields = ['title', 'content', 'picture']
+        fields = ['title', 'content']
+
+
+    def clean_picture(self):
+        image = self.cleaned_data['picture']
+        if image:
+            img = Image.open(image)
+            w, h = img.size
+
+            # validate dimensions
+            max_width = max_height = 2000
+            if w > max_width or h > max_height:
+                raise forms.ValidationError(
+                    _('Please use an image that is smaller or equal to '
+                      '%s x %s pixels.' % (max_width, max_height)))
+
+            # validate content type
+            main, sub = image.content_type.split('/')
+            if not (main == 'image' and sub.lower() in ['jpeg', 'pjpeg', 'png',
+                                                        'jpg', 'gif']):
+                raise forms.ValidationError(
+                    _('Please use a JPEG or PNG image.'))
+
+            # validate file size
+            if len(image) > (10 * 1024 * 1024):
+                raise forms.ValidationError(
+                    _('Image file too large ( maximum 10mb )'))
+        else:
+            raise forms.ValidationError(_("Couldn't read uploaded image"))
+        return image

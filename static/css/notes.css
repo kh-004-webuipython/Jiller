@@ -61,7 +61,7 @@
     overflow: hidden;
     min-height: 500px;
     text-align: left;
-
+    white-space: pre-wrap;
 }
 
 .note:nth-child(even) {
@@ -99,10 +99,13 @@
 
 .note-picture {
     float: right;
+    display: block;
+    position: relative;
     height: 150px;
     width: auto;
     clear: left;
     margin: 0 0 15px 10px;
+    vertical-align: baseline;
     -moz-user-select: none
 }
 
@@ -125,13 +128,7 @@
     filter: alpha(opacity=0);
 }
 
-div.content-text  {
-    text-align: left;
-    overflow: hidden;
-    -webkit-appearance: textarea;
-    white-space: pre-wrap;
-    min-height: 450px;
-}
+
 
 img[src=""] {
     display: none;

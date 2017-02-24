@@ -145,6 +145,7 @@ document.addEventListener("DOMContentLoaded", function () {
             formData.append("id", note.dataset['id']);
             formData.append("title",title.value);
             formData.append("oldTitle", note.oldText['title']);
+            console.log((note.oldText['content']).length);
             formData.append("content", content.innerText);
             formData.append("oldContent", note.oldText['content']);
             xhr.open("POST", '/project/' + notes.dataset['pr'] + '/note/',
@@ -179,22 +180,20 @@ document.addEventListener("DOMContentLoaded", function () {
             var title = note.getElementsByClassName('note-title')[0];
             var content = note.getElementsByClassName('note-content')[0];
             var formData = new FormData();
-            formData.append("title",title.value);
-            formData.append("oldTitle", note.oldText['title']);
-            formData.append("content", content.innerText);
-            formData.append("oldContent", note.oldText['content']);
-            formData.append("picture", file);
             formData.append("id", note.dataset['id']);
+            formData.append("picture", file);
             xhr.open("POST", '/project/' + notes.dataset['pr'] + '/note/', true);
             xhr.setRequestHeader("X-CSRFTOKEN", csrftoken);
             xhr.onreadystatechange = function () {
                 if (xhr.readyState == 4 && xhr.status == 200) {
-                    note.oldText['title'] = title.value;
-                    note.oldText['content'] = content.innerText;
                     if (!note.dataset['id']) {
                         note.dataset['id'] = xhr.getResponseHeader('note_id');
                     }
-                    location.reload();
+                    newImg = xhr.getResponseHeader('newImg');
+                    note.getElementsByClassName('note-picture')[0].src = newImg;
+
+                    console.log(newImg);
+                    //location.reload();
                     //TODO: show that data is saved
                 }
             };

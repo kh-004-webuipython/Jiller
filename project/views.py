@@ -548,29 +548,60 @@ def notes_view(request, project_id):
 
     if request.method == "POST" and 'id' in request.POST:
         id_val = request.POST.get('id')
+
         if id_val == 'undefined':
-            form = NoteForm(request.POST, request.FILES)
+            if request.FILES:
+                form = NoteForm(request.POST, request.FILES)
+                note = form.save(commit=False)
+                note.project_id = project_id
+                note.picture = request.FILES['picture']
+                note.save()
+                response = HttpResponse()
+                response.__setitem__('newImg',
+                                     settings.MEDIA_URL + str(note.picture))
+                response.__setitem__('note_id', str(note.id))
+                return response
+
+            form = NoteForm(request.POST)
             note = form.save(commit=False)
             note.project_id = project_id
             note.save()
             response = HttpResponse()
             response.__setitem__('note_id', str(note.id))
-            #print '1', request.POST,request.FILES
+
             return response
+        elif request.FILES:
+            note = get_object_or_404(ProjectNote, pk=int(id_val))
+            print 2, note.picture, note.content, note.title
+            form = NoteForm(request.POST, request.FILES)
+            print 'VALID:', form.is_valid()
+            if form.is_valid():
+                note.picture = request.FILES['picture']
+                print 2.1 #note.picture, note.content, note.title
+                note.save()
+                response = HttpResponse()
+                response.__setitem__('newImg', settings.MEDIA_URL + str(note.picture))
+                return response
+
         else:
             note = get_object_or_404(ProjectNote, pk=int(id_val))
             old_title = request.POST.get('oldTitle')
             old_content = request.POST.get('oldContent')
-            if note.content != old_content or note.title != old_title:
+            print 3
+            """
+            if  note.content != old_content or note.title != old_title:
                 response = HttpResponseBadRequest()
                 response.__setitem__('refresh', 'true')
                 print 'Error! resp'
+                print old_title, note.title, 'old', len(old_content),old_content, 'new',len(note.content),note.content
                 return response
-            form = NoteForm(request.POST, request.FILES, instance=note)
-            print old_title, note.title, old_content, note.content
+            """
+            form = NoteForm(request.POST, instance=note)
+            #print 3.1, old_title, note.title, 'old', len(old_content),old_content, 'new',len(note.content),note.content
+            print form.errors
             if form.is_valid():
-                note.save()
-                #print '1', request.POST, request.FILES
+                form.save()
+                print 4
                 return HttpResponse()
     if request.method == "DELETE":
         delete = QueryDict(request.body)
@@ -580,7 +611,8 @@ def notes_view(request, project_id):
             note.delete()
             return HttpResponse()
         raise Http404("Wrong request")
-    return redirect(request, 'project:note', {'project_id': project_id})
+    return HttpResponseBadRequest()
+    #return redirect(reverse('project:note', kwargs={'project_id': project_id}))
 
 
 @waffle_flag('edit_sprint')
