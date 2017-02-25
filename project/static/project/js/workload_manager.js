@@ -22,18 +22,18 @@ $(function() {
                 var placeToDrop = $('#workload-template .sortable');
                 for(var i = 0; i < placeToDrop.length; i++) {
                     placeToDrop[i].classList.add('contain-box');
-                    $(placeToDrop[i]).addClass('drop over');
+                    placeToDrop[i].classList.add('over');
                 }
 
-                ui.item.closest('div').removeClass('drop over');
+                ui.item.closest('div').removeClass('over');
             },
             out: function () {
                 var placeToDrop = $('#workload-template .sortable');
                 for(var i = 0; i < placeToDrop.length; i++)
-                    $(placeToDrop[i]).removeClass('drop over');
+                    placeToDrop[i].classList.remove('over');
 
                 placeToDrop.on("sortover", function ( event, ui ) {
-                    ui.placeholder.closest('div').addClass('drop over');
+                    ui.placeholder.closest('div').addClass('over');
                 });
             },
             stop: function (event, ui) {
