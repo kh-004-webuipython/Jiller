@@ -11,7 +11,8 @@ from .email_confirmation import sender
 
 
 def home_page(request):
-    return render(request, 'general/home_page.html')
+    user = Employee.objects.get(pk=request.user.pk)
+    return render(request, 'general/home_page.html', {'online_status': user.online_status() })
 
 
 def login_form_view(request):
