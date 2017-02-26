@@ -40,10 +40,13 @@
         </div>
         <textarea class="note-title text-center" maxlength='25'
                   rows='1'>{{ note.title }}</textarea>
-        <div class="note-content" contenteditable="true" maxlength="10000"><img
+        <div class="note-content"><img
             class="note-picture hide" draggable="false"
-            src="{% if note.picture %}{{ note.picture.url}}{% endif %}"><p>{{ note.content}}</p></div>
-        <div class="hide trash"><span class='glyphicon glyphicon-trash'></span></div>
+            src="{% if note.picture %}{{ note.picture.url}}{% endif %}"><p
+            maxlength="10000" contenteditable="true">{{ note.content}}</p>
+        </div>
+        <div class="hide trash"><span class='glyphicon glyphicon-trash'></span>
+        </div>
       </div>
     {% endfor %}
   </div>

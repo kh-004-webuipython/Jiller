@@ -31,10 +31,9 @@ document.addEventListener("DOMContentLoaded", function () {
             "<input type='file' name='picture' class='note-upload'/></div>" +
             "<textarea class='note-title" +
             " text-center' maxlength='25' rows='1'></textarea>" +
-            "<div class='note-content' contenteditable='true'" +
-            " maxlength='10000'>" +
-            "<img class='note-picture hide' src='' draggable='false'></div>" +
-            "<p></p>" +
+            "<div class='note-content'>" +
+            "<img class='note-picture hide' src='' draggable='false'>" +
+            "<p maxlength='10000' contenteditable='true'></p></div>" +
             "<div class='trash hide'>" +
             "<span class='glyphicon glyphicon-trash'></span></div>";
         notes.appendChild(newNote);
@@ -59,24 +58,23 @@ document.addEventListener("DOMContentLoaded", function () {
             this.lastElementChild.classList.remove('hide');
             this.getElementsByClassName('fileUpload')[0].classList.remove('hide');
             var image = this.getElementsByClassName('note-picture')[0];
+            var thisNote = this;
             image.classList.remove('hide');
             image.onclick = function () {
+                thisNote.classList.toggle('big-content');
                 image.classList.toggle('big-image');
             }
         };
-
-
-
-
-
 
 
         // remember old data for future checks to prevent overwriting data
         note.oldText= {};
         var title = note.getElementsByClassName('note-title')[0];
         var content = note.getElementsByTagName('p')[0];
+
         note.oldText['title'] = title.value;
         note.oldText['content'] = content.innerText;
+
 
         // send data to server after changing text
         title.addEventListener(
@@ -84,7 +82,17 @@ document.addEventListener("DOMContentLoaded", function () {
                 sendData(note);
         });
 
-        note.getElementsByClassName('note-content')[0].addEventListener(
+        //check max length in content and stop typing more
+        content.onkeydown = function (event) {
+                var maxLength = content.attributes['maxlength'].value;
+                if (content.innerText.length >= maxLength -1 && event.keyCode
+                    != 8 && event.keyCode != 46 && event.keyCode != 116) {
+                    alert('Sorry, this note has a limit in ' +  maxLength +
+                        ' chars.');
+                    return false;
+                }
+        };
+        content.addEventListener(
             'input', function () {
                 sendData(note);
         });
@@ -140,7 +148,7 @@ document.addEventListener("DOMContentLoaded", function () {
             formData.append("id", note.dataset['id']);
             formData.append("title",title.value);
             formData.append("oldTitle", note.oldText['title']);
-            formData.append("content", content.innerText);
+            formData.append("content", content.innerText.trim());
             formData.append("oldContent", note.oldText['content']);
             xhr.open("POST", '/project/' + notes.dataset['pr'] + '/note/',
                 true);
@@ -149,13 +157,15 @@ document.addEventListener("DOMContentLoaded", function () {
                 if (xhr.readyState == 4) {
                     if (xhr.status == 200) {
                         note.oldText['title'] = title.value;
-                        note.oldText['content'] = content.innerText;
+                        note.oldText['content'] = content.innerText.trim();
                         if (!note.dataset['id']) {
                             note.dataset['id'] = xhr.getResponseHeader('note_id');
                         }
                     } else {
                         if (xhr.getResponseHeader('refresh')) {
-                            alert('Oops, someone has updated this note before you, please refresh page and then write new changes!')
+                            alert('Oops, someone has updated this note ' +
+                                'before you, please refresh page and ' +
+                                'then write new changes!')
                         } else {
                             alert("Error, this note hasn't been saved!")
                         }
@@ -179,12 +189,19 @@ document.addEventListener("DOMContentLoaded", function () {
             xhr.open("POST", '/project/' + notes.dataset['pr'] + '/note/', true);
             xhr.setRequestHeader("X-CSRFTOKEN", csrftoken);
             xhr.onreadystatechange = function () {
-                if (xhr.readyState == 4 && xhr.status == 200) {
-                    if (!note.dataset['id']) {
+                if (xhr.readyState == 4) {
+                    if (xhr.status == 200) {
+                        if (!note.dataset['id']) {
                         note.dataset['id'] = xhr.getResponseHeader('note_id');
                     }
                     newImg = xhr.getResponseHeader('newImg');
                     note.getElementsByClassName('note-picture')[0].src = newImg;
+                    }
+                    if (xhr.status == 400) {
+                        var error = xhr.getResponseHeader('errorForm');
+                        alert(error);
+                    }
+
                     //TODO: show that data is saved
                 }
             };

@@ -106,7 +106,8 @@
     clear: left;
     margin: 0 0 15px 10px;
     vertical-align: baseline;
-    -moz-user-select: none
+    -moz-user-select: none;
+    cursor: zoom-in;
 }
 
 .fileUpload {
@@ -128,8 +129,6 @@
     filter: alpha(opacity=0);
 }
 
-
-
 img[src=""] {
     display: none;
 }
@@ -140,5 +139,14 @@ img[src=""] {
     height: auto;
     z-index: 1000;
     margin: 0;
-    -moz-user-select: none
+    -moz-user-select: none;
+    cursor: zoom-out;
+}
+
+.note-content p {
+    min-height: 500px;
+}
+
+div.big-content {
+    width: 100% !important;
 }

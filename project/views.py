@@ -4,7 +4,8 @@ from django.contrib import messages
 
 from django.conf import settings
 from django.db.models import Q
-from django.http import HttpResponseRedirect, Http404, HttpResponse, HttpResponseBadRequest
+from django.http import HttpResponseRedirect, Http404, HttpResponse, \
+    HttpResponseBadRequest
 from django.http.request import QueryDict
 from django.http.response import JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
@@ -32,7 +33,8 @@ from .utils.workload_manager import put_issue_back_to_pool, \
 
 from employee.models import Employee
 
-from general.tasks import send_email_after_sprint_start_task, send_email_after_sprint_finish_task
+from general.tasks import send_email_after_sprint_start_task, \
+    send_email_after_sprint_finish_task
 
 
 class ProjectListView(SingleTableView):
@@ -554,14 +556,14 @@ def notes_view(request, project_id):
             if request.FILES:
                 form = NoteFormWithImage(request.POST, request.FILES)
                 if form.is_valid():
-                    print 'underf'
                     note = form.save(commit=False)
                     note.project_id = project_id
                     note.picture = request.FILES['picture']
                     note.save()
                     response = HttpResponse()
                     response.__setitem__('newImg',
-                                         settings.MEDIA_URL + str(note.picture))
+                                         settings.MEDIA_URL + str(
+                                             note.picture))
                     response.__setitem__('note_id', str(note.id))
                     return response
             else:
@@ -574,33 +576,31 @@ def notes_view(request, project_id):
                 return response
         elif request.FILES:
             note = get_object_or_404(ProjectNote, pk=int(id_val))
-            print 2
             form = NoteFormWithImage(request.POST, request.FILES)
-            print 'VALID:', form.is_valid()
             if form.is_valid():
                 note.picture = request.FILES['picture']
-                print 2.1 #note.picture, note.content, note.title
                 note.save()
                 response = HttpResponse()
-                response.__setitem__('newImg', settings.MEDIA_URL + str(note.picture))
+                response.__setitem__('newImg',
+                                     settings.MEDIA_URL + str(note.picture))
                 return response
+            response = HttpResponseBadRequest()
+            response.__setitem__('errorForm',
+                                 'This picture does not fit ' +
+                                 'the specified parameters')
+            return response
 
         else:
             note = get_object_or_404(ProjectNote, pk=int(id_val))
             old_title = request.POST.get('oldTitle')
             old_content = request.POST.get('oldContent')
-            print 3
-            print 'old', len(old_content), 'new', len(note.content)
-            if  note.content != old_content or note.title != old_title:
+            if note.content != old_content or note.title != old_title:
                 response = HttpResponseBadRequest()
                 response.__setitem__('refresh', 'true')
-                print 'Error! resp'
                 return response
             form = NoteForm(request.POST, instance=note)
-            print form.errors
             if form.is_valid():
                 form.save()
-                print 4
                 return HttpResponse()
     if request.method == "DELETE":
         delete = QueryDict(request.body)
@@ -611,7 +611,6 @@ def notes_view(request, project_id):
             return HttpResponse()
         raise Http404("Wrong request")
     return HttpResponseBadRequest()
-    #return redirect(reverse('project:note', kwargs={'project_id': project_id}))
 
 
 @waffle_flag('edit_sprint')
@@ -633,8 +632,10 @@ def finish_active_sprint_view(request, project_id):
             active_sprint.end_date = datetime.datetime.now()
             active_sprint.save()
             for member in employees:
-                send_email_after_sprint_finish_task.delay(member.email, user_id,
-                                                          sprint_id, active_sprint.release_link,
+                send_email_after_sprint_finish_task.delay(member.email,
+                                                          user_id,
+                                                          sprint_id,
+                                                          active_sprint.release_link,
                                                           active_sprint.feedback_text)
             return HttpResponseRedirect(reverse('project:sprint_active',
                                                 kwargs={
