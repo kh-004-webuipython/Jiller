@@ -158,3 +158,23 @@ tr.Task {
 tr.Bug {
     background-color: #f2dede;
 }
+
+.social-login a {
+    width: 34px;
+    height: 34px;
+    line-height: 38px;
+}
+
+.social-login a > .ace-icon {
+    font-size: 20px;
+}
+
+.ace-nav > li {
+    border-left: none;
+}
+
+@media only screen and (min-width: 992px){
+    .navbar-container {
+        padding-right: 0;
+    }
+}
