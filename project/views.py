@@ -20,7 +20,8 @@ from waffle.decorators import waffle_flag
 
 from .forms import ProjectForm, SprintCreateForm, CreateTeamForm, \
     IssueCommentCreateForm, CreateIssueForm, IssueLogForm, \
-    IssueFormForEditing, SprintFinishForm, NoteForm, IssueFormForSprint
+    IssueFormForEditing, SprintFinishForm, NoteForm, IssueFormForSprint, \
+    NoteFormWithImage
 from .models import Project, ProjectTeam, Issue, Sprint, ProjectNote
 from .decorators import delete_project, \
     edit_project_detail, create_project, create_sprint
@@ -551,29 +552,30 @@ def notes_view(request, project_id):
 
         if id_val == 'undefined':
             if request.FILES:
-                form = NoteForm(request.POST, request.FILES)
+                form = NoteFormWithImage(request.POST, request.FILES)
+                if form.is_valid():
+                    print 'underf'
+                    note = form.save(commit=False)
+                    note.project_id = project_id
+                    note.picture = request.FILES['picture']
+                    note.save()
+                    response = HttpResponse()
+                    response.__setitem__('newImg',
+                                         settings.MEDIA_URL + str(note.picture))
+                    response.__setitem__('note_id', str(note.id))
+                    return response
+            else:
+                form = NoteForm(request.POST)
                 note = form.save(commit=False)
                 note.project_id = project_id
-                note.picture = request.FILES['picture']
                 note.save()
                 response = HttpResponse()
-                response.__setitem__('newImg',
-                                     settings.MEDIA_URL + str(note.picture))
                 response.__setitem__('note_id', str(note.id))
                 return response
-
-            form = NoteForm(request.POST)
-            note = form.save(commit=False)
-            note.project_id = project_id
-            note.save()
-            response = HttpResponse()
-            response.__setitem__('note_id', str(note.id))
-
-            return response
         elif request.FILES:
             note = get_object_or_404(ProjectNote, pk=int(id_val))
-            print 2, note.picture, note.content, note.title
-            form = NoteForm(request.POST, request.FILES)
+            print 2
+            form = NoteFormWithImage(request.POST, request.FILES)
             print 'VALID:', form.is_valid()
             if form.is_valid():
                 note.picture = request.FILES['picture']
@@ -588,16 +590,13 @@ def notes_view(request, project_id):
             old_title = request.POST.get('oldTitle')
             old_content = request.POST.get('oldContent')
             print 3
-            """
+            print 'old', len(old_content), 'new', len(note.content)
             if  note.content != old_content or note.title != old_title:
                 response = HttpResponseBadRequest()
                 response.__setitem__('refresh', 'true')
                 print 'Error! resp'
-                print old_title, note.title, 'old', len(old_content),old_content, 'new',len(note.content),note.content
                 return response
-            """
             form = NoteForm(request.POST, instance=note)
-            #print 3.1, old_title, note.title, 'old', len(old_content),old_content, 'new',len(note.content),note.content
             print form.errors
             if form.is_valid():
                 form.save()

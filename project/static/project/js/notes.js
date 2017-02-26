@@ -34,6 +34,7 @@ document.addEventListener("DOMContentLoaded", function () {
             "<div class='note-content' contenteditable='true'" +
             " maxlength='10000'>" +
             "<img class='note-picture hide' src='' draggable='false'></div>" +
+            "<p></p>" +
             "<div class='trash hide'>" +
             "<span class='glyphicon glyphicon-trash'></span></div>";
         notes.appendChild(newNote);
@@ -73,24 +74,18 @@ document.addEventListener("DOMContentLoaded", function () {
         // remember old data for future checks to prevent overwriting data
         note.oldText= {};
         var title = note.getElementsByClassName('note-title')[0];
-        var content = note.getElementsByClassName('note-content')[0];
+        var content = note.getElementsByTagName('p')[0];
         note.oldText['title'] = title.value;
         note.oldText['content'] = content.innerText;
 
         // send data to server after changing text
         title.addEventListener(
             'input', function () {
-                console.log(note.getElementsByClassName('note-title')[0].value);
-                console.log(note.oldText['title']);
-                console.log(note.oldText['content']);
                 sendData(note);
         });
 
-        content.addEventListener(
+        note.getElementsByClassName('note-content')[0].addEventListener(
             'input', function () {
-                console.log(note.getElementsByClassName('note-title')[0].innerText);
-                console.log(note.oldText['title']);
-                console.log(note.oldText['content']);
                 sendData(note);
         });
 
@@ -140,12 +135,11 @@ document.addEventListener("DOMContentLoaded", function () {
         function sendToServer() {
             var xhr = new XMLHttpRequest();
             var title = note.getElementsByClassName('note-title')[0];
-            var content = note.getElementsByClassName('note-content')[0];
+            var content = note.getElementsByTagName('p')[0];
             var formData = new FormData();
             formData.append("id", note.dataset['id']);
             formData.append("title",title.value);
             formData.append("oldTitle", note.oldText['title']);
-            console.log((note.oldText['content']).length);
             formData.append("content", content.innerText);
             formData.append("oldContent", note.oldText['content']);
             xhr.open("POST", '/project/' + notes.dataset['pr'] + '/note/',
@@ -191,9 +185,6 @@ document.addEventListener("DOMContentLoaded", function () {
                     }
                     newImg = xhr.getResponseHeader('newImg');
                     note.getElementsByClassName('note-picture')[0].src = newImg;
-
-                    console.log(newImg);
-                    //location.reload();
                     //TODO: show that data is saved
                 }
             };

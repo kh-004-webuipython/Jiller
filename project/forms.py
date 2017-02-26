@@ -165,6 +165,11 @@ class NoteForm(forms.ModelForm):
         fields = ['title', 'content']
 
 
+class NoteFormWithImage(forms.ModelForm):
+    class Meta:
+        model = ProjectNote
+        fields = ['title', 'content', 'picture']
+
     def clean_picture(self):
         image = self.cleaned_data['picture']
         if image:
