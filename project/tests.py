@@ -474,6 +474,7 @@ class SprintResponseTests(LoginRequiredBase):
         self.project = Project.objects.create(title='Pr1')
         self.team = ProjectTeam.objects.create(project=self.project)
         self.sprint = Sprint.objects.create(project=self.project,
+                                            start_date=datetime.date(2017, 12, 14),
                                             status=Sprint.ACTIVE, duration=10)
         self.employee = Employee.objects.create()
         self.issue = Issue.objects.create(project=self.project,
@@ -556,6 +557,7 @@ class ActiveSprintTests(LoginRequiredBase):
         self.project = Project.objects.create(title='pr1')
         self.team = ProjectTeam.objects.create(project=self.project)
         self.sprint = Sprint.objects.create(project=self.project,
+                                            start_date=datetime.date(2017, 12, 14),
                                             status=Sprint.ACTIVE, duration=10)
         self.employee = Employee.objects.create()
         self.issue = Issue.objects.create(project=self.project,
