@@ -45,7 +45,7 @@ $(function() {
                         element.empty();
                         element.append('<h2 class="alert alert-warning">' +
                             message + '</h2>');
-                        setTimeout(location.reload.bind(window.location), 3500);
+                        // setTimeout(location.reload.bind(window.location), 3500);
                     }
                 });
             }

@@ -1,4 +1,5 @@
 {% load waffle_tags %}
+{% load mathfilters %}
 
 {% if items %}
 <div id="sprint-status" data-status="{{ sprint_status }}"></div>
@@ -26,8 +27,16 @@
             <span class="badge">{{ issue.estimation }}</span></li>
         {% endfor %}
         </div>
-        <li class="list-group-item white background-blue bigger-110">Free hours
-          <span class="badge">{{ item.free }}</span></li>
+        <li class="list-group-item white bigger-110{% if item.free < 0 %}
+            background-overloaded">Overloaded
+          {% elif item.free == 0 %}
+            background-back-to-back text-center">Back to back
+          {% else %}
+            background-loading">Free hours
+          {% endif %}
+          {% if item.free != 0 %}
+            <span class="badge">{{ item.free|abs }}</span></li>
+          {% endif %}
       </ul>
     </div>
   {% if forloop.counter == 3 %}
