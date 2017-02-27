@@ -2,6 +2,7 @@
 {% load i18n %}
 {% load thumbnail %}
 {% load visible_logs %}
+{% load security_data %}
 
 {# block user profile #}
 <div class="page-header"><h1>{{ user.get_full_name }}</h1></div>
@@ -131,7 +132,7 @@
           </tr>
           </thead>
           <tbody>
-          {% for log in user.issuelog_set.all|visible_logs %}
+          {% for log in user.issuelog_set.all|visible_logs|security_note_list:request.user %}
             <tr>
               <td class="col-sm-2">
                 <a href="{% url 'project:issue_detail' log.issue.project.id log.issue.id %}">
@@ -162,7 +163,7 @@
           </tr>
           </thead>
           <tbody>
-          {% for issue in user.employee_issue_set.all %}
+          {% for issue in user..all|security_issue_list:request.user %}
             <tr>
               <td><a href="{% url 'employee:detail' issue.author.id %}">{{ issue.author }}</a></td>
               <td><a href="{% url 'project:issue_detail' issue.project.id issue.id %}">{{ issue.title }}</a></td>
@@ -195,7 +196,7 @@
           </tr>
           </thead>
           <tbody>
-          {% for project in user.get_all_projects %}
+          {% for project in user.get_all_projects|security_project_list:request.user %}
             <tr>
               <td><a href="{% url 'project:detail' project.id %}">{{ project.title }}</a></td>
               <td><span>{{ project.start_date }}</span></td>
@@ -216,15 +217,15 @@
           </tr>
           </thead>
           <tbody>
-          {% for comment in user.issuecomment_set.all %}
+          {% for comment in user.issuecomment_set.all|security_note_list:request.user %}
             <tr>
               <td class="col-sm-2">
                 <a href="{% url 'project:issue_detail' comment.issue.project.id comment.issue.id %}">
                   {{ comment.issue.title }}
                 </a>
               </td>
-              <td class="col-sm-1"><span>{{ comment.text }}</span></td>
-              <td class="col-sm-9"><span>{{ comment.get_pretty_date_created }}</span></td>
+              <td class="col-sm-9"><span>{{ comment.text }}</span></td>
+              <td class="col-sm-1"><span>{{ comment.get_pretty_date_created }}</span></td>
             </tr>
           {% endfor %}
           </tbody>
