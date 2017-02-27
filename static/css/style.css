@@ -211,3 +211,11 @@ tr.Bug {
     display: table-cell;
     vertical-align: middle;
 }
+
+@-moz-document url-prefix() {
+    #id_photo {
+        height: auto;
+        padding-top: 2px;
+        padding-bottom: 1px;
+    }
+}
