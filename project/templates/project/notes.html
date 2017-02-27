@@ -2,6 +2,7 @@
 {% load static %}
 {% load i18n %}
 {% load waffle_tags %}
+{% load staticfiles %}
 
 {% block styles %}
   {{ block.super }}
@@ -30,14 +31,22 @@
   {% include 'project/project_navbar.html' with notes=True %}
 
 
-  <div class="notes" data-pr="{{ project.id }}">
+  <div class="notes" data-pr="{{ project.id }}" data-lent="{{ max.t }}"
+       data-lenc="{{ max.c}}">
     {% for note in notes %}
       <div class="note center" data-id="{{ note.id }}">
-        <textarea class="note-title text-center"
-                  maxlength='25' rows='1'>{{ note.title }}</textarea>
-        <textarea class="note-content text-justify"
-                  maxlength='5000' rows='20'>{{ note.content }}</textarea>
-        <div class="hide"><span class='glyphicon glyphicon-trash'></span>
+        <div class="fileUpload btn btn-link hide">
+          <span>Add picture</span>
+          <input type="file" name="picture" class="note-upload" />
+        </div>
+        <textarea class="note-title text-center" maxlength='{{ max.t }}'
+                  rows='1'>{{ note.title }}</textarea>
+        <div class="note-content"><img
+            class="note-picture hide" draggable="false"
+            src="{% if note.picture %}{{ note.picture.url}}{% endif %}"><p
+            contenteditable="true">{{ note.content}}</p>
+        </div>
+        <div class="hide trash"><span class='glyphicon glyphicon-trash'></span>
         </div>
       </div>
     {% endfor %}
