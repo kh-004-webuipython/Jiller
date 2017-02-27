@@ -298,6 +298,7 @@ class ProjectDetailView(DetailView):
                           str(user.id)
             response.set_cookie(cookie_name, self.kwargs['project_id'])
             return response
+        return response
 
 
 class ProjectUpdateView(UpdateView):
@@ -384,6 +385,7 @@ class ActiveSprintDetailView(SprintView):
                           str(user.id)
             response.set_cookie(cookie_name, self.kwargs['project_id'])
             return response
+        return response
 
 
 @waffle_flag('push_issue', 'project:list')
