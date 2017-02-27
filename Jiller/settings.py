@@ -56,7 +56,6 @@ INSTALLED_APPS = [
     'allauth.socialaccount.providers.vk',
     'allauth.socialaccount.providers.google',
     'allauth.socialaccount.providers.facebook',
-
     'allauth.socialaccount.providers.instagram',
     'mathfilters',
 ]
@@ -78,6 +77,7 @@ MIDDLEWARE = [
     'Jiller.middleware.LoginRequiredMiddleware.LoginRequiredMiddleware',
     'Jiller.middleware.CheckProjectRelationMiddleware.CheckProjectRelation',
     'Jiller.middleware.SetLastSeenMiddleware.SetLastSeenMiddleware',
+    'Jiller.middleware.SaveLastProjectMiddleware.SaveLastProjectMiddleware',
 ]
 
 ROOT_URLCONF = 'Jiller.urls'

@@ -285,18 +285,6 @@ class ProjectDetailView(DetailView):
     pk_url_kwarg = 'project_id'
     template_name = 'project/project_detail.html'
 
-    def render_to_response(self, context, **response_kwargs):
-        response = super(ProjectDetailView, self).render_to_response(context,
-                                                          **response_kwargs)
-        # save cookie with last project
-        user = self.request.user
-        if user.groups.all():
-            cookie_name = 'Last_pr' + str(user.groups.all()[0].pk) + '#' + \
-                          str(user.id)
-            response.set_cookie(cookie_name, self.kwargs['project_id'])
-            return response
-        return response
-
 
 class ProjectUpdateView(UpdateView):
     model = Project
@@ -371,18 +359,6 @@ class ActiveSprintDetailView(SprintView):
 
     def get_object(self, queryset=None):
         return self.project.sprint_set.filter(status=Sprint.ACTIVE).first()
-
-    def render_to_response(self, context, **response_kwargs):
-        response = super(ActiveSprintDetailView, self).render_to_response(context,
-                                                          **response_kwargs)
-        # save cookie with last project
-        user = self.request.user
-        if user.groups.all():
-            cookie_name = 'Last_pr' + str(user.groups.all()[0].pk) + '#' + \
-                          str(user.id)
-            response.set_cookie(cookie_name, self.kwargs['project_id'])
-            return response
-        return response
 
 
 @waffle_flag('push_issue', 'project:list')
