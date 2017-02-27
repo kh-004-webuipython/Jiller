@@ -86,7 +86,6 @@ def backlog(request, project_id):
 @waffle_flag('create_issue', 'project:list')
 def issue_create_view(request, project_id):
     current_project = get_object_or_404(Project, pk=project_id)
-
     if request.method == "POST":
         form = CreateIssueForm(project=current_project, data=request.POST,
                                user=request.user)
