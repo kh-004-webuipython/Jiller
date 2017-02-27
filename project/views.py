@@ -208,7 +208,11 @@ def issue_detail_view(request, project_id, issue_id):
                 log.user = request.user
                 log.save()
                 return JsonResponse({'success': True, 'errors': None,
-                                     'completion_rate': current_issue.completion_rate()},
+                                     'completion_rate': current_issue.completion_rate(),
+                                     'cost': log.cost, 'user': log.user.get_full_name(),
+                                     'date_created': log.get_pretty_date_created(),
+                                     'user-link': reverse('employee:detail', args=[log.user.id]),
+                                     'note': log.note},
                                     status=201)
             return JsonResponse({'success': False, 'error': form.errors},
                                 status=400)
