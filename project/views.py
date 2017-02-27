@@ -101,8 +101,8 @@ def issue_create_view(request, project_id):
         initial = {}
         if request.GET.get('root', False):
             initial['root'] = request.GET['root']
-            form = CreateIssueForm(project=current_project, initial=initial,
-                                   user=request.user)
+        form = CreateIssueForm(project=current_project, initial=initial,
+                               user=request.user)
     return render(request, 'project/issue_create.html',
                   {'form': form, 'project': current_project})
 
