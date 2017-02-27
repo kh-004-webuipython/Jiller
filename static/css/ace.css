@@ -12788,11 +12788,11 @@ td,
 }
 
 .table > thead > tr > th:first-child {
-    border-left-color: #F1F1F1;
+    border-left-color: #ddd;
 }
 
 .table > thead > tr > th:last-child {
-    border-right-color: #F1F1F1;
+    border-right-color: #ddd;
 }
 
 .table.table-bordered > thead > tr > th {
@@ -15888,13 +15888,13 @@ li.item-default {
 
 .profile-user-info {
     display: table;
-    width: 98%;
-    width: calc(100% - 24px);
     margin: 0 auto;
+    width: 100%;
 }
 
 .profile-info-row {
     display: table-row;
+    padding: 0;
 }
 
 .profile-info-name {
@@ -15905,7 +15905,7 @@ li.item-default {
     background-color: transparent;
     border-top: 1px dotted #D5E4F1;
     display: table-cell;
-    width: 110px;
+    width: 25%;
     vertical-align: middle;
 }
 
