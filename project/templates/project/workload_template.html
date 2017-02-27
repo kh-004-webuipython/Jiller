@@ -17,15 +17,28 @@
            data-progress-percent="{{ item.workload }}">
           <div class="progress-bar progress"></div>
         </div>
-        <div data-relate="{{ item.employee.id }}" class="sortable contant-box">
+        <div data-relate="{{ item.employee.id }}" class="sortable">
         {% for issue in item.issues|dictsort:'order' %}
+          {% if issue.status != 'resolved'%}
           <li data-issue="{{ issue.id }}" class="list-group-item">
             <a class="no-underline limit-text-width"
                href="{% url 'project:issue_detail' project.id issue.id %}">
                 {{ issue.title }}</a>
             <span class="badge">{{ issue.estimation }}</span></li>
+          {% endif %}
         {% endfor %}
         </div>
+        {% if item.resolved %}
+          <li class="list-group-item text-center resolved">Resolved</li>
+          {% for resolved in item.resolved %}
+            <li class="list-group-item">
+              <a class="no-underline limit-text-width"
+               href="{% url 'project:issue_detail' project.id resolved.id %}">
+                {{ resolved.title }}</a>
+              <span class="badge">{{ resolved.estimation }}</span></li>
+            </li>
+          {% endfor %}
+        {% endif %}
         <li class="list-group-item white background-blue bigger-110">Free hours
           <span class="badge">{{ item.free }}</span></li>
       </ul>
