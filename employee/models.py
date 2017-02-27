@@ -1,8 +1,10 @@
 from __future__ import unicode_literals
-from datetime import date, datetime
+from datetime import date, datetime, timedelta as td
 
 from django.utils.encoding import python_2_unicode_compatible
 from django.utils import timezone
+from django.utils import formats
+# from django.utils.dateparse import parse_date
 from django.utils.translation import ugettext_lazy as _
 from django.core.exceptions import ValidationError
 from django.core.validators import MinValueValidator
@@ -22,6 +24,8 @@ class Employee(SimpleEmailConfirmationUserMixin, AbstractUser):
     date_birth = models.DateField(verbose_name=_('Date birth'), null=True,
                                   blank=True)
     photo = models.ImageField(upload_to='avatars/', null=True, blank=True)
+    last_activity = models.DateTimeField(verbose_name=_('Last activity'), null=True,
+                                         blank=True)
 
     def get_all_projects(self):
         return Project.objects.get_user_projects(
@@ -29,6 +33,30 @@ class Employee(SimpleEmailConfirmationUserMixin, AbstractUser):
 
     def __str__(self):
         return self.username
+
+    def online_status(self):
+        status = None
+        now = timezone.now()
+        moreThanDayGap = now - td(hours=24)
+        moreThanHourGap = now - td(hours=1)
+        gap = now - td(seconds=900)
+        if not self.last_activity:
+            status = 'Never logged in'
+        elif self.last_activity < moreThanDayGap:
+            status = 'last seen ' + str(formats.date_format(timezone.localtime(
+                self.last_activity), 'DATE_FORMAT')) + ' at ' \
+                     + str(formats.date_format(timezone.localtime(
+                self.last_activity), 'TIME_FORMAT'))
+        elif self.last_activity < moreThanHourGap:
+            status = 'last seen today at ' + str(formats.date_format(timezone.localtime(
+                self.last_activity), 'TIME_FORMAT'))
+        elif self.last_activity <= gap:
+            delta = now - self.last_activity
+            status = 'last seen ' + str(td(seconds=delta.seconds).seconds / 60) + ' minutes ago'
+        elif self.last_activity > gap:
+            status = 'Online'
+
+        return status
 
     def calculate_age(self):
         if self.date_birth:

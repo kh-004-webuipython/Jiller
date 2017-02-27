@@ -64,7 +64,7 @@ class IssuesTable(tables.Table):
 
 
 class ProjectTeamTable(EmployeeTable):
-    get_role = tables.Column(attrs={'td': {'width': '20%'}},
+    get_role = tables.Column(attrs={'td': {'width': '30%'}},
                              verbose_name='Role',
                              order_by=('groups',))
 

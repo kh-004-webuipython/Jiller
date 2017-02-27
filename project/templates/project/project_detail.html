@@ -37,14 +37,15 @@
         </div>
       </div>
 
+      {% if project.end_date %}
       <div class="profile-info-row">
         <div class="profile-info-name">End date</div>
-
         <div class="profile-info-value">
           <span>{{ project.end_date }}</span>
         </div>
       </div>
     </div>
+    {% endif %}
   </div>
   <span>{{ project.description }}</span>
   </p>
