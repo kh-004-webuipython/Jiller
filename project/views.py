@@ -4,7 +4,8 @@ from django.contrib import messages
 
 from django.conf import settings
 from django.db.models import Q
-from django.http import HttpResponseRedirect, Http404, HttpResponse
+from django.http import HttpResponseRedirect, Http404, HttpResponse, \
+    HttpResponseBadRequest
 from django.http.request import QueryDict
 from django.http.response import JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
@@ -20,7 +21,8 @@ from waffle.decorators import waffle_flag
 
 from .forms import ProjectForm, SprintCreateForm, CreateTeamForm, \
     IssueCommentCreateForm, CreateIssueForm, IssueLogForm, \
-    IssueFormForEditing, SprintFinishForm, NoteForm, IssueFormForSprint
+    IssueFormForEditing, SprintFinishForm, NoteForm, IssueFormForSprint, \
+    NoteFormWithImage
 from .models import Project, ProjectTeam, Issue, Sprint, ProjectNote
 from .decorators import delete_project, \
     edit_project_detail, create_project, create_sprint
@@ -31,7 +33,8 @@ from .utils.workload_manager import put_issue_back_to_pool, \
 
 from employee.models import Employee
 
-from general.tasks import send_email_after_sprint_start_task, send_email_after_sprint_finish_task
+from general.tasks import send_email_after_sprint_start_task, \
+    send_email_after_sprint_finish_task
 
 
 class ProjectListView(SingleTableView):
@@ -284,6 +287,18 @@ class ProjectDetailView(DetailView):
     pk_url_kwarg = 'project_id'
     template_name = 'project/project_detail.html'
 
+    def render_to_response(self, context, **response_kwargs):
+        response = super(ProjectDetailView, self).render_to_response(context,
+                                                          **response_kwargs)
+        # save cookie with last project
+        user = self.request.user
+        if user.groups.all():
+            cookie_name = 'Last_pr' + str(user.groups.all()[0].pk) + '#' + \
+                          str(user.id)
+            response.set_cookie(cookie_name, self.kwargs['project_id'])
+            return response
+        return response
+
 
 class ProjectUpdateView(UpdateView):
     model = Project
@@ -358,6 +373,18 @@ class ActiveSprintDetailView(SprintView):
 
     def get_object(self, queryset=None):
         return self.project.sprint_set.filter(status=Sprint.ACTIVE).first()
+
+    def render_to_response(self, context, **response_kwargs):
+        response = super(ActiveSprintDetailView, self).render_to_response(context,
+                                                          **response_kwargs)
+        # save cookie with last project
+        user = self.request.user
+        if user.groups.all():
+            cookie_name = 'Last_pr' + str(user.groups.all()[0].pk) + '#' + \
+                          str(user.id)
+            response.set_cookie(cookie_name, self.kwargs['project_id'])
+            return response
+        return response
 
 
 @waffle_flag('push_issue', 'project:list')
@@ -542,29 +569,76 @@ def notes_view(request, project_id):
 
     if request.method == "GET":
         notes = ProjectNote.objects.filter(project_id=project_id)
+        max_len = {}
+        max_len['t'] = ProjectNote._meta.get_field('title').max_length
+        max_len['c'] = ProjectNote._meta.get_field('content').max_length
         return render(request, 'project/notes.html', {'project': project,
-                                                      'notes': notes})
+                                                      'notes': notes,
+                                                      'max': max_len})
 
     if request.method == "POST" and 'id' in request.POST:
-        form = NoteForm(request.POST)
-        if form.is_valid():
-            id_val = request.POST.get('id')
-            note = form.save(commit=False)
-            note.project_id = project.id
-            note.title = form.cleaned_data['title']
-            note.content = form.cleaned_data['content']
+        id_val = request.POST.get('id')
 
-            if id_val == 'undefined':
+        if id_val == 'undefined':
+            if request.FILES:
+                form = NoteFormWithImage(request.POST, request.FILES)
+                if form.is_valid():
+                    note = form.save(commit=False)
+                    note.project_id = project_id
+                    note.picture = request.FILES['picture']
+                    note.save()
+                    response = HttpResponse()
+                    response.__setitem__('newImg',
+                                         settings.MEDIA_URL + str(
+                                             note.picture))
+                    response.__setitem__('note_id', str(note.id))
+                    return response
+            else:
+                form = NoteForm(request.POST)
+                if form.is_valid():
+                    note = form.save(commit=False)
+                    note.project_id = project_id
+                    note.save()
+                    response = HttpResponse()
+                    response.__setitem__('note_id', str(note.id))
+                    return response
+                return HttpResponseBadRequest()
+        elif request.FILES:
+            note = get_object_or_404(ProjectNote, pk=int(id_val))
+            form = NoteFormWithImage(request.POST, request.FILES)
+            if form.is_valid():
+                note.picture = request.FILES['picture']
                 note.save()
                 response = HttpResponse()
-                response.__setitem__('note_id', str(note.id))
+                response.__setitem__('newImg',
+                                     settings.MEDIA_URL + str(note.picture))
                 return response
-            else:
-                note.id = int(id_val)
-                get_object_or_404(ProjectNote, pk=note.id)
-                note.save()
-                return HttpResponse()
+            response = HttpResponseBadRequest()
+            response.__setitem__('errorForm',
+                                 'This picture does not fit ' +
+                                 'the specified parameters')
+            return response
 
+        else:
+            note = get_object_or_404(ProjectNote, pk=int(id_val))
+            old_title = request.POST.get('oldTitle')
+            old_content = request.POST.get('oldContent')
+            if note.content != old_content or note.title != old_title:
+                response = HttpResponseBadRequest()
+                response.__setitem__('error', 'Oops, someone has updated ' +
+                                     'this note before you, please refresh ' +
+                                     'page and then write new changes!')
+                return response
+            form = NoteForm(request.POST, instance=note)
+            if form.is_valid():
+                form.save()
+                return HttpResponse()
+            response = HttpResponseBadRequest()
+            input_c_length = ProjectNote._meta.get_field('content').max_length
+            if len(request.POST.get('content')) >= input_c_length:
+                response.__setitem__('error',
+                                 'You have typed to limit in 10000 chars!')
+                return response
     if request.method == "DELETE":
         delete = QueryDict(request.body)
         if 'id' in delete:
@@ -573,7 +647,7 @@ def notes_view(request, project_id):
             note.delete()
             return HttpResponse()
         raise Http404("Wrong request")
-    return redirect(request, 'project:note', {'project_id': project_id})
+    return HttpResponseBadRequest()
 
 
 @waffle_flag('edit_sprint')
@@ -595,8 +669,10 @@ def finish_active_sprint_view(request, project_id):
             active_sprint.end_date = datetime.datetime.now()
             active_sprint.save()
             for member in employees:
-                send_email_after_sprint_finish_task.delay(member.email, user_id,
-                                                          sprint_id, active_sprint.release_link,
+                send_email_after_sprint_finish_task.delay(member.email,
+                                                          user_id,
+                                                          sprint_id,
+                                                          active_sprint.release_link,
                                                           active_sprint.feedback_text)
             return HttpResponseRedirect(reverse('project:sprint_active',
                                                 kwargs={
