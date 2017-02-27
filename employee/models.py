@@ -42,7 +42,7 @@ class Employee(SimpleEmailConfirmationUserMixin, AbstractUser):
         gap = now - td(seconds=900)
         if not self.last_activity:
             status = 'Never logged in'
-        elif self.last_activity < moreThanDayGap:
+        elif self.last_activity < moreThanDayGap or now.day > timezone.localtime(self.last_activity).day:
             status = 'last seen ' + str(formats.date_format(timezone.localtime(
                 self.last_activity), 'DATE_FORMAT')) + ' at ' \
                      + str(formats.date_format(timezone.localtime(

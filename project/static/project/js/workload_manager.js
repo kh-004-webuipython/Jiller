@@ -12,12 +12,13 @@ $(function() {
     function sortable() {
         $('.sortable').sortable({
             delay: 200,
-            connectWith: 'div',
+            connectWith: '.sortable',
             opacity: 0.6,
             cursor: 'move',
-            tolerance: 'pointer',
             dropOnEmpty: true,
-            containment: 'document',
+            containment: '#main-container',
+            revert: true,
+            tolerance: 'pointer',
             start: function (event, ui) {
                 var placeToDrop = $('#workload-template .sortable');
                 for(var i = 0; i < placeToDrop.length; i++) {
