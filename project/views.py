@@ -544,7 +544,7 @@ def workload_manager(request, project_id, sprint_status):
         item['resolved'] = [issue for issue in item['issues'] if issue.status == Issue.RESOLVED]
 
         item['workload'] = totalEstim * 100 / work_hours
-        item['free'] = work_hours - totalEstim
+        item['free'] = int(work_hours)- totalEstim
 
     form = IssueFormForSprint(project=project, initial={}, user=request.user)
     context = {'items': items,
