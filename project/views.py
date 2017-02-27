@@ -111,13 +111,11 @@ def issue_edit_view(request, project_id, issue_id):
     if request.method == "POST":
         form = IssueFormForEditing(project=current_project, data=request.POST,
                                    instance=current_issue, user=request.user)
-        if form.is_valid():
-            current_issue = form.save(commit=False)
-            current_issue.project = current_project
-            current_issue.author = request.user
-            current_issue.save()
+        if form.is_valid() and form.changed_data:
+            current_issue = form.save()
             form.send_email(request.user.id, current_issue.id)
-            return redirect('project:backlog', current_project.id)
+
+        return redirect('project:issue_detail', current_project.id, current_issue.id)
     else:
         form = IssueFormForEditing(project=current_project,
                                    instance=current_issue, user=request.user)
