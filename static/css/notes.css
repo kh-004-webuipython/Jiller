@@ -19,7 +19,6 @@
     position: relative;
     list-style: none;
     text-decoration: none;
-    color: #000;
     background: #ffc;
     display: block;
     height: 150px;
@@ -143,10 +142,10 @@ img[src=""] {
     cursor: zoom-out;
 }
 
-.note-content p {
-    min-height: 500px;
-}
-
 div.big-content {
     width: 100% !important;
+}
+
+.note-content p {
+    min-height: 500px;
 }
