@@ -65,7 +65,7 @@ button.team-event:focus {
 div.project-detail {
     padding: 0;
     float: left;
-    margin: 7px 0 7px 7px;
+    margin: 7px 0 7px 0;
 }
 
 .progress {
@@ -157,6 +157,31 @@ tr.Task {
 
 tr.Bug {
     background-color: #f2dede;
+}
+
+
+.social-login a {
+    width: 34px;
+    height: 34px;
+    line-height: 38px;
+}
+
+.social-login a > .ace-icon {
+    font-size: 20px;
+}
+
+.ace-nav > li {
+    border-left: none;
+}
+
+@media only screen and (min-width: 992px){
+    .navbar-container {
+        padding-right: 0;
+    }
+}
+
+.orderable.start_date, .orderable.end_date, .orderable.status{
+    text-align: center;
 }
 
 .online-status {
