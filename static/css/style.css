@@ -102,8 +102,17 @@ div.project-detail {
     min-height: 2px;
 }
 
-.background-blue {
+.background-loading {
     background: rgba(150, 205, 141, 0.8);
+}
+
+.background-overloaded {
+    background-color: #d15b47;
+}
+
+.background-back-to-back {
+    background-color: #d9edf7;
+    color: #478fca!important;
 }
 
 .no-underline:hover {
