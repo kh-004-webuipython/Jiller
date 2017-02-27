@@ -529,9 +529,9 @@ def workload_manager(request, project_id, sprint_status):
     items = []
     for employee in employees:
         issues = Issue.objects.filter(project=project_id) \
-            .filter(sprint__status=sprint_status, employee=employee).filter(
-            ~Q(status='deleted'))
-        items.append({'employee': employee, 'issues': issues})
+            .filter(sprint__status=sprint_status, employee=employee)\
+            .exclude(status=Issue.DELETED)
+        items.append({'employee': employee, 'issues': issues, 'resolved': []})
 
     try:
         sprint = Sprint.objects.get(project=project_id, status=sprint_status)
@@ -540,12 +540,11 @@ def workload_manager(request, project_id, sprint_status):
 
     work_hours = calc_work_hours(sprint)
     for item in items:
-        sum = 0
-        for issue in item['issues']:
-            sum += issue.estimation
+        totalEstim = sum((issue.estimation for issue in item['issues']))
+        item['resolved'] = [issue for issue in item['issues'] if issue.status == Issue.RESOLVED]
 
-        item['workload'] = sum * 100 / work_hours
-        item['free'] = work_hours - sum
+        item['workload'] = totalEstim * 100 / work_hours
+        item['free'] = work_hours - totalEstim
 
     form = IssueFormForSprint(project=project, initial={}, user=request.user)
     context = {'items': items,
