@@ -24,7 +24,7 @@ def login_form_view(request):
                 if user.is_confirmed:
                     login(request, user)
 
-                    # make redirect to last project from cookie
+                    # make redirect to last project from cookies
                     if user.groups.all():
                         role_pk = user.groups.all()[0].pk
                         cookie_name = 'Last_pr' + str(role_pk) + '#' + \

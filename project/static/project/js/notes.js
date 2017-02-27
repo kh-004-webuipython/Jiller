@@ -1,7 +1,9 @@
 document.addEventListener("DOMContentLoaded", function () {
-    var TIME_BEFORE_SAVE = 1000;
-    var csrftoken = getCookie('csrftoken');
     var notes = document.querySelector('.notes');
+    var TIME_BEFORE_SAVE = 1000;
+    var MAXLEN_T = notes.dataset['lent'];
+    var MAXLEN_C = notes.dataset['lenc'];
+    var csrftoken = getCookie('csrftoken');
     var noteQuery = document.querySelectorAll('.note');
     var openedNote;
 
@@ -30,10 +32,10 @@ document.addEventListener("DOMContentLoaded", function () {
             "<span>Add picture</span>" +
             "<input type='file' name='picture' class='note-upload'/></div>" +
             "<textarea class='note-title" +
-            " text-center' maxlength='25' rows='1'></textarea>" +
+            " text-center' maxlength=" + MAXLEN_T + " rows='1'></textarea>" +
             "<div class='note-content'>" +
             "<img class='note-picture hide' src='' draggable='false'>" +
-            "<p maxlength='10000' contenteditable='true'></p></div>" +
+            "<p contenteditable='true'></p></div>" +
             "<div class='trash hide'>" +
             "<span class='glyphicon glyphicon-trash'></span></div>";
         notes.appendChild(newNote);
@@ -71,7 +73,6 @@ document.addEventListener("DOMContentLoaded", function () {
         note.oldText= {};
         var title = note.getElementsByClassName('note-title')[0];
         var content = note.getElementsByTagName('p')[0];
-
         note.oldText['title'] = title.value;
         note.oldText['content'] = content.innerText;
 
@@ -82,16 +83,6 @@ document.addEventListener("DOMContentLoaded", function () {
                 sendData(note);
         });
 
-        //check max length in content and stop typing more
-        content.onkeydown = function (event) {
-                var maxLength = content.attributes['maxlength'].value;
-                if (content.innerText.length >= maxLength -1 && event.keyCode
-                    != 8 && event.keyCode != 46 && event.keyCode != 116) {
-                    alert('Sorry, this note has a limit in ' +  maxLength +
-                        ' chars.');
-                    return false;
-                }
-        };
         content.addEventListener(
             'input', function () {
                 sendData(note);
@@ -115,12 +106,8 @@ document.addEventListener("DOMContentLoaded", function () {
                     'application/x-www-form-urlencoded');
                 xhrd.setRequestHeader("X-CSRFTOKEN", csrftoken);
                 xhrd.onreadystatechange = function () {
-                    if (xhrd.readyState == 4) {
-                        if (xhrd.status == 200) {
+                    if (xhrd.readyState == 4 && xhrd.status == 200) {
                             note.remove();
-                        } else {
-                            alert("Error, this note hasn't been deleted!")
-                        }
                     }
 
                 };
@@ -162,12 +149,11 @@ document.addEventListener("DOMContentLoaded", function () {
                             note.dataset['id'] = xhr.getResponseHeader('note_id');
                         }
                     } else {
-                        if (xhr.getResponseHeader('refresh')) {
-                            alert('Oops, someone has updated this note ' +
-                                'before you, please refresh page and ' +
-                                'then write new changes!')
+                        if (xhr.getResponseHeader('error')) {
+                            var error = xhr.getResponseHeader('error');
+                            alert(error);
                         } else {
-                            alert("Error, this note hasn't been saved!")
+                            alert("Error, this note hasn't been saved!");
                         }
 
                     }

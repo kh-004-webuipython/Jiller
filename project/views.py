@@ -568,8 +568,12 @@ def notes_view(request, project_id):
 
     if request.method == "GET":
         notes = ProjectNote.objects.filter(project_id=project_id)
+        max_len = {}
+        max_len['t'] = ProjectNote._meta.get_field('title').max_length
+        max_len['c'] = ProjectNote._meta.get_field('content').max_length
         return render(request, 'project/notes.html', {'project': project,
-                                                      'notes': notes})
+                                                      'notes': notes,
+                                                      'max': max_len})
 
     if request.method == "POST" and 'id' in request.POST:
         id_val = request.POST.get('id')
@@ -618,12 +622,20 @@ def notes_view(request, project_id):
             old_content = request.POST.get('oldContent')
             if note.content != old_content or note.title != old_title:
                 response = HttpResponseBadRequest()
-                response.__setitem__('refresh', 'true')
+                response.__setitem__('error', 'Oops, someone has updated ' +
+                                     'this note before you, please refresh ' +
+                                     'page and then write new changes!')
                 return response
             form = NoteForm(request.POST, instance=note)
             if form.is_valid():
                 form.save()
                 return HttpResponse()
+            response = HttpResponseBadRequest()
+            input_c_length = ProjectNote._meta.get_field('content').max_length
+            if len(request.POST.get('content')) >= input_c_length:
+                response.__setitem__('error',
+                                 'You have typed to limit in 10000 chars!')
+                return response
     if request.method == "DELETE":
         delete = QueryDict(request.body)
         if 'id' in delete:
