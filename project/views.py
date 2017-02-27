@@ -595,12 +595,14 @@ def notes_view(request, project_id):
                     return response
             else:
                 form = NoteForm(request.POST)
-                note = form.save(commit=False)
-                note.project_id = project_id
-                note.save()
-                response = HttpResponse()
-                response.__setitem__('note_id', str(note.id))
-                return response
+                if form.is_valid():
+                    note = form.save(commit=False)
+                    note.project_id = project_id
+                    note.save()
+                    response = HttpResponse()
+                    response.__setitem__('note_id', str(note.id))
+                    return response
+                return HttpResponseBadRequest()
         elif request.FILES:
             note = get_object_or_404(ProjectNote, pk=int(id_val))
             form = NoteFormWithImage(request.POST, request.FILES)
