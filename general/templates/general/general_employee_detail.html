@@ -38,6 +38,8 @@
           Comments
         </a>
       </li>
+
+      <span class="pull-right online-status">{{ online_status }}</span>
     </ul>
 
     <div class="tab-content no-border padding-24">
@@ -95,15 +97,11 @@
               </div>
 
               <div class="profile-info-row">
-                {% if user.is_authenticated %}
-                  <div class="profile-info-name">Online</div>
+                  <div class="profile-info-name">In action</div>
                   <div class="profile-info-value">
-                  <span>True</span>
-                {% else %}
-                  <div class="profile-info-name">Last login</div>
-                  <div class="profile-info-value">
-                  <span>{{ user.last_login }}</span>
-                {% endif %}
+                  <span class="{% if user.is_active %}
+                  glyphicon glyphicon-ok green{% else %}
+                  glyphicon glyphicon-remove red{% endif %}"></span>
                 </div>
                 </div>
               </div>

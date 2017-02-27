@@ -76,6 +76,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'Jiller.middleware.LoginRequiredMiddleware.LoginRequiredMiddleware',
     'Jiller.middleware.CheckProjectRelationMiddleware.CheckProjectRelation',
+    'Jiller.middleware.SetLastSeenMiddleware.SetLastSeenMiddleware',
 ]
 
 ROOT_URLCONF = 'Jiller.urls'
@@ -142,7 +143,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Europe/Kiev'
 
 USE_I18N = True
 
@@ -216,6 +217,7 @@ NOSE_ARGS = [
 ]
 
 PAGINATION_PER_PAGE = 20
+LAST_ACTIVITY_INTERVAL_SECS = 900 # 15 min
 
 try:
     from .local_settings import *
