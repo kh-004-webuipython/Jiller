@@ -158,3 +158,12 @@ tr.Task {
 tr.Bug {
     background-color: #f2dede;
 }
+
+.online-status {
+    padding-right: 10px;
+    font-weight: normal;
+    color: #667E99;
+    background-color: transparent;
+    display: table-cell;
+    vertical-align: middle;
+}
