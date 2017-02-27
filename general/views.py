@@ -33,15 +33,19 @@ def login_form_view(request):
                         if cookie_name in request.COOKIES:
                             last_project = request.COOKIES.get(cookie_name)
                             # make future redirects depend by role
+                            # developer
                             if role_pk == 1:
                                 return redirect('project:sprint_active',
                                                 project_id=int(last_project))
+                            # scrum
                             elif role_pk == 2:
                                 return redirect('project:sprint_active',
                                                 project_id=int(last_project))
+                            # product owner
                             elif role_pk == 3:
                                 return redirect('project:backlog',
                                                 project_id=int(last_project))
+                            # project manager
                             elif role_pk == 4:
                                 return redirect('project:team',
                                                 project_id=int(last_project))
