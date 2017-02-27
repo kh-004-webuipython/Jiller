@@ -3,9 +3,11 @@ document.addEventListener("DOMContentLoaded", function () {
     var tables = document.querySelectorAll('.drop');
     var startRow;
     var startTable;
+    var curDragOverTable;
 
     tables.forEach(
         function (table) {
+            table.addEventListener('dragenter', handleDragEnter, false);
             table.addEventListener('dragover', handleDragOver, false);
             table.addEventListener('drop', handleDrop, false);
         });
@@ -21,6 +23,7 @@ document.addEventListener("DOMContentLoaded", function () {
         this.classList.add('chosen');
         startRow = e.target;   // remember start drag row
         startTable = startRow.offsetParent.offsetParent;
+        curDragOverTable = startTable;
         makeTableBackgroundBigger();
     }
 
@@ -38,6 +41,26 @@ document.addEventListener("DOMContentLoaded", function () {
             }
         });
     }
+
+     // remark tables borders over drag
+    function handleDragEnter(e) {
+        tables.forEach(function (table) {
+            // mark hover table
+            if (table.contains(e.target) && table != curDragOverTable &&
+                table != startTable) {
+                curDragOverTable.classList.remove('over');
+                curDragOverTable = table;
+                curDragOverTable.classList.add('over');
+            } else {
+                // unmark borders of 3rd table in first hover
+                if (!startTable.contains(e.target) &&
+                    table != curDragOverTable) {
+                    table.classList.remove('over');
+                }
+            }
+        });
+    }
+
 
     //need for mark borders
     function handleDragOver(e) {
