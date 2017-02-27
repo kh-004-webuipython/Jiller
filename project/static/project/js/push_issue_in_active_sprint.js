@@ -21,8 +21,6 @@ document.addEventListener("DOMContentLoaded", function () {
         this.classList.add('chosen');
         startRow = e.target;   // remember start drag row
         startTable = startRow.offsetParent.offsetParent;
-        console.log(startRow);
-        console.log(startTable);
         makeTableBackgroundBigger();
     }
 
