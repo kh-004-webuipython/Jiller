@@ -78,6 +78,7 @@ MIDDLEWARE = [
     'Jiller.middleware.LoginRequiredMiddleware.LoginRequiredMiddleware',
     'Jiller.middleware.CheckProjectRelationMiddleware.CheckProjectRelation',
     'Jiller.middleware.SetLastSeenMiddleware.SetLastSeenMiddleware',
+    'Jiller.middleware.SaveLastProjectMiddleware.SaveLastProjectMiddleware',
 ]
 
 ROOT_URLCONF = 'Jiller.urls'
