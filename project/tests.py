@@ -813,28 +813,28 @@ class WorkloadManagerTest(LoginRequiredBase):
         self.assertQuerysetEqual(response.context['items'], [])
 
 
-class IssueSearchTest(LoginRequiredBase):
-    def setUp(self):
-        super(IssueSearchTest, self).setUp()
-        self.project = Project.objects.create(title='pr1')
-        for status, _ in Issue.ISSUE_STATUS_CHOICES:
-            for i in range(10):
-                Issue.objects.create(title='Title {} {}'.format(status, i),
-                                     description='Description {} {}'.format(
-                                         status, i),
-                                     author=self.user,
-                                     status=status,
-                                     estimation=2,
-                                     project=self.project)
-
-    def test_basic_search(self):
-        url = reverse('project:issue_search',
-                      kwargs={'project_id': self.project.id})
-        # response = self.client.get(url)
-        response = self.client.get(url, {'s': 'Title NEW 1'})
-        self.assertTrue(response.status_code == 200)
-        self.assertContains(response, 'Title NEW 1')
-        self.assertNotContains(response, 'Title NEW 2')
+# class IssueSearchTest(LoginRequiredBase):
+#     def setUp(self):
+#         super(IssueSearchTest, self).setUp()
+#         self.project = Project.objects.create(title='pr1')
+#         for status, _ in Issue.ISSUE_STATUS_CHOICES:
+#             for i in range(10):
+#                 Issue.objects.create(title='Title {} {}'.format(status, i),
+#                                      description='Description {} {}'.format(
+#                                          status, i),
+#                                      author=self.user,
+#                                      status=status,
+#                                      estimation=2,
+#                                      project=self.project)
+#
+#     def test_basic_search(self):
+#         url = reverse('project:issue_search',
+#                       kwargs={'project_id': self.project.id})
+#         # response = self.client.get(url)
+#         response = self.client.get(url, {'s': 'Title NEW 1'})
+#         self.assertTrue(response.status_code == 200)
+#         self.assertContains(response, 'Title NEW 1')
+#         self.assertNotContains(response, 'Title NEW 2')
 
 
 class CreateSprintTests(LoginRequiredBase):
