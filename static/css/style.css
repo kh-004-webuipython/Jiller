@@ -220,3 +220,7 @@ tr.Bug {
         padding-bottom: 1px;
     }
 }
+
+.dropdown-menu-right {
+    right: 0!important;
+}

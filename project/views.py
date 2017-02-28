@@ -22,8 +22,7 @@ from waffle.decorators import waffle_flag
 from .forms import ProjectForm, SprintCreateForm, CreateTeamForm, \
     IssueCommentCreateForm, CreateIssueForm, IssueLogForm, \
     IssueFormForEditing, SprintFinishForm, NoteForm, \
-    NoteFormWithImage
-    # IssueFormForSprint
+    NoteFormWithImage, IssueFormForSprint
 from .models import Project, ProjectTeam, Issue, Sprint, ProjectNote
 from .decorators import delete_project, \
     edit_project_detail, create_project, create_sprint
@@ -31,6 +30,8 @@ from .tables import ProjectTable, SprintsListTable, IssuesTable, \
     ProjectTeamTable
 from .utils.workload_manager import put_issue_back_to_pool, \
     calc_work_hours, assign_issue, get_pool
+from .utils.user_variator import check_if_issue_assigned, \
+    check_issue_add_to_sprint
 
 from employee.models import Employee
 
@@ -94,8 +95,14 @@ def issue_create_view(request, project_id):
             new_issue = form.save(commit=False)
             new_issue.project = current_project
             new_issue.author = request.user
+            if check_if_issue_assigned(form):
+                new_issue.employee = request.user
+            if 'add_sprint' in form.cleaned_data and form.cleaned_data['add_sprint']:
+                new_issue.sprint = Sprint.objects.get(project=project_id,
+                                                      status=Sprint.NEW)
             new_issue.save()
-            form.send_email(request.user.id, new_issue.id)
+            if 'self_assign' in form.cleaned_data and form.cleaned_data['self_assign']:
+                form.send_email(request.user.id, new_issue.id)
             return redirect('project:backlog', current_project.id)
     else:
         initial = {}
@@ -507,7 +514,7 @@ def workload_manager(request, project_id, sprint_status):
         item['workload'] = totalEstim * 100 / work_hours
         item['free'] = work_hours- totalEstim
 
-    form = CreateIssueForm(project=project, initial={}, user=request.user)
+    form = IssueFormForSprint(project=project, initial={}, user=request.user)
     context = {'items': items,
                'project': project,
                'issues_log': issues_log,
@@ -686,8 +693,8 @@ def sprint_start_view(request, project_id):
 def issue_create_workload(request, project_id, sprint_status):
     if request.method == "POST":
         project = get_object_or_404(Project, pk=project_id)
-        form = CreateIssueForm(project=project, data=request.POST,
-                               user=request.user)
+        form = IssueFormForSprint(project=project, data=request.POST,
+                                  user=request.user)
         if form.is_valid():
             sprint = get_object_or_404(Sprint, project_id=project_id,
                                        status=sprint_status)
@@ -695,6 +702,8 @@ def issue_create_workload(request, project_id, sprint_status):
             current_issue.project = project
             current_issue.sprint = sprint
             current_issue.author = request.user
+            if form.cleaned_data['self_assign']:
+                current_issue.employee = request.user
             current_issue.save()
             return HttpResponseRedirect(reverse('project:workload_manager',
                                                 args=[project_id,
