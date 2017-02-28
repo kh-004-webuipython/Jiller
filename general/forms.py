@@ -11,8 +11,13 @@ class FormControlMixin(object):
         for field_name, field in self.fields.items():
             if field_name == 'date_birth':
                 field.widget.attrs.update(
-                    {'class': 'form-control date-picker', 'data-date-format': 'yyyy-mm-dd',
+                    {'class': 'form-control date-picker',
+                     'data-date-format': 'yyyy-mm-dd',
                      'placeholder': field.label})
+            elif field_name == 'release_link':
+                field.widget.attrs.update(
+                    {'class': 'form-control',
+                     'placeholder': 'Link on product relies in VCS'})
             else:
                 field.widget.attrs.update({'class': 'form-control', 'placeholder': field.label})
 

@@ -221,10 +221,10 @@ tr.Bug {
     }
 }
 
-.dropdown-menu-right {
-    right: 0!important;
-}
-
 form input[type="checkbox"] {
     margin-top: 12px;
+}
+
+hr {
+    margin: 0;
 }
