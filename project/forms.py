@@ -17,7 +17,7 @@ class DateInput(forms.DateInput):
     input_type = 'date'
 
 
-class ProjectForm(forms.ModelForm):
+class ProjectForm(FormControlMixin, forms.ModelForm):
     class Meta:
         model = Project
         fields = ['title', 'description', 'start_date', 'end_date']
@@ -36,7 +36,7 @@ class ProjectForm(forms.ModelForm):
                            _('End date cant\'t be earlies than start date'))
 
 
-class IssueForm(forms.ModelForm):
+class IssueForm(FormControlMixin, forms.ModelForm):
     def __init__(self, user, project, *args, **kwargs):
         super(IssueForm, self).__init__(*args, **kwargs)
         self.fields['sprint'].queryset = Sprint.objects.filter(
@@ -99,7 +99,7 @@ class CreateIssueForm(IssueForm):
         return title
 
 
-class CreateTeamForm(forms.ModelForm):
+class CreateTeamForm(FormControlMixin, forms.ModelForm):
     class Meta:
         model = ProjectTeam
         fields = ['title']
@@ -112,7 +112,7 @@ class CreateTeamForm(forms.ModelForm):
         return title
 
 
-class IssueCommentCreateForm(forms.ModelForm):
+class IssueCommentCreateForm(FormControlMixin, forms.ModelForm):
     class Meta:
         model = IssueComment
         fields = ['text']
@@ -140,7 +140,7 @@ class IssueLogForm(FormControlMixin, forms.ModelForm):
         fields = ['cost', 'note']
 
 
-class SprintFinishForm(forms.ModelForm):
+class SprintFinishForm(FormControlMixin, forms.ModelForm):
     class Meta:
         model = Sprint
         fields = ['feedback_text', 'release_link']

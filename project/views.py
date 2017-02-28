@@ -286,18 +286,6 @@ class ProjectDetailView(DetailView):
     pk_url_kwarg = 'project_id'
     template_name = 'project/project_detail.html'
 
-    def render_to_response(self, context, **response_kwargs):
-        response = super(ProjectDetailView, self).render_to_response(context,
-                                                          **response_kwargs)
-        # save cookie with last project
-        user = self.request.user
-        if user.groups.all():
-            cookie_name = 'Last_pr' + str(user.groups.all()[0].pk) + '#' + \
-                          str(user.id)
-            response.set_cookie(cookie_name, self.kwargs['project_id'])
-            return response
-        return response
-
 
 class ProjectUpdateView(UpdateView):
     model = Project
@@ -372,18 +360,6 @@ class ActiveSprintDetailView(SprintView):
 
     def get_object(self, queryset=None):
         return self.project.sprint_set.filter(status=Sprint.ACTIVE).first()
-
-    def render_to_response(self, context, **response_kwargs):
-        response = super(ActiveSprintDetailView, self).render_to_response(context,
-                                                          **response_kwargs)
-        # save cookie with last project
-        user = self.request.user
-        if user.groups.all():
-            cookie_name = 'Last_pr' + str(user.groups.all()[0].pk) + '#' + \
-                          str(user.id)
-            response.set_cookie(cookie_name, self.kwargs['project_id'])
-            return response
-        return response
 
 
 @waffle_flag('push_issue', 'project:list')
@@ -487,22 +463,6 @@ def change_user_in_team(request, project_id, user_id, team_id):
     return redirect('project:team', project_id)
 
 
-def team_create(request, project_id):
-    project = get_object_or_404(Project, pk=project_id)
-    if request.method == "POST":
-        form = CreateTeamForm(request.POST)
-        if form.is_valid():
-            new_team = form.save(commit=False)
-            new_team.project = project
-            new_team.save()
-            new_team.employees.add(request.user.id)
-            return redirect('project:team', project_id)
-    else:
-        form = CreateTeamForm()
-    return render(request, 'project/team_create.html', {'form': form,
-                                                        'project': project})
-
-
 @waffle_flag('read_workflow_manager', 'project:list')
 def workload_manager(request, project_id, sprint_status):
     if request.method == 'POST':
@@ -539,13 +499,13 @@ def workload_manager(request, project_id, sprint_status):
     except Sprint.DoesNotExist:
         raise Http404("Sprint does not exist")
 
-    work_hours = calc_work_hours(sprint)
+    work_hours = int(calc_work_hours(sprint))
     for item in items:
         totalEstim = sum((issue.estimation for issue in item['issues']))
         item['resolved'] = [issue for issue in item['issues'] if issue.status == Issue.RESOLVED]
 
         item['workload'] = totalEstim * 100 / work_hours
-        item['free'] = work_hours - totalEstim
+        item['free'] = work_hours- totalEstim
 
     form = CreateIssueForm(project=project, initial={}, user=request.user)
     context = {'items': items,

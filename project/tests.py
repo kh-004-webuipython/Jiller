@@ -745,7 +745,7 @@ class ProjectNotes(LoginRequiredBase):
 
     def test_notes_post_responses(self):
         url = reverse('project:note', kwargs={'project_id': self.project.id})
-        data = {'id': 1, 'title': 'title', 'content': 'SOME TEXT#'}
+        data = {'id': 1, 'title': 'title', 'content': 'SOME TEXT#', 'oldContent':'some text in Notes', 'oldTitle': 'TESTS'}
         self.client.post(url, data)
         self.assertEqual(ProjectNote.objects.get(pk=1).content, 'SOME TEXT#')
 
