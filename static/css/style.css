@@ -219,3 +219,7 @@ tr.Bug {
         padding-bottom: 1px;
     }
 }
+
+hr {
+    margin: 0;
+}
