@@ -21,5 +21,6 @@ td a {
 }
 
 .over {
-  border: 2px dashed #000;
+    border: 2px dashed #7a3497;
+    background: #f2f3fe;
 }

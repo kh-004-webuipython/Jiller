@@ -37,21 +37,30 @@ document.addEventListener("DOMContentLoaded", function () {
                 if (additionalHeight > table.clientHeight) {
                     table.style.height = additionalHeight + 'px';
                 }
-             }
+                table.classList.add('over');
+            }
         });
     }
 
-    // mark tables borders over drag
+     // remark tables borders over drag
     function handleDragEnter(e) {
         tables.forEach(function (table) {
+            // mark hover table
             if (table.contains(e.target) && table != curDragOverTable &&
                 table != startTable) {
                 curDragOverTable.classList.remove('over');
                 curDragOverTable = table;
                 curDragOverTable.classList.add('over');
+            } else {
+                // unmark borders of 3rd table in first hover
+                if (!startTable.contains(e.target) &&
+                    table != curDragOverTable) {
+                    table.classList.remove('over');
+                }
             }
         });
     }
+
 
     //need for mark borders
     function handleDragOver(e) {

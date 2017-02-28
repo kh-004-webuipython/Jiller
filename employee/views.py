@@ -16,5 +16,7 @@ def employee_index_view(request):
 
 def employee_detail_view(request, employee_id):
     employee = get_object_or_404(Employee, pk=employee_id)
-    return render(request, 'employee/detail.html', {'employee': employee})
+    online_status = employee.online_status()
+    return render(request, 'employee/detail.html', {'employee': employee,
+                                                    'online_status': online_status })
 

@@ -1,6 +1,5 @@
 $(function() {
     moveProgressBar();
-    // on browser resize...
     $(window).resize(function() {
         moveProgressBar();
     });
@@ -19,6 +18,31 @@ $(function() {
             tolerance: 'pointer',
             dropOnEmpty: true,
             containment: 'document',
+            start: function (event, ui) {
+                var placeToDrop = $('#workload-template .sortable');
+                for(var i = 0; i < placeToDrop.length; i++) {
+                    placeToDrop[i].classList.add('contain-box');
+                    placeToDrop[i].classList.add('over');
+                }
+
+                ui.item.closest('div').removeClass('over');
+            },
+            out: function () {
+                var placeToDrop = $('#workload-template .sortable');
+                for(var i = 0; i < placeToDrop.length; i++)
+                    placeToDrop[i].classList.remove('over');
+
+                placeToDrop.on("sortover", function ( event, ui ) {
+                    ui.placeholder.closest('div').addClass('over');
+                });
+            },
+            stop: function (event, ui) {
+                var placeToDrop = $('#workload-template .sortable');
+                placeToDrop.off('sortover');
+
+                for(var i = 0; i < placeToDrop.length; i++)
+                    placeToDrop[i].classList.remove('contain-box');
+            },
             remove: function (event, ui) {
                 var alterData = {};
                 alterData['issue'] = ui.item.data('issue');

@@ -9,11 +9,14 @@ class EmployeeTable(tables.Table):
                                       order_by=('last_name'), verbose_name='Name')
     email = tables.Column()
     date_joined = tables.DateColumn(attrs={'td': {'align': 'center', 'width': '10%'}})
-    is_active = tables.BooleanColumn(attrs={'td': {'align': 'center', 'width': '10%'}})
+    is_active = tables.BooleanColumn(attrs={'th': {'style': 'text-align: center'},
+                                            'td': {'align': 'center', 'width': '10%'}},
+                                     verbose_name='In action')
+    online_status = tables.Column(verbose_name='Activity')
 
     class Meta:
         model = Employee
         attrs = {"class": "table table-bordered table-striped table-hover"}
         exclude = ('id')
-        fields = ['get_full_name', 'email', 'date_joined', 'is_active']
+        fields = ['get_full_name', 'email', 'online_status', 'is_active', 'date_joined', ]
 
