@@ -12,7 +12,8 @@ from .email_confirmation import sender
 
 def home_page(request):
     user = Employee.objects.get(pk=request.user.pk)
-    return render(request, 'general/home_page.html', {'online_status': user.online_status() })
+    return render(request, 'general/home_page.html',
+                  {'online_status': user.online_status()})
 
 
 def login_form_view(request):
@@ -53,7 +54,8 @@ def login_form_view(request):
 
                     return redirect('general:home_page')
                 else:
-                    return render(request, 'general/require_key.html', {'user': user})
+                    return render(request, 'general/require_key.html',
+                                  {'user': user})
 
         messages.error(request, _("Wrong username or password"))
         return redirect('general:login')
