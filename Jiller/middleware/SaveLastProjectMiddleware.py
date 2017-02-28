@@ -15,8 +15,8 @@ class SaveLastProjectMiddleware(object):
         response = self.get_response(request)
 
         user = request.user
-        if user.groups.all():
-            new_cookie_name = 'Last_pr' + str(user.groups.all()[0].pk) + '#' \
+        if user.groups.exists():
+            new_cookie_name = 'Last_pr' + str(user.groups.first().pk) + '#' \
                               + str(user.id)
             path = request.path_info.lstrip('/')
             pattern = r'^project/(?P<project_id>\d+)/'
