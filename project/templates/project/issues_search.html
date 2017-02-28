@@ -1,52 +1,94 @@
 {% extends 'base.html' %}
 {% load render_table from django_tables2 %}
 {% load i18n %}
+{% load dict_methods %}
 
 {% block title %}Issues{% endblock %}
 
 {% block breadcrumbs %}
-    {{ block.super }}
-    <li>
-        <a href="{% url 'project:list' %}">Projects</a>
-    </li>
-    <li>
-        <a href="{% url 'project:detail' project.id %}">{{ project.title }}</a>
-    </li>
-    <li>
-        <span>{% trans 'Issues' %}</span>
-    </li>
+  {{ block.super }}
+  <li>
+    <a href="{% url 'project:list' %}">Projects</a>
+  </li>
+  <li>
+    <a href="{% url 'project:detail' project.id %}">{{ project.title }}</a>
+  </li>
+  <li>
+    <span>{% trans 'Issues' %}</span>
+  </li>
 {% endblock %}
 
 {% block content %}
-    {% include 'project/project_navbar.html' with issues_tab=True %}
-    <div class="container-fluid">
-        <form action="{% url 'project:issue_search' project.id %}" method="get">
+  {% include 'project/project_navbar.html' with issues_tab=True %}
+  <div class="container-fluid">
+    <form action="{% url 'project:issue_search' project.id %}" method="get">
 
-            <div class="row">
-                <div class="col-md-12 ">
-                    <div class="input-group">
-                    <input name="s" type="text" class="form-control" placeholder="Search" value="{{ request.GET.s }}">
-                    <span class="input-group-btn">
-                        <button class="btn btn-sm btn-info no-radius" type="submit" name="status"   value="{% if request.GET.status %}{{ request.GET.status }}{% else %}all{% endif %}">
-                            <i class="ace-icon fa fa-share"></i>
-                            Search
-                        </button>
-                        <button type="submit" name="status" value="all"
-                                class="btn btn-sm btn-primary{% if request.GET.status == 'all' or not request.GET.status %} active{% endif %}">
-                            All
-                        </button>
-                        {% for value, name in issues_status %}
-                            <button type="submit" name="status" value="{{ value }}"
-                                    class="btn btn-sm btn-primary{% if request.GET.status == value %} active{% endif %}">{{ name }}</button>
-                        {% endfor %}
+      <div class="row">
+        <div class="col-md-10 ">
+          <div class="input-group">
+            <input name="s" type="text" class="form-control" placeholder="Search" value="{{ request.GET.s }}">
+            <span class="input-group-btn">
+                        <button class="btn btn-sm btn-info no-radius" type="submit" name="status">
+                            <i class=" ace-icon fa fa-share"></i>
+              Search
+              </button>
                     </span>
-                    </div>
-                </div>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-sm-2">
+          <a href="#status_collapse" class="btn btn-info" data-toggle="collapse">Status</a>
+          <div id="status_collapse" class="collapse in">
+            {% for value, name in issues_status %}
+              <div class="checkbox">
+                <label><input type="checkbox" name="status" value="{{ value }}"
+                              {% if not request.GET.status or value in request.GET|getlist:'status' %}checked{% endif %}>{{ name }}
+                </label>
+              </div>
+            {% endfor %}
+          </div>
+        </div>
+        <div class="col-sm-2">
+          <a href="#type_collapse" class="btn btn-info" data-toggle="collapse">Type</a>
+          <div id="type_collapse" class="collapse in">
+            {% for value, name in issue_types %}
+              <div class="checkbox">
+                <label><input type="checkbox" name="type" value="{{ value }}"
+                              {% if not request.GET.type or value in request.GET|getlist:'type' %}checked{% endif %}>{{ name }}
+                </label>
+              </div>
+            {% endfor %}
+          </div>
+        </div>
+        <div class="col-sm-2">
+          <a href="#estimation_collapse" class="btn btn-info" data-toggle="collapse">Estimation</a>
+          <div id="estimation_collapse" class="collapse in">
+            <div class="input-group">
+              <label>From:</label>
+              <input type="number" class="form-control input-sm" name="estimation_from"
+                     value="{% firstof request.GET.estimation_from %}"/>
             </div>
-        </form>
-        {% if table %}
-            {% render_table table "base_table.html" %}
+            <div class="input-group">
+              <label>To:</label>
+              <input type="number" class="form-control input-sm" name="estimation_to"
+                     value="{% firstof request.GET.estimation_to %}"/>
+            </div>
+          </div>
 
-        {% endif %}
+        </div>
+      </div>
+    </form>
+    <div class="row">
+      <div class="col-sm-3">
+        <span>{% if object_list %}{{ object_list|length }} issues have been found.{% else %} No issues have been
+          found.{% endif %}</span>
+      </div>
     </div>
+
+    {% if table %}
+      {% render_table table "base_table.html" %}
+
+    {% endif %}
+  </div>
 {% endblock %}

@@ -391,24 +391,31 @@ class IssueSearchView(SingleTableView):
     }
 
     def get_queryset(self):
-        status = self.request.GET.get('status', None)
-        type = self.request.GET.get('type', None)
+        status = self.request.GET.getlist('status', None)
+        type = self.request.GET.getlist('type', None)
         search_string = self.request.GET.get('s', None)
+        estimation_from = self.request.GET.get('estimation_from', None)
+        estimation_to = self.request.GET.get('estimation_to', None)
         query_expr = Issue.objects.filter(project_id=self.kwargs['project_id'])
         if type:
-            query_expr = query_expr.filter(type=type)  # Not Implemented
+            query_expr = query_expr.filter(type__in=type)
         if status and status != 'all':
-            query_expr = query_expr.filter(status=status)
+            query_expr = query_expr.filter(status__in=status)
+        if estimation_to:
+            query_expr = query_expr.filter(estimation__lte=estimation_to)
+        if estimation_from:
+            query_expr = query_expr.filter(estimation__gte=estimation_from)
         if search_string:
             query_expr = query_expr.filter(
-                Q(title__contains=search_string) | Q(
-                    description__contains=search_string))
+                Q(title__icontains=search_string) | Q(
+                    description__icontains=search_string))
         return query_expr
 
     def get_context_data(self, **kwargs):
         context = super(IssueSearchView, self).get_context_data(**kwargs)
         context['project'] = Project.objects.get(id=self.kwargs['project_id'])
         context['issues_status'] = Issue.ISSUE_STATUS_CHOICES
+        context['issue_types'] = Issue.ISSUE_TYPE_CHOICES
         return context
 
 
