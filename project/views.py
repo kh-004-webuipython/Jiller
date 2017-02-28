@@ -143,7 +143,7 @@ def team_view(request, project_id):
     team = get_object_or_404(ProjectTeam, project_id=current_project)
     data.update({'team': team})
 
-    row_attrs_data = {'data-pr_id': project_id, \
+    row_attrs_data = {'data-pr_id': project_id,
                       'data-id': lambda record: record.pk,
                       'data-team_id': team.pk,
                       'draggable': 'True'}
