@@ -91,14 +91,14 @@
       <div class="profile-info-row">
         <div class="profile-info-name">Author</div>
         <div class="profile-info-value">
-          <span>{{ issue.author }}</span>
+            <span>{% if issue.author %}<a href="{% url 'employee:detail' issue.author.id %}">{{ issue.author }}</a>{% else %}--{% endif %}</span>
         </div>
       </div>
       {% if issue.employee %}
         <div class="profile-info-row">
-          <div class="profile-info-name">Employee</div>
+          <div class="profile-info-name">Assigned to</div>
           <div class="profile-info-value">
-            <span>{{ issue.employee }}</span>
+              <span>{% if issue.employee %}<a href="{% url 'employee:detail' issue.employee.id %}">{{ issue.employee }}</a>{% else %}--{% endif %}</span>
           </div>
         </div>
       {% endif %}
