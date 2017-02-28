@@ -39,21 +39,10 @@ class ProjectForm(FormControlMixin, forms.ModelForm):
 class IssueForm(FormControlMixin, forms.ModelForm):
     def __init__(self, user, project, *args, **kwargs):
         super(IssueForm, self).__init__(*args, **kwargs)
-        # self.fields['sprint'].queryset = Sprint.objects.filter(
-        #     project=project.id).exclude(status=Sprint.FINISHED)
         self.fields['root'].queryset = Issue.objects.filter(
             project=project.id).filter(status=('new' or 'in progress'))
-        # self.fields['employee'].queryset = ProjectTeam.objects.filter(
-        #     project=project)[0].employees.filter(
-        #     groups__pk__in=[1, 2])
         self.fields['type'].choices = [('Task', 'Task'), ('Bug', 'Bug'), ]
-        if user.groups.filter(id=1):
-            self.fields['self_assign'] = forms.BooleanField(label='Assign yourself',
-                                                            required=False)
-        if Sprint.objects.filter(project=project.pk, status=Sprint.NEW):
-            self.fields['add_sprint'] = forms.BooleanField(label='Add to new sprint', required=False)
         user_variator(self, user, project)
-        self.fields.pop('employee')
 
     def clean_status(self):
         cleaned_data = super(IssueForm, self).clean()
@@ -74,7 +63,7 @@ class IssueForm(FormControlMixin, forms.ModelForm):
         return estimation
 
     def send_email(self, user_id, issue_id):
-        employee = self.cleaned_data['employee']
+        employee = Issue.objects.get(pk=issue_id).employee
         if employee and employee.email:
             email = employee.email
             send_assign_email_task.delay(email, user_id, issue_id)

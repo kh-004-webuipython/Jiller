@@ -1,7 +1,15 @@
+from django import forms
+from project.models import Sprint
+
+
 def user_variator(self, user, project):
     if user.groups.all():
-        if user.groups.filter(id=2):
-            del self.fields['type']
+        if Sprint.objects.filter(project=project.pk, status=Sprint.NEW):
+            self.fields['add_sprint'] = forms.BooleanField(label='Add to new sprint', required=False)
+
+        if user.groups.filter(id=1):
+            self.fields['self_assign'] = forms.BooleanField(label='Assign yourself',
+                                                            required=False)
 
         if user.groups.filter(id=3):
             del self.fields['type']

@@ -95,13 +95,15 @@ def issue_create_view(request, project_id):
             new_issue = form.save(commit=False)
             new_issue.project = current_project
             new_issue.author = request.user
+            if request.user.groups.filter(id=3):
+                new_issue.estimation = 0
             if check_if_issue_assigned(form):
                 new_issue.employee = request.user
-            if 'add_sprint' in form.cleaned_data and form.cleaned_data['add_sprint']:
+            if check_issue_add_to_sprint(form):
                 new_issue.sprint = Sprint.objects.get(project=project_id,
                                                       status=Sprint.NEW)
             new_issue.save()
-            if 'self_assign' in form.cleaned_data and form.cleaned_data['self_assign']:
+            if check_if_issue_assigned(form):
                 form.send_email(request.user.id, new_issue.id)
             return redirect('project:backlog', current_project.id)
     else:
@@ -702,7 +704,7 @@ def issue_create_workload(request, project_id, sprint_status):
             current_issue.project = project
             current_issue.sprint = sprint
             current_issue.author = request.user
-            if form.cleaned_data['self_assign']:
+            if check_if_issue_assigned(form):
                 current_issue.employee = request.user
             current_issue.save()
             return HttpResponseRedirect(reverse('project:workload_manager',
