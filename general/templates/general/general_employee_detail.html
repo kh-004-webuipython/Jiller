@@ -59,7 +59,7 @@
                 />
               </span>
             <div>
-              {% if profile %}
+              {% if profile or user == request.user %}
               <a href="accounts/social/connections/">Edit social network
                 authentications</a>
               {% endif %}
@@ -132,7 +132,7 @@
           </tr>
           </thead>
           <tbody>
-          {% for log in user.issuelog_set.all|visible_logs|security_note_list:request.user %}
+          {% for log in user.issuelog_set.all|visible_logs|security_list:request.user %}
             <tr>
               <td class="col-sm-2">
                 <a href="{% url 'project:issue_detail' log.issue.project.id log.issue.id %}">
@@ -163,7 +163,7 @@
           </tr>
           </thead>
           <tbody>
-          {% for issue in user..all|security_issue_list:request.user %}
+          {% for issue in user.employee_issue_set.all|security_list:request.user %}
             <tr>
               <td><a href="{% url 'employee:detail' issue.author.id %}">{{ issue.author }}</a></td>
               <td><a href="{% url 'project:issue_detail' issue.project.id issue.id %}">{{ issue.title }}</a></td>
@@ -196,7 +196,7 @@
           </tr>
           </thead>
           <tbody>
-          {% for project in user.get_all_projects|security_project_list:request.user %}
+          {% for project in user.get_all_projects|security_list:request.user %}
             <tr>
               <td><a href="{% url 'project:detail' project.id %}">{{ project.title }}</a></td>
               <td><span>{{ project.start_date }}</span></td>
@@ -217,7 +217,7 @@
           </tr>
           </thead>
           <tbody>
-          {% for comment in user.issuecomment_set.all|security_note_list:request.user %}
+          {% for comment in user.issuecomment_set.all|security_list:request.user %}
             <tr>
               <td class="col-sm-2">
                 <a href="{% url 'project:issue_detail' comment.issue.project.id comment.issue.id %}">
@@ -233,5 +233,4 @@
       </div>
     </div>
   </div>
-</div>
 </div>

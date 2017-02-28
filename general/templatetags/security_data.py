@@ -1,20 +1,18 @@
 from django import template
 
-from project.models import Issue
+from employee.models import IssueLog
+from project.models import Issue, Project, IssueComment
 
 register = template.Library()
 
 
-@register.filter(name='security_note_list')
+@register.filter(name='security_list')
 def security_note_list(data, user):
-    return data.filter(issue__project__in=user.get_all_projects())
-
-
-@register.filter(name='security_issue_list')
-def security_issue_list(data, user):
-    return data.filter(project__in=user.get_all_projects()).exclude(status__in=(Issue.RESOLVED, Issue.CLOSED))
-
-
-@register.filter(name='security_project_list')
-def security_project_list(data, user):
-    return data.filter(id__in=user.get_all_projects())
+    if data:
+        if data.model == Issue:
+            return data.exclude(status__in=(Issue.RESOLVED, Issue.CLOSED)).filter(project__in=user.get_all_projects())
+        if data.model == Project:
+            return data.filter(id__in=user.get_all_projects())
+        if data.model == IssueLog or data.model == IssueComment:
+            return data.filter(issue__project__in=user.get_all_projects())
+    return []
