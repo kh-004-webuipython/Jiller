@@ -538,13 +538,13 @@ def workload_manager(request, project_id, sprint_status):
     except Sprint.DoesNotExist:
         raise Http404("Sprint does not exist")
 
-    work_hours = calc_work_hours(sprint)
+    work_hours = int(calc_work_hours(sprint))
     for item in items:
         totalEstim = sum((issue.estimation for issue in item['issues']))
         item['resolved'] = [issue for issue in item['issues'] if issue.status == Issue.RESOLVED]
 
         item['workload'] = totalEstim * 100 / work_hours
-        item['free'] = int(work_hours)- totalEstim
+        item['free'] = work_hours- totalEstim
 
     form = IssueFormForSprint(project=project, initial={}, user=request.user)
     context = {'items': items,
