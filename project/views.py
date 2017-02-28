@@ -208,7 +208,11 @@ def issue_detail_view(request, project_id, issue_id):
                 log.user = request.user
                 log.save()
                 return JsonResponse({'success': True, 'errors': None,
-                                     'completion_rate': current_issue.completion_rate()},
+                                     'completion_rate': current_issue.completion_rate(),
+                                     'cost': log.cost, 'user': log.user.get_full_name(),
+                                     'date_created': log.get_pretty_date_created(),
+                                     'user-link': reverse('employee:detail', args=[log.user.id]),
+                                     'note': log.note},
                                     status=201)
             return JsonResponse({'success': False, 'error': form.errors},
                                 status=400)
@@ -462,22 +466,6 @@ def change_user_in_team(request, project_id, user_id, team_id):
     return redirect('project:team', project_id)
 
 
-def team_create(request, project_id):
-    project = get_object_or_404(Project, pk=project_id)
-    if request.method == "POST":
-        form = CreateTeamForm(request.POST)
-        if form.is_valid():
-            new_team = form.save(commit=False)
-            new_team.project = project
-            new_team.save()
-            new_team.employees.add(request.user.id)
-            return redirect('project:team', project_id)
-    else:
-        form = CreateTeamForm()
-    return render(request, 'project/team_create.html', {'form': form,
-                                                        'project': project})
-
-
 @waffle_flag('read_workflow_manager', 'project:list')
 def workload_manager(request, project_id, sprint_status):
     if request.method == 'POST':
@@ -514,13 +502,13 @@ def workload_manager(request, project_id, sprint_status):
     except Sprint.DoesNotExist:
         raise Http404("Sprint does not exist")
 
-    work_hours = calc_work_hours(sprint)
+    work_hours = int(calc_work_hours(sprint))
     for item in items:
         totalEstim = sum((issue.estimation for issue in item['issues']))
         item['resolved'] = [issue for issue in item['issues'] if issue.status == Issue.RESOLVED]
 
         item['workload'] = totalEstim * 100 / work_hours
-        item['free'] = work_hours - totalEstim
+        item['free'] = work_hours- totalEstim
 
     form = IssueFormForSprint(project=project, initial={}, user=request.user)
     context = {'items': items,

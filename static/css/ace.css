@@ -9915,7 +9915,8 @@ fieldset[disabled] .btn-white.btn-grey.active {
 
 .dropdown-menu.dropdown-close.dropdown-menu-right {
     left: auto;
-    right: 0;
+    right: 0px;
+
 }
 
 .dropdown-menu.dropdown-closer {
