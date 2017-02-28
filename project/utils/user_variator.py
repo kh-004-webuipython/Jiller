@@ -1,14 +1,16 @@
 from django import forms
+from django.utils.translation import ugettext_lazy as _
 from project.models import Sprint
 
 
 def user_variator(self, user, project):
     if user.groups.all():
         if Sprint.objects.filter(project=project.pk, status=Sprint.NEW):
-            self.fields['add_sprint'] = forms.BooleanField(label='Add to new sprint', required=False)
+            self.fields['add_sprint'] = forms.BooleanField(label=_('Add to new sprint'),
+                                                           required=False)
 
         if user.groups.filter(id=1):
-            self.fields['self_assign'] = forms.BooleanField(label='Assign yourself',
+            self.fields['self_assign'] = forms.BooleanField(label=_('Assign yourself'),
                                                             required=False)
 
         if user.groups.filter(id=3):
