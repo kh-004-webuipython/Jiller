@@ -207,6 +207,8 @@ def issue_detail_view(request, project_id, issue_id):
                 log.issue = current_issue
                 log.user = request.user
                 log.save()
+                if current_issue.status == Issue.NEW:
+                    current_issue.update(status=Issue.IN_PROGRESS)
                 return JsonResponse({'success': True, 'errors': None,
                                      'completion_rate': current_issue.completion_rate(),
                                      'cost': log.cost, 'user': log.user.get_full_name(),
