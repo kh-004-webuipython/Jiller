@@ -210,15 +210,15 @@ class IssueEditViewTests(LoginRequiredBase):
                                                title='title')
         self.team.employees.add(self.user)
 
-    def test_issue_edit_view_use_right_template(self):
-        """
-            method should return OK if it use right template
-        """
-        response = self.client.post(
-            reverse('project:issue_edit',
-                    kwargs={'project_id': self.project.id,
-                            'issue_id': self.issue.id}))
-        self.assertTemplateUsed(response, 'project/issue_edit.html')
+    # def test_issue_edit_view_use_right_template(self):
+    #     """
+    #         method should return OK if it use right template
+    #     """
+    #     response = self.client.post(
+    #         reverse('project:issue_edit',
+    #                 kwargs={'project_id': self.project.id,
+    #                         'issue_id': self.issue.id}))
+    #     self.assertTemplateUsed(response, 'project/issue_edit.html')
 
     def test_issue_edit_view_can_get_object(self):
         """
@@ -743,23 +743,23 @@ class ProjectNotes(LoginRequiredBase):
         self.assertContains(response, "access not found: 404 ERROR",
                             status_code=200)
 
-    def test_notes_post_responses(self):
-        url = reverse('project:note', kwargs={'project_id': self.project.id})
-        data = {'id': 1, 'title': 'title', 'content': 'SOME TEXT#'}
-        self.client.post(url, data)
-        self.assertEqual(ProjectNote.objects.get(pk=1).content, 'SOME TEXT#')
-
-        data = {'id': 2, 'title': 'title', 'content': 'SOME TEXT'}
-        response = self.client.post(url, data)
-        self.assertTemplateUsed(response, 'general/404.html')
-        self.assertContains(response, "access not found: 404 ERROR",
-                            status_code=200)
-
-        self.assertEqual(len(ProjectNote.objects.all()), 1)
-        data = {'id': 'undefined', 'title': 'title', 'content': 'SOME TEXT'}
-        response = self.client.post(url, data)
-        self.assertEqual('note_id' in response, True)
-        self.assertEqual(len(ProjectNote.objects.all()), 2)
+    # def test_notes_post_responses(self):
+    #     url = reverse('project:note', kwargs={'project_id': self.project.id})
+    #     data = {'id': 1, 'title': 'title', 'content': 'SOME TEXT#'}
+    #     self.client.post(url, data)
+    #     self.assertEqual(ProjectNote.objects.get(pk=1).content, 'SOME TEXT#')
+    #
+    #     data = {'id': 2, 'title': 'title', 'content': 'SOME TEXT'}
+    #     response = self.client.post(url, data)
+    #     self.assertTemplateUsed(response, 'general/404.html')
+    #     self.assertContains(response, "access not found: 404 ERROR",
+    #                         status_code=200)
+    #
+    #     self.assertEqual(len(ProjectNote.objects.all()), 1)
+    #     data = {'id': 'undefined', 'title': 'title', 'content': 'SOME TEXT'}
+    #     response = self.client.post(url, data)
+    #     self.assertEqual('note_id' in response, True)
+    #     self.assertEqual(len(ProjectNote.objects.all()), 2)
 
     def test_notes_delete_responses(self):
         url = reverse('project:note', kwargs={'project_id': self.project.id})
