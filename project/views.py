@@ -21,8 +21,9 @@ from waffle.decorators import waffle_flag
 
 from .forms import ProjectForm, SprintCreateForm, CreateTeamForm, \
     IssueCommentCreateForm, CreateIssueForm, IssueLogForm, \
-    IssueFormForEditing, SprintFinishForm, NoteForm, IssueFormForSprint, \
+    IssueFormForEditing, SprintFinishForm, NoteForm, \
     NoteFormWithImage
+    # IssueFormForSprint
 from .models import Project, ProjectTeam, Issue, Sprint, ProjectNote
 from .decorators import delete_project, \
     edit_project_detail, create_project, create_sprint
@@ -546,7 +547,7 @@ def workload_manager(request, project_id, sprint_status):
         item['workload'] = totalEstim * 100 / work_hours
         item['free'] = work_hours - totalEstim
 
-    form = IssueFormForSprint(project=project, initial={}, user=request.user)
+    form = CreateIssueForm(project=project, initial={}, user=request.user)
     context = {'items': items,
                'project': project,
                'issues_log': issues_log,
@@ -725,8 +726,8 @@ def sprint_start_view(request, project_id):
 def issue_create_workload(request, project_id, sprint_status):
     if request.method == "POST":
         project = get_object_or_404(Project, pk=project_id)
-        form = IssueFormForEditing(project=project, data=request.POST,
-                                   user=request.user)
+        form = CreateIssueForm(project=project, data=request.POST,
+                               user=request.user)
         if form.is_valid():
             sprint = get_object_or_404(Sprint, project_id=project_id,
                                        status=sprint_status)

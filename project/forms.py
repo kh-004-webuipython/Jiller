@@ -10,6 +10,8 @@ from general.forms import FormControlMixin
 from .models import Project, Sprint, Issue, ProjectTeam, IssueComment, \
     ProjectNote
 
+from .utils.form_user_variator import user_variator
+
 
 class DateInput(forms.DateInput):
     input_type = 'date'
@@ -44,10 +46,7 @@ class IssueForm(forms.ModelForm):
         self.fields['employee'].queryset = ProjectTeam.objects.filter(
             project=project)[0].employees.filter(
             groups__pk__in=[1, 2])
-        if user.groups.filter(id=3):
-            self.fields['type'].choices = [('User_story', 'User story'), ]
-        elif user.groups.filter(id__in=(1, 2, 4)):
-            self.fields['type'].choices = [('Task', 'Task'), ('Bug', 'Bug'), ]
+        user_variator(self, user, project)
 
     def clean_status(self):
         cleaned_data = super(IssueForm, self).clean()
@@ -85,10 +84,10 @@ class IssueFormForEditing(IssueForm):
         self.fields.pop('order')
 
 
-class IssueFormForSprint(IssueForm):
-    def __init__(self, *args, **kwargs):
-        super(IssueFormForSprint, self).__init__(*args, **kwargs)
-        self.fields.pop('sprint')
+# class IssueFormForSprint(IssueForm):
+#     def __init__(self, *args, **kwargs):
+#         super(IssueFormForSprint, self).__init__(*args, **kwargs)
+#         self.fields.pop('sprint')
 
 
 class CreateIssueForm(IssueForm):
