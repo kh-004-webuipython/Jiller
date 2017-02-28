@@ -108,13 +108,13 @@
                 <a draggable="false" class="align-middle" href="
                   {% url 'project:issue_detail' new_iss.project_id new_iss.id %}">
                   <ul class="list-unstyled" style="margin-bottom: 0">
-{#                    {% if new_iss.completion_rate %}#}
-{#                    <li>#}
-{#                      <div class="progress pos-rel" style="margin-bottom: 0; height: 3px">#}
-{#                        <div class="progress-bar" style="width:{{ new_iss.completion_rate }}%"></div>#}
-{#                      </div>#}
-{#                    </li>#}
-{#                    {% endif %}#}
+                    {% if new_iss.completion_rate %}
+                    <li>
+                      <div class="progress pos-rel" style="margin-bottom: 0; height: 3px">
+                        <div class="progress-bar" style="width:{{ new_iss.completion_rate }}%"></div>
+                      </div>
+                    </li>
+                    {% endif %}
                     <li>{{ new_iss.title }} ({{ new_iss.estimation }} hours) | {{ new_iss.employee.get_full_name }}</li>
                   </ul>
                 </a>
@@ -216,8 +216,10 @@
 {% endblock %}
 
 {% block extrascripts %}
+  <script src="{% static 'js/ajax_csrf.js' %}"></script>
+  <script src="{% static 'js/sprint_create_validation.js' %}"></script>
   {% flag "push_issue" %}
-    <script src="{% static 'js/ajax_csrf.js' %}"></script>
+
     <script
         src="{% static 'project/js/push_issue_in_active_sprint.js' %}"></script>
   {% endflag %}

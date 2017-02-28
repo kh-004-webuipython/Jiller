@@ -655,6 +655,10 @@ def sprint_create_view(request, project_id):
             new_sprint.save()
             return HttpResponseRedirect(reverse('project:workload_manager',
                                                 args=[project_id, Sprint.NEW]))
+
+        return JsonResponse({'success': False, 'error': form.errors},
+                            status=400)
+
     raise Http404
 
 
