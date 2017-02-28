@@ -10,7 +10,7 @@ register = template.Library()
 def security_note_list(data, user):
     if data:
         if data.model == Issue:
-            return data.exclude(status__in=(Issue.RESOLVED, Issue.CLOSED)).filter(project__in=user.get_all_projects())
+            return data.filter(project__in=user.get_all_projects()).order_by('-order')
         if data.model == Project:
             return data.filter(id__in=user.get_all_projects())
         if data.model == IssueLog or data.model == IssueComment:
