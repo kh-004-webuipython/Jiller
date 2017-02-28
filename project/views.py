@@ -493,7 +493,7 @@ def workload_manager(request, project_id, sprint_status):
     items = []
     for employee in employees:
         issues = Issue.objects.filter(project=project_id) \
-            .filter(sprint__status=sprint_status, employee=employee)\
+            .filter(sprint__status=sprint_status, employee=employee) \
             .exclude(status=Issue.DELETED)
         items.append({'employee': employee, 'issues': issues, 'resolved': []})
 
@@ -508,7 +508,7 @@ def workload_manager(request, project_id, sprint_status):
         item['resolved'] = [issue for issue in item['issues'] if issue.status == Issue.RESOLVED]
 
         item['workload'] = totalEstim * 100 / work_hours
-        item['free'] = work_hours- totalEstim
+        item['free'] = work_hours - totalEstim
 
     form = IssueFormForSprint(project=project, initial={}, user=request.user)
     context = {'items': items,
@@ -598,7 +598,7 @@ def notes_view(request, project_id):
             input_c_length = ProjectNote._meta.get_field('content').max_length
             if len(request.POST.get('content')) >= input_c_length:
                 response.__setitem__('error',
-                                 'You have typed to limit in 10000 chars!')
+                                     'You have typed to limit in 10000 chars!')
                 return response
     if request.method == "DELETE":
         delete = QueryDict(request.body)
@@ -653,9 +653,9 @@ def sprint_create_view(request, project_id):
             new_sprint.project = project
             new_sprint.status = Sprint.NEW
             new_sprint.save()
-            return HttpResponseRedirect(reverse('project:workload_manager',
-                                                args=[project_id, Sprint.NEW]))
-
+            return JsonResponse({'success': True,
+                                 'redirect_url': reverse('project:workload_manager',
+                                                         args=[project_id, Sprint.NEW])}, status=201)
         return JsonResponse({'success': False, 'error': form.errors},
                             status=400)
 
@@ -703,7 +703,10 @@ def issue_create_workload(request, project_id, sprint_status):
             current_issue.sprint = sprint
             current_issue.author = request.user
             current_issue.save()
-            return HttpResponseRedirect(reverse('project:workload_manager',
-                                                args=[project_id,
-                                                      sprint_status]))
+            return JsonResponse({'success': True,
+                                 'redirect_url': reverse('project:workload_manager',
+                                                         args=[project_id,
+                                                               sprint_status])}, status=201)
+        return JsonResponse({'success': False, 'error': form.errors},
+                            status=400)
     raise Http404
