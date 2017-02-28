@@ -219,3 +219,7 @@ tr.Bug {
         padding-bottom: 1px;
     }
 }
+
+input[required] {
+    border: 1px solid dimgrey;
+}
