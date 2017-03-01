@@ -35,26 +35,28 @@ class Employee(SimpleEmailConfirmationUserMixin, AbstractUser):
         return self.username
 
     def online_status(self):
-        status = 'last seen ' + str(formats.date_format(timezone.localtime(
-            self.last_activity), 'DATE_FORMAT')) + ' at ' \
-                 + str(formats.date_format(timezone.localtime(
-            self.last_activity), 'TIME_FORMAT'))
         now = timezone.now()
         moreThanHourGap = now - td(hours=1)
         gap = now - td(seconds=900)
         if not self.last_activity:
             status = 'Never logged in'
-        elif self.last_activity < moreThanHourGap and \
-                        timezone.localtime(now).day != timezone.localtime(self.last_activity).day:
-            return status
-        elif self.last_activity < moreThanHourGap:
-            status = 'last seen today at ' + str(formats.date_format(timezone.localtime(
+        else:
+            status = 'last seen ' + str(formats.date_format(timezone.localtime(
+                self.last_activity), 'DATE_FORMAT')) + ' at ' \
+                     + str(formats.date_format(timezone.localtime(
                 self.last_activity), 'TIME_FORMAT'))
-        elif self.last_activity <= gap:
-            delta = now - self.last_activity
-            status = 'last seen ' + str(td(seconds=delta.seconds).seconds / 60) + ' minutes ago'
-        elif self.last_activity > gap:
-            status = 'Online'
+
+            if self.last_activity < moreThanHourGap and \
+                            timezone.localtime(now).day != timezone.localtime(self.last_activity).day:
+                return status
+            elif self.last_activity < moreThanHourGap:
+                status = 'last seen today at ' + str(formats.date_format(timezone.localtime(
+                    self.last_activity), 'TIME_FORMAT'))
+            elif self.last_activity <= gap:
+                delta = now - self.last_activity
+                status = 'last seen ' + str(td(seconds=delta.seconds).seconds / 60) + ' minutes ago'
+            elif self.last_activity > gap:
+                status = 'Online'
 
         return status
 
