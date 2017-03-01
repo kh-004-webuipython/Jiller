@@ -9,12 +9,13 @@
 
       <form role="form" action=
           "{% url 'project:issue_create_workload' project.id sprint_status %}"
-            class="form-horizontal" method="post">
+            class="form-horizontal" id="create-issue-form-modal" method="post">
+      <div id="create_issue_modal-body" class="modal-body">
         {% csrf_token %}
         {% for field in form %}
-          <div class="form-group {% if field.errors %} has-error {% endif %}">
+          <div class="form-group  {% if field.errors %} has-error {% endif %}">
           <label class="col-sm-3 control-label no-padding-right">{{ field.label_tag }}</label>
-          <div class="col-sm-9">
+          <div class="col-sm-7">
             {{ field }}
             <div class="help-block col-xs-12 col-sm-reset inline">
               {% if field.errors %}
@@ -30,10 +31,11 @@
           </div>
           </div>
         {% endfor %}
+      </div>
         <div class="modal-footer">
           <div class="row " >
             <div class="col-md-3 col-lg-offset-6">
-              <button type="submit" class="btn btn-primary">
+              <button type="submit" id="create_issue_modal_btn" class="btn btn-primary">
                 Create
               </button>
             </div>

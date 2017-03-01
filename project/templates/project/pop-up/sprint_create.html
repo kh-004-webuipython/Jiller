@@ -4,9 +4,9 @@
       <div class="modal-header">
         <h4 class="modal-title">Create New Sprint</h4>
       </div>
-      <form action="{% url 'project:sprint_create' project.id %}"
+      <form id="create_sprint_form" action="{% url 'project:sprint_create' project.id %}"
             method="post">
-        <div class="modal-body">
+        <div id="create_sprint_modal-body" class="modal-body">
           <strong class="center">
             <p>To create sprint enter duration and title of the sprint</p>
           </strong>
@@ -19,7 +19,7 @@
         <div class="modal-footer">
           <div class="row " >
             <div class="col-md-3 col-lg-offset-6">
-              <button type="submit" class="btn btn-primary">
+              <button type="submit" id='create_sprint_modal_btn' class="btn btn-primary">
                 Create
               </button>
             </div>

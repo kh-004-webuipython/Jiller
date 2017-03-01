@@ -10,6 +10,8 @@ from general.forms import FormControlMixin
 from .models import Project, Sprint, Issue, ProjectTeam, IssueComment, \
     ProjectNote
 
+from .utils.user_variator import user_variator
+
 
 class DateInput(forms.DateInput):
     input_type = 'date'
@@ -37,17 +39,10 @@ class ProjectForm(FormControlMixin, forms.ModelForm):
 class IssueForm(FormControlMixin, forms.ModelForm):
     def __init__(self, user, project, *args, **kwargs):
         super(IssueForm, self).__init__(*args, **kwargs)
-        self.fields['sprint'].queryset = Sprint.objects.filter(
-            project=project.id).exclude(status=Sprint.FINISHED)
         self.fields['root'].queryset = Issue.objects.filter(
             project=project.id).filter(status=('new' or 'in progress'))
-        self.fields['employee'].queryset = ProjectTeam.objects.filter(
-            project=project)[0].employees.filter(
-            groups__pk__in=[1, 2])
-        if user.groups.filter(id=3):
-            self.fields['type'].choices = [('User_story', 'User story'), ]
-        elif user.groups.filter(id__in=(1, 2, 4)):
-            self.fields['type'].choices = [('Task', 'Task'), ('Bug', 'Bug'), ]
+        self.fields['type'].choices = [('Task', 'Task'), ('Bug', 'Bug'), ]
+        user_variator(self, user, project)
 
     def clean_status(self):
         cleaned_data = super(IssueForm, self).clean()
@@ -61,14 +56,14 @@ class IssueForm(FormControlMixin, forms.ModelForm):
     def clean_estimation(self):
         cleaned_data = super(IssueForm, self).clean()
         estimation = cleaned_data.get('estimation')
-        sprint = cleaned_data.get('sprint')
-        if sprint and not estimation:
+        add_sprint = cleaned_data.get('add_sprint')
+        if add_sprint and not estimation:
             raise forms.ValidationError(
                 'The issue related to sprint has to be estimated')
         return estimation
 
     def send_email(self, user_id, issue_id):
-        employee = self.cleaned_data['employee']
+        employee = Issue.objects.get(pk=issue_id).employee
         if employee and employee.email:
             email = employee.email
             send_assign_email_task.delay(email, user_id, issue_id)
@@ -86,21 +81,31 @@ class IssueFormForEditing(IssueForm):
     def __init__(self, *args, **kwargs):
         super(IssueFormForEditing, self).__init__(*args, **kwargs)
         self.fields.pop('order')
-
-
-class IssueFormForSprint(IssueForm):
-    def __init__(self, *args, **kwargs):
-        super(IssueFormForSprint, self).__init__(*args, **kwargs)
-        self.fields.pop('sprint')
+        if 'add_sprint' in self.fields:
+            self.fields.pop('add_sprint')
+        if 'self_assign' in self.fields:
+            self.fields.pop('self_assign')
 
 
 class CreateIssueForm(IssueForm):
+    def __init__(self, *args, **kwargs):
+        super(CreateIssueForm, self).__init__(*args, **kwargs)
+        self.fields.pop('status')
+
+
     def clean_title(self):
-        cleaned_data = super(IssueForm, self).clean()
+        cleaned_data = super(CreateIssueForm, self).clean()
         title = cleaned_data.get('title')
         if Issue.objects.filter(title=title):
             raise forms.ValidationError('This title is already use')
         return title
+
+
+class IssueFormForSprint(CreateIssueForm):
+    def __init__(self, *args, **kwargs):
+        super(IssueFormForSprint, self).__init__(*args, **kwargs)
+        if 'add_sprint' in self.fields:
+            self.fields.pop('add_sprint')
 
 
 class CreateTeamForm(FormControlMixin, forms.ModelForm):
