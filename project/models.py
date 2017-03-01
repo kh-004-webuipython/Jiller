@@ -196,7 +196,7 @@ class Issue(models.Model):
                               choices=ISSUE_STATUS_CHOICES, default=NEW,
                               max_length=255)
     type = models.CharField(verbose_name=_('Type'),
-                            choices=ISSUE_TYPE_CHOICES, default=TASK,
+                            choices=ISSUE_TYPE_CHOICES, default=USER_STORY,
                             max_length=255)
     estimation = models.PositiveIntegerField(verbose_name=_('Estimation'),
                                              validators=[

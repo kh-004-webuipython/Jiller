@@ -1,6 +1,6 @@
 from datetime import timedelta as td
 from django.utils import timezone
-from django.utils.dateparse import parse_date
+from django.utils.dateparse import parse_datetime
 from django.conf import settings
 from employee.models import Employee
 
@@ -14,7 +14,7 @@ class SetLastSeenMiddleware(object):
         if request.user.is_authenticated():
             str_last_activity = request.session.get(self.KEY)
             if str_last_activity:
-                last_activity = parse_date(str_last_activity)
+                last_activity = parse_datetime(str_last_activity)
             else:
                 last_activity = None
 
@@ -24,8 +24,7 @@ class SetLastSeenMiddleware(object):
                 user = Employee.objects.get(pk=request.user.pk)
                 user.last_activity = timezone.now()
                 user.save()
-
-            request.session[self.KEY] = str(timezone.now())
+                request.session[self.KEY] = str(timezone.now())
 
         response = self.get_response(request)
 
