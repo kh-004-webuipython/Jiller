@@ -69,10 +69,10 @@
   {% endif %}
 
   {% block extrascripts %}
-
+    <script defer type="text/javascript" src="{% static 'js/ajax_csrf.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/issue_validation.js' %}"></script>
     {% flag "update_workflow_manager" %}
     <script defer type="text/javascript" src="{% static 'js/jquery-ui.min.js' %}"></script>
-    <script defer type="text/javascript" src="{% static 'js/ajax_csrf.js' %}"></script>
     <script defer type="text/javascript" src="{% static 'project/js/workload_manager.js' %}"></script>
     {% endflag %}
 
