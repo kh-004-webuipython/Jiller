@@ -222,4 +222,7 @@ tr.Bug {
 
 input[required] {
     border: 1px solid dimgrey;
+
+hr {
+    margin: 0;
 }
