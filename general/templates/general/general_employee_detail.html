@@ -18,7 +18,7 @@
       </li>
       <li>
         <a data-toggle="tab" href="#logs">
-          <span class="badge badge-danger">{{ user.issuelog_set|visible_logs:True }}</span>
+          <span class="badge badge-danger">{{ user.issuelog_set.count }}</span>
           Logs
         </a>
       </li>

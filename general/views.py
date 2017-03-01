@@ -17,7 +17,8 @@ from employee.views import generate_tables
 def home_page(request):
     user = Employee.objects.get(pk=request.user.pk)
 
-    return render(request, 'general/home_page.html', generate_tables(user))
+    return render(request, 'general/home_page.html', generate_tables(user,
+                                                                     user))
 
 
 def login_form_view(request):
