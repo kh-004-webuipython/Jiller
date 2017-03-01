@@ -24,12 +24,3 @@ class EmployeeFilter(django_filters.FilterSet):
         fields = ['first_name', 'last_name', 'email', 'last_activity',
                   'date_joined', 'groups']
 
-    # @property
-    # def qs(self):
-    #     parent = super(EmployeeFilter, self).qs
-    #     # search = get_query(self.request.search)
-    #     search = parent.filter(first_name = self.request.search)
-    #
-    #     return search
-    # #     # return parent.filter(is_published=True) \
-    # #     #    | parent.filter(author=self.request.user)
