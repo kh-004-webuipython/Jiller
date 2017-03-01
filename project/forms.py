@@ -198,7 +198,7 @@ class NoteFormWithImage(forms.ModelForm):
             # validate file size
             if len(image) > (MAX_FILE_SIZE * 1024 * 1024):
                 raise forms.ValidationError(
-                    _('Image file too large ( maximum 10mb )'))
+                    _('Image file too large ( maximum '+ MAX_FILE_SIZE + 'mb )'))
         else:
             raise forms.ValidationError(_("Couldn't read uploaded image"))
         return image
