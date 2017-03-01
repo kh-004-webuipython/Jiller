@@ -9732,7 +9732,8 @@ fieldset[disabled] .btn-white.btn-grey.active {
     font-size: 13px;
     padding-left: 11px;
     padding-right: 11px;
-    padding-bottom: 4px;
+    padding-bottom: 7px;
+    padding-top: 7px;
     margin-bottom: 1px;
     margin-top: 1px;
 }
@@ -9915,7 +9916,7 @@ fieldset[disabled] .btn-white.btn-grey.active {
 
 .dropdown-menu.dropdown-close.dropdown-menu-right {
     left: auto;
-    right: 0px;
+    right: 0;
 
 }
 
