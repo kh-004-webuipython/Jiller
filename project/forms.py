@@ -20,7 +20,7 @@ class DateInput(forms.DateInput):
 class ProjectForm(FormControlMixin, forms.ModelForm):
     class Meta:
         model = Project
-        fields = ['title', 'description', 'start_date', 'end_date']
+        fields = ['title', 'start_date', 'description', 'end_date']
         widgets = {
             'start_date': DateInput(),
             'end_date': DateInput(),
@@ -70,8 +70,11 @@ class IssueForm(FormControlMixin, forms.ModelForm):
 
     class Meta:
         model = Issue
-        fields = ['root', 'type', 'title', 'description',
-                  'status', 'estimation', 'order']
+        fields = ['title', 'estimation', 'type', 'root', 'description',
+                  'sprint', 'employee', 'status', 'order']
+        labels = {
+            'root': _('Parent issue'),
+        }
 
 
 class IssueFormForEditing(IssueForm):
@@ -176,13 +179,16 @@ class NoteFormWithImage(forms.ModelForm):
         fields = ['title', 'content', 'picture']
 
     def clean_picture(self):
+        MAX_PIXEL_SIZE = 2000
+        MAX_FILE_SIZE = 10 # MB
+        IMG_EXTENSION = ['jpeg', 'pjpeg', 'jpg', 'png', 'gif']
         image = self.cleaned_data['picture']
         if image:
             img = Image.open(image)
             w, h = img.size
 
             # validate dimensions
-            max_width = max_height = 2000
+            max_width = max_height = MAX_PIXEL_SIZE
             if w > max_width or h > max_height:
                 raise forms.ValidationError(
                     _('Please use an image that is smaller or equal to '
@@ -190,15 +196,14 @@ class NoteFormWithImage(forms.ModelForm):
 
             # validate content type
             main, sub = image.content_type.split('/')
-            if not (main == 'image' and sub.lower() in ['jpeg', 'pjpeg', 'png',
-                                                        'jpg', 'gif']):
+            if not (main == 'image' and sub.lower() in IMG_EXTENSION):
                 raise forms.ValidationError(
                     _('Please use a JPEG or PNG image.'))
 
             # validate file size
-            if len(image) > (10 * 1024 * 1024):
+            if len(image) > (MAX_FILE_SIZE * 1024 * 1024):
                 raise forms.ValidationError(
-                    _('Image file too large ( maximum 10mb )'))
+                    _('Image file too large ( maximum '+ MAX_FILE_SIZE + 'mb )'))
         else:
             raise forms.ValidationError(_("Couldn't read uploaded image"))
         return image
