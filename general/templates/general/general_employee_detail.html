@@ -200,7 +200,8 @@
             <tr>
               <td><a href="{% url 'project:detail' project.id %}">{{ project.title }}</a></td>
               <td><span>{{ project.start_date }}</span></td>
-              <td><span>{{ project.end_date }}</span></td>
+              <td><span>{% if project.end_date %}
+                {{ project.end_date }}{% else %}—{% endif %}</span></td>
             </tr>
           {% endfor %}
           </tbody>
