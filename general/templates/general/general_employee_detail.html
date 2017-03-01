@@ -3,6 +3,7 @@
 {% load thumbnail %}
 {% load visible_logs %}
 {% load render_table from django_tables2 %}
+{% load security_data %}
 
 {# block user profile #}
 <div class="page-header"><h1>{{ user.get_full_name }}</h1></div>
@@ -17,7 +18,7 @@
       </li>
       <li>
         <a data-toggle="tab" href="#logs">
-          <span class="badge badge-danger">{{ user.issuelog_set.count }}</span>
+          <span class="badge badge-danger">{{ user.issuelog_set|visible_logs:True }}</span>
           Logs
         </a>
       </li>
@@ -58,13 +59,13 @@
                     {% endif %}
                 />
               </span>
-          {% if employee.id == request.user.id or not employee.id %}
             <div>
-              <a href="{% url 'socialaccount_connections' %}">Edit social network
+              {% if profile or user == request.user %}
+              <a href="accounts/social/connections/">Edit social network
                 authentications</a>
+              {% endif %}
             </div>
             <div class="space space-4"></div>
-          {% endif %}
           </div>
 
           <div class="col-xs-12 col-sm-9">
@@ -73,6 +74,13 @@
                 <div class="profile-info-name"> Username</div>
                 <div class="profile-info-value">
                   <span>{{ user.username }}</span>
+                </div>
+              </div>
+
+              <div class="profile-info-row">
+                <div class="profile-info-name"> Role</div>
+                <div class="profile-info-value">
+                  <span>{{ user.get_role }}</span>
                 </div>
               </div>
 
@@ -100,20 +108,20 @@
               </div>
 
               <div class="profile-info-row">
-                  <div class="profile-info-name">In action</div>
-                  <div class="profile-info-value">
+                <div class="profile-info-name">In action</div>
+                <div class="profile-info-value">
                   <span class="{% if user.is_active %}
                   glyphicon glyphicon-ok green{% else %}
                   glyphicon glyphicon-remove red{% endif %}"></span>
                 </div>
-                </div>
               </div>
             </div>
-            <div class="hr hr-8 dotted"></div>
           </div>
+          <div class="hr hr-8 dotted"></div>
         </div>
-        {# end block user profile #}
-        {#block user logs#}
+      </div>
+      {# end block user profile #}
+      {#block user logs#}
 
         <div id="logs" class="tab-pane fade">
           {% if table_logs %}
