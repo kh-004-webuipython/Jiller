@@ -7,97 +7,61 @@
 
 {% block title %} Employee {% endblock %}
 
+
 {% block breadcrumbs %}
   {{ block.super }}
   <li><span>{% trans 'Employee' %}</span></li>
 {% endblock %}
 
 {% block content %}
-  <form method="get">
-        <div class="well">
-          <h4 style="margin-top: 0">Filter</h4>
-          <div class="row">
-            <div class="form-group col-sm-4 col-md-3">
-              {{ filter.form.first_name.label_tag }}
-              {% render_field filter.form.first_name class="form-control" %}
-            </div>
-            <div class="form-group col-sm-4 col-md-3">
-              {{ filter.form.last_name.label_tag }}
-              {% render_field filter.form.last_name class="form-control" %}
-            </div>
-            <div class="form-group col-sm-4 col-md-3">
-              {{ filter.form.year_joined.label_tag }}
-              {% render_field filter.form.year_joined class="form-control" %}
-            </div>
-            <div class="form-group col-sm-8 col-md-6">
-              {{ filter.form.groups.label_tag }}
-              <div>
-                {% for choice in filter.form.groups %}
-                  <label class="checkbox-inline">
-                    {{ choice.tag }} {{ choice.choice_label }}
-                  </label>
-                {% endfor %}
+  <div class="accordion-style1 panel-group" id="accordion">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h4 class="panel-title">
+          <a class="accordion-toggle collapsed" data-toggle="collapse"
+             data-parent="#accordion" href="#collapseOne">
+            <i data-icon-show="ace-icon fa fa-search"
+               data-icon-hide="ace-icon fa fa-close"
+               class="ace-icon fa fa-search"></i>
+            Search
+          </a>
+        </h4>
+      </div>
+      <div id="collapseOne" class="panel-collapse collapse in">
+        <div class="panel-body">
+          <form method="get">
+            <div class="row">
+              <div class="form-group col-sm-4 col-md-4">
+                {{ filter.form.first_name.label_tag }}
+                {% render_field filter.form.first_name type="search" class="form-control" %}
+              </div>
+              <div class="form-group col-sm-4 col-md-4">
+                {{ filter.form.last_name.label_tag }}
+                {% render_field filter.form.last_name type="search" class="form-control" %}
+              </div>
+              <div class="form-group col-sm-4 col-md-4">
+                {{ filter.form.year_joined.label_tag }}
+                {% render_field filter.form.year_joined class="form-control" %}
+              </div>
+              <div class="form-group col-sm-8 col-md-6">
+                {{ filter.form.groups.label_tag }}
+                <div>
+                  {% for choice in filter.form.groups %}
+                    <label class="checkbox-inline">
+                      {{ choice.tag }} {{ choice.choice_label }}
+                    </label>
+                  {% endfor %}
+                </div>
               </div>
             </div>
-          </div>
-          <button type="submit" class="btn btn-primary">
-            <span class="glyphicon glyphicon-search"></span> Search
-          </button>
+            <button type="submit" class="btn btn-primary">
+              <span class="glyphicon glyphicon-search"></span> Search
+            </button>
+          </form>
         </div>
-{#    <div class="row">#}
-{#      <div class="col-md-12 ">#}
-{#        <div class="input-group">#}
-{#          <input name="s" type="text" class="form-control" placeholder="Search"#}
-{#                 value="{{ request.GET.s }}">#}
-{#          <span class="input-group-btn">#}
-{#                        <button class="btn btn-sm btn-info no-radius"#}
-{#                                type="submit" name="status" value="#}
-{#                            {% if request.GET.status %}{{ request.GET.status }}{% else %}all{% endif %}">#}
-{#                            <i class="ace-icon fa fa-share"></i>#}
-{#                            Search#}
-{#                        </button>#}
-{#            {% for value, name in issues_status %}#}
-{#              <button type="submit" name="status" value="{{ value }}"#}
-{#                      class="btn btn-sm btn-primary{% if request.GET.status == value %} active{% endif %}">{{ name }}</button>#}
-{#            {% endfor %}#}
-{#                    </span>#}
-{#        </div>#}
-{#      </div>#}
-{#    </div>#}
-  </form>
-
-  {#  <table class="table table-bordered">#}
-  {#    <thead>#}
-  {#      <tr>#}
-  {#        <th>Username</th>#}
-  {#        <th>First name</th>#}
-  {#        <th>Last name</th>#}
-  {#        <th>Date joined</th>#}
-  {#        <th>Groups</th>#}
-  {#      </tr>#}
-  {#    </thead>#}
-  {#    <tbody>#}
-  {#      {% for user in filter.qs %}#}
-  {#        <tr>#}
-  {#          <td>{{ user.username }}</td>#}
-  {#          <td>{{ user.first_name }}</td>#}
-  {#          <td>{{ user.last_name }}</td>#}
-  {#          <td>{{ user.date_joined }}</td>#}
-  {#          <td>#}
-  {#            {% for group in user.groups.all %}#}
-  {#              {{ group }}#}
-  {#            {% empty %}#}
-  {#              <em class="text-muted">No group</em>#}
-  {#            {% endfor %}#}
-  {#          </td>#}
-  {#        </tr>#}
-  {#      {% empty %}#}
-  {#        <tr>#}
-  {#          <td colspan="5">No data</td>#}
-  {#        </tr>#}
-  {#      {% endfor %}#}
-  {#    </tbody>#}
-  {#  </table>#}
+      </div>
+    </div>
+  </div>
   {% if table %}
     {% render_table table "base_table.html" %}
   {% endif %}
@@ -108,4 +72,3 @@
   <script src="{% static 'js/table.js' %}"></script>
 
 {% endblock %}
-
