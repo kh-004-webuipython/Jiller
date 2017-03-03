@@ -1,6 +1,6 @@
 import django_tables2 as tables
 from django_tables2.utils import A
-from .models import Employee
+from .models import Employee, IssueLog
 
 
 class EmployeeTable(tables.Table):
@@ -21,3 +21,16 @@ class EmployeeTable(tables.Table):
         exclude = ('id')
         fields = ['get_full_name', 'email', 'get_role', 'online_status', 'is_active', 'date_joined']
 
+
+class LogsTable(tables.Table):
+    issue = tables.LinkColumn('project:issue_detail',
+                              kwargs={"project_id": A('issue.project.id'),
+                                      'issue_id': A('issue.id')},
+                              order_by=('issue'), verbose_name='Issue')
+    cost = tables.Column(verbose_name='Costs')
+    note = tables.Column(verbose_name=('Note'))
+
+    class Meta:
+        model = IssueLog
+        attrs = {"class": "table table-bordered table-striped table-hover"}
+        fields = ['issue', 'cost', 'note', ]
