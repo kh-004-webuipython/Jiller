@@ -2,6 +2,7 @@
 {% load i18n %}
 {% load thumbnail %}
 {% load visible_logs %}
+{% load render_table from django_tables2 %}
 {% load security_data %}
 
 {# block user profile #}
@@ -17,7 +18,7 @@
       </li>
       <li>
         <a data-toggle="tab" href="#logs">
-          <span class="badge badge-danger">{{ user.issuelog_set|visible_logs:True }}</span>
+          <span class="badge badge-danger">{{ user.issuelog_set.count }}</span>
           Logs
         </a>
       </li>
@@ -123,114 +124,30 @@
       {#block user logs#}
 
       <div id="logs" class="tab-pane fade">
-        <table id="simple-table" class="table  table-bordered table-hover">
-          <thead>
-          <tr>
-            <th>Issue</th>
-            <th>Costs</th>
-            <th>Note</th>
-          </tr>
-          </thead>
-          <tbody>
-          {% for log in user.issuelog_set.all|visible_logs|security_list:request.user %}
-            <tr>
-              <td class="col-sm-2">
-                <a href="{% url 'project:issue_detail' log.issue.project.id log.issue.id %}">
-                  {{ log.issue.title }}
-                </a>
-              </td>
-              <td class="col-sm-1"><span>{{ log.cost }}</span></td>
-              <td class="col-sm-9"><span>{{ log.note }}</span></td>
-            </tr>
-          {% endfor %}
-          </tbody>
-        </table>
+          {% if table_logs %}
+            {% render_table table_logs "base_table.html" %}
+          {% endif %}
       </div>
 
-        {# end block user logs #}
-        {#block user issue#}
+       {# end block user logs #}
+       {#block user issue#}
 
       <div id="issues" class="tab-pane fade">
-        <table id="simple-table" class="table  table-bordered table-hover">
-          <thead>
-          <tr>
-            <th>Author</th>
-            <th>Title</th>
-            <th>Status</th>
-            <th>Estimation</th>
-            <th>Project</th>
-            <th>Sprint</th>
-          </tr>
-          </thead>
-          <tbody>
-          {% for issue in user.employee_issue_set.all|security_list:request.user %}
-            <tr>
-              <td><a href="{% url 'employee:detail' issue.author.id %}">{{ issue.author }}</a></td>
-              <td><a href="{% url 'project:issue_detail' issue.project.id issue.id %}">{{ issue.title }}</a></td>
-              <td><span>{{ issue.status }}</span></td>
-              <td><span>{{ issue.estimation }}</span></td>
-              <td><a href="{% url 'project:detail' issue.project.id %}">{{ issue.project.title }}</a></td>
-
-              <td>
-                {% if issue.sprint %}
-                  <a href="{% url 'project:sprint_detail' issue.project.id issue.sprint.id %}">
-                    {{ issue.sprint.title }}
-                  </a>
-                {% else %}
-                  <span>None</span>
-                {% endif %}</td>
-
-            </tr>
-          {% endfor %}
-          </tbody>
-        </table>
+            {% if table_issues %}
+              {% render_table table_issues "base_table.html" %}
+            {% endif %}
       </div>
 
       <div id="projects" class="tab-pane fade">
-        <table id="simple-table" class="table  table-bordered table-hover">
-          <thead>
-          <tr>
-            <th>Title</th>
-            <th>Start date</th>
-            <th>End date</th>
-          </tr>
-          </thead>
-          <tbody>
-          {% for project in user.get_all_projects|security_list:request.user %}
-            <tr>
-              <td><a href="{% url 'project:detail' project.id %}">{{ project.title }}</a></td>
-              <td><span>{{ project.start_date }}</span></td>
-              <td><span>{% if project.end_date %}
-                {{ project.end_date }}{% else %}—{% endif %}</span></td>
-            </tr>
-          {% endfor %}
-          </tbody>
-        </table>
+          {% if table_projects %}
+            {% render_table table_projects "base_table.html" %}
+          {% endif %}
       </div>
 
       <div id="comments" class="tab-pane fade">
-        <table id="simple-table" class="table  table-bordered table-hover">
-          <thead>
-          <tr>
-            <th>Issue</th>
-            <th>Text</th>
-            <th>Date created</th>
-          </tr>
-          </thead>
-          <tbody>
-          {% for comment in user.issuecomment_set.all|security_list:request.user %}
-            <tr>
-              <td class="col-sm-2">
-                <a href="{% url 'project:issue_detail' comment.issue.project.id comment.issue.id %}">
-                  {{ comment.issue.title }}
-                </a>
-              </td>
-              <td class="col-sm-9"><span>{{ comment.text }}</span></td>
-              <td class="col-sm-1"><span>{{ comment.get_pretty_date_created }}</span></td>
-            </tr>
-          {% endfor %}
-          </tbody>
-        </table>
+          {% if table_comments %}
+            {% render_table table_comments "base_table.html" %}
+          {% endif %}
       </div>
     </div>
   </div>

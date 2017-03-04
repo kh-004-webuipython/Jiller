@@ -221,6 +221,10 @@ tr.Bug {
     }
 }
 
+input[required] {
+    border: 1px solid dimgrey;
+}
+
 form input[type="checkbox"] {
     margin-top: 12px;
 }
