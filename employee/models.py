@@ -1,9 +1,8 @@
 from __future__ import unicode_literals
-from datetime import date, datetime, timedelta as td
+from datetime import date, datetime
 
 from django.utils.encoding import python_2_unicode_compatible
 from django.utils import timezone
-from django.utils import formats
 # from django.utils.dateparse import parse_date
 from django.utils.translation import ugettext_lazy as _
 from django.core.exceptions import ValidationError
@@ -17,6 +16,7 @@ from simple_email_confirmation.models import SimpleEmailConfirmationUserMixin
 from sorl.thumbnail import get_thumbnail
 
 from project.models import ProjectTeam, Project
+from .utils.get_online_status import get_online_status
 
 
 @python_2_unicode_compatible
@@ -35,26 +35,10 @@ class Employee(SimpleEmailConfirmationUserMixin, AbstractUser):
         return self.username
 
     def online_status(self):
-        status = None
-        now = timezone.now()
-        moreThanDayGap = now - td(hours=24)
-        moreThanHourGap = now - td(hours=1)
-        gap = now - td(seconds=900)
         if not self.last_activity:
             status = 'Never logged in'
-        elif self.last_activity < moreThanDayGap:
-            status = 'last seen ' + str(formats.date_format(timezone.localtime(
-                self.last_activity), 'DATE_FORMAT')) + ' at ' \
-                     + str(formats.date_format(timezone.localtime(
-                self.last_activity), 'TIME_FORMAT'))
-        elif self.last_activity < moreThanHourGap:
-            status = 'last seen today at ' + str(formats.date_format(timezone.localtime(
-                self.last_activity), 'TIME_FORMAT'))
-        elif self.last_activity <= gap:
-            delta = now - self.last_activity
-            status = 'last seen ' + str(td(seconds=delta.seconds).seconds / 60) + ' minutes ago'
-        elif self.last_activity > gap:
-            status = 'Online'
+        else:
+            status = get_online_status(self.last_activity)
 
         return status
 

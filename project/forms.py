@@ -10,6 +10,8 @@ from general.forms import FormControlMixin
 from .models import Project, Sprint, Issue, ProjectTeam, IssueComment, \
     ProjectNote
 
+from .utils.user_variator import user_variator
+
 
 class DateInput(forms.DateInput):
     input_type = 'date'
@@ -18,7 +20,7 @@ class DateInput(forms.DateInput):
 class ProjectForm(FormControlMixin, forms.ModelForm):
     class Meta:
         model = Project
-        fields = ['title', 'description', 'start_date', 'end_date']
+        fields = ['title', 'start_date', 'description', 'end_date']
         widgets = {
             'start_date': DateInput(),
             'end_date': DateInput(),
@@ -37,17 +39,10 @@ class ProjectForm(FormControlMixin, forms.ModelForm):
 class IssueForm(FormControlMixin, forms.ModelForm):
     def __init__(self, user, project, *args, **kwargs):
         super(IssueForm, self).__init__(*args, **kwargs)
-        self.fields['sprint'].queryset = Sprint.objects.filter(
-            project=project.id).exclude(status=Sprint.FINISHED)
         self.fields['root'].queryset = Issue.objects.filter(
             project=project.id).filter(status=('new' or 'in progress'))
-        self.fields['employee'].queryset = ProjectTeam.objects.filter(
-            project=project)[0].employees.filter(
-            groups__pk__in=[1, 2])
-        if user.groups.filter(id=3):
-            self.fields['type'].choices = [('User_story', 'User story'), ]
-        elif user.groups.filter(id__in=(1, 2, 4)):
-            self.fields['type'].choices = [('Task', 'Task'), ('Bug', 'Bug'), ]
+        self.fields['type'].choices = [('Task', 'Task'), ('Bug', 'Bug'), ]
+        user_variator(self, user, project)
 
     def clean_status(self):
         cleaned_data = super(IssueForm, self).clean()
@@ -61,43 +56,56 @@ class IssueForm(FormControlMixin, forms.ModelForm):
     def clean_estimation(self):
         cleaned_data = super(IssueForm, self).clean()
         estimation = cleaned_data.get('estimation')
-        sprint = cleaned_data.get('sprint')
-        if sprint and not estimation:
+        add_sprint = cleaned_data.get('add_sprint')
+        if add_sprint and not estimation:
             raise forms.ValidationError(
                 'The issue related to sprint has to be estimated')
         return estimation
 
     def send_email(self, user_id, issue_id):
-        employee = self.cleaned_data['employee']
+        employee = Issue.objects.get(pk=issue_id).employee
         if employee and employee.email:
             email = employee.email
             send_assign_email_task.delay(email, user_id, issue_id)
 
     class Meta:
         model = Issue
-        fields = ['root', 'type', 'sprint', 'employee', 'title', 'description',
-                  'status', 'estimation', 'order']
 
+        fields = ['title', 'estimation', 'type', 'root', 'description',
+                  'status', 'order']
+        labels = {
+            'root': _('Parent issue'),
+        }
 
 class IssueFormForEditing(IssueForm):
     def __init__(self, *args, **kwargs):
         super(IssueFormForEditing, self).__init__(*args, **kwargs)
         self.fields.pop('order')
-
-
-class IssueFormForSprint(IssueForm):
-    def __init__(self, *args, **kwargs):
-        super(IssueFormForSprint, self).__init__(*args, **kwargs)
-        self.fields.pop('sprint')
+        if 'add_sprint' in self.fields:
+            self.fields.pop('add_sprint')
+        if 'self_assign' in self.fields:
+            self.fields.pop('self_assign')
 
 
 class CreateIssueForm(IssueForm):
+    def __init__(self, *args, **kwargs):
+        super(CreateIssueForm, self).__init__(*args, **kwargs)
+        self.fields.pop('status')
+
+
     def clean_title(self):
-        cleaned_data = super(IssueForm, self).clean()
+        cleaned_data = super(CreateIssueForm, self).clean()
         title = cleaned_data.get('title')
         if Issue.objects.filter(title=title):
             raise forms.ValidationError('This title is already use')
         return title
+
+
+class IssueFormForSprint(CreateIssueForm):
+    def __init__(self, *args, **kwargs):
+        super(IssueFormForSprint, self).__init__(*args, **kwargs)
+        if 'add_sprint' in self.fields:
+            self.fields.pop('add_sprint')
 
 
 class CreateTeamForm(FormControlMixin, forms.ModelForm):
@@ -171,13 +179,16 @@ class NoteFormWithImage(forms.ModelForm):
         fields = ['title', 'content', 'picture']
 
     def clean_picture(self):
+        MAX_PIXEL_SIZE = 2000
+        MAX_FILE_SIZE = 10 # MB
+        IMG_EXTENSION = ['jpeg', 'pjpeg', 'jpg', 'png', 'gif']
         image = self.cleaned_data['picture']
         if image:
             img = Image.open(image)
             w, h = img.size
 
             # validate dimensions
-            max_width = max_height = 2000
+            max_width = max_height = MAX_PIXEL_SIZE
             if w > max_width or h > max_height:
                 raise forms.ValidationError(
                     _('Please use an image that is smaller or equal to '
@@ -185,13 +196,12 @@ class NoteFormWithImage(forms.ModelForm):
 
             # validate content type
             main, sub = image.content_type.split('/')
-            if not (main == 'image' and sub.lower() in ['jpeg', 'pjpeg', 'png',
-                                                        'jpg', 'gif']):
+            if not (main == 'image' and sub.lower() in IMG_EXTENSION):
                 raise forms.ValidationError(
                     _('Please use a JPEG or PNG image.'))
 
             # validate file size
-            if len(image) > (10 * 1024 * 1024):
+            if len(image) > (MAX_FILE_SIZE * 1024 * 1024):
                 raise forms.ValidationError(
                     _('Image file too large ( maximum 10mb )'))
         else:
