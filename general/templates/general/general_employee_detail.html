@@ -123,33 +123,31 @@
       {# end block user profile #}
       {#block user logs#}
 
-        <div id="logs" class="tab-pane fade">
+      <div id="logs" class="tab-pane fade">
           {% if table_logs %}
             {% render_table table_logs "base_table.html" %}
           {% endif %}
-        </div>
+      </div>
 
-        {# end block user logs #}
-        {#block user issue#}
+       {# end block user logs #}
+       {#block user issue#}
 
-        <div id="issues" class="tab-pane fade">
+      <div id="issues" class="tab-pane fade">
             {% if table_issues %}
               {% render_table table_issues "base_table.html" %}
             {% endif %}
-        </div>
+      </div>
 
-        <div id="projects" class="tab-pane fade">
+      <div id="projects" class="tab-pane fade">
           {% if table_projects %}
             {% render_table table_projects "base_table.html" %}
           {% endif %}
-        </div>
+      </div>
 
-        <div id="comments" class="tab-pane fade">
+      <div id="comments" class="tab-pane fade">
           {% if table_comments %}
             {% render_table table_comments "base_table.html" %}
           {% endif %}
-
-        </div>
       </div>
     </div>
   </div>
