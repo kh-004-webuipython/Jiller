@@ -18,7 +18,8 @@ class EmployeeTable(tables.Table):
                                             'td': {'align': 'center',
                                                    'width': '10%'}},
                                      verbose_name='In action')
-    online_status = tables.Column(verbose_name='Activity')
+    online_status = tables.Column(verbose_name='Activity',
+                                     order_by='last_activity')
 
     class Meta:
         model = Employee
