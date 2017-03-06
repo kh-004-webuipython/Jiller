@@ -92,8 +92,8 @@ class ProjectTeamTable(EmployeeTable):
                              order_by=('groups',))
 
     class Meta:
-        exclude = ('id', 'email', 'date_joined', 'is_active')
-        fields = ['get_full_name', 'get_role']
+        exclude = ('id', 'email', 'date_joined')
+        fields = ['get_full_name', 'get_role', 'online_status']
         order_by = ('get_role',)
 
 
