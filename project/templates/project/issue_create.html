@@ -21,7 +21,7 @@
 
 {% block content %}
 {% include 'project/project_navbar.html' with backlog=True%}
-<form role="form" action="" class="form-horizontal" method="post">
+<form role="form" action="" class="form-horizontal issue-create" method="post">
   {% for field in form %}
     <div class="form-group {% if field.errors %} has-error {% endif %}">
     <label class="col-sm-3 control-label no-padding-right">{{ field.label_tag }}</label>
