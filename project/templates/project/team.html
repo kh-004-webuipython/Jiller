@@ -3,7 +3,6 @@
 {% load static %}
 {% load i18n %}
 {% load waffle_tags %}
-{% load widget_tweaks %}
 
 {% block title %}Team{% endblock %}
 
@@ -23,44 +22,42 @@
 {% block content %}
   {% if not team %}
     {% flag 'create_team' %}
-      <a class="btn btn-info pull-right"
-         href="{% url 'project:team_create' project.id %}">Create new team</a>
-      <h3>no team on project</h3>
+    <a class="btn btn-info pull-right"
+       href="{% url 'project:team_create' project.id %}">Create new team</a>
+    <h3>no team on project</h3>
     {% endflag %}
   {% endif %}
 
   {% include 'project/project_navbar.html' with team=True %}
 
 
-  <div class="col-sm-6 project-detail">
+  <div class="col-sm-12 project-detail" >
     <div style="margin:0" class="profile-user-info profile-user-info-striped">
       <div class="profile-info-row">
         <div class="profile-info-name">Project manager</div>
-        {% if pm|length_is:'1' %}
-          <div class="profile-info-value">
-            <span>{{ pm.first.first_name }} {{ pm.first.last_name }}</span>
-          </div>
-        {% elif pm|length_is:'0' %}
-          <div class="profile-info-value">
-            <span>There is no project manager</span>
-          </div>
-        {% else %}
-          <div class="profile-info-value">
-            <span>There are more than one project manager</span>
-          </div>
-        {% endif %}
+          {% if pm|length_is:'1' %}
+            <div class="profile-info-value">
+              <span>{{ pm.first.first_name }} {{ pm.first.last_name }}</span>
+            </div>
+          {% elif pm|length_is:'0' %}
+            <div class="profile-info-value">
+              <span>There is no project manager</span>
+            </div>
+          {% else %}
+            <div class="profile-info-value">
+              <span>There are more than one project manager</span>
+            </div>
+          {% endif %}
+        </div>
       </div>
     </div>
-  </div>
 
 
-  <div class="col-sm-12 profile-info-row">
-
+  <div class="col-sm-12 profile-info-row" >
     <table class="table">
       <tr>
         <td width="46%" style="padding: 8px 0;">
           <div>
-
             {% if table_cur %}
               {% render_table table_cur "base_table.html" %}
             {% endif %}
@@ -70,43 +67,6 @@
         </td>
         <td width="46%" style="padding: 8px 0;">
           <div>
-            <div class="accordion-style1 panel-group" id="accordion">
-              <div class="panel panel-default">
-                <div class="panel-heading">
-                  <h4 class="panel-title">
-                    <a class="accordion-toggle collapsed"
-                       data-toggle="collapse"
-                       data-parent="#accordion" href="#collapseOne">
-                      <i data-icon-show="ace-icon fa fa-search"
-                         data-icon-hide="ace-icon fa fa-close"
-                         class="ace-icon fa fa-search"></i>
-                      Search
-                    </a>
-                  </h4>
-                </div>
-                <div id="collapseOne" class="panel-collapse collapse">
-                  <div class="panel-body">
-                    <form method="get">
-                      <div class="row">
-                        <div class="form-group col-sm-6 col-md-6">
-                          {{ filter.form.groups.label_tag }}
-                          <div>
-                            {% for choice in filter.form.groups %}
-                              <label class="checkbox col-sm-offset-2">
-                                {{ choice.tag }} {{ choice.choice_label }}
-                              </label>
-                            {% endfor %}
-                          </div>
-                        </div>
-                      </div>
-                      <button type="submit" class="btn btn-primary">
-                        <span class="glyphicon glyphicon-search"></span> Search
-                      </button>
-                    </form>
-                  </div>
-                </div>
-              </div>
-            </div>
             {% if table_add %}
               {% render_table table_add "base_table.html" %}
             {% endif %}
