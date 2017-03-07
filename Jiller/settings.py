@@ -58,6 +58,7 @@ INSTALLED_APPS = [
     'allauth.socialaccount.providers.facebook',
     'allauth.socialaccount.providers.instagram',
     'mathfilters',
+    'widget_tweaks',
 ]
 
 SITE_ID = 1
