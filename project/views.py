@@ -19,7 +19,6 @@ from django.core.exceptions import ValidationError
 from django_tables2 import SingleTableView, RequestConfig
 from waffle.decorators import waffle_flag
 
-from employee.filters import EmployeeFilter
 from .forms import ProjectForm, SprintCreateForm, CreateTeamForm, \
     IssueCommentCreateForm, CreateIssueForm, IssueLogForm, \
     IssueFormForEditing, SprintFinishForm, NoteForm, \
@@ -181,15 +180,14 @@ def team_view(request, project_id):
     if request.user.groups.filter(name='project manager').exists():
         user_list = Employee.objects.exclude(groups__name='project manager'). \
             exclude(projectteam__project=project_id)
-        employee_filter = EmployeeFilter(request.GET, queryset=user_list)
 
         table_attrs_data.update({"data-table": "table_add"})
-        table_add = ProjectTeamTable(employee_filter.qs, prefix='2-',
+        table_add = ProjectTeamTable(user_list, prefix='2-',
                                      row_attrs=row_attrs_data,
                                      attrs=table_attrs_data)
         table_add.base_columns['get_full_name'].verbose_name = 'Free employees'
 
-        data.update({'table_add': table_add, 'filter': employee_filter})
+        data.update({'table_add': table_add})
         RequestConfig(request,
                       paginate={'per_page': settings.PAGINATION_PER_PAGE}). \
             configure(table_add)
