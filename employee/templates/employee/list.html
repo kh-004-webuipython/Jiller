@@ -3,8 +3,10 @@
 {% load i18n %}
 {% load static %}
 {% load gravatar %}
+{% load widget_tweaks %}
 
 {% block title %} Employee {% endblock %}
+
 
 {% block breadcrumbs %}
   {{ block.super }}
@@ -12,9 +14,57 @@
 {% endblock %}
 
 {% block content %}
-    {% if table %}
-      {% render_table table "base_table.html" %}
-    {% endif %}
+  <div class="accordion-style1 panel-group" id="accordion">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h4 class="panel-title">
+          <a class="accordion-toggle collapsed" data-toggle="collapse"
+             data-parent="#accordion" href="#collapseOne">
+            <i data-icon-show="ace-icon fa fa-search"
+               data-icon-hide="ace-icon fa fa-close"
+               class="ace-icon fa fa-search"></i>
+            Search
+          </a>
+        </h4>
+      </div>
+      <div id="collapseOne" class="panel-collapse collapse in">
+        <div class="panel-body">
+          <form method="get">
+            <div class="row">
+              <div class="form-group col-sm-4 col-md-4">
+                {{ filter.form.first_name.label_tag }}
+                {% render_field filter.form.first_name type="search" class="form-control" %}
+              </div>
+              <div class="form-group col-sm-4 col-md-4">
+                {{ filter.form.last_name.label_tag }}
+                {% render_field filter.form.last_name type="search" class="form-control" %}
+              </div>
+              <div class="form-group col-sm-4 col-md-4">
+                {{ filter.form.year_joined.label_tag }}
+                {% render_field filter.form.year_joined class="form-control" %}
+              </div>
+              <div class="form-group col-sm-8 col-md-6">
+                {{ filter.form.groups.label_tag }}
+                <div>
+                  {% for choice in filter.form.groups %}
+                    <label class="checkbox-inline">
+                      {{ choice.tag }} {{ choice.choice_label }}
+                    </label>
+                  {% endfor %}
+                </div>
+              </div>
+            </div>
+            <button type="submit" class="btn btn-primary">
+              <span class="glyphicon glyphicon-search"></span> Search
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+  {% if table %}
+    {% render_table table "base_table.html" %}
+  {% endif %}
 {% endblock %}
 
 {% block extrascripts %}
@@ -22,4 +72,3 @@
   <script src="{% static 'js/table.js' %}"></script>
 
 {% endblock %}
-
