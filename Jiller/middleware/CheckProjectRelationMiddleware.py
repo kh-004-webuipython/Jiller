@@ -1,10 +1,9 @@
-import json
-import waffle
-from django.http import Http404
-
 from django.http import HttpResponseForbidden
+from django.shortcuts import get_object_or_404
 from django.urls import resolve
-from project.models import ProjectTeam, Issue
+
+import waffle
+from project.models import ProjectTeam, Issue, Project
 from re import compile
 
 PROJECT_URLS = [compile(r'^project/.+')]
@@ -16,18 +15,12 @@ class CheckProjectRelation(object):
         self.get_response = get_response
 
     def is_user_attached_to_project(self, user_id, project_id):
-        project_team = ProjectTeam.objects.filter(project_id=project_id)
-        if not project_team:
-            raise Http404()
-        for team in project_team:
-            try:
-                ProjectTeam.objects.get(
-                    pk=team.id, employees=user_id)
-            except ProjectTeam.DoesNotExist:
-                continue
-            else:
-                return True
-        return False
+        user_project_team = ProjectTeam.objects.filter(project_id=project_id, employees=user_id)
+        if user_project_team:
+            return True
+        else:
+            get_object_or_404(Project, pk=project_id)
+            return False
 
     def __call__(self, request):
         path = request.path_info.lstrip('/')

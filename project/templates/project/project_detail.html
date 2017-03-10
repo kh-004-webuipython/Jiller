@@ -18,35 +18,6 @@
        href="{% url 'project:update' project.id %}"> Edit project </a>
   {% endflag %}
   {% include 'project/project_navbar.html' with detail=True %}
-  <p>
-  <div class="col-sm-4 project-detail" >
-    <div style="margin:0" class="profile-user-info profile-user-info-striped">
-      <div class="profile-info-row">
-        <div class="profile-info-name"> Title</div>
+  <div class="col-sm-12"><span>{{ project.description }}</span></div>
 
-        <div class="profile-info-value">
-          <span>{{ project.title }}</span>
-        </div>
-      </div>
-
-      <div class="profile-info-row">
-        <div class="profile-info-name"> Start date</div>
-
-        <div class="profile-info-value">
-          <span>{{ project.start_date }}</span>
-        </div>
-      </div>
-
-      {% if project.end_date %}
-      <div class="profile-info-row">
-        <div class="profile-info-name">End date</div>
-        <div class="profile-info-value">
-          <span>{{ project.end_date }}</span>
-        </div>
-      </div>
-      {% endif %}
-    </div>
-  </div>
-  <span>{{ project.description }}</span>
-  </p>
 {% endblock %}

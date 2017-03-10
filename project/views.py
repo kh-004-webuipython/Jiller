@@ -21,8 +21,8 @@ from waffle.decorators import waffle_flag
 
 from .forms import ProjectForm, SprintCreateForm, CreateTeamForm, \
     IssueCommentCreateForm, CreateIssueForm, IssueLogForm, \
-    IssueFormForEditing, SprintFinishForm, NoteForm, IssueFormForSprint, \
-    NoteFormWithImage
+    IssueFormForEditing, SprintFinishForm, NoteForm, \
+    NoteFormWithImage, IssueFormForSprint
 from .models import Project, ProjectTeam, Issue, Sprint, ProjectNote
 from .decorators import delete_project, \
     edit_project_detail, create_project, create_sprint
@@ -30,6 +30,8 @@ from .tables import ProjectTable, SprintsListTable, IssuesTable, \
     ProjectTeamTable
 from .utils.workload_manager import put_issue_back_to_pool, \
     calc_work_hours, assign_issue, get_pool
+from .utils.user_variator import check_if_issue_assigned, \
+    check_issue_add_to_sprint
 
 from employee.models import Employee
 
@@ -93,8 +95,16 @@ def issue_create_view(request, project_id):
             new_issue = form.save(commit=False)
             new_issue.project = current_project
             new_issue.author = request.user
+            if request.user.groups.filter(id=3):
+                new_issue.estimation = 0
+            if check_if_issue_assigned(form):
+                new_issue.employee = request.user
+            if check_issue_add_to_sprint(form):
+                new_issue.sprint = Sprint.objects.get(project=project_id,
+                                                      status=Sprint.NEW)
             new_issue.save()
-            form.send_email(request.user.id, new_issue.id)
+            if check_if_issue_assigned(form):
+                form.send_email(request.user.id, new_issue.id)
             return redirect('project:backlog', current_project.id)
     else:
         initial = {}
@@ -143,7 +153,7 @@ def team_view(request, project_id):
     team = get_object_or_404(ProjectTeam, project_id=current_project)
     data.update({'team': team})
 
-    row_attrs_data = {'data-pr_id': project_id, \
+    row_attrs_data = {'data-pr_id': project_id,
                       'data-id': lambda record: record.pk,
                       'data-team_id': team.pk,
                       'draggable': 'True'}
@@ -208,7 +218,11 @@ def issue_detail_view(request, project_id, issue_id):
                 log.user = request.user
                 log.save()
                 return JsonResponse({'success': True, 'errors': None,
-                                     'completion_rate': current_issue.completion_rate()},
+                                     'completion_rate': current_issue.completion_rate(),
+                                     'cost': log.cost, 'user': log.user.get_full_name(),
+                                     'date_created': log.get_pretty_date_created(),
+                                     'user-link': reverse('employee:detail', args=[log.user.id]),
+                                     'note': log.note},
                                     status=201)
             return JsonResponse({'success': False, 'error': form.errors},
                                 status=400)
@@ -285,18 +299,6 @@ class ProjectDetailView(DetailView):
     pk_url_kwarg = 'project_id'
     template_name = 'project/project_detail.html'
 
-    def render_to_response(self, context, **response_kwargs):
-        response = super(ProjectDetailView, self).render_to_response(context,
-                                                          **response_kwargs)
-        # save cookie with last project
-        user = self.request.user
-        if user.groups.all():
-            cookie_name = 'Last_pr' + str(user.groups.all()[0].pk) + '#' + \
-                          str(user.id)
-            response.set_cookie(cookie_name, self.kwargs['project_id'])
-            return response
-        return response
-
 
 class ProjectUpdateView(UpdateView):
     model = Project
@@ -372,18 +374,6 @@ class ActiveSprintDetailView(SprintView):
     def get_object(self, queryset=None):
         return self.project.sprint_set.filter(status=Sprint.ACTIVE).first()
 
-    def render_to_response(self, context, **response_kwargs):
-        response = super(ActiveSprintDetailView, self).render_to_response(context,
-                                                          **response_kwargs)
-        # save cookie with last project
-        user = self.request.user
-        if user.groups.all():
-            cookie_name = 'Last_pr' + str(user.groups.all()[0].pk) + '#' + \
-                          str(user.id)
-            response.set_cookie(cookie_name, self.kwargs['project_id'])
-            return response
-        return response
-
 
 @waffle_flag('push_issue', 'project:list')
 def push_issue_in_active_sprint(request):
@@ -415,24 +405,31 @@ class IssueSearchView(SingleTableView):
     }
 
     def get_queryset(self):
-        status = self.request.GET.get('status', None)
-        type = self.request.GET.get('type', None)
+        status = self.request.GET.getlist('status', None)
+        issue_type = self.request.GET.getlist('type', None)
         search_string = self.request.GET.get('s', None)
+        estimation_from = self.request.GET.get('estimation_from', None)
+        estimation_to = self.request.GET.get('estimation_to', None)
         query_expr = Issue.objects.filter(project_id=self.kwargs['project_id'])
-        if type:
-            query_expr = query_expr.filter(type=type)  # Not Implemented
+        if issue_type:
+            query_expr = query_expr.filter(type__in=issue_type)
         if status and status != 'all':
-            query_expr = query_expr.filter(status=status)
+            query_expr = query_expr.filter(status__in=status)
+        if estimation_to:
+            query_expr = query_expr.filter(estimation__lte=estimation_to)
+        if estimation_from:
+            query_expr = query_expr.filter(estimation__gte=estimation_from)
         if search_string:
             query_expr = query_expr.filter(
-                Q(title__contains=search_string) | Q(
-                    description__contains=search_string))
+                Q(title__icontains=search_string) | Q(
+                    description__icontains=search_string))
         return query_expr
 
     def get_context_data(self, **kwargs):
         context = super(IssueSearchView, self).get_context_data(**kwargs)
         context['project'] = Project.objects.get(id=self.kwargs['project_id'])
         context['issues_status'] = Issue.ISSUE_STATUS_CHOICES
+        context['issue_types'] = Issue.ISSUE_TYPE_CHOICES
         return context
 
 
@@ -486,22 +483,6 @@ def change_user_in_team(request, project_id, user_id, team_id):
     return redirect('project:team', project_id)
 
 
-def team_create(request, project_id):
-    project = get_object_or_404(Project, pk=project_id)
-    if request.method == "POST":
-        form = CreateTeamForm(request.POST)
-        if form.is_valid():
-            new_team = form.save(commit=False)
-            new_team.project = project
-            new_team.save()
-            new_team.employees.add(request.user.id)
-            return redirect('project:team', project_id)
-    else:
-        form = CreateTeamForm()
-    return render(request, 'project/team_create.html', {'form': form,
-                                                        'project': project})
-
-
 @waffle_flag('read_workflow_manager', 'project:list')
 def workload_manager(request, project_id, sprint_status):
     if request.method == 'POST':
@@ -538,13 +519,13 @@ def workload_manager(request, project_id, sprint_status):
     except Sprint.DoesNotExist:
         raise Http404("Sprint does not exist")
 
-    work_hours = calc_work_hours(sprint)
+    work_hours = int(calc_work_hours(sprint))
     for item in items:
         totalEstim = sum((issue.estimation for issue in item['issues']))
         item['resolved'] = [issue for issue in item['issues'] if issue.status == Issue.RESOLVED]
 
         item['workload'] = totalEstim * 100 / work_hours
-        item['free'] = work_hours - totalEstim
+        item['free'] = work_hours- totalEstim
 
     form = IssueFormForSprint(project=project, initial={}, user=request.user)
     context = {'items': items,
@@ -725,8 +706,8 @@ def sprint_start_view(request, project_id):
 def issue_create_workload(request, project_id, sprint_status):
     if request.method == "POST":
         project = get_object_or_404(Project, pk=project_id)
-        form = IssueFormForEditing(project=project, data=request.POST,
-                                   user=request.user)
+        form = IssueFormForSprint(project=project, data=request.POST,
+                                  user=request.user)
         if form.is_valid():
             sprint = get_object_or_404(Sprint, project_id=project_id,
                                        status=sprint_status)
@@ -734,6 +715,8 @@ def issue_create_workload(request, project_id, sprint_status):
             current_issue.project = project
             current_issue.sprint = sprint
             current_issue.author = request.user
+            if check_if_issue_assigned(form):
+                current_issue.employee = request.user
             current_issue.save()
             return HttpResponseRedirect(reverse('project:workload_manager',
                                                 args=[project_id,

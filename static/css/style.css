@@ -143,6 +143,7 @@ div.project-detail {
     padding: 0 15px 0;
     height: calc(100% - 260px);
     right: 0;
+    z-index: 100;
 }
 
 .limit-text-width {
@@ -218,4 +219,16 @@ tr.Bug {
         padding-top: 2px;
         padding-bottom: 1px;
     }
+}
+
+input[required] {
+    border: 1px solid dimgrey;
+}
+
+.issue-create input[type="checkbox"] {
+    margin-top: 12px;
+}
+
+hr {
+    margin: 0;
 }

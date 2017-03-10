@@ -13,13 +13,12 @@
 {% endblock %}
 
 {% block content %}
-  <h3 class="col-sm-offset-3">Create project</h3>
   <form role="form" action="" class="form-horizontal" method="post">
     {% for field in form %}
       <div class="form-group {% if field.errors %} has-error {% endif %}">
         <label
             class="col-sm-3 control-label no-padding-right">{{ field.label_tag }}</label>
-        <div class="col-sm-9">
+        <div class="col-sm-4">
           {{ field }}
           <div class="help-block col-xs-12 col-sm-reset inline">
             {% if field.errors %}
