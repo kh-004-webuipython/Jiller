@@ -5,6 +5,7 @@ from datetime import timedelta
 from redislite import Redis
 
 from django.urls.base import reverse_lazy
+from socket import gethostname
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -14,7 +15,6 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'public', 'media')
 
 MEDIA_URL = '/media/'
 
-
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.10/howto/deployment/checklist/
 
@@ -23,8 +23,6 @@ SECRET_KEY = 'olj^%!kemjn61dic)!y3k!(51&vciz$2jf*w_mji-(f(nwz#7$'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
-
-from socket import gethostname
 
 ALLOWED_HOSTS = ['127.0.0.1', 'localhost', gethostname(),
                  os.environ.get('OPENSHIFT_APP_DNS')]
@@ -58,6 +56,7 @@ INSTALLED_APPS = [
     'allauth.socialaccount.providers.facebook',
     'allauth.socialaccount.providers.instagram',
     'mathfilters',
+    'django_jenkins'
 ]
 
 SITE_ID = 1
@@ -81,7 +80,6 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = 'Jiller.urls'
-
 
 TEMPLATES = [
     {
@@ -114,7 +112,6 @@ DATABASES = {
     }
 }
 
-
 # Password validation
 # https://docs.djangoproject.com/en/1.10/ref/settings/#auth-password-validators
 
@@ -138,7 +135,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
 # Internationalization
 # https://docs.djangoproject.com/en/1.10/topics/i18n/
 
@@ -152,7 +148,6 @@ USE_L10N = True
 
 USE_TZ = True
 
-
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.10/howto/static-files/
 
@@ -162,42 +157,39 @@ STATIC_ROOT = os.path.join('../static')
 
 STATICFILES_DIRS = (os.path.join(BASE_DIR, 'static'),)
 
-
 AUTH_USER_MODEL = 'employee.Employee'
 
 LOGIN_URL = 'general:login'
 
 LOGIN_EXEMPT_URLS = (
 
- r'^login/$',
- r'^registration/$',
- r'^confirmation/(?P<username>[a-zA-Z0-9]+)/(?P<key>[a-zA-Z0-9]+)/$',
- r'^sender/(?P<username>[a-zA-Z0-9]+)/$',
- r'^accounts/github/login/$',
- r'^accounts/twitter/login/$',
- r'^accounts/vk/login/$',
- r'^accounts/google/login/$',
- r'^accounts/linkedin/login/$',
- # need for edit social accounts in user profile
- r'^accounts/social/connections/$',
- r'^accounts/twitter/login/callback/$',
- r'^accounts/facebook/login/$',
- r'^accounts/instagram/login',
+    r'^login/$',
+    r'^registration/$',
+    r'^confirmation/(?P<username>[a-zA-Z0-9]+)/(?P<key>[a-zA-Z0-9]+)/$',
+    r'^sender/(?P<username>[a-zA-Z0-9]+)/$',
+    r'^accounts/github/login/$',
+    r'^accounts/twitter/login/$',
+    r'^accounts/vk/login/$',
+    r'^accounts/google/login/$',
+    r'^accounts/linkedin/login/$',
+    # need for edit social accounts in user profile
+    r'^accounts/social/connections/$',
+    r'^accounts/twitter/login/callback/$',
+    r'^accounts/facebook/login/$',
+    r'^accounts/instagram/login',
 )
-
-
 
 SOCIALACCOUNT_PROVIDERS = \
     {'linkedin':
          {'SCOPE': ['r_emailaddress']},
-    'facebook':
-        {'METHOD': 'oauth2',
-         'SCOPE': ['email'],
-         'AUTH_PARAMS': {'auth_type': 'reauthenticate'},
-         'LOCALE_FUNC': lambda request: 'en_US',
-         'VERSION': 'v2.4'},
-    'vk':
-         {'SCOPE':['email'],
+     'facebook':
+         {'METHOD': 'oauth2',
+          'SCOPE': ['email'],
+          'AUTH_PARAMS': {'auth_type': 'reauthenticate'},
+          'LOCALE_FUNC': lambda request: 'en_US',
+          'VERSION': 'v2.4'},
+     'vk':
+         {'SCOPE': ['email'],
           'FIELDS': [
               'id',
               'email',
@@ -206,11 +198,15 @@ SOCIALACCOUNT_PROVIDERS = \
               'last_name'
           ],
           'AUTH_PARAMS': {'auth_type': 'reauthenticate'},
-          'METHOD':'oauth2',
+          'METHOD': 'oauth2',
           }
      }
 
-TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
+JENKINS_TASKS = ('django_jenkins.tasks.run_pylint',
+                 'django_jenkins.tasks.run_pep8',
+                 'django_jenkins.tasks.run_pyflakes',
+                 'django_jenkins.tasks.run_flake8')
+
 
 NOSE_ARGS = [
     '--with-coverage',
@@ -227,9 +223,9 @@ except ImportError:
 
 # CELERY
 
-REDIS_DB_PATH = os.path.join(DATA_DIR,'my_redis.db')
+REDIS_DB_PATH = os.path.join(DATA_DIR, 'my_redis.db')
 rdb = Redis(REDIS_DB_PATH, serverconfig={'port': '1116'})
-REDIS_SOCKET_PATH = 'redis+socket://%s' % (rdb.socket_file, )
+REDIS_SOCKET_PATH = 'redis+socket://%s' % (rdb.socket_file,)
 BROKER_URL = REDIS_SOCKET_PATH
 CELERY_RESULT_BACKEND = REDIS_SOCKET_PATH
 
@@ -238,7 +234,6 @@ CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'
 CELERY_IMPORTS = ['general.tasks']
 CELERY_TIMEZONE = 'UTC'
-
 
 # EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
@@ -251,4 +246,3 @@ EMAIL_PORT = 587
 DEFAULT_FROM_EMAIL = 'email.assign.python.webui@gmail.com'
 
 JILLER_HOST = 'http://jiller-phobosprogrammer.rhcloud.com'
-
