@@ -1,7 +1,8 @@
 import datetime
 import json
-from django.contrib import messages
+import re
 
+from django.contrib import messages
 from django.conf import settings
 from django.db.models import Q
 from django.http import HttpResponseRedirect, Http404, HttpResponse, \
@@ -15,7 +16,6 @@ from django.views.decorators.csrf import csrf_protect
 from django.utils.decorators import method_decorator
 from django.urls import reverse
 from django.core.exceptions import ValidationError
-
 from django_tables2 import SingleTableView, RequestConfig
 from waffle.decorators import waffle_flag
 
@@ -601,7 +601,9 @@ def notes_view(request, project_id):
             note = get_object_or_404(ProjectNote, pk=int(id_val))
             old_title = request.POST.get('oldTitle')
             old_content = request.POST.get('oldContent')
-            if note.content != old_content or note.title != old_title:
+            if re.sub("^\s+|\n|\r|\s+$", '', note.content) != \
+                    re.sub("^\s+|\n|\r|\s+$", '', old_content) or \
+                            note.title != old_title:
                 response = HttpResponseBadRequest()
                 response.__setitem__('error', 'Oops, someone has updated ' +
                                      'this note before you, please refresh ' +
