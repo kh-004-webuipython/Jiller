@@ -2,6 +2,7 @@ from django.db.models import Q
 from project.models import Sprint, Issue
 from employee.models import Employee
 from django.http import HttpResponse
+from waffle import flag_is_active
 
 
 WEEK_DAYS = 7
@@ -9,12 +10,20 @@ WORK_DAYS = 5
 WORK_HOURS = 8
 
 
-def put_issue_back_to_pool(pk, issue, relate):
+def put_issue_back_to_pool(request, pk, issue, relate):
     current_sprint = None
     if relate == 'new_sprint':
         current_sprint = Sprint.objects.get(project=pk, status=Sprint.NEW)
     elif relate == 'active_sprint':
         current_sprint = Sprint.objects.get(project=pk, status=Sprint.ACTIVE)
+    elif relate == 'backlog':
+        if flag_is_active(request, 'return_issue_to_backlog'):
+            if not issue.root:
+                issue.type = Issue.USER_STORY
+        else:
+            return HttpResponse('The issue can not be returned back to backlog.',
+                                status=403)
+
     issue.status = Issue.NEW
     issue.sprint = current_sprint
     issue.employee = None
@@ -22,7 +31,7 @@ def put_issue_back_to_pool(pk, issue, relate):
 
 def assign_issue(pk, employee, issue, sprint_status):
     if not issue.estimation:
-        return HttpResponse('The issue has to be estimated', status=401)
+        return HttpResponse('The issue has to be estimated', status=403)
     employee = Employee.objects.get(pk=employee)
     issue.employee = employee
     if issue.type == Issue.USER_STORY:

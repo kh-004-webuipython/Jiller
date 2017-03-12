@@ -63,7 +63,7 @@ $(function() {
                             message = error.responseText;
                         var element = $('#error-message');
                         element.empty();
-                        element.append('<h2 class="alert alert-warning">' +
+                        element.html('<h2 class="alert alert-warning">' +
                             message + '</h2>');
                         setTimeout(location.reload.bind(window.location), 3500);
                     }

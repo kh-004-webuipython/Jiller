@@ -491,10 +491,13 @@ def workload_manager(request, project_id, sprint_status):
         relate = data['relate']
         issue = Issue.objects.get(pk=data['issue'])
         # if issue was drugged into backlog or sprint pool
+        error = None
         if relate in ['backlog', 'new_sprint', 'active_sprint']:
-            put_issue_back_to_pool(project_id, issue, relate)
+            error = put_issue_back_to_pool(request, project_id, issue, relate)
         else:
-            assign_issue(project_id, relate, issue, sprint_status)
+            error = assign_issue(project_id, relate, issue, sprint_status)
+        if error:
+            return error
         issue.save()
 
     project = get_object_or_404(Project, pk=project_id)
