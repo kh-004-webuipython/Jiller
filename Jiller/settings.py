@@ -224,7 +224,7 @@ except ImportError:
 # CELERY
 
 REDIS_DB_PATH = os.path.join(DATA_DIR, 'my_redis.db')
-rdb = Redis(REDIS_DB_PATH, serverconfig={'port': '1116'})
+rdb = Redis(REDIS_DB_PATH, serverconfig={'port': '1545'})
 REDIS_SOCKET_PATH = 'redis+socket://%s' % (rdb.socket_file,)
 BROKER_URL = REDIS_SOCKET_PATH
 CELERY_RESULT_BACKEND = REDIS_SOCKET_PATH

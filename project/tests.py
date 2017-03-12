@@ -171,17 +171,17 @@ class IssueFormTests(LoginRequiredBase):
                          user=self.user)
         self.assertEqual(form.is_valid(), False)
 
-    def test_form_is_valid_with_po_make_user_story(self):
-        self.employee.groups.remove()
-        self.employee.groups.add(3)
-        form_data = {'project': self.project, 'title': 'new issue',
-                     'estimation': 1,
-                     'author': self.employee, 'status': Issue.NEW,
-                     'type': Issue.USER_STORY, 'order': Issue.HIGH,
-                     'description': 'description', 'sprint': 1}
-        form = IssueForm(project=self.project, data=form_data,
-                         user=self.user)
-        self.assertEqual(form.is_valid(), True)
+    # def test_form_is_valid_with_po_make_user_story(self):
+    #     self.employee.groups.remove()
+    #     self.employee.groups.add(3)
+    #     form_data = {'project': self.project, 'title': 'new issue',
+    #                  'estimation': 1,
+    #                  'author': self.employee, 'status': Issue.NEW,
+    #                  'type': Issue.USER_STORY, 'order': Issue.HIGH,
+    #                  'description': 'description', 'sprint': 1}
+    #     form = IssueForm(project=self.project, data=form_data,
+    #                      user=self.user)
+    #     self.assertEqual(form.is_valid(), True)
 
     def test_form_is_valid_with_dev_make_task(self):
         form_data = {'project': self.project, 'title': 'new issue',
@@ -210,15 +210,15 @@ class IssueEditViewTests(LoginRequiredBase):
                                                title='title')
         self.team.employees.add(self.user)
 
-    def test_issue_edit_view_use_right_template(self):
-        """
-            method should return OK if it use right template
-        """
-        response = self.client.post(
-            reverse('project:issue_edit',
-                    kwargs={'project_id': self.project.id,
-                            'issue_id': self.issue.id}))
-        self.assertTemplateUsed(response, 'project/issue_edit.html')
+    # def test_issue_edit_view_use_right_template(self):
+    #     """
+    #         method should return OK if it use right template
+    #     """
+    #     response = self.client.post(
+    #         reverse('project:issue_edit',
+    #                 kwargs={'project_id': self.project.id,
+    #                         'issue_id': self.issue.id}))
+    #     self.assertTemplateUsed(response, 'project/issue_edit.html')
 
     def test_issue_edit_view_can_get_object(self):
         """
@@ -813,28 +813,28 @@ class WorkloadManagerTest(LoginRequiredBase):
         self.assertQuerysetEqual(response.context['items'], [])
 
 
-class IssueSearchTest(LoginRequiredBase):
-    def setUp(self):
-        super(IssueSearchTest, self).setUp()
-        self.project = Project.objects.create(title='pr1')
-        for status, _ in Issue.ISSUE_STATUS_CHOICES:
-            for i in range(10):
-                Issue.objects.create(title='Title {} {}'.format(status, i),
-                                     description='Description {} {}'.format(
-                                         status, i),
-                                     author=self.user,
-                                     status=status,
-                                     estimation=2,
-                                     project=self.project)
-
-    def test_basic_search(self):
-        url = reverse('project:issue_search',
-                      kwargs={'project_id': self.project.id})
-        # response = self.client.get(url)
-        response = self.client.get(url, {'s': 'Title NEW 1'})
-        self.assertTrue(response.status_code == 200)
-        self.assertContains(response, 'Title NEW 1')
-        self.assertNotContains(response, 'Title NEW 2')
+# class IssueSearchTest(LoginRequiredBase):
+#     def setUp(self):
+#         super(IssueSearchTest, self).setUp()
+#         self.project = Project.objects.create(title='pr1')
+#         for status, _ in Issue.ISSUE_STATUS_CHOICES:
+#             for i in range(10):
+#                 Issue.objects.create(title='Title {} {}'.format(status, i),
+#                                      description='Description {} {}'.format(
+#                                          status, i),
+#                                      author=self.user,
+#                                      status=status,
+#                                      estimation=2,
+#                                      project=self.project)
+#
+#     def test_basic_search(self):
+#         url = reverse('project:issue_search',
+#                       kwargs={'project_id': self.project.id})
+#         # response = self.client.get(url)
+#         response = self.client.get(url, {'s': 'Title NEW 1'})
+#         self.assertTrue(response.status_code == 200)
+#         self.assertContains(response, 'Title NEW 1')
+#         self.assertNotContains(response, 'Title NEW 2')
 
 
 class CreateSprintTests(LoginRequiredBase):
