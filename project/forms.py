@@ -179,7 +179,7 @@ class NoteFormWithImage(forms.ModelForm):
         fields = ['title', 'content', 'picture']
 
     def clean_picture(self):
-        MAX_PIXEL_SIZE = 2000
+        MAX_PIXEL_SIZE = 5000
         MAX_FILE_SIZE = 10 # MB
         IMG_EXTENSION = ['jpeg', 'pjpeg', 'jpg', 'png', 'gif']
         image = self.cleaned_data['picture']
