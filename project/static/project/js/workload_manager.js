@@ -1,9 +1,4 @@
 $(function() {
-    moveProgressBar();
-    $(window).resize(function() {
-        moveProgressBar();
-    });
-
     var csrftoken = getCookie('csrftoken');
     var project = $('div.page-header').data('project');
 
@@ -68,30 +63,13 @@ $(function() {
                             message = error.responseText;
                         var element = $('#error-message');
                         element.empty();
-                        element.append('<h2 class="alert alert-warning">' +
+                        element.html('<h2 class="alert alert-warning">' +
                             message + '</h2>');
                         setTimeout(location.reload.bind(window.location), 3500);
                     }
                 });
             }
         });
-    }
-
-    // SIGNATURE PROGRESS
-    function moveProgressBar() {
-        var items = document.querySelectorAll('.progress-wrap');
-        $.each(items, function(index, value) {
-            var getPercent = ($(value).data('progress-percent') / 100);
-            var getProgressWrapWidth = $('.progress-wrap').width();
-            var progressTotal = getPercent * getProgressWrapWidth;
-            var animationLength = 2000;
-
-            // on page load, animate percentage bar to data percentage length
-            // .stop() used to prevent animation queueing
-            $(value.firstElementChild).stop().animate({
-                left: progressTotal
-            }, animationLength);
-        })
     }
 });
 

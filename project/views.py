@@ -1,7 +1,8 @@
 import datetime
 import json
-from django.contrib import messages
+import re
 
+from django.contrib import messages
 from django.conf import settings
 from django.db.models import Q
 from django.http import HttpResponseRedirect, Http404, HttpResponse, \
@@ -15,7 +16,6 @@ from django.views.decorators.csrf import csrf_protect
 from django.utils.decorators import method_decorator
 from django.urls import reverse
 from django.core.exceptions import ValidationError
-
 from django_tables2 import SingleTableView, RequestConfig
 from waffle.decorators import waffle_flag
 
@@ -491,10 +491,13 @@ def workload_manager(request, project_id, sprint_status):
         relate = data['relate']
         issue = Issue.objects.get(pk=data['issue'])
         # if issue was drugged into backlog or sprint pool
+        error = None
         if relate in ['backlog', 'new_sprint', 'active_sprint']:
-            put_issue_back_to_pool(project_id, issue, relate)
+            error = put_issue_back_to_pool(request, project_id, issue, relate)
         else:
-            assign_issue(project_id, relate, issue, sprint_status)
+            error = assign_issue(project_id, relate, issue, sprint_status)
+        if error:
+            return error
         issue.save()
 
     project = get_object_or_404(Project, pk=project_id)
@@ -601,7 +604,9 @@ def notes_view(request, project_id):
             note = get_object_or_404(ProjectNote, pk=int(id_val))
             old_title = request.POST.get('oldTitle')
             old_content = request.POST.get('oldContent')
-            if note.content != old_content or note.title != old_title:
+            if re.sub("^\s+|\n|\r|\s+$", '', note.content) != \
+                    re.sub("^\s+|\n|\r|\s+$", '', old_content) or \
+                            note.title != old_title:
                 response = HttpResponseBadRequest()
                 response.__setitem__('error', 'Oops, someone has updated ' +
                                      'this note before you, please refresh ' +

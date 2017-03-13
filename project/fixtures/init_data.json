@@ -126,7 +126,7 @@
       "created": "2017-01-30T16:12:35Z",
       "modified": "2017-01-30T16:13:03.933Z",
       "groups": [
-        1, 2, 4
+        1, 2
       ],
       "users": []
     }
@@ -148,7 +148,7 @@
       "created": "2017-01-30T16:12:35Z",
       "modified": "2017-01-30T16:13:03.933Z",
       "groups": [
-        3, 4
+        4
       ],
       "users": []
     }
@@ -325,6 +325,28 @@
       "modified": "2017-01-30T16:12:29.133Z",
       "groups": [
         1,2
+      ],
+      "users": []
+    }
+  },
+  {
+    "model": "waffle.flag",
+    "pk": 17,
+    "fields": {
+      "name": "return_issue_to_backlog",
+      "everyone": null,
+      "percent": null,
+      "testing": false,
+      "superusers": true,
+      "staff": true,
+      "authenticated": false,
+      "languages": "",
+      "rollout": false,
+      "note": "",
+      "created": "2017-01-30T16:11:37Z",
+      "modified": "2017-01-30T16:12:29.133Z",
+      "groups": [
+        2
       ],
       "users": []
     }

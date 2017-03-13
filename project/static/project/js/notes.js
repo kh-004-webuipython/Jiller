@@ -131,11 +131,13 @@ document.addEventListener("DOMContentLoaded", function () {
             var xhr = new XMLHttpRequest();
             var title = note.getElementsByClassName('note-title')[0];
             var content = note.getElementsByTagName('p')[0];
+            var sendTitle = title.value;
+            var sendContent = content.innerText.trim();
             var formData = new FormData();
             formData.append("id", note.dataset['id']);
-            formData.append("title",title.value);
+            formData.append("title", sendTitle);
             formData.append("oldTitle", note.oldText['title']);
-            formData.append("content", content.innerText.trim());
+            formData.append("content", sendContent);
             formData.append("oldContent", note.oldText['content']);
             xhr.open("POST", '/project/' + notes.dataset['pr'] + '/note/',
                 true);
@@ -143,8 +145,8 @@ document.addEventListener("DOMContentLoaded", function () {
             xhr.onreadystatechange = function () {
                 if (xhr.readyState == 4) {
                     if (xhr.status == 200) {
-                        note.oldText['title'] = title.value;
-                        note.oldText['content'] = content.innerText.trim();
+                        note.oldText['title'] = sendTitle;
+                        note.oldText['content'] = sendContent;
                         if (!note.dataset['id']) {
                             note.dataset['id'] = xhr.getResponseHeader('note_id');
                         }
