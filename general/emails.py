@@ -6,8 +6,7 @@ from django.urls import reverse
 from employee.models import Employee
 from project.models import Issue, Sprint
 
-
-def send_assign_email(email, user_id, issue_id):
+def send_assign_email(base_url, email, user_id, issue_id):
     user = Employee.objects.get(pk=user_id)
     issue = Issue.objects.get(pk=issue_id)
     issue_url = reverse('project:issue_detail',
@@ -15,7 +14,7 @@ def send_assign_email(email, user_id, issue_id):
                                 'issue_id': issue.id})
     user_name = str(user.first_name) + ' ' + str(user.last_name)
     c = Context({'email': email, 'user': user_name, 'issue': issue,
-                 'issue_url': issue_url, 'base_url': settings.JILLER_HOST})
+                 'issue_url': issue_url, 'base_url': 'http://' + base_url})
 
     email_subject = render_to_string(
         'email/email_subject.txt', c).replace('\n', '')
@@ -32,14 +31,14 @@ def send_assign_email(email, user_id, issue_id):
     return email.send(fail_silently=False)
 
 
-def send_email_after_sprint_start(email, user_id, sprint_id):
+def send_email_after_sprint_start(base_url,email, user_id, sprint_id):
     user = Employee.objects.get(pk=user_id)
     sprint = Sprint.objects.get(pk=sprint_id)
     sprint_url = reverse('project:sprint_active', kwargs={
         'project_id': sprint.project_id})
     user_name = str(user.first_name) + ' ' + str(user.last_name)
     c = Context({'email': email, 'user': user_name, 'sprint': sprint,
-                 'sprint_url': sprint_url, 'base_url': settings.JILLER_HOST})
+                 'sprint_url': sprint_url, 'base_url': 'http://' + base_url})
 
     email_subject = render_to_string(
         'email/email_subject.txt', c).replace('\n', '')
@@ -56,7 +55,7 @@ def send_email_after_sprint_start(email, user_id, sprint_id):
     return email.send(fail_silently=False)
 
 
-def send_email_after_sprint_finish(email, user_id, sprint_id,
+def send_email_after_sprint_finish(base_url, email, user_id, sprint_id,
                                    release_link, feedback_text):
     user = Employee.objects.get(pk=user_id)
     sprint = Sprint.objects.get(pk=sprint_id)
@@ -64,7 +63,7 @@ def send_email_after_sprint_finish(email, user_id, sprint_id,
         'project_id': sprint.project_id})
     user_name = str(user.first_name) + ' ' + str(user.last_name)
     c = Context({'email': email, 'user': user_name, 'sprint': sprint,
-                 'sprint_url': sprint_url, 'base_url': settings.JILLER_HOST,
+                 'sprint_url': sprint_url, 'base_url': 'http://' + base_url,
                  "release_link": release_link, "feedback_text": feedback_text})
 
     email_subject = render_to_string(

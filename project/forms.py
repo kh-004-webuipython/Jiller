@@ -62,11 +62,11 @@ class IssueForm(FormControlMixin, forms.ModelForm):
                 'The issue related to sprint has to be estimated')
         return estimation
 
-    def send_email(self, user_id, issue_id):
+    def send_email(self, base_url, user_id, issue_id):
         employee = Issue.objects.get(pk=issue_id).employee
         if employee and employee.email:
             email = employee.email
-            send_assign_email_task.delay(email, user_id, issue_id)
+            send_assign_email_task.delay(base_url, email, user_id, issue_id)
 
     class Meta:
         model = Issue
