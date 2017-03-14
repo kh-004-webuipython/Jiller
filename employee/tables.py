@@ -10,7 +10,9 @@ class EmployeeTable(tables.Table):
                                       order_by=('last_name'),
                                       verbose_name='Name')
     email = tables.Column()
-    get_role = tables.Column(verbose_name='Role')
+    get_role = tables.Column(attrs={'td': {'width': '30%'}},
+                             verbose_name='Role',
+                             order_by=('groups',))
     date_joined = tables.DateColumn(attrs={'td': {'align': 'center',
                                                   'width': '10%'}})
     is_active = tables.BooleanColumn(attrs={'th': {'style':

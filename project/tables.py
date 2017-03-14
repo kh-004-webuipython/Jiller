@@ -84,12 +84,10 @@ class IssuesInProfileTable(IssuesTable):
         fields = ['author', 'title', 'status', 'estimation',
                   'project', 'sprint']
         order_by = 'sprint'
+        #orderable = False
 
 
 class ProjectTeamTable(EmployeeTable):
-    get_role = tables.Column(attrs={'td': {'width': '30%'}},
-                             verbose_name='Role',
-                             order_by=('groups',))
 
     class Meta:
         exclude = ('id', 'email', 'date_joined')
