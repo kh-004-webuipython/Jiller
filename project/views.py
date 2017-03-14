@@ -104,7 +104,8 @@ def issue_create_view(request, project_id):
                                                       status=Sprint.NEW)
             new_issue.save()
             if check_if_issue_assigned(form):
-                form.send_email(request.user.id, new_issue.id)
+                form.send_email(request.META['HTTP_HOST'], request.user.id,
+                                new_issue.id)
             return redirect('project:backlog', current_project.id)
     else:
         initial = {}
@@ -126,9 +127,11 @@ def issue_edit_view(request, project_id, issue_id):
                                    instance=current_issue, user=request.user)
         if form.is_valid() and form.changed_data:
             current_issue = form.save()
-            form.send_email(request.user.id, current_issue.id)
+            form.send_email(request.META['HTTP_HOST'], request.user.id,
+                            current_issue.id)
 
-        return redirect('project:issue_detail', current_project.id, current_issue.id)
+        return redirect('project:issue_detail', current_project.id,
+                        current_issue.id)
     else:
         form = IssueFormForEditing(project=current_project,
                                    instance=current_issue, user=request.user)
@@ -219,9 +222,11 @@ def issue_detail_view(request, project_id, issue_id):
                 log.save()
                 return JsonResponse({'success': True, 'errors': None,
                                      'completion_rate': current_issue.completion_rate(),
-                                     'cost': log.cost, 'user': log.user.get_full_name(),
+                                     'cost': log.cost,
+                                     'user': log.user.get_full_name(),
                                      'date_created': log.get_pretty_date_created(),
-                                     'user-link': reverse('employee:detail', args=[log.user.id]),
+                                     'user-link': reverse('employee:detail',
+                                                          args=[log.user.id]),
                                      'note': log.note},
                                     status=201)
             return JsonResponse({'success': False, 'error': form.errors},
@@ -513,7 +518,7 @@ def workload_manager(request, project_id, sprint_status):
     items = []
     for employee in employees:
         issues = Issue.objects.filter(project=project_id) \
-            .filter(sprint__status=sprint_status, employee=employee)\
+            .filter(sprint__status=sprint_status, employee=employee) \
             .exclude(status=Issue.DELETED)
         items.append({'employee': employee, 'issues': issues, 'resolved': []})
 
@@ -525,10 +530,11 @@ def workload_manager(request, project_id, sprint_status):
     work_hours = int(calc_work_hours(sprint))
     for item in items:
         totalEstim = sum((issue.estimation for issue in item['issues']))
-        item['resolved'] = [issue for issue in item['issues'] if issue.status == Issue.RESOLVED]
+        item['resolved'] = [issue for issue in item['issues'] if
+                            issue.status == Issue.RESOLVED]
 
         item['workload'] = totalEstim * 100 / work_hours
-        item['free'] = work_hours- totalEstim
+        item['free'] = work_hours - totalEstim
 
     form = IssueFormForSprint(project=project, initial={}, user=request.user)
     context = {'items': items,
@@ -620,7 +626,7 @@ def notes_view(request, project_id):
             input_c_length = ProjectNote._meta.get_field('content').max_length
             if len(request.POST.get('content')) >= input_c_length:
                 response.__setitem__('error',
-                                 'You have typed to limit in 10000 chars!')
+                                     'You have typed to limit in 10000 chars!')
                 return response
     if request.method == "DELETE":
         delete = QueryDict(request.body)
@@ -652,11 +658,13 @@ def finish_active_sprint_view(request, project_id):
             active_sprint.end_date = datetime.datetime.now()
             active_sprint.save()
             for member in employees:
-                send_email_after_sprint_finish_task.delay(member.email,
-                                                          user_id,
-                                                          sprint_id,
-                                                          active_sprint.release_link,
-                                                          active_sprint.feedback_text)
+                send_email_after_sprint_finish_task.delay(
+                    request.META['HTTP_HOST'],
+                    member.email,
+                    user_id,
+                    sprint_id,
+                    active_sprint.release_link,
+                    active_sprint.feedback_text)
             return HttpResponseRedirect(reverse('project:sprint_active',
                                                 kwargs={
                                                     'project_id': project_id}))
@@ -700,8 +708,9 @@ def sprint_start_view(request, project_id):
             employees = ProjectTeam.objects.get(
                 project_id=project_id).employees.all()
             for member in employees:
-                send_email_after_sprint_start_task.delay(member.email, user_id,
-                                                         sprint_id)
+                send_email_after_sprint_start_task.delay(
+                    request.META['HTTP_HOST'], member.email, user_id,
+                    sprint_id)
         return HttpResponseRedirect(reverse('project:sprint_active',
                                             args=[project_id, ]))
     raise Http404
