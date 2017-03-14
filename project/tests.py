@@ -745,7 +745,8 @@ class ProjectNotes(LoginRequiredBase):
 
     def test_notes_post_responses(self):
         url = reverse('project:note', kwargs={'project_id': self.project.id})
-        data = {'id': 1, 'title': 'title', 'content': 'SOME TEXT#', 'oldContent':'some text in Notes', 'oldTitle': 'TESTS'}
+        data = {'id': 1, 'title': 'title', 'content': 'SOME TEXT#', 'oldContent': 'some text in Notes',
+                'oldTitle': 'TESTS'}
         self.client.post(url, data)
         self.assertEqual(ProjectNote.objects.get(pk=1).content, 'SOME TEXT#')
 
@@ -819,6 +820,17 @@ class IssueSearchTest(LoginRequiredBase):
         self.project = Project.objects.create(title='pr1')
         for status, _ in Issue.ISSUE_STATUS_CHOICES:
             for i in range(10):
+                if status == Issue.RESOLVED:
+                    issue = Issue.objects.create(title='Title {} {}'.format(status, i),
+                                         description='Description {} {}'.format(
+                                             status, i),
+                                         author=self.user,
+                                         status=Issue.NEW,
+                                         estimation=2,
+                                         project=self.project)
+                    issue.status = Issue.RESOLVED
+                    issue.save()
+                    continue
                 Issue.objects.create(title='Title {} {}'.format(status, i),
                                      description='Description {} {}'.format(
                                          status, i),
