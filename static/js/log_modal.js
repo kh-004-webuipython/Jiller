@@ -10,6 +10,7 @@ jQuery(function ($) {
                 201: function (data) {
                     $('.modal-body').empty();
                     $('.modal-footer').empty();
+                    $('#logs-tab .comments').empty()
                     $('.modal-body').append('<h3>' + $('#log-modal').attr('data-success-title') + '</h3>');
                     $('div.progress-bar').css('width', data.completion_rate + '%');
                     $('div.progress.pos-rel').attr('data-percent', data.completion_rate + '%');
