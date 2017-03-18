@@ -1,0 +1,35 @@
+version: '2'
+services:
+  redis:
+    image: redis
+  web:
+    build: .
+    command: python manage.py runserver 0.0.0.0:8000
+    volumes:
+      - .:/code
+    ports:
+      - "8000:8000"
+    depends_on:
+      - redis
+  rabbit:
+    hostname: rabbit
+    image: rabbitmq:3.6.0
+    environment:
+      - RABBITMQ_DEFAULT_USER=admin
+      - RABBITMQ_DEFAULT_PASS=mypass
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+  worker:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: celery -A Jiller worker -l info
+    volumes:
+      - .:/code
+    links:
+      - rabbit
+      - redis
+    depends_on:
+      - rabbit
+
