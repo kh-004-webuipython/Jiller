@@ -1,13 +1,12 @@
 import os
+
+from datetime import timedelta
+from redislite import Redis
+from django.urls.base import reverse_lazy
+from socket import gethostname
 from kombu import Exchange, Queue
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
-from datetime import timedelta
-from redislite import Redis
-
-from django.urls.base import reverse_lazy
-from socket import gethostname
-
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 DATA_DIR = os.environ.get('OPENSHIFT_DATA_DIR', BASE_DIR)
@@ -25,9 +24,7 @@ SECRET_KEY = 'olj^%!kemjn61dic)!y3k!(51&vciz$2jf*w_mji-(f(nwz#7$'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-from socket import gethostname
-
-ALLOWED_HOSTS = ['0.0.0.0', '127.0.0.1', 'localhost', '45.55.140.239',
+ALLOWED_HOSTS = ['0.0.0.0', '127.0.0.1', 'localhost', '45.55.140.239','web',
                  gethostname(), os.environ.get('OPENSHIFT_APP_DNS')]
 
 # Application definition
@@ -101,6 +98,7 @@ TEMPLATES = [
 WSGI_APPLICATION = 'Jiller.wsgi.application'
 
 LOGIN_REDIRECT_URL = reverse_lazy('general:home_page')
+
 # Database
 # https://docs.djangoproject.com/en/1.10/ref/settings/#databases
 
@@ -154,7 +152,7 @@ STATIC_URL = '/static/'
 
 STATIC_ROOT = os.path.join('../static')
 
-STATICFILES_DIRS = (os.path.join(BASE_DIR, 'static'),)
+STATICFILES_DIRS = (os.path.join(BASE_DIR, 'static'), )
 
 AUTH_USER_MODEL = 'employee.Employee'
 
@@ -231,8 +229,7 @@ RABBIT_HOSTNAME = os.environ.get('RABBIT_PORT_5672_TCP', 'rabbit')
 if RABBIT_HOSTNAME.startswith('tcp://'):
     RABBIT_HOSTNAME = RABBIT_HOSTNAME.split('//')[1]
 
-BROKER_URL = os.environ.get('BROKER_URL',
-                            '')
+BROKER_URL = os.environ.get('BROKER_URL', '')
 if not BROKER_URL:
     BROKER_URL = 'amqp://{user}:{password}@{hostname}/{vhost}/'.format(
         user=os.environ.get('RABBIT_ENV_USER', 'admin'),
