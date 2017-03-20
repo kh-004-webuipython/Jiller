@@ -9,12 +9,14 @@ services:
       - ./src:/src
       - ./config/nginx:/etc/nginx/conf.d
       - /static:/static
+      - ./src/public/media:/media
+      - ./logs/nginx:/var/log/nginx
     depends_on:
       - web
   web:
     build: .
     container_name: Django-Jiller
-    command: bash -c "python manage.py makemigrations && python manage.py migrate && python manage.py collectstatic --noinput && gunicorn Jiller.wsgi -b 0.0.0.0:8000"
+    command: bash -c "python manage.py makemigrations && python manage.py migrate && python manage.py collectstatic --noinput && python manage.py loaddata project/fixtures/init_data.json && gunicorn Jiller.wsgi -b 0.0.0.0:8000"
     depends_on:
       - db
     volumes:
@@ -22,7 +24,6 @@ services:
       - /static:/static
     expose:
       - "8000"
-
 
   db:
     image: postgres:latest
@@ -35,6 +36,7 @@ services:
       - '6379:6379'
 
   rabbit:
+    container_name: Rabbit01
     hostname: rabbit
     image: rabbitmq:3.6.0
     environment:
@@ -44,16 +46,15 @@ services:
       - "5672:5672"
       - "15672:15672"
 
-  celeryworker:
+  celeryworkers:
     build:
       context: .
       dockerfile: Dockerfile
+    container_name: Celery01
     command: celery -A Jiller worker -l info
     volumes:
       - ./src:/src
-    links:
+    depends_on:
       - rabbit
       - redis
       - db
-    depends_on:
-      - rabbit

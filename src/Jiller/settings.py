@@ -22,9 +22,9 @@ MEDIA_URL = '/media/'
 SECRET_KEY = 'olj^%!kemjn61dic)!y3k!(51&vciz$2jf*w_mji-(f(nwz#7$'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = ['0.0.0.0', '127.0.0.1', 'localhost', '45.55.140.239','web', 'jiller.tk',
+ALLOWED_HOSTS = ['0.0.0.0', '127.0.0.1', 'localhost', '45.55.140.239', 'web',
                  gethostname(), os.environ.get('OPENSHIFT_APP_DNS')]
 
 # Application definition
@@ -162,7 +162,7 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
-STATIC_ROOT = os.path.join('../static')
+STATIC_ROOT = os.path.join('/static/')
 
 STATICFILES_DIRS = (os.path.join(BASE_DIR, 'static'), )
 
