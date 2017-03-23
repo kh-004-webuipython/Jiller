@@ -9,6 +9,7 @@ urlpatterns = [
     url(r'^project/', include('project.urls', namespace='project')),
     url(r'^employee/', include('employee.urls', namespace='employee')),
     url(r'^accounts/', include('allauth.urls')),
+    url(r'^api/v1/', include('api.urls', namespace='api')),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 try:
