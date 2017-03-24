@@ -44,8 +44,7 @@ services:
     command: celery -A Jiller worker -l info
     volumes:
       - ./src:/src
-    links:
-      - rabbit
-      - redis
     depends_on:
       - rabbit
+      - redis
+      - db
