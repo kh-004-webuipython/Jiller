@@ -43,7 +43,7 @@ services:
       dockerfile: Dockerfile
     command: celery -A Jiller worker -l info
     volumes:
-      - .:/code
+      - ./src:/src
     links:
       - rabbit
       - redis
