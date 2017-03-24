@@ -17,6 +17,8 @@ app.config.from_envvar('FLASKR_SETTINGS', silent=True)
 
 room_db = PyMongo(app)
 
+socketio = SocketIO(app)
+
 
 @app.route('/', methods=['POST'])
 def main_page():
@@ -25,12 +27,29 @@ def main_page():
         room = room_db.db.rooms
         q = room.find_one({'url': issue_json['url']})
         if q:
-            output = 'its already in db'
-            #room.insert(jsonify(issue_json))
+            room.update(issue_json)
         else:
-            output = 'no row in db'
+            issue_json['story_point'] = 0
+            for line in issue_json['team']:
+                line['estimate'] = 0
             room.insert(issue_json)
-    return render_template('index.html', result=output)
+    return render_template('index.html')
+
+
+@socketio.on('join')
+def on_join(data):
+    username = data['username']
+    room = data['room']
+    join_room(room)
+    send(username + ' has entered the room.', room=room)
+
+
+@socketio.on('leave')
+def on_leave(data):
+    username = data['username']
+    room = data['room']
+    leave_room(room)
+    send(username + ' has left the room.', room=room)
 
 
 @app.route('/link/')
@@ -39,25 +58,20 @@ def main_page1(name=None):
     return render_template('index.html', link=name)
 
 
-socketio = SocketIO(app)
-
-
-@socketio.on('message')
-def hendleMessage(msg):
-    print ('Messega: ' + msg)
-    send(msg, broadcast=True)
-
+@socketio.on('my event')
+def handle_my_custom_event(json):
+    emit('start playing', json)
 
 
 # @socketio.on('URI_link')
 # def handle_json(json):
 #     print('received json: ' + str(json))
 #     send(json, json=True, namespace='URI_link')
-#
-#
-# @socketio.on('my event')
-# def handle_my_custom_event(json):
-#     print('received json: ' + str(json))
+
+
+@socketio.on('my event')
+def handle_my_custom_event(json):
+    print('received json: ' + str(json))
 
 
 if __name__ == '__main__':
