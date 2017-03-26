@@ -736,3 +736,9 @@ def issue_create_workload(request, project_id, sprint_status):
                                                 args=[project_id,
                                                       sprint_status]))
     raise Http404
+
+
+def poker_room_redirect_view(request, project_id):
+    project = Project.objects.get(id=project_id)
+    link = 'http://' + project.estimation_link
+    return redirect(link)

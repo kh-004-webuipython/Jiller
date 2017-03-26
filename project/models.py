@@ -27,6 +27,11 @@ class ProjectModelManager(models.Manager):
                 projectteam__employees__id__exact=user.id)
 
 
+def generate_estimation_link():
+    estimation_link = 'google.com'
+    return estimation_link
+
+
 @python_2_unicode_compatible
 class Project(models.Model):
     title = models.CharField(verbose_name=_('Title'), max_length=255)
@@ -38,6 +43,9 @@ class Project(models.Model):
                                 blank=True)
     is_active = models.BooleanField(verbose_name=_('Is active'), null=False,
                                     default=True)
+    estimation_link = models.CharField(verbose_name=_('Estimation'),
+                                       default=generate_estimation_link,
+                                       max_length=1000)
 
     def __str__(self):
         return self.title
@@ -73,7 +81,8 @@ class Sprint(models.Model):
                               max_length=255)
     duration = models.PositiveIntegerField(verbose_name=_('Duration in days'))
     release_link = models.URLField(blank=True, null=True)
-    feedback_text = models.TextField(max_length=5000, verbose_name=_('Sprint review'),
+    feedback_text = models.TextField(max_length=5000,
+                                     verbose_name=_('Sprint review'),
                                      null=True, blank=True)
 
     def __str__(self):
@@ -84,17 +93,22 @@ class Sprint(models.Model):
 
     def calculate_estimation_sum(self):
         return self.issue_set.exclude(
-            status=Issue.CLOSED).aggregate(Sum('estimation'))['estimation__sum'] or 0
+            status=Issue.CLOSED).aggregate(Sum('estimation'))[
+                   'estimation__sum'] or 0
 
     def get_chart_data(self, date):
         return self.issue_set.filter(
-            issuelog__date_created__range=[self.start_date, date + datetime.timedelta(days=1)]).exclude(
+            issuelog__date_created__range=[self.start_date,
+                                           date + datetime.timedelta(
+                                               days=1)]).exclude(
             status=Issue.CLOSED).extra(
-            {'date_created': "date(date_created)"}).values('date_created').annotate(
+            {'date_created': "date(date_created)"}).values(
+            'date_created').annotate(
             sum=Sum('issuelog__cost')).order_by()
 
     def sprint_daterange(self):
-        for n in range(int((self.get_expected_end_date() - self.start_date).days)):
+        for n in range(
+                int((self.get_expected_end_date() - self.start_date).days)):
             yield self.start_date + datetime.timedelta(n)
 
     def chart(self):
@@ -243,8 +257,10 @@ def change_sprint_status(instance, **kwargs):
     if instance.status == Issue.RESOLVED:
         now = datetime.datetime.now()
         log_cost_left = instance.estimation - instance.get_logs_sum()
-        note = '({}) was changed status to resolved at {}. Employee: {}'.format(instance.title, now, instance.employee)
-        IssueLog.objects.create(issue=instance, user=instance.author, cost=log_cost_left, note=note, is_hidden=True)
+        note = '({}) was changed status to resolved at {}. Employee: {}'.format(
+            instance.title, now, instance.employee)
+        IssueLog.objects.create(issue=instance, user=instance.author,
+                                cost=log_cost_left, note=note, is_hidden=True)
     else:
         instance.issuelog_set.filter(is_hidden=True).delete()
 
