@@ -19,6 +19,7 @@ from django.core.exceptions import ValidationError
 from django_tables2 import SingleTableView, RequestConfig
 from waffle.decorators import waffle_flag
 
+from api.views import IssueDetailAPIView
 from .forms import ProjectForm, SprintCreateForm, CreateTeamForm, \
     IssueCommentCreateForm, CreateIssueForm, IssueLogForm, \
     IssueFormForEditing, SprintFinishForm, NoteForm, \
@@ -742,3 +743,17 @@ def poker_room_redirect_view(request, project_id):
     project = Project.objects.get(id=project_id)
     link = 'http://' + project.estimation_link
     return redirect(link)
+
+
+import urllib2
+import json
+
+
+def estimate_issue(request, project_id, issue_id):
+    project = Project.objects.get(id=project_id)
+    data = IssueDetailAPIView.as_view({'get': 'retrieve'})(request, pk=issue_id).render().content
+    url = 'http://' + project.estimation_link
+    opener = urllib2.build_opener(urllib2.HTTPHandler)
+    request = urllib2.Request(url, data=json.dumps(data))
+    request.add_header("Content-Type", "application/json")  # Header, Value
+    opener.open(request)

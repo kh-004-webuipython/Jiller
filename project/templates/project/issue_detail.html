@@ -43,6 +43,10 @@
       <a href="{% url 'project:issue_create' project.id %}?root={{ issue.id }}"
          class="btn btn-success">Create sub issue</a>
     {% endflag %}
+    {% if not issue.estimation %}
+      <a href="{% url 'project:issue_estimate' project.id issue.id %}"
+         class="btn btn-info">Estimate this issue</a>
+    {% endif %}
   </div>
   {% include 'project/project_navbar.html' with backlog=True %}
   <div class="col-sm-8">
@@ -52,7 +56,8 @@
         <div class="profile-info-value">
           <div class="progress pos-rel" style="margin-bottom: 0; height: 18px"
                data-percent="{{ issue.completion_rate }}%">
-            <div class="progress-bar" style="width:{{ issue.completion_rate }}%"></div>
+            <div class="progress-bar"
+                 style="width:{{ issue.completion_rate }}%"></div>
           </div>
         </div>
       </div>
@@ -91,14 +96,18 @@
       <div class="profile-info-row">
         <div class="profile-info-name">Author</div>
         <div class="profile-info-value">
-            <span>{% if issue.author %}<a href="{% url 'employee:detail' issue.author.id %}">{{ issue.author }}</a>{% else %}--{% endif %}</span>
+          <span>{% if issue.author %}
+            <a href="{% url 'employee:detail' issue.author.id %}">{{ issue.author }}</a>{% else %}
+            --{% endif %}</span>
         </div>
       </div>
       {% if issue.employee %}
         <div class="profile-info-row">
           <div class="profile-info-name">Assigned to</div>
           <div class="profile-info-value">
-              <span>{% if issue.employee %}<a href="{% url 'employee:detail' issue.employee.id %}">{{ issue.employee }}</a>{% else %}--{% endif %}</span>
+            <span>{% if issue.employee %}
+              <a href="{% url 'employee:detail' issue.employee.id %}">{{ issue.employee }}</a>{% else %}
+              --{% endif %}</span>
           </div>
         </div>
       {% endif %}
@@ -111,7 +120,8 @@
     </div>
     <div class="space-10"></div>
     <div class="tabbable">
-      <ul class="nav nav-tabs padding-12 tab-color-blue background-blue" id="myTab4">
+      <ul class="nav nav-tabs padding-12 tab-color-blue background-blue"
+          id="myTab4">
         <li class="active">
           <a data-toggle="tab" href="#comments-tab">Comments</a>
         </li>
@@ -122,7 +132,8 @@
 
       <div class="tab-content">
         <div id="comments-tab" class="tab-pane in active">
-          <form method="post" action='{% url 'project:issue_detail' project.id issue.id %}'>
+          <form method="post"
+                action='{% url 'project:issue_detail' project.id issue.id %}'>
             <input type='hidden' name="comment" value="1">
             <div style='margin-top: 0' class="form-actions">
               <div class="input-group">
@@ -232,7 +243,9 @@
                     <th>#</th>
                     <th>Title</th>
                     <th>Status</th>
-                    <th>Estimation</th>
+                    {% if issue.root.estimation %}
+                      <th>Estimation</th>
+                    {% endif %}
                   </tr>
                   </thead>
                   <tbody>
@@ -243,7 +256,9 @@
                         {{ issue.root.title }}</a>
                     </td>
                     <td>{{ issue.root.status }}</td>
-                    <td>{{ issue.root.estimation }}</td>
+                    {% if issue.root.estimation %}
+                      <td>{{ issue.root.estimation }}</td>
+                    {% endif %}
                   </tr>
                   </tbody>
                 </table>
@@ -268,7 +283,9 @@
                     <th>#</th>
                     <th>Title</th>
                     <th>Status</th>
-                    <th>Estimation</th>
+                    {% if child.estimation %}
+                      <th>Estimation</th>
+                    {% endif %}
                   </tr>
                   </thead>
                   <tbody>
@@ -279,7 +296,9 @@
                         <a href="{% url 'project:issue_detail' project.id child.id %}">{{ child.title }} </a>
                       </td>
                       <td>{{ child.status }}</td>
-                      <td>{{ child.estimation }}</td>
+                      {% if child.estimation %}
+                        <td>{{ child.estimation }}</td>
+                      {% endif %}
                     </tr>
                   {% endfor %}
                   </tbody>
@@ -291,19 +310,23 @@
       </div>
     </div>
   </div>
-  <div id="log-modal" data-success-title="Your log was successfully created" class="modal" tabindex="-1">
+  <div id="log-modal" data-success-title="Your log was successfully created"
+       class="modal" tabindex="-1">
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
-          <button type="button" class="close" data-dismiss="modal">&times;</button>
+          <button type="button" class="close" data-dismiss="modal">&times;
+          </button>
           <h4 class="blue bigger">Creating an issue log</h4>
         </div>
         <div class="modal-body">
           <div class="row">
-            <form id="log-modal-form" method="post" action="{% url 'project:issue_detail' project.id issue.id %}">
+            <form id="log-modal-form" method="post"
+                  action="{% url 'project:issue_detail' project.id issue.id %}">
               <input type='hidden' name="log" value="1">
               {% for field in log_form %}
-                <div class="form-group {% if field.errors %} has-error {% endif %}">
+                <div
+                    class="form-group {% if field.errors %} has-error {% endif %}">
                   <label
                       class="col-sm-1 control-label no-padding-right">{{ field.label_tag }}</label>
                   <div class="col-sm-11">

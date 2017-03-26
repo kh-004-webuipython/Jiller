@@ -81,7 +81,7 @@ class IssueListAPIView(ListAPIView):
 
     def get_queryset(self, *args, **kwargs):
         # queryset_list = super(PostListAPIView, self).get_queryset(*args, **kwargs)
-        queryset_list = Issue.objects.all().filter(status=Issue.NEW)
+        queryset_list = Issue.objects.all()
         # query = self.request.GET.get("q")
         # if query:
         #     queryset_list = queryset_list.filter(

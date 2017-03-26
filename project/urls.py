@@ -56,6 +56,8 @@ urlpatterns = [
         views.IssueSearchView.as_view(), name='issue_search'),
     url(r'^(?P<project_id>[0-9]+)/issue_create/(?P<sprint_status>\w+)/$',
         views.issue_create_workload, name='issue_create_workload'),
+    url(r'^(?P<project_id>[0-9]+)/issue/(?P<issue_id>[0-9]+)/estimate/$',
+        views.estimate_issue, name='issue_estimate'),
 
     # team
     url(r'^(?P<project_id>\d+)/team/$', views.team_view, name='team'),
