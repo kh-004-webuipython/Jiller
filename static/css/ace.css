@@ -47,7 +47,7 @@ body {
 
 .main-content {
     margin-left: 0;
-    min-height: calc(100vh - 45px - 23px);
+    min-height: calc(100vh - 45px - 56px);
     padding: 0;
 
 }
@@ -9732,7 +9732,8 @@ fieldset[disabled] .btn-white.btn-grey.active {
     font-size: 13px;
     padding-left: 11px;
     padding-right: 11px;
-    padding-bottom: 4px;
+    padding-bottom: 7px;
+    padding-top: 7px;
     margin-bottom: 1px;
     margin-top: 1px;
 }
@@ -9915,7 +9916,8 @@ fieldset[disabled] .btn-white.btn-grey.active {
 
 .dropdown-menu.dropdown-close.dropdown-menu-right {
     left: auto;
-    right: -5px;
+    right: 0;
+
 }
 
 .dropdown-menu.dropdown-closer {
@@ -12788,11 +12790,11 @@ td,
 }
 
 .table > thead > tr > th:first-child {
-    border-left-color: #F1F1F1;
+    border-left-color: #ddd;
 }
 
 .table > thead > tr > th:last-child {
-    border-right-color: #F1F1F1;
+    border-right-color: #ddd;
 }
 
 .table.table-bordered > thead > tr > th {
@@ -15888,13 +15890,13 @@ li.item-default {
 
 .profile-user-info {
     display: table;
-    width: 98%;
-    width: calc(100% - 24px);
     margin: 0 auto;
+    width: 100%;
 }
 
 .profile-info-row {
     display: table-row;
+    padding: 0;
 }
 
 .profile-info-name {
@@ -15905,7 +15907,7 @@ li.item-default {
     background-color: transparent;
     border-top: 1px dotted #D5E4F1;
     display: table-cell;
-    width: 110px;
+    width: 25%;
     vertical-align: middle;
 }
 

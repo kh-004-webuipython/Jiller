@@ -5,13 +5,20 @@ from django.utils.translation import ugettext_lazy as _
 from django.shortcuts import render, redirect, reverse
 from django.http import HttpResponseRedirect, Http404
 
-from employee.models import Employee
+from employee.models import Employee, IssueLog
+from project.models import Issue
 from .forms import LoginForm, RegistrationForm
 from .email_confirmation import sender
+from employee.tables import LogsTable
+from project.tables import IssuesInProfileTable, CommentsTable
+from employee.views import generate_tables
 
 
 def home_page(request):
-    return render(request, 'general/home_page.html')
+    user = Employee.objects.get(pk=request.user.pk)
+
+    return render(request, 'general/home_page.html', generate_tables(user,
+                                                                     user))
 
 
 def login_form_view(request):
@@ -23,9 +30,37 @@ def login_form_view(request):
             if user is not None:
                 if user.is_confirmed:
                     login(request, user)
+
+                    # make redirect to last project from cookies
+                    if user.groups.all():
+                        role_pk = user.groups.all()[0].pk
+                        cookie_name = 'Last_pr' + str(role_pk) + '#' + \
+                                      str(user.id)
+
+                        if cookie_name in request.COOKIES:
+                            last_project = request.COOKIES.get(cookie_name)
+                            # make future redirects depend by role
+                            # developer
+                            if role_pk == 1:
+                                return redirect('project:sprint_active',
+                                                project_id=int(last_project))
+                            # scrum
+                            elif role_pk == 2:
+                                return redirect('project:sprint_active',
+                                                project_id=int(last_project))
+                            # product owner
+                            elif role_pk == 3:
+                                return redirect('project:backlog',
+                                                project_id=int(last_project))
+                            # project manager
+                            elif role_pk == 4:
+                                return redirect('project:team',
+                                                project_id=int(last_project))
+
                     return redirect('general:home_page')
                 else:
-                    return render(request, 'general/require_key.html', {'user': user})
+                    return render(request, 'general/require_key.html',
+                                          {'user': user})
 
         messages.error(request, _("Wrong username or password"))
         return redirect('general:login')

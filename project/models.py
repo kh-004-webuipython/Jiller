@@ -71,7 +71,7 @@ class Sprint(models.Model):
     status = models.CharField(verbose_name=_('Status'),
                               choices=SPRINT_STATUS_CHOICES, default=NEW,
                               max_length=255)
-    duration = models.PositiveIntegerField(verbose_name=_('Duration'))
+    duration = models.PositiveIntegerField(verbose_name=_('Duration in days'))
     release_link = models.URLField(blank=True, null=True)
     feedback_text = models.TextField(max_length=5000, verbose_name=_('Sprint review'),
                                      null=True, blank=True)
@@ -196,7 +196,7 @@ class Issue(models.Model):
                               choices=ISSUE_STATUS_CHOICES, default=NEW,
                               max_length=255)
     type = models.CharField(verbose_name=_('Type'),
-                            choices=ISSUE_TYPE_CHOICES, default=TASK,
+                            choices=ISSUE_TYPE_CHOICES, default=USER_STORY,
                             max_length=255)
     estimation = models.PositiveIntegerField(verbose_name=_('Estimation'),
                                              validators=[
@@ -297,8 +297,9 @@ class ProjectNote(models.Model):
     project = models.ForeignKey(Project, verbose_name=_('Project'))
     title = models.CharField(max_length=25, verbose_name=_('Title'),
                              null=True, blank=True)
-    content = models.TextField(max_length=5000, verbose_name=_('Note text'),
+    content = models.TextField(max_length=10000, verbose_name=_('Note text'),
                                null=True, blank=True)
+    picture = models.ImageField(upload_to='notes/', null=True, blank=True)
 
     def __str__(self):
         return self.title

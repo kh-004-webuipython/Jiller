@@ -65,7 +65,7 @@ button.team-event:focus {
 div.project-detail {
     padding: 0;
     float: left;
-    margin: 7px 0 7px 7px;
+    margin: 7px 0 7px 0;
 }
 
 .progress {
@@ -112,8 +112,17 @@ div.project-detail {
     min-height: 46px;
 }
 
-.background-blue {
+.background-loading {
     background: rgba(150, 205, 141, 0.8);
+}
+
+.background-overloaded {
+    background-color: #d15b47;
+}
+
+.background-back-to-back {
+    background-color: #d9edf7;
+    color: #478fca!important;
 }
 
 .no-underline:hover {
@@ -134,6 +143,7 @@ div.project-detail {
     padding: 0 15px 0;
     height: calc(100% - 260px);
     right: 0;
+    z-index: 100;
 }
 
 .limit-text-width {
@@ -167,4 +177,58 @@ tr.Task {
 
 tr.Bug {
     background-color: #f2dede;
+}
+
+
+.social-login a {
+    width: 34px;
+    height: 34px;
+    line-height: 38px;
+}
+
+.social-login a > .ace-icon {
+    font-size: 20px;
+}
+
+.ace-nav > li {
+    border-left: none;
+}
+
+@media only screen and (min-width: 992px){
+    .navbar-container {
+        padding-right: 0;
+    }
+}
+
+.orderable.start_date, .orderable.end_date, .orderable.status{
+    text-align: center;
+}
+
+.online-status {
+    padding-right: 10px;
+    font-weight: normal;
+    color: #667E99;
+    background-color: transparent;
+    display: table-cell;
+    vertical-align: middle;
+}
+
+@-moz-document url-prefix() {
+    #id_photo {
+        height: auto;
+        padding-top: 2px;
+        padding-bottom: 1px;
+    }
+}
+
+input[required] {
+    border: 1px solid dimgrey;
+}
+
+.issue-create input[type="checkbox"] {
+    margin-top: 12px;
+}
+
+hr {
+    margin: 0;
 }

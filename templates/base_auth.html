@@ -15,8 +15,6 @@
 
   {# Block where global CSS will go. #}
   {% block styles %}
-    {#custom styles#}
-    <link rel="stylesheet" href="{% static 'css/style.css' %}">
     <!-- bootstrap & fontawesome -->
     <link rel="stylesheet" href='{% static 'css/bootstrap.css' %}'
           type='text/css'/>
@@ -31,6 +29,9 @@
     <link href='{% static "css/ace.css" %}' rel='stylesheet' type='text/css'
           class="ace-main-stylesheet"
           id="main-ace-style"/>
+    {#custom styles#}
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="stylesheet" href="{% static 'css/social.css' %}">
   {% endblock %}
 </head>
 

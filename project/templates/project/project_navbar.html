@@ -2,7 +2,8 @@
 {% load waffle_tags %}
 
 <div class="page-header" data-project="{{ project.id }}">
-    <h1>{{ project.title }}</h1></div>
+    <h1>{{ project.title }}
+      {% if detail %}<small> started on {{ project.start_date|date:'d.m.Y' }}</small>{% endif %}</h1></div>
 
 {% for message in messages %}
   <p class="red pull-right">

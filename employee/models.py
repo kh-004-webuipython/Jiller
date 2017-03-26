@@ -3,6 +3,7 @@ from datetime import date, datetime
 
 from django.utils.encoding import python_2_unicode_compatible
 from django.utils import timezone
+# from django.utils.dateparse import parse_date
 from django.utils.translation import ugettext_lazy as _
 from django.core.exceptions import ValidationError
 from django.core.validators import MinValueValidator
@@ -15,6 +16,7 @@ from simple_email_confirmation.models import SimpleEmailConfirmationUserMixin
 from sorl.thumbnail import get_thumbnail
 
 from project.models import ProjectTeam, Project
+from .utils.get_online_status import get_online_status
 
 
 @python_2_unicode_compatible
@@ -22,6 +24,8 @@ class Employee(SimpleEmailConfirmationUserMixin, AbstractUser):
     date_birth = models.DateField(verbose_name=_('Date birth'), null=True,
                                   blank=True)
     photo = models.ImageField(upload_to='avatars/', null=True, blank=True)
+    last_activity = models.DateTimeField(verbose_name=_('Last activity'), null=True,
+                                         blank=True)
 
     def get_all_projects(self):
         return Project.objects.get_user_projects(
@@ -29,6 +33,14 @@ class Employee(SimpleEmailConfirmationUserMixin, AbstractUser):
 
     def __str__(self):
         return self.username
+
+    def online_status(self):
+        if not self.last_activity:
+            status = 'Never logged in'
+        else:
+            status = get_online_status(self.last_activity)
+
+        return status
 
     def calculate_age(self):
         if self.date_birth:

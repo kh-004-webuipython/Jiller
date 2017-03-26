@@ -1,11 +1,12 @@
 {% load waffle_tags %}
+{% load mathfilters %}
 
 {% if items %}
 <div id="sprint-status" data-status="{{ sprint_status }}"></div>
 <div class="row">
   {% for item in items %}
     <div class="col-md-3">
-      <ul class="list-group">
+      <ul class="list-group pos-rel">
         <li class="blue lighter bigger-120 list-group-item">
           <span class="glyphicon glyphicon-user"></span>&nbsp
             <a class="no-underline" href="{% url 'employee:detail' item.employee.id %}">
@@ -39,8 +40,17 @@
             </li>
           {% endfor %}
         {% endif %}
-        <li class="list-group-item white background-blue bigger-110">Free hours
-          <span class="badge">{{ item.free }}</span></li>
+
+        <li class="list-group-item white bigger-110{% if item.free < 0 %}
+            background-overloaded">Overloaded
+          {% elif item.free == 0 %}
+            background-back-to-back text-center">Back to back
+          {% else %}
+            background-loading">Free hours
+          {% endif %}
+          {% if item.free != 0 %}
+            <span class="badge">{{ item.free|abs }}</span></li>
+          {% endif %}
       </ul>
     </div>
   {% if forloop.counter == 3 %}

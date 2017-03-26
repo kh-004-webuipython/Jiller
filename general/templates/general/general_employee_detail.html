@@ -2,6 +2,8 @@
 {% load i18n %}
 {% load thumbnail %}
 {% load visible_logs %}
+{% load render_table from django_tables2 %}
+{% load security_data %}
 
 {# block user profile #}
 <div class="page-header"><h1>{{ user.get_full_name }}</h1></div>
@@ -38,6 +40,8 @@
           Comments
         </a>
       </li>
+
+      <span class="pull-right online-status">{{ online_status }}</span>
     </ul>
 
     <div class="tab-content no-border padding-24">
@@ -56,8 +60,10 @@
                 />
               </span>
             <div>
+              {% if profile or user == request.user %}
               <a href="accounts/social/connections/">Edit social network
                 authentications</a>
+              {% endif %}
             </div>
             <div class="space space-4"></div>
           </div>
@@ -68,6 +74,13 @@
                 <div class="profile-info-name"> Username</div>
                 <div class="profile-info-value">
                   <span>{{ user.username }}</span>
+                </div>
+              </div>
+
+              <div class="profile-info-row">
+                <div class="profile-info-name"> Role</div>
+                <div class="profile-info-value">
+                  <span>{{ user.get_role }}</span>
                 </div>
               </div>
 
@@ -95,134 +108,46 @@
               </div>
 
               <div class="profile-info-row">
-                {% if user.is_authenticated %}
-                  <div class="profile-info-name">Online</div>
-                  <div class="profile-info-value">
-                  <span>True</span>
-                {% else %}
-                  <div class="profile-info-name">Last login</div>
-                  <div class="profile-info-value">
-                  <span>{{ user.last_login }}</span>
-                {% endif %}
-                </div>
+                <div class="profile-info-name">In action</div>
+                <div class="profile-info-value">
+                  <span class="{% if user.is_active %}
+                  glyphicon glyphicon-ok green{% else %}
+                  glyphicon glyphicon-remove red{% endif %}"></span>
                 </div>
               </div>
             </div>
-            <div class="hr hr-8 dotted"></div>
           </div>
+          <div class="hr hr-8 dotted"></div>
         </div>
-        {# end block user profile #}
-        {#block user logs#}
+      </div>
+      {# end block user profile #}
+      {#block user logs#}
 
-        <div id="logs" class="tab-pane fade">
-          <table id="simple-table" class="table  table-bordered table-hover">
-            <thead>
-            <tr>
-              <th>Issue</th>
-              <th>Costs</th>
-              <th>Note</th>
-            </tr>
-            </thead>
-            <tbody>
-            {% for log in user.issuelog_set.all|visible_logs %}
-              <tr>
-                <td class="col-sm-2">
-                  <a href="{% url 'project:issue_detail' log.issue.project.id log.issue.id %}">
-                    {{ log.issue.title }}
-                  </a>
-                </td>
-                <td class="col-sm-1"><span>{{ log.cost }}</span></td>
-                <td class="col-sm-9"><span>{{ log.note }}</span></td>
-              </tr>
-            {% endfor %}
-            </tbody>
-          </table>
-        </div>
+      <div id="logs" class="tab-pane fade">
+          {% if table_logs %}
+            {% render_table table_logs "base_table.html" %}
+          {% endif %}
+      </div>
 
-        {# end block user logs #}
-        {#block user issue#}
+       {# end block user logs #}
+       {#block user issue#}
 
-        <div id="issues" class="tab-pane fade">
-          <table id="simple-table" class="table  table-bordered table-hover">
-            <thead>
-            <tr>
-              <th>Author</th>
-              <th>Title</th>
-              <th>Status</th>
-              <th>Estimation</th>
-              <th>Project</th>
-              <th>Sprint</th>
-            </tr>
-            </thead>
-            <tbody>
-            {% for issue in user.employee_issue_set.all %}
-              <tr>
-                <td><a href="{% url 'employee:detail' issue.author.id %}">{{ issue.author }}</a></td>
-                <td><a href="{% url 'project:issue_detail' issue.project.id issue.id %}">{{ issue.title }}</a></td>
-                <td><span>{{ issue.status }}</span></td>
-                <td><span>{{ issue.estimation }}</span></td>
-                <td><a href="{% url 'project:detail' issue.project.id %}">{{ issue.project.title }}</a></td>
+      <div id="issues" class="tab-pane fade">
+            {% if table_issues %}
+              {% render_table table_issues "base_table.html" %}
+            {% endif %}
+      </div>
 
-                <td>
-                  {% if issue.sprint %}
-                    <a href="{% url 'project:sprint_detail' issue.project.id issue.sprint.id %}">
-                      {{ issue.sprint.title }}
-                    </a>
-                  {% else %}
-                    <span>None</span>
-                  {% endif %}</td>
+      <div id="projects" class="tab-pane fade">
+          {% if table_projects %}
+            {% render_table table_projects "base_table.html" %}
+          {% endif %}
+      </div>
 
-              </tr>
-            {% endfor %}
-            </tbody>
-          </table>
-        </div>
-
-        <div id="projects" class="tab-pane fade">
-          <table id="simple-table" class="table  table-bordered table-hover">
-            <thead>
-            <tr>
-              <th>Title</th>
-              <th>Start date</th>
-              <th>End date</th>
-            </tr>
-            </thead>
-            <tbody>
-            {% for project in user.get_all_projects %}
-              <tr>
-                <td><a href="{% url 'project:detail' project.id %}">{{ project.title }}</a></td>
-                <td><span>{{ project.start_date }}</span></td>
-                <td><span>{{ project.end_date }}</span></td>
-              </tr>
-            {% endfor %}
-            </tbody>
-          </table>
-        </div>
-
-        <div id="comments" class="tab-pane fade">
-          <table id="simple-table" class="table  table-bordered table-hover">
-            <thead>
-            <tr>
-              <th>Issue</th>
-              <th>Text</th>
-              <th>Date created</th>
-            </tr>
-            </thead>
-            <tbody>
-            {% for comment in user.issuecomment_set.all %}
-              <tr>
-                <td class="col-sm-2">
-                  <a href="{% url 'project:issue_detail' comment.issue.project.id comment.issue.id %}">
-                    {{ comment.issue.title }}
-                  </a>
-                </td>
-                <td class="col-sm-1"><span>{{ comment.text }}</span></td>
-                <td class="col-sm-9"><span>{{ comment.get_pretty_date_created }}</span></td>
-              </tr>
-            {% endfor %}
-            </tbody>
-          </table>
-        </div>
+      <div id="comments" class="tab-pane fade">
+          {% if table_comments %}
+            {% render_table table_comments "base_table.html" %}
+          {% endif %}
       </div>
     </div>
   </div>
