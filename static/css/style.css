@@ -1,160 +1,181 @@
-html, body {
-    min-height: 100%;
-    position: relative;
+* {
     margin: 0;
     padding: 0;
+    box-sizing: border-box;
+    font-size: 14px;
+    border-radius: 0;
+}
+.profile {
+    float: right;
+    padding: 0 20px;
+    background-color: beige;
 }
 
-*:focus {
-    outline: none!important;
-}
-
-#main-container{
-    min-height: 100%;
-    position: relative;
-    padding-bottom: 56px;
-    margin: 0;
-}
-
-/* some elements used in demo only */
-.spinner-preview {
-    width: 100px;
-    height: 100px;
+#poker-app {
     text-align: center;
-    margin-top: 60px;
 }
 
-.dropdown-preview {
-    margin: 0 5px;
-    display: inline-block;
+.user-box {
+    height: 490px;
+    margin: 0;
+    padding: 25px;
+    width: auto;
+    border: 1px solid lightsteelblue;
+    overflow-y: auto;
 }
 
-.dropdown-preview > .dropdown-menu {
+.chat-box {
+    padding-top: 15px;
+    border: 1px solid lightsteelblue;
+}
+
+.user-list {
+    display: table-cell;
+    text-align: center;
+}
+
+.main-block {
     display: block;
-    position: static;
-    margin-bottom: 5px;
+    height: 490px;
+    padding-top: 15px;
+    border: 1px solid lightsteelblue;
+    overflow-x: hidden;
+    overflow-y: auto;
 }
 
-a#createprojectbtn {
-    margin-bottom: 8px;
+.comment-box {
+    height: 350px;
+    overflow-y: auto;
+}
+.comment > p {
+    margin: 0;
 }
 
-.navbar-margin-bottom {
-    margin-bottom: 10px;
-}
-
-.ui-sortable-helper {
-    display: table !important;
-}
-
-button.team-event {
-    border: none;
-    background: white;
-}
-
-button.active-sprint-event {
-    outline: none;
-    border: 0 !important;
-    background: transparent;
-}
-
-button.team-event:focus {
-    outline: none
-}
-
-div.project-detail {
-    padding: 0;
-    float: left;
-    margin: 7px 0 7px 7px;
-}
-
-.progress {
+.comment {
+    min-height: 15px;
     width: 100%;
-    height: 2px;
+    text-align: left;
+    margin-top: 10px;
 }
 
-.progress-wrap {
-    margin: 0 0;
-    overflow: hidden;
-    position: relative;
+div.comment-box div.comment :nth-child(even) {
+    background-color: #f5f5f5;
 }
 
-.progress-wrap .progress-bar {
-    background: #ddd;
-    left: 0;
-    position: absolute;
-    top: 0;
+.comment :first-child {
+    font-size: 0.9em;
+    font-weight: 600;
 }
 
-.background-red {
-    background: #FF464B;
+.current-issue {
+    min-height: 300px;
 }
 
-.background-green {
-    background: #7cfb00;
+.info {
+    display: table;
+    margin: 0 auto;
+    width: 100%;
 }
 
-.background-yellow {
-    background: #ffca2c;
+.info-striped {
+    border: 1px solid #DCEBF7;
 }
 
-.contant-box {
-    min-height: 2px;
+.info-row {
+    display: table-row;
+    padding: 0;
 }
 
-.background-blue {
-    background: rgba(150, 205, 141, 0.8);
+.info-name {
+    text-align: right;
+    padding: 6px 10px 6px 4px;
+    font-weight: normal;
+    color: #667E99;
+    background-color: transparent;
+    border-top: 1px dotted #D5E4F1;
+    display: table-cell;
+    vertical-align: middle;
 }
 
-.no-underline:hover {
-    text-decoration: none;
+.info-value {
+    display: table-cell;
+    width: 75%;
+    padding: 6px 4px 6px 6px;
+    border-top: 1px dotted #D5E4F1;
+    border-left: 1px dotted #D5E4F1;
 }
 
-.fixed-backlog-pool {
-    height: calc(100%);
-    position: static;
-    width: calc(100% + 32px);
-    padding-right: 20px;
-    overflow-y: scroll;
+
+.info-striped .info-name {
+    color: #336199;
+    background-color: #EDF3F4;
+    border-top: 1px solid #F7FBFF;
 }
 
-.backlog-wrap {
-    position: fixed;
-    width: calc((100% - 196px)* 0.25);
-    padding: 0 15px 0;
-    height: calc(100% - 260px);
-    right: 0;
-}
-
-.limit-text-width {
-    width: 80%;
+.card {
     display: inline-block;
+    width: 110px;
+    height: 150px;
+    margin: 10px;
+    padding: 5px;
+    border: 1px solid black;
+    border-radius: 5px;
+    background-color: #EDF3F4;
 }
 
-td.User_story {
-    background-color: #d9edf7;
+.card:hover {
+    background-color: #c2c1f4;
 }
 
-td.Task {
-    background-color: #dff0d8;
+.card-top-data {
+    text-align: left;
+    font-size: 14px;
 }
 
-td.Bug {
-    background-color: #f2dede;
+.card-center-data {
+    display: block;
+    height: 100px;
+    width: 80px;
+    margin: 0 auto;
+    border: 1px solid black;
+    border-radius: 5px;
+    line-height: 2.6;
+    font-size: 36px;
 }
 
-td.User_story a, td.Task a, td.Bug a {
-    color: #333;
+.card-center-data .fa-coffee {
+    font-size: 1.6em;
+    line-height: 1.6;
 }
 
-tr.User_story {
-    background-color: #d9edf7;
+.chosen {
+    background-color: #7c8af4 !important;
 }
 
-tr.Task {
-    background-color: #dff0d8;
+.user-list > .info-row > .info-value > .fa {
+   position: absolute;
+    top: 0;
+    left: 33%;
 }
 
-tr.Bug {
-    background-color: #f2dede;
+.card-bottom-data {
+    text-align: right;
+    bottom: 0;
+    font-size: 14px;
+}
+
+.flex {
+    display: flex;
+}
+
+.issue-bar {
+    position: absolute;
+    bottom: 0;
+    height: 30px;
+    width: 100%;
+    margin: 5px 0;
+}
+
+.form-control, .btn {
+    border-radius: 0 !important;
 }

@@ -1294,14 +1294,10 @@ p {
   font-size: 16px;
   font-weight: 300;
   line-height: 1.4;
-
 }
 @media (min-width: 768px) {
   .lead {
     font-size: 21px;
-    float: none;
-    display: block;
-    overflow: hidden;
   }
 }
 small,
