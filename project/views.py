@@ -2,6 +2,7 @@ import datetime
 import json
 import re
 
+import requests
 from django.contrib import messages
 from django.conf import settings
 from django.db.models import Q
@@ -17,8 +18,11 @@ from django.utils.decorators import method_decorator
 from django.urls import reverse
 from django.core.exceptions import ValidationError
 from django_tables2 import SingleTableView, RequestConfig
+from rest_framework.request import Request
+from rest_framework.test import APIRequestFactory
 from waffle.decorators import waffle_flag
 
+from api.serializers import IssueDetailSerializer
 from api.views import IssueDetailAPIView
 from .forms import ProjectForm, SprintCreateForm, CreateTeamForm, \
     IssueCommentCreateForm, CreateIssueForm, IssueLogForm, \
@@ -745,15 +749,21 @@ def poker_room_redirect_view(request, project_id):
     return redirect(link)
 
 
-import urllib2
-import json
-
-
-def estimate_issue(request, project_id, issue_id):
+def poker_room_with_issue_redirect_view(request, project_id, issue_id):
     project = Project.objects.get(id=project_id)
-    data = IssueDetailAPIView.as_view({'get': 'retrieve'})(request, pk=issue_id).render().content
-    url = 'http://' + project.estimation_link
-    opener = urllib2.build_opener(urllib2.HTTPHandler)
-    request = urllib2.Request(url, data=json.dumps(data))
-    request.add_header("Content-Type", "application/json")  # Header, Value
-    opener.open(request)
+    issue = Issue.objects.get(id=issue_id)
+    # url = 'http://' + project.estimation_link
+    url = 'http://httpbin.org/post'
+    factory = APIRequestFactory()
+    request = factory.get('/')
+
+    serializer_context = {
+        'request': Request(request),
+    }
+    data = IssueDetailSerializer(instance=issue, context=serializer_context)
+    headers = {'Content-Type': 'application/json'}
+
+    r = requests.post(url, data=data, headers=headers)
+    print r.content
+    return r.content
+    # return json.dumps(r.json(), indent=4)

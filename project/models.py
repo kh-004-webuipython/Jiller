@@ -28,7 +28,7 @@ class ProjectModelManager(models.Manager):
 
 
 def generate_estimation_link():
-    estimation_link = 'google.com'
+    estimation_link = 'localhost:8000'
     return estimation_link
 
 

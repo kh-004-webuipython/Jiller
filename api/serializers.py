@@ -15,7 +15,7 @@ class ProjectSerializer(ModelSerializer):
     class Meta:
         model = Project
         fields = [
-            # 'id',
+            'id',
             'title',
             'description',
         ]
@@ -27,9 +27,7 @@ class IssueCreateUpdateSerializer(ModelSerializer):
     class Meta:
         model = Issue
         fields = [
-            # 'id',
             'root',
-            # 'project',
             'title',
             'description',
             'status',
@@ -57,7 +55,6 @@ class IssueDetailSerializer(ModelSerializer):
         fields = [
             'url',
             'project',
-            'sprint',
             'root',
             'title',
             'description',
