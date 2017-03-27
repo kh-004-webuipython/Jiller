@@ -1,0 +1,160 @@
+html, body {
+    min-height: 100%;
+    position: relative;
+    margin: 0;
+    padding: 0;
+}
+
+*:focus {
+    outline: none!important;
+}
+
+#main-container{
+    min-height: 100%;
+    position: relative;
+    padding-bottom: 56px;
+    margin: 0;
+}
+
+/* some elements used in demo only */
+.spinner-preview {
+    width: 100px;
+    height: 100px;
+    text-align: center;
+    margin-top: 60px;
+}
+
+.dropdown-preview {
+    margin: 0 5px;
+    display: inline-block;
+}
+
+.dropdown-preview > .dropdown-menu {
+    display: block;
+    position: static;
+    margin-bottom: 5px;
+}
+
+a#createprojectbtn {
+    margin-bottom: 8px;
+}
+
+.navbar-margin-bottom {
+    margin-bottom: 10px;
+}
+
+.ui-sortable-helper {
+    display: table !important;
+}
+
+button.team-event {
+    border: none;
+    background: white;
+}
+
+button.active-sprint-event {
+    outline: none;
+    border: 0 !important;
+    background: transparent;
+}
+
+button.team-event:focus {
+    outline: none
+}
+
+div.project-detail {
+    padding: 0;
+    float: left;
+    margin: 7px 0 7px 7px;
+}
+
+.progress {
+    width: 100%;
+    height: 2px;
+}
+
+.progress-wrap {
+    margin: 0 0;
+    overflow: hidden;
+    position: relative;
+}
+
+.progress-wrap .progress-bar {
+    background: #ddd;
+    left: 0;
+    position: absolute;
+    top: 0;
+}
+
+.background-red {
+    background: #FF464B;
+}
+
+.background-green {
+    background: #7cfb00;
+}
+
+.background-yellow {
+    background: #ffca2c;
+}
+
+.contant-box {
+    min-height: 2px;
+}
+
+.background-blue {
+    background: rgba(150, 205, 141, 0.8);
+}
+
+.no-underline:hover {
+    text-decoration: none;
+}
+
+.fixed-backlog-pool {
+    height: calc(100%);
+    position: static;
+    width: calc(100% + 32px);
+    padding-right: 20px;
+    overflow-y: scroll;
+}
+
+.backlog-wrap {
+    position: fixed;
+    width: calc((100% - 196px)* 0.25);
+    padding: 0 15px 0;
+    height: calc(100% - 260px);
+    right: 0;
+}
+
+.limit-text-width {
+    width: 80%;
+    display: inline-block;
+}
+
+td.User_story {
+    background-color: #d9edf7;
+}
+
+td.Task {
+    background-color: #dff0d8;
+}
+
+td.Bug {
+    background-color: #f2dede;
+}
+
+td.User_story a, td.Task a, td.Bug a {
+    color: #333;
+}
+
+tr.User_story {
+    background-color: #d9edf7;
+}
+
+tr.Task {
+    background-color: #dff0d8;
+}
+
+tr.Bug {
+    background-color: #f2dede;
+}
