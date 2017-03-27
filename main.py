@@ -56,8 +56,9 @@ def create_room():
 def add_issue():
     issue_json = request.get_json(force='True')
     room = room_db.db.rooms
-    q = room.find_one({'title': issue_json["title"]})
-    room.update_one(q, {'$set': issue_json['issue']}, upsert=True)
+    q = room.find_one({'project_id': issue_json["project_id"]})
+    room.update_one(q, {'$set': {'issues': issue_json['issues']}}, upsert=True)
+    return render_template('index.html')
 
 
 state = {
