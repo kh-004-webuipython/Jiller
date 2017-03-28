@@ -1,7 +1,8 @@
 //const USER = 'phobos';
 //const USER_ID = 1;
 const USER_ID = Number(prompt());
-const ROOM = document.querySelector('body').dataset['room'];
+/const ROOM = document.querySelector('body').dataset['room'];
+let ROOM = '';
 const USER = USER_ID;
 let startUserList = [];
 let startIssueList = [];
@@ -11,15 +12,13 @@ function isNumber(n) {
 }
 
 
-
-
-/*
 if (location.pathname.substr(1,4) === 'room') {
-    //ROOM = location.pathname.replace(/^\/room\/|\/$/g, '')
+    ROOM = location.pathname.replace(/^\/room\/|\/$/g, '')
 }
-*/
-let socket = io.connect('http://' + document.domain + ':' + location.port + '/');
-socket.on('connect', () => socket.send('User has connected!') );
+
+let socket = io.connect('http://127.0.0.1:5000');
+socket.on('connect', () => socket.emit('join',{'room': ROOM}));
+console.log(ROOM);
 
 socket.on('start_data', (data) => {
     startUserList = data.user_list;
@@ -283,8 +282,9 @@ class IssueBox extends React.Component {
 
             if (isNumber(this._userList[0].current_vote)) {
                 console.log('vote');
-                let  issue = this.state.currentIssue;
-                socket.emit('accept_estimation', {'issue_id': issue.id, 'estimation': this._userList[0].current_vote});
+                let issue = this.state.currentIssue;
+                let vote = this._userList[0].current_vote
+                socket.emit('accept_estimation', {'issue_id': issue.id, 'estimation': vote});
             }
         } else {
             alert('Sorry, you can not set estimation on issue before all teammates make vote!')
