@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+{% load render_table from django_tables2 %}
+{% load i18n %}
+{% load static %}
+{% load gravatar %}
+
+{% block title %} Employee {% endblock %}
+
+{% block breadcrumbs %}
+  {{ block.super }}
+  <li><span>{% trans 'Employee' %}</span></li>
+{% endblock %}
+
+{% block content %}
+    {% if table %}
+      {% render_table table "base_table.html" %}
+    {% endif %}
+{% endblock %}
+
+{% block extrascripts %}
+
+  <script src="{% static 'js/table.js' %}"></script>
+
+{% endblock %}
+

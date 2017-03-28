@@ -1,0 +1,54 @@
+{% extends 'base_auth.html' %}
+{% load static %}
+
+{% block title %}Registration{% endblock %}
+
+{% block content %}
+  <div class="signup-box visible widget-box no-border">
+    <div class="widget-body">
+      <div class="widget-main">
+        <h4 class="header text-center blue lighter bigger">
+          New User Registration
+        </h4>
+        <div class="space-6"></div>
+        <form action="{% url 'general:registration' %}" enctype="multipart/form-data" method="post">{% csrf_token %}
+          <fieldset>
+            {% for field in form %}
+                <label class="block clearfix">
+              <span class="block input-icon {% if field.errors %} has-error {% endif %} input-icon-right">
+                {{ field }}
+              </span>
+                </label>
+                {% if field.errors %}
+                  <ul>
+                  {% for error in field.errors %}
+                    <li class="red">
+                      {{ error }}
+                    </li>
+                  {% endfor %}
+                {% endif %}
+              </ul>
+            {% endfor %}
+            <div class="space-10"></div>
+            <div class="clearfix">
+              <a href="{% url 'general:registration' %}" class="width-30 pull-left btn btn-sm">
+                <i class="ace-icon fa fa-refresh"></i>
+                <span class="bigger-110">Reset</span>
+              </a>
+              <button type="submit" class="width-65 pull-right btn btn-sm btn-success">
+                <span class="bigger-110">Register</span>
+                <i class="ace-icon fa fa-arrow-right icon-on-right"></i>
+              </button>
+            </div>
+          </fieldset>
+        </form>
+      </div>
+      <div class="toolbar center">
+        <a href="{% url 'general:login' %}" class="back-to-login-link">
+          <i class="ace-icon fa fa-arrow-left"></i>
+          Back to login
+        </a>
+      </div>
+    </div><!-- /.widget-body -->
+  </div>
+{% endblock %}
