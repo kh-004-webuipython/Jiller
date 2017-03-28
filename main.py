@@ -257,6 +257,7 @@ def handle_reset_estimation(vote_obj):
         user['current_vote'] = ''
     emit('reset_estimation', users, broadcast=True)
 
+
 @socketio.on('skip_estimation')
 def handle_reset_estimation(vote_obj):
     users = state['room_500']['user_list']
