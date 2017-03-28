@@ -12,7 +12,7 @@ if (location.pathname.substr(1,4) === 'room') {
     //ROOM = location.pathname.replace(/^\/room\/|\/$/g, '')
 }
 */
-let socket = io.connect('http://127.0.0.1:5000');
+let socket = io.connect('http://' + document.domain + ':' + location.port + '/');
 socket.on('connect', () => socket.send('User has connected!') );
 
 socket.on('start_data', (data) => {
