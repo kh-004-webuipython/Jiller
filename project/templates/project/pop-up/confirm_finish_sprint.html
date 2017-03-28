@@ -1,0 +1,37 @@
+<div id="confirm_finish_modal" class="modal fade" tabindex="-1"
+       role="dialog">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h4 class="modal-title">Confirmation</h4>
+        </div>
+        <form action="{% url 'project:finish_active_sprint' project.id %}"
+              method="post">
+          <div class="modal-body">
+            <strong class="center"><p>Do you really want to finish sprint?</p>
+              <p>To finish the sprint you have to write feedback and fill link
+                on its release.</p></strong>
+            <br>
+            {% csrf_token %}
+            <div class="form-group">
+              {{ form }}
+            </div>
+          </div>
+          <div class="modal-footer">
+            <div class="row " >
+              <div class="col-md-3 col-lg-offset-6">
+                <button type="submit" class="btn btn-primary">
+                  Yes
+                </button>
+              </div>
+              <div class="col-md-3 ">
+                <button type="button" class="btn btn-default"
+                        data-dismiss="modal">Cancel
+                </button>
+              </div>
+            </div>
+          </div>
+        </form>
+      </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+  </div><!-- /.modal -->

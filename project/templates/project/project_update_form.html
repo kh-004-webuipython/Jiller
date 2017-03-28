@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+{% load waffle_tags %}
+{% load i18n %}
+
+{% block title %}Update project{% endblock %}
+{% block breadcrumbs %}
+  {{ block.super }}
+  <li>
+    <a href="{% url 'project:list' %}">Projects</a>
+  </li>
+  <li>
+    <a href="{% url 'project:detail' project.id %}">{{ project.title }}</a>
+  </li>
+  <li>
+    <span>{% trans 'Edit' %}</span>
+  </li>
+
+{% endblock %}
+
+{% block content %}
+
+  {% include 'project/project_navbar.html' with detail=True %}
+  <form role="form" action="" class="form-horizontal" method="post">
+    {% for field in form %}
+      <div class="form-group {% if field.errors %} has-error {% endif %}">
+        <label
+            class="col-sm-3 control-label no-padding-right">{{ field.label_tag }}</label>
+        <div class="col-sm-4">
+          {{ field }}
+          <div class="help-block col-xs-12 col-sm-reset inline">
+            {% if field.errors %}
+                    <ul>
+                        {% for error in field.errors %}
+                        <li>
+                            {{ error }}
+                        </li>
+                        {% endfor %}
+                        {% endif %}
+                    </ul>
+          </div>
+        </div>
+      </div>
+    {% endfor %}
+    {% csrf_token %}
+    <div class="clearfix">
+      <div class="col-sm-offset-3 col-sm-9">
+        <button type="submit" class="btn btn-success">Submit</button>
+        
+        {% flag "delete_project" %}
+        <button class="btn ">Cancel</button>
+        <a class = "btn btn-danger" href="{% url 'project:delete' project.id %}"> Delete </a>
+        {% endflag %}
+      </div>
+    </div>
+  </form>
+
+{% endblock %}

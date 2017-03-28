@@ -1,0 +1,86 @@
+{% extends 'base.html' %}
+{% load render_table from django_tables2 %}
+{% load static %}
+{% load i18n %}
+{% load waffle_tags %}
+
+{% block title %}Team{% endblock %}
+
+{% block breadcrumbs %}
+  {{ block.super }}
+  <li>
+    <a href="{% url 'project:list' %}">Projects</a>
+  </li>
+  <li>
+    <a href="{% url 'project:detail' project.id %}">{{ project.title }}</a>
+  </li>
+  <li>
+    <span>{% trans 'Team' %}</span>
+  </li>
+{% endblock %}
+
+{% block content %}
+  {% if not team %}
+    {% flag 'create_team' %}
+    <a class="btn btn-info pull-right"
+       href="{% url 'project:team_create' project.id %}">Create new team</a>
+    <h3>no team on project</h3>
+    {% endflag %}
+  {% endif %}
+
+  {% include 'project/project_navbar.html' with team=True %}
+
+
+  <div class="col-sm-12 project-detail" >
+    <div style="margin:0" class="profile-user-info profile-user-info-striped">
+      <div class="profile-info-row">
+        <div class="profile-info-name">Project manager</div>
+          {% if pm|length_is:'1' %}
+            <div class="profile-info-value">
+              <span>{{ pm.first.first_name }} {{ pm.first.last_name }}</span>
+            </div>
+          {% elif pm|length_is:'0' %}
+            <div class="profile-info-value">
+              <span>There is no project manager</span>
+            </div>
+          {% else %}
+            <div class="profile-info-value">
+              <span>There are more than one project manager</span>
+            </div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+
+
+  <div class="col-sm-12 profile-info-row" >
+    <table class="table">
+      <tr>
+        <td width="46%" style="padding: 8px 0;">
+          <div>
+            {% if table_cur %}
+              {% render_table table_cur "base_table.html" %}
+            {% endif %}
+          </div>
+        </td>
+        <td width="6%" style="padding: 8px 0;">
+        </td>
+        <td width="46%" style="padding: 8px 0;">
+          <div>
+            {% if table_add %}
+              {% render_table table_add "base_table.html" %}
+            {% endif %}
+          </div>
+        </td>
+      </tr>
+    </table>
+  </div>
+{% endblock %}
+
+{% block extrascripts %}
+  {% flag "update_team" %}
+    <script src="{% static 'js/ajax_csrf.js' %}"></script>
+    <script
+        src="{% static 'project/js/drag_and_drop_employees.js' %}"></script>
+  {% endflag %}
+{% endblock %}

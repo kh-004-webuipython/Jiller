@@ -1,0 +1,386 @@
+[
+{
+  "model": "waffle.flag",
+  "pk": 1,
+  "fields": {
+    "name": "edit_project_detail",
+    "everyone": null,
+    "percent": null,
+    "testing": false,
+    "superusers": true,
+    "staff": true,
+    "authenticated": false,
+    "languages": "",
+    "rollout": false,
+    "note": "",
+    "created": "2017-01-30T15:10:08.958Z",
+    "modified": "2017-01-30T15:10:08.958Z",
+    "groups": [
+      3,4
+    ],
+    "users": []
+  }
+},
+{
+  "model": "waffle.flag",
+  "pk": 2,
+  "fields": {
+    "name": "create_issue",
+    "everyone": null,
+    "percent": null,
+    "testing": false,
+    "superusers": true,
+    "staff": true,
+    "authenticated": false,
+    "languages": "",
+    "rollout": false,
+    "note": "",
+    "created": "2017-01-30T15:10:08.981Z",
+    "modified": "2017-01-30T15:10:08.981Z",
+    "groups": [
+      1,2,3
+    ],
+    "users": []
+  }
+},
+{
+  "model": "waffle.flag",
+  "pk": 3,
+  "fields": {
+    "name": "create_project",
+    "everyone": null,
+    "percent": null,
+    "testing": false,
+    "superusers": true,
+    "staff": true,
+    "authenticated": false,
+    "languages": "",
+    "rollout": false,
+    "note": "",
+    "created": "2017-01-30T15:10:08.993Z",
+    "modified": "2017-01-30T15:10:08.993Z",
+    "groups": [
+      4
+    ],
+    "users": []
+  }
+},
+{
+  "model": "waffle.flag",
+  "pk": 4,
+  "fields": {
+    "name": "edit_issue",
+    "everyone": null,
+    "percent": null,
+    "testing": false,
+    "superusers": true,
+    "staff": true,
+    "authenticated": false,
+    "languages": "",
+    "rollout": false,
+    "note": "",
+    "created": "2017-01-30T15:10:09.003Z",
+    "modified": "2017-01-30T15:10:09.003Z",
+    "groups": [
+      1, 2, 3
+    ],
+    "users": []
+  }
+},
+{
+  "model": "waffle.flag",
+  "pk": 5,
+  "fields": {
+    "name": "create_sprint",
+    "everyone": null,
+    "percent": null,
+    "testing": false,
+    "superusers": true,
+    "staff": true,
+    "authenticated": false,
+    "languages": "",
+    "rollout": false,
+    "note": "",
+    "created": "2017-01-30T16:11:37Z",
+    "modified": "2017-01-30T16:12:29.133Z",
+    "groups": [
+      2
+    ],
+    "users": []
+  }
+},
+  {
+    "model": "waffle.flag",
+    "pk": 1013,
+    "fields": {
+      "name": "edit_sprint",
+      "everyone": null,
+      "percent": null,
+      "testing": false,
+      "superusers": true,
+      "staff": true,
+      "authenticated": false,
+      "languages": "",
+      "rollout": false,
+      "note": "",
+      "created": "2017-01-30T16:11:37Z",
+      "modified": "2017-01-30T16:12:29.133Z",
+      "groups": [
+        2
+      ],
+      "users": []
+    }
+  },
+{
+  "model": "waffle.flag",
+  "pk": 6,
+  "fields": {
+    "name": "push_issue",
+    "everyone": null,
+    "percent": null,
+    "testing": false,
+    "superusers": true,
+    "staff": true,
+    "authenticated": false,
+    "languages": "",
+    "rollout": false,
+    "note": "",
+    "created": "2017-01-30T16:12:35Z",
+    "modified": "2017-01-30T16:13:03.933Z",
+    "groups": [
+      1, 2
+    ],
+    "users": []
+  }
+},
+{
+  "model": "waffle.flag",
+  "pk": 7,
+  "fields": {
+    "name": "delete_project",
+    "everyone": null,
+    "percent": null,
+    "testing": false,
+    "superusers": true,
+    "staff": true,
+    "authenticated": false,
+    "languages": "",
+    "rollout": false,
+    "note": "",
+    "created": "2017-01-30T16:12:35Z",
+    "modified": "2017-01-30T16:13:03.933Z",
+    "groups": [
+      4
+    ],
+    "users": []
+  }
+},
+{
+  "model": "waffle.flag",
+  "pk": 8,
+  "fields": {
+    "name": "prioritize_issue",
+    "everyone": null,
+    "percent": null,
+    "testing": false,
+    "superusers": true,
+    "staff": true,
+    "authenticated": false,
+    "languages": "",
+    "rollout": false,
+    "note": "",
+    "created": "2017-01-30T16:12:35Z",
+    "modified": "2017-01-30T16:13:03.933Z",
+    "groups": [
+      3
+    ],
+    "users": []
+  }
+},
+{
+  "model": "waffle.flag",
+  "pk": 9,
+  "fields": {
+    "name": "update_team",
+    "everyone": null,
+    "percent": null,
+    "testing": false,
+    "superusers": true,
+    "staff": true,
+    "authenticated": false,
+    "languages": "",
+    "rollout": false,
+    "note": "",
+    "created": "2017-01-30T16:12:35Z",
+    "modified": "2017-01-30T16:13:03.933Z",
+    "groups": [
+      4
+    ],
+    "users": []
+  }
+},
+{
+  "model": "waffle.flag",
+  "pk": 10,
+  "fields": {
+    "name": "company_employees_view",
+    "everyone": null,
+    "percent": null,
+    "testing": false,
+    "superusers": true,
+    "staff": true,
+    "authenticated": false,
+    "languages": "",
+    "rollout": false,
+    "note": "",
+    "created": "2017-01-30T16:12:35Z",
+    "modified": "2017-01-30T16:13:03.933Z",
+    "groups": [
+      4
+    ],
+    "users": []
+  }
+},
+{
+  "model": "waffle.flag",
+  "pk": 11,
+  "fields": {
+    "name": "create_team",
+    "everyone": null,
+    "percent": null,
+    "testing": false,
+    "superusers": true,
+    "staff": true,
+    "authenticated": false,
+    "languages": "",
+    "rollout": false,
+    "note": "",
+    "created": "2017-01-30T16:12:35Z",
+    "modified": "2017-01-30T16:13:03.933Z",
+    "groups": [
+      4
+    ],
+    "users": []
+  }
+},
+{
+  "model": "waffle.flag",
+  "pk": 13,
+  "fields": {
+    "name": "read_workflow_manager",
+    "everyone": null,
+    "percent": null,
+    "testing": false,
+    "superusers": true,
+    "staff": true,
+    "authenticated": false,
+    "languages": "",
+    "rollout": false,
+    "note": "",
+    "created": "2017-02-07T16:12:35Z",
+    "modified": "2017-02-08T16:13:03.933Z",
+    "groups": [
+      1,2,3,4
+    ],
+    "users": []
+  }
+},
+{
+  "model": "waffle.flag",
+  "pk": 14,
+  "fields": {
+    "name": "update_workflow_manager",
+    "everyone": null,
+    "percent": null,
+    "testing": false,
+    "superusers": true,
+    "staff": true,
+    "authenticated": false,
+    "languages": "",
+    "rollout": false,
+    "note": "",
+    "created": "2017-02-07T16:12:35Z",
+    "modified": "2017-02-08T16:13:03.933Z",
+    "groups": [
+      1,2
+    ],
+    "users": []
+  }
+},
+{
+  "model": "waffle.flag",
+  "pk": 16,
+  "fields": {
+    "name": "create_task",
+    "everyone": null,
+    "percent": null,
+    "testing": false,
+    "superusers": true,
+    "staff": true,
+    "authenticated": false,
+    "languages": "",
+    "rollout": false,
+    "note": "",
+    "created": "2017-01-30T16:11:37Z",
+    "modified": "2017-01-30T16:12:29.133Z",
+    "groups": [
+      1,2
+    ],
+    "users": []
+  }
+},
+{
+  "model": "waffle.flag",
+  "pk": 17,
+  "fields": {
+    "name": "return_issue_to_backlog",
+    "everyone": null,
+    "percent": null,
+    "testing": false,
+    "superusers": true,
+    "staff": true,
+    "authenticated": false,
+    "languages": "",
+    "rollout": false,
+    "note": "",
+    "created": "2017-01-30T16:11:37Z",
+    "modified": "2017-01-30T16:12:29.133Z",
+    "groups": [
+      2
+    ],
+    "users": []
+  }
+},
+{
+  "pk": 1,
+  "model": "auth.Group",
+  "fields": {
+    "name": "developer"
+  }
+},
+{
+  "pk": 2,
+  "model": "auth.Group",
+  "fields": {
+    "name": "scrum"
+  }
+},
+{
+  "pk": 3,
+  "model": "auth.Group",
+  "fields": {
+    "name": "product owner"
+  }
+},
+{
+  "model": "simple_email_confirmation.emailaddress",
+  "pk": 1,
+  "fields": {
+    "user": 1,
+    "email": "lennon@thebeatles.com",
+    "key": "wJeR0mkBsGzF",
+    "set_at": "2017-02-05T13:31:53.991Z",
+    "confirmed_at": "2017-02-05T13:32:43.555Z"
+  }
+}
+]

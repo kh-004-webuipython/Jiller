@@ -1,0 +1,59 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load i18n %}
+{% load waffle_tags %}
+{% load staticfiles %}
+
+{% block styles %}
+  {{ block.super }}
+  <link rel="stylesheet" type="text/css"
+        href="{% static 'css/notes.css' %}"/>
+{% endblock %}
+
+{% block title %}Developer notes{% endblock %}
+
+{% block breadcrumbs %}
+  {{ block.super }}
+  <li>
+    <a href="{% url 'project:list' %}">Projects</a>
+  </li>
+  <li>
+    <a href="{% url 'project:detail' project.id %}">{{ project.title }}</a>
+  </li>
+  <li>
+    <span>{% trans 'Notes' %}</span>
+  </li>
+{% endblock %}
+
+{% block content %}
+  <button id="btnNew" class="btn btn-info pull-right">Create new note</button>
+
+  {% include 'project/project_navbar.html' with notes=True %}
+
+
+  <div class="notes" data-pr="{{ project.id }}" data-lent="{{ max.t }}"
+       data-lenc="{{ max.c}}">
+    {% for note in notes %}
+      <div class="note center" data-id="{{ note.id }}">
+        <div class="fileUpload btn btn-link hide">
+          <span>Add picture</span>
+          <input type="file" name="picture" class="note-upload" />
+        </div>
+        <textarea class="note-title text-center" maxlength='{{ max.t }}'
+                  rows='1'>{{ note.title }}</textarea>
+        <div class="note-content"><img
+            class="note-picture hide" draggable="false"
+            src="{% if note.picture %}{{ note.picture.url}}{% endif %}"><p
+            contenteditable="true">{{ note.content}}</p>
+        </div>
+        <div class="hide trash"><span class='glyphicon glyphicon-trash'></span>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+{% endblock %}
+
+{% block extrascripts %}
+  <script src="{% static 'js/ajax_csrf.js' %}"></script>
+  <script src="{% static 'project/js/notes.js' %}"></script>
+{% endblock %}

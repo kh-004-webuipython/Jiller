@@ -1,0 +1,50 @@
+.table-container ul.pagination {
+    overflow: auto;
+    margin: 0;
+    padding: 5px;
+    /*border: 1px solid #F4782E;*/
+    list-style: none;
+}
+.table-container ul.pagination > li > a {
+    text-decoration: none;
+    font-weight: bold;
+}
+.table-container ul.pagination li {
+    float: left;
+    line-height: 34px;
+    margin-left: 10px;
+}
+.table-container ul.pagination li:first-child {
+    margin-left: 0;
+}
+
+.table-container ul.pagination li.cardinality {
+    float: right;
+    color: #8d8d8d;
+}
+
+.table-container .true {
+    color: green;
+}
+
+.table-container .false {
+    color: red;
+}
+
+.table tr{
+    valign: top;
+}
+
+.table-sm {
+    width: 100%;
+    margin: 10;
+}
+
+.table {
+    cellpadding: 60;
+}
+.table-container {
+    cellspacing: 0;
+    cellpadding: 5;
+}
+

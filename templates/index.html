@@ -1,4 +1,5 @@
-<html>
+<!DOCTYPE html>
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
   <title>Poker Room</title>
@@ -21,34 +22,40 @@
   <script src="{{ url_for('static', filename='js/vendors/react-dom.js') }}"></script>
   <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
   <script type="text/jsx" src="{{ url_for('static', filename='js/components.js') }}"></script>
-
-
-
-
-
-
 <!--
+  <!--<script type="text/javascript" charset="utf-8">-->
+    <!--var socket = io.connect('https://' + document.domain + ':' + location-->
+    <!--.port + '/')-->
+    <!--socket.on( 'connect', function() {-->
+      <!--socket.emit( 'my event', {-->
+        <!--data: 'user connect'-->
+      <!--})-->
+      <!--socket.emit('join', {-->
+        <!--'username': {{ user_name }},-->
+        <!--'room': {{ room_name }}-->
+        <!--})-->
+      <!--})-->
 
+      <!--var form = $(' form ').on( ' submit ', function( e ) {-->
+        <!--e.preventDefault()-->
+        <!--var user_name = $(' input.username ').val()-->
+        <!--var message = $(' input.message ').val()-->
 
-<script type="text/javascript">
-$(document).ready(function() {
-	var socket = io.connect('http://127.0.0.1:5000');
-	socket.on('connect', function() {
-		socket.send('User has connected!');
-	});
-	socket.on('message', function(msg) {
-		$("#messages").append('<li>'+msg+'</li>');
-		console.log('Received message');
-	});
-	$('#sendbutton').on('click', function() {
-		socket.send($('#myMessage').val());
-		$('#myMessage').val('');
-	});
-});
-</script>
-<ul id="messages"></ul>
-<input type="text" id="myMessage">
-<button id="sendbutton">Send</button>
--->
+        <!--socket.emit('my event', {-->
+          <!--user: user_name,-->
+          <!--msg: message-->
+        <!--})-->
+      <!--})-->
+
+      <!--socket.on('resp', function(msg) {-->
+      <!--if (typeof msg.user !== 'undefined')-->
+      <!--{-->
+        <!--$('h1').remove()-->
+        <!--$('div.msg-wrapper').append('<div class="msgbbl"><b>' + msg.user +-->
+        <!--': ' + '</b>' + msg.msg + '</div>')-->
+      <!--}-->
+        <!--console.log(msg)-->
+      <!--})-->
+      <!--</script>-->
 </body>
-</html>
+

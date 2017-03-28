@@ -1,0 +1,9 @@
+{% extends 'base.html' %}
+{% load gravatar %}
+{% load i18n %}
+{% load thumbnail %}
+{% block title %}Home{% endblock %}
+
+{% block content %}
+{% include 'general/general_employee_detail.html' with user=request.user profile=True %}
+{% endblock %}
