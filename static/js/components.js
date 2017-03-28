@@ -1,11 +1,17 @@
-const USER = 'phobos';
-const USER_ID = 1;
+//const USER = 'phobos';
+//const USER_ID = 1;
+const USER_ID = Number(prompt());
 const ROOM = document.querySelector('body').dataset['room'];
-
-let userList = [];
-let issueList = [];
+const USER = USER_ID;
+let startUserList = [];
+let startIssueList = [];
 let chatLog = [];
-let currentIssue = 0;
+function isNumber(n) {
+  return !isNaN(parseFloat(n)) && isFinite(n);
+}
+
+
+
 
 /*
 if (location.pathname.substr(1,4) === 'room') {
@@ -16,14 +22,25 @@ let socket = io.connect('http://' + document.domain + ':' + location.port + '/')
 socket.on('connect', () => socket.send('User has connected!') );
 
 socket.on('start_data', (data) => {
-    userList = data.user_list;
-    issueList = data.issue_list;
+    startUserList = data.user_list;
+    startIssueList = data.issue_list;
     chatLog = data.chat_log;
-
+    console.log(startUserList);
+    let startIssue = 0;
+let startFlip = (() => {
+	for (var i = 0; i < startUserList.length; i++) {
+		if (startUserList[i].current_vote === '') {
+			return false;
+		}
+	}
+	return true;
+}) ();
+console.log(startFlip, startUserList);
     //*********************************
+    // поднять на уровень выше юзелист и флип
     // Определиться с дизайном естимейшен аксепт
     // написать функцию резет воута, которая будет использоваться при повторном голосвании и успешном сохранении сервером естимешена
-    // accept, reset, skip
+    // пересадить большую часть интерфейса на таблицы
     // поставить вебсокет на новые колеса: gevent + gunicorn + Nginx
     // настроить фласк в облаке
 
@@ -59,8 +76,8 @@ class UserBox extends React.Component {
     constructor() {
         super();
         this.state = {
-            'userList': userList,
-            'flip': false
+            'userList': startUserList,
+            'flip': startFlip,
         }
     }
     componentWillMount() {
@@ -85,7 +102,7 @@ class UserBox extends React.Component {
 
     _getUsers() {
         return (this.state.userList.map(user => {
-                return <User name={user.name} role={user.role} vote={user.current_vote}
+                return <User name={user.name} vote={user.current_vote}
                              key={user.id} flip={this.state.flip} />
             })
         )
@@ -94,8 +111,13 @@ class UserBox extends React.Component {
     _changeUserStatus() {
         socket.on('make_vote', newUserList => {
             this.setState({userList: newUserList});
+            console.log('make_vote');
             if (newUserList.filter(x => x.current_vote).length == newUserList.length) {
                 this.setState({'flip': true});
+                console.log('set_true_flip');
+            } else {
+                this.setState({'flip': false});
+                console.log('set_false_flip');
             }
         });
     }
@@ -118,62 +140,81 @@ class IssueBox extends React.Component {
     constructor() {
         super();
         this.state = {
-            'currentIssue': 1,
+            'currentIssue': startIssueList.filter(x=>x.estimation === '')[0],
             'currentSlide': 'active',
-            'issueList': issueList,
-            'vote': userList.find(x=>x['id']=USER_ID)['current_vote'],
+            'issueList': startIssueList,
+            'vote': startUserList.find(x=>x.id=USER_ID)['current_vote'],
+            'flip': startFlip,
         };
+        this._userList = startUserList;
+
+    }
+
+    componentWillMount() {
+        this._changeUserStatus();
     }
 
     render() {
-        if (this.state.currentSlide == 'active') {
+        if (this.state.currentIssue && this.state.currentSlide == 'active') {
         //current issue slide
             return (
                 <div className="main-block col-md-9">
-                    <div className="info info-striped">
-                        <div className="info-row">
+                    <div className="info info-striped overflow">
+                        <div className="info-row ">
                             <div className="info-name">Issue on estimation:</div>
-                            <div className="info-value">{this.state.issueList[this.state.currentIssue].title}</div>
+                            <div className="info-value">{this.state.currentIssue.title}</div>
                         </div>
                         <div className="info-row">
                             <div className="info-name">Description:</div>
-                            <div className="info-value">{this.state.issueList[this.state.currentIssue].description}</div>
+                            <div className="info-value overflow">{this.state.currentIssue.description}</div>
                         </div>
                     </div>
-                    <CardBox vote={this.state.vote} saveVote={this._setVote.bind(this)} />
+                    <CardBox vote={this.state.vote} flip={this.state.flip} saveVote={this._setVote.bind(this)} />
                     <IssueNavbar activeSlide={this.state.currentSlide} setSlide={this._setSlide.bind(this)} />
                 </div>
             );
         }
-        if (this.state.currentSlide == 'accept') {
+        if (this.state.currentIssue && this.state.currentSlide == 'accept') {
         //current issue slide
             return (
                 <div className="main-block col-md-9">
-                    <div className="info info-striped">
+                    <div className="info info-striped overflow">
                         <div className="info-row">
                             <div className="info-name">Issue on estimation:</div>
-                            <div className="info-value">{this.state.issueList[this.state.currentIssue].title}</div>
+                            <div className="info-value">{this.state.currentIssue.title}</div>
                         </div>
                         <div className="info-row">
                             <div className="info-name">Description:</div>
-                            <div className="info-value">{this.state.issueList[this.state.currentIssue].description}</div>
+                            <div className="info-value">{this.state.currentIssue.description}</div>
                         </div>
+                    </div>
+                    <div>СТАТИСТИКА</div>
+
+                    <div>
+                        <p>Estimation manager</p>
+                        <button className={this._checkBtn('accept')} onClick={this._estimationAccept.bind(this)}>Accept issue estimation</button>
+                        <button className="btn btn-default" onClick={this._estimationReset.bind(this)}>Reset votes</button>
+                        <button className="btn btn-default" onClick={this._estimationSkip.bind(this, 'skip')}>Skip issue</button>
                     </div>
                     <IssueNavbar activeSlide = {this.state.currentSlide} setSlide={this._setSlide.bind(this)} />
                 </div>
             );
 
         }
+
+
+        // аксепт: сенд дату + редирект вкладки
+        // резет: сенд резет + редирект вкладки
+        // скип: сенд резет + редирект
         if (this.state.currentSlide == 'completed') {
         //current issue slide
-            console.log(issueList);
             return (
-                <div className="main-block col-md-9">
+                <div className="main-block col-md-9 overflow">
                 {
                 this.state.issueList.filter(x=>x['estimation']).map((issue, index) => {
                 return (<div className="info info-striped" key={index}>
                     <div className="info-row flex">
-                        <div className="info-name col-md-1">{index}</div>
+                        <div className="info-name col-md-1">{index+1}</div>
                         <div className="info-value col-md-2">{issue.title}</div>
                         <div className="info-value col-md-8">{issue.description}</div>
                         <div className="info-value col-md-1">{issue.estimation}</div>
@@ -181,19 +222,17 @@ class IssueBox extends React.Component {
                     </div>)
                 })
                 }
-                <div>
-                    <IssueNavbar activeSlide={this.state.currentSlide} setSlide={this._setSlide.bind(this)} />
-                </div>
+                <IssueNavbar activeSlide={this.state.currentSlide} setSlide={this._setSlide.bind(this)} />
              </div>)
         }
         if (this.state.currentSlide == 'all') {
         //current issue slide
-            return (<div className="main-block col-md-9">
+            return (<div className="main-block col-md-9 overflow">
                 <div className="info info-striped">
                 {
                 this.state.issueList.map((issue, index) => {
                 return (<div className="info-row flex" key={index}>
-                    <div className="info-name col-md-1">{index}</div>
+                    <div className="info-name col-md-1">{index+1}</div>
                     <div className="info-value col-md-2">{issue.title}</div>
                     <div className="info-value col-md-8">{issue.description}</div>
                     <div className="info-value col-md-1">{issue.estimation}</div>
@@ -201,21 +240,122 @@ class IssueBox extends React.Component {
                 })
                 }
                 </div>
-                <div>
+                <IssueNavbar activeSlide={this.state.currentSlide} setSlide={this._setSlide.bind(this)} />
+            </div>);
+        } else {
+        //current issue slide
+            return (
+                <div className="main-block col-md-9">
+                    <div className="info info-striped overflow">
+                        <p className="text-center">No Issues to estimate</p>
+                    </div>
                     <IssueNavbar activeSlide={this.state.currentSlide} setSlide={this._setSlide.bind(this)} />
                 </div>
-            </div>);
-
+            );
         }
     }
 
     _setSlide(slide) {
         this.setState({'currentSlide': slide});
+        console.log('set_slide');
     }
 
     _setVote(vote) {
         this.setState({vote});
+        console.log('set_vote');
     }
+
+    _checkBtn(btn) {
+        if (btn == 'accept') {
+            return this.state.flip ? "btn btn-success" : "btn btn-danger";
+        }
+    }
+
+    _estimationAccept() {
+        if (this.state.flip) {
+            for(let i = 1; i < this._userList.length; i++) {
+	            if (this._userList[i - 1].current_vote !== this._userList[i].current_vote) {
+	                console.log(this._userList);
+		            alert('Sorry, you can not set estimation on issue when teammates have made different votes!');
+		            return
+	            }
+            }
+
+            if (isNumber(this._userList[0].current_vote)) {
+                console.log('vote');
+                let  issue = this.state.currentIssue;
+                socket.emit('accept_estimation', {'issue_id': issue.id, 'estimation': this._userList[0].current_vote});
+            }
+        } else {
+            alert('Sorry, you can not set estimation on issue before all teammates make vote!')
+        }
+    }
+
+    _estimationReset() {
+        socket.emit('reset_estimation');
+    }
+
+    _estimationSkip() {
+        socket.emit('skip_estimation');
+    }
+
+    _changeUserStatus() {
+        socket.on('make_vote', newUserList => {
+            this._userList = newUserList;
+            console.log('make_vote');
+            if (newUserList.filter(x => x.current_vote).length == newUserList.length) {
+                this.setState({'flip': true});
+                this.setState({'currentSlide': 'accept'});
+                console.log('set_true_flip');
+            } /*else {
+                this.setState({'flip': false});
+                console.log('set_false_flip');
+            }*/
+        });
+
+
+        socket.on('issue_was_estimated', (data)=> {
+            let nextSecIssue = () => this.state.issueList.filter(issue => issue.estimation === '')[1];
+            this._userList = data.users;
+            this.setState({'flip': false, 'currentIssue': nextSecIssue(), 'issueList': data.issues});
+            console.log(this.state.flip, this._userList, this.state.currentIssue);
+        });
+
+
+        socket.on('skip_estimation', (users)=> {
+            let nextSecIssue = () => this.state.issueList.filter(issue => issue.estimation === '')[1];
+            this._userList = users;
+            this.setState({'flip': false, 'currentIssue': nextSecIssue()});
+            console.log(this.state.flip, this._userList);
+        });
+
+        socket.on('reset_estimation', (users)=> {
+            this._userList = users;
+            this.setState({'flip': false});
+            console.log(this.state.flip, this._userList);
+
+        });
+    }
+
+    //TODO: применить функцию
+    _nextIssue(param) {
+        let noEstimatedIssue = this.state.issueList.filter(issue => issue.estimation === '');
+        if(param === 'start') {
+            return noEstimatedIssue[0]
+        }
+
+        if (param === 'save') {
+            return noEstimatedIssue[1]
+        }
+        if (param === 'skip') {
+            if (noEstimatedIssue.length > 1) {
+                return noEstimatedIssue[1]
+            } else {
+                return noEstimatedIssue[0]
+            }
+        }
+    }
+
 }
 
 
@@ -237,9 +377,11 @@ class CardBox extends React.Component {
     }
 
     _sendEstimation(event) {
-        let card = event.currentTarget.dataset['card'];
-        this.props.saveVote(card);
-        socket.emit('make_vote', {'user_id': USER_ID, 'card': card});
+        if (!this.props.flip) {
+	        let card = event.currentTarget.dataset['card'];
+	        this.props.saveVote(card);
+	        socket.emit('make_vote', {'user_id': USER_ID, 'card': card});
+        }
     }
 
 }
@@ -285,13 +427,13 @@ class CommentBox extends React.Component {
 
     _addNewComment() {
         socket.on('add_new_comment', newComment => {
+            console.log('add_new_comment');
             this.setState({comments: this.state.comments.concat([newComment])});
         });
     }
 
     _sendComment(user, body) {
         const comment = {
-            id: this.state.comments.length + 1,
             user,
             body
         };

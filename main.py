@@ -227,7 +227,7 @@ def handle_add_comment(comment_obj):
 def handle_vote(vote_obj):
     users = state['room_500']['user_list']
     for user in users:
-        if user['id'] == vote_obj['user_id']:
+        if user['id'] == int(vote_obj['user_id']):
             user['current_vote'] = vote_obj['card']
     emit('make_vote', users, broadcast=True)
 
@@ -238,36 +238,31 @@ def handle_accept(accept_obj):
     # MAKE REST TO DJANGO AND ON success:
         # DELETE ISSUE IN OUR DB
     for issue in issues:
-        if issue['id'] == accept_obj['id']:
-            issue['estimation'] = accept_obj['estimation']
-    [x.__setattr__('current_vote', '') for x in state['room_500']['user_list']]
-    """for user in users:
+        if issue['id'] == int(accept_obj['issue_id']):
+            issue['estimation'] = int(accept_obj['estimation'])
+
+    users = state['room_500']['user_list']
+    for user in users:
         user['current_vote'] = ''
-        """
-    emit('reset_vote_and_update_Issue', issue, broadcast=True)
+
+    new_users = state['room_500']['user_list']
+    new_issues = state['room_500']['issue_list']
+    emit('issue_was_estimated', {'users': new_users, 'issues': new_issues}, broadcast=True)
 
 
-"""
-@socketio.on('chat_event')
-def handle_json(json):
-    print('received json: ' + str(json))
-    room = state[json['room']]
-    if room['chat']:
-       room['chat'].push(json['message'])
-    send(json, json=True, namespace='chat_event', broadcast=True)
+@socketio.on('reset_estimation')
+def handle_reset_estimation(vote_obj):
+    users = state['room_500']['user_list']
+    for user in users:
+        user['current_vote'] = ''
+    emit('reset_estimation', users, broadcast=True)
 
-
-@socketio.on('message')
-def hendleMessage(msg):
-    print ('Messega: ' + msg)
-    send(msg, broadcast=True)
-
-
-@socketio.on('my event')
-def handle_my_custom_event(json):
-    print('received json: ' + str(json))
-
-"""
+@socketio.on('skip_estimation')
+def handle_reset_estimation(vote_obj):
+    users = state['room_500']['user_list']
+    for user in users:
+        user['current_vote'] = ''
+    emit('skip_estimation', users, broadcast=True)
 
 if __name__ == '__main__':
     socketio.run(app)
