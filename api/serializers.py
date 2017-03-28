@@ -1,12 +1,8 @@
 from rest_framework.serializers import (
     HyperlinkedIdentityField,
     ModelSerializer,
-    SerializerMethodField
-)
-#
-# from accounts.api.serializers import UserDetailSerializer
-# from comments.api.serializers import CommentSerializer
-# from comments.models import Comment
+    SerializerMethodField,
+    Serializer)
 
 from project.models import Issue, Project, Sprint
 
@@ -45,11 +41,6 @@ issue_detail_url = HyperlinkedIdentityField(
 class IssueDetailSerializer(ModelSerializer):
     url = issue_detail_url
 
-    # user = UserDetailSerializer(read_only=True)
-    # image = SerializerMethodField()
-    # html = SerializerMethodField()
-    # comments = SerializerMethodField()
-
     class Meta:
         model = Issue
         fields = [
@@ -64,21 +55,6 @@ class IssueDetailSerializer(ModelSerializer):
             'order',
         ]
 
-        # def get_html(self, obj):
-        #     return obj.get_markdown()
-        #
-        # def get_image(self, obj):
-        #     try:
-        #         image = obj.image.url
-        #     except:
-        #         image = None
-        #     return image
-        #
-        # def get_comments(self, obj):
-        #     c_qs = Comment.objects.filter_by_instance(obj)
-        #     comments = CommentSerializer(c_qs, many=True).data
-        #     return comments
-
 
 class IssueListSerializer(ModelSerializer):
     url = issue_detail_url
@@ -92,3 +68,18 @@ class IssueListSerializer(ModelSerializer):
             'title',
             'description',
         ]
+
+
+class IssueCustomSerializer(Serializer):
+    def get_issue(self, issue):
+        mapped_object = {
+            'project': issue.project.id,
+            'root': issue.root,
+            'title': issue.title,
+            'description': issue.description,
+            'status': issue.status,
+            'type': issue.type,
+            'order': issue.order,
+        }
+
+        return mapped_object

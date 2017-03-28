@@ -15,7 +15,7 @@ urlpatterns = [
         name='update'),
     url(r'^delete/(?P<project_id>\d+)/$', views.ProjectDeleteView.as_view(),
         name='delete'),
-    url(r'^estimate/(?P<project_id>\d+)/$', views.poker_room_redirect_view,
+    url(r'^estimate/(?P<project_id>\d+)/$', views.create_poker_room_view,
         name='estimate'),
 
     # backlog
