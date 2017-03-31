@@ -19,11 +19,12 @@ from django.utils.decorators import method_decorator
 from django.urls import reverse
 from django.core.exceptions import ValidationError
 from django_tables2 import SingleTableView, RequestConfig
+from django.core import serializers
 from rest_framework.request import Request
 from rest_framework.test import APIRequestFactory
 from waffle.decorators import waffle_flag
 
-from api.serializers import IssueDetailSerializer, IssueCustomSerializer
+from api.serializers import IssueDetailSerializer
 from api.views import IssueDetailAPIView
 from .forms import ProjectForm, SprintCreateForm, CreateTeamForm, \
     IssueCommentCreateForm, CreateIssueForm, IssueLogForm, \
@@ -755,22 +756,38 @@ def poker_room_with_issue_redirect_view(request, project_id, issue_id):
     issue = Issue.objects.get(id=issue_id)
     url = 'http://localhost:5000/add_issue/'  # + project.estimation_link
 
-    serializer = IssueCustomSerializer(issue)
-    data = serializer.data
-    headers = {'Content-Type': 'application/json'}
+    # serializer = serializers.serialize('json', issue, serializer=IssueDetailSerializer)
+    data = '{' \
+               '"project_id": 2,' \
+               '"issues":' \
+                '[' \
+                   '{"id":10, ' \
+                   '"title": "Jenkins",' \
+                   '"description": "1) deploy CI "}' \
+               ']' \
+           '}'
+    # data = serializer.data
+    headers = {'Content-Type': 'application/json', 'user_name':'petya'}
 
     r = requests.post(url, data=data, headers=headers)
     # print r.content
-    return redirect(url)
+    return HttpResponse(r.raise_for_status())
     # return json.dumps(r.json(), indent=4)
 
 
 def create_poker_room_view(request, project_id):
     project = Project.objects.get(id=project_id)
     url = 'http://localhost:5000/create_room/'  # + project.estimation_link
-    data = '{"project_id": 1,"title": "project1","team": [{"id": 1, "name": "Vasya Pupkin", "token": "555"}, {"id": 2, "name": "Vasya Slavin", "token": "555"}],"issues": []}'
+    data = '{"project_id": 2,' \
+           '"title": "Pkokok23",' \
+           '"team": ' \
+           '[' \
+           '{"id": 1, "name": "zazazaz", "token": "555"}, ' \
+           '{"id": 2, "name": "kokokoko", "token": "555"}' \
+           '],' \
+           '"issues": []}'
 
-    headers = {'Content-Type': 'application/json'}
+    headers = {'Content-Type': 'application/json', 'user_name':'petya'}
 
     r = requests.post(url, data=data, headers=headers)
     # print r.content

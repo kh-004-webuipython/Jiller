@@ -39,12 +39,11 @@ issue_detail_url = HyperlinkedIdentityField(
 
 
 class IssueDetailSerializer(ModelSerializer):
-    url = issue_detail_url
+    # project = models.Field
 
     class Meta:
         model = Issue
         fields = [
-            'url',
             'project',
             'root',
             'title',
@@ -70,16 +69,16 @@ class IssueListSerializer(ModelSerializer):
         ]
 
 
-class IssueCustomSerializer(Serializer):
-    def get_issue(self, issue):
-        mapped_object = {
-            'project': issue.project.id,
-            'root': issue.root,
-            'title': issue.title,
-            'description': issue.description,
-            'status': issue.status,
-            'type': issue.type,
-            'order': issue.order,
-        }
-
-        return mapped_object
+# class IssueCustomSerializer(Serializer):
+#     def get_dump_object(self, issue):
+#         mapped_object = {
+#             'project': issue.project.id,
+#             'root': issue.root,
+#             'title': issue.title,
+#             'description': issue.description,
+#             'status': issue.status,
+#             'type': issue.type,
+#             'order': issue.order,
+#         }
+#
+#         return mapped_object
