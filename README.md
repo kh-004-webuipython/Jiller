@@ -43,3 +43,4 @@ To make working photo uploading wright:
 
 2) python manage.py migrate thumbnail
 
+
