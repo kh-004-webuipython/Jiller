@@ -56,7 +56,8 @@ INSTALLED_APPS = [
     'allauth.socialaccount.providers.facebook',
     'allauth.socialaccount.providers.instagram',
     'mathfilters',
-    'django_jenkins'
+    'django_jenkins',
+    'rest_framework',
 ]
 
 SITE_ID = 1
@@ -245,4 +246,11 @@ EMAIL_HOST_PASSWORD = 'Kh004Python1'
 EMAIL_PORT = 587
 DEFAULT_FROM_EMAIL = 'email.assign.python.webui@gmail.com'
 
-JILLER_HOST = 'http://jiller-phobosprogrammer.rhcloud.com'
+
+REST_FRAMEWORK = {
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly'
+    ]
+}
+
+poker_link = ''

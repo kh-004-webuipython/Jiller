@@ -173,23 +173,23 @@ class IssueFormTests(LoginRequiredBase):
 
 
     # TODO: fix this test
-"""    def test_form_is_valid_with_po_make_user_story(self):
-        self.employee.groups.remove()
-        self.employee.groups.add(3)
-        form_data = {'project': self.project,
-                     'title': 'new issue',
-                     'estimation': 1,
-                     # 'author': self.employee,
-                     'status': Issue.NEW,
-                     # 'type': Issue.TASK,
-                     'order': Issue.HIGH,
-                     'description': 'description',
-                     # 'sprint': 1
-                     }
-        form = IssueForm(project=self.project, data=form_data,
-                         user=self.user)
-        print form.errors
-        self.assertEqual(form.is_valid(), False)"""
+# """    def test_form_is_valid_with_po_make_user_story(self):
+#         self.employee.groups.remove()
+#         self.employee.groups.add(3)
+#         form_data = {'project': self.project,
+#                      'title': 'new issue',
+#                      'estimation': 1,
+#                      # 'author': self.employee,
+#                      'status': Issue.NEW,
+#                      # 'type': Issue.TASK,
+#                      'order': Issue.HIGH,
+#                      'description': 'description',
+#                      # 'sprint': 1
+#                      }
+#         form = IssueForm(project=self.project, data=form_data,
+#                          user=self.user)
+#         print form.errors
+#         self.assertEqual(form.is_valid(), False)"""
 
     def test_form_is_valid_with_dev_make_task(self):
         form_data = {'project': self.project, 'title': 'new issue',

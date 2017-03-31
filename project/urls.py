@@ -15,6 +15,8 @@ urlpatterns = [
         name='update'),
     url(r'^delete/(?P<project_id>\d+)/$', views.ProjectDeleteView.as_view(),
         name='delete'),
+    url(r'^estimate/(?P<project_id>\d+)/$', views.create_poker_room_view,
+        name='estimate'),
 
     # backlog
     url(r'^(?P<project_id>[0-9]+)/backlog/$', views.backlog,
@@ -54,6 +56,8 @@ urlpatterns = [
         views.IssueSearchView.as_view(), name='issue_search'),
     url(r'^(?P<project_id>[0-9]+)/issue_create/(?P<sprint_status>\w+)/$',
         views.issue_create_workload, name='issue_create_workload'),
+    url(r'^(?P<project_id>[0-9]+)/issue/(?P<issue_id>[0-9]+)/estimate/$',
+        views.poker_room_with_issue_redirect_view, name='issue_estimate'),
 
     # team
     url(r'^(?P<project_id>\d+)/team/$', views.team_view, name='team'),
