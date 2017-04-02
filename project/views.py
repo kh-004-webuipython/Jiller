@@ -774,10 +774,13 @@ def poker_room_with_issue_redirect_view(request, project_id, issue_id):
     project = Project.objects.get(id=project_id)
     issue = Issue.objects.get(id=issue_id)
     url = 'http://localhost:5000/add_issue/'  # + project.estimation_link
-    data1 = model_to_dict(issue, fields=['id', 'title', 'description'])
+    data = model_to_dict(issue, fields=['id', 'title', 'description'])
 
-    data1.update({'project_id': project.id, 'estimation':0})
-    data = '{ "project_id": 1,"title": "issue1","id": 1,"description": "make smt","estimation": 0}'
+    data.update({'project_id': project.id, 'estimation':0})
+    data2 = '[{ "project_id": 1,"title": "issue1","id": 1,' \
+            '"description": "make smt","estimation": 0},' \
+            '{"project_id": 1, "title": "issue1", "id": 1, ' \
+                '"description": "make smt", "estimation": 0}]'
 
 
 # '"estimation": "0"}' \
