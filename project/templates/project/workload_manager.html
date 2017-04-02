@@ -55,6 +55,8 @@
                 data-target="#confirm_start_modal">Start Sprint
         </button>
       {% endflag %}
+      <a href="{% url 'project:sprint_estimate' project.id%}"
+       class="btn btn-primary">Estimate Sprint</a>
     {% endif %}
   </div>
 

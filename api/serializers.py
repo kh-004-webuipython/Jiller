@@ -17,19 +17,25 @@ class ProjectSerializer(ModelSerializer):
         ]
 
 
-class IssueCreateUpdateSerializer(ModelSerializer):
+class IssueCreateSerializer(ModelSerializer):
     # project = ProjectSerializer()
 
     class Meta:
         model = Issue
         fields = [
-            'root',
             'title',
             'description',
             'status',
             'type',
             'estimation',
             'order',
+        ]
+
+class IssueUpdateSerializer(ModelSerializer):
+    class Meta:
+        model = Issue
+        fields = [
+            'estimation',
         ]
 
 
@@ -58,8 +64,6 @@ class IssueDetailSerializer(ModelSerializer):
 class IssueListSerializer(ModelSerializer):
     url = issue_detail_url
 
-    # user = UserDetailSerializer(read_only=True)
-
     class Meta:
         model = Issue
         fields = [
@@ -69,16 +73,3 @@ class IssueListSerializer(ModelSerializer):
         ]
 
 
-# class IssueCustomSerializer(Serializer):
-#     def get_dump_object(self, issue):
-#         mapped_object = {
-#             'project': issue.project.id,
-#             'root': issue.root,
-#             'title': issue.title,
-#             'description': issue.description,
-#             'status': issue.status,
-#             'type': issue.type,
-#             'order': issue.order,
-#         }
-#
-#         return mapped_object

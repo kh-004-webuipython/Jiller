@@ -33,6 +33,8 @@ urlpatterns = [
         views.SprintStatusUpdate.as_view(), name='sprint_activate'),
     url(r'^(?P<project_id>\d+)/sprint_start/$',
         views.sprint_start_view, name='sprint_start'),
+    url(r'^(?P<project_id>\d+)/sprint/estimate/$',
+        views.poker_room_with_sprint_redirect_view, name='sprint_estimate'),
 
     # active_sprint
     url(r'^(?P<project_id>\d+)/sprint/active/$',
