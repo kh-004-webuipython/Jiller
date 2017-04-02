@@ -770,9 +770,12 @@ def create_poker_room_view(request, project_id):
     url = 'http://localhost:5000/create_room/'  # + project.estimation_link
     data = '{"project_id": 1,"title": "project1","team": [{"id": 1, "name": "Vasya Pupkin", "token": "555"}, {"id": 2, "name": "Vasya Slavin", "token": "555"}],"issues": []}'
 
-    headers = {'Content-Type': 'application/json'}
+    headers = {'Content-Type': 'application/json',
+               'user_id': request.session['user_id']}
 
     r = requests.post(url, data=data, headers=headers)
     # print r.content
+    #st = 'http://localhost:5000/room/' + str(data['project_id'])
     return HttpResponseRedirect('http://localhost:5000/')
     # return json.dumps(r.json(), indent=4)
+

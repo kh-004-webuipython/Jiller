@@ -254,3 +254,6 @@ REST_FRAMEWORK = {
 }
 
 poker_link = ''
+
+SESSION_ENGINE = "django.contrib.sessions.backends.signed_cookies"
+SESSION_COOKIE_HTTPONLY = True
