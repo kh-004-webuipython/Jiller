@@ -753,35 +753,45 @@ def poker_room_redirect_view(request, project_id):
 
 
 def create_poker_room_view(request, project_id):
+    host = 'http://' + request.META['HTTP_HOST'].split(':')[0] + ':5000/'
     project = Project.objects.get(id=project_id)
     team = ProjectTeam.objects.get(project=project.id)
-    url = 'http://localhost:5000/create_room/'  # + project.estimation_link
+    url = host + 'create_room/'
     team_list = []
     for employee in team.employees.all():
         team_list.append(model_to_dict(employee, fields=['id', 'username']))
 
     data = {'project_id': project.id, 'title': project.title, 'team': team_list}
-    headers = {'Content-Type': 'application/json'}
+    headers = {'Content-Type': 'application/json',
+               'user_id': str(request.user.id)}
 
     r = requests.post(url, data=json.dumps(data), headers=headers)
-    # return HttpResponse(r.raise_for_status())
-    return HttpResponseRedirect('http://localhost:5000/room/' + str(project.id))
+
+    # response = HttpResponse()
+    # response['user_id'] = str(request.user.id)
+    #return HttpResponseRedirect('http://localhost:5000/room/' + str(
+    #    project.id))
+    return HttpResponse(r.raise_for_status())
 
 
 def poker_room_with_issue_redirect_view(request, project_id, issue_id):
+    host = 'http://' + request.META['HTTP_HOST'].split(':')[0] + ':5000/'
     project = Project.objects.get(id=project_id)
     issue = Issue.objects.get(id=issue_id)
-    url = 'http://localhost:5000/add_issue/'  # + project.estimation_link
-    issue_dict = model_to_dict(issue, fields=['id', 'title', 'description'])
+    url = host + 'add_issue/'
+    data = model_to_dict(issue, fields=['id', 'title', 'description'])
 
-    data = issue_dict.update({'project_id': project.id, 'estimation': 0})
-    #data = issue_dict.copy()
-    #source_url = request.url
-    headers = {'Content-Type': 'application/json', 'user_name': 'vasya'}
+    data.update({'project_id': project.id, 'estimation': 0})
+    data_list = list()
+    data_list.append(data)
+    data = json.dumps(data_list)
+
+    headers = {'Content-Type': 'application/json',
+               'user_id': str(request.user.id)}
 
     r = requests.post(url, data=data, headers=headers)
     # return HttpResponseRedirect('http://localhost:5000/room/10')
-    return HttpResponse(r.raise_for_status())
+    return HttpResponseRedirect(host + '/room/' + str(project.id))
 
 
 
