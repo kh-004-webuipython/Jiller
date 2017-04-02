@@ -21,12 +21,10 @@ python3-openid==3.0.10
 defusedxml==0.5.0
 redislite==3.2.311
 django-mathfilters==0.4.0
-
 django-jenkins==0.110.0
 pylint
 pep8
 pyflakes
 flake8
-
-gunicorn==19.6.0
+gunicorn==19.7.1
 psycopg2==2.6.2

@@ -5,14 +5,18 @@ services:
     container_name: Nginx01
     ports:
       - "80:80"
+      - "5000:5000"
     volumes:
-      - ./src:/src
       - ./config/nginx:/etc/nginx/conf.d
+      - ./src:/src
       - /static:/static
+      - ./poker:/poker
       - ./src/public/media:/media
       - ./logs/nginx:/var/log/nginx
     depends_on:
       - web
+      - poker
+
   web:
     build: .
     container_name: Django-Jiller
@@ -24,6 +28,15 @@ services:
       - /static:/static
     expose:
       - "8000"
+
+  poker:
+    build: ./poker
+    container_name: Flask-Poker
+    command:  bash -c "gunicorn -k gevent -b 0.0.0.0:5000 -w 1 main:app"
+    volumes:
+      - ./poker:/poker
+    expose:
+      - "5000"
 
   db:
     image: postgres:latest
