@@ -20,6 +20,7 @@ from django.urls import reverse
 from django.core.exceptions import ValidationError
 from django_tables2 import SingleTableView, RequestConfig
 from django.core import serializers
+from django.forms.models import model_to_dict
 from rest_framework.request import Request
 from rest_framework.test import APIRequestFactory
 from waffle.decorators import waffle_flag
@@ -751,45 +752,39 @@ def poker_room_redirect_view(request, project_id):
     return redirect(link)
 
 
+def create_poker_room_view(request, project_id):
+    project = Project.objects.get(id=project_id)
+    team = ProjectTeam.objects.get(project=project.id)
+    url = 'http://localhost:5000/create_room/'  # + project.estimation_link
+    team_list = []
+    for employee in team.employees.all():
+        team_list.append(model_to_dict(employee, fields=['id', 'username']))
+
+    data = {'project_id': project.id, 'title': project.title, 'team': team_list}
+    # data1 = '{"project_id": 2,"title": "project2","team": [{"id": 1, "name": "Vasya Pupkin"}, {"id": 2, "name": "Vasya Slavin"}]}'
+
+    headers = {'Content-Type': 'application/json'}
+
+    r = requests.post(url, data=json.dumps(data), headers=headers)
+    # return HttpResponse(r.raise_for_status())
+    return HttpResponseRedirect('http://localhost:5000/room/' + str(project.id))
+
 def poker_room_with_issue_redirect_view(request, project_id, issue_id):
     project = Project.objects.get(id=project_id)
     issue = Issue.objects.get(id=issue_id)
     url = 'http://localhost:5000/add_issue/'  # + project.estimation_link
+    issue_dict = model_to_dict(issue, fields=['id', 'title', 'description'])
 
-    # serializer = serializers.serialize('json', issue, serializer=IssueDetailSerializer)
-    data = '{' \
-               '"project_id": 2,' \
-               '"issues":' \
-                '[' \
-                   '{"id":10, ' \
-                   '"title": "Jenkins",' \
-                   '"description": "1) deploy CI "}' \
-               ']' \
-           '}'
-    # data = serializer.data
-    headers = {'Content-Type': 'application/json', 'user_name':'petya'}
+    data = issue_dict.update({'project_id':project.id, 'estimation':0})
+    # data = '{ "project_id": 2,"title": "issue1","id": 1,"description": "make smt","estimation": 0}'
+
+
+# '"estimation": "0"}' \
+    headers = {'Content-Type': 'application/json', 'user_name':'vasya'}
 
     r = requests.post(url, data=data, headers=headers)
-    # print r.content
+    # return HttpResponseRedirect('http://localhost:5000/room/10')
     return HttpResponse(r.raise_for_status())
-    # return json.dumps(r.json(), indent=4)
 
 
-def create_poker_room_view(request, project_id):
-    project = Project.objects.get(id=project_id)
-    url = 'http://localhost:5000/create_room/'  # + project.estimation_link
-    data = '{"project_id": 2,' \
-           '"title": "Pkokok23",' \
-           '"team": ' \
-           '[' \
-           '{"id": 1, "name": "zazazaz", "token": "555"}, ' \
-           '{"id": 2, "name": "kokokoko", "token": "555"}' \
-           '],' \
-           '"issues": []}'
 
-    headers = {'Content-Type': 'application/json', 'user_name':'petya'}
-
-    r = requests.post(url, data=data, headers=headers)
-    # print r.content
-    return HttpResponseRedirect('http://localhost:5000/')
-    # return json.dumps(r.json(), indent=4)
