@@ -769,20 +769,21 @@ def create_poker_room_view(request, project_id):
     # return HttpResponse(r.raise_for_status())
     return HttpResponseRedirect('http://localhost:5000/room/' + str(project.id))
 
+
 def poker_room_with_issue_redirect_view(request, project_id, issue_id):
     project = Project.objects.get(id=project_id)
     issue = Issue.objects.get(id=issue_id)
     url = 'http://localhost:5000/add_issue/'  # + project.estimation_link
-    issue_dict = model_to_dict(issue, fields=['id', 'title', 'description'])
+    data1 = model_to_dict(issue, fields=['id', 'title', 'description'])
 
-    data = issue_dict.update({'project_id':project.id, 'estimation':0})
-    # data = '{ "project_id": 2,"title": "issue1","id": 1,"description": "make smt","estimation": 0}'
+    data1.update({'project_id': project.id, 'estimation':0})
+    data = '{ "project_id": 1,"title": "issue1","id": 1,"description": "make smt","estimation": 0}'
 
 
 # '"estimation": "0"}' \
-    headers = {'Content-Type': 'application/json', 'user_name':'vasya'}
+    headers = {'Content-Type': 'application/json'}
 
-    r = requests.post(url, data=data, headers=headers)
+    r = requests.post(url, data=json.dumps(data), headers=headers)
     # return HttpResponseRedirect('http://localhost:5000/room/10')
     return HttpResponse(r.raise_for_status())
 
