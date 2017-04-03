@@ -759,15 +759,18 @@ def create_poker_room_view(request, project_id):
     url = host + 'create_room/'
     team_list = []
     for employee in team.employees.all():
-        employee_dict = {'id':employee.id, 'name':employee.username}
+        employee_dict = {'id': employee.id, 'name': employee.username}
         team_list.append(employee_dict)
     data = {'project_id': project.id, 'title': project.title, 'team': team_list}
     headers = {'Content-Type': 'application/json'}
 
     r = requests.post(url, data=json.dumps(data), headers=headers)
 
-    return HttpResponseRedirect(host + 'room/' + str(project.id) + '/user/' +
-                                str(request.user.id))
+    if r.headers.get('Status') == 'room is empty':
+        return redirect('project:issues', project_id)
+    else:
+        return HttpResponseRedirect(host + 'room/' + str(project.id) + '/user/'
+                                    + str(request.user.id))
 
 
 def poker_room_with_issue_redirect_view(request, project_id, issue_id):
