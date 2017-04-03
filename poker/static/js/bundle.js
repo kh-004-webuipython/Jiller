@@ -44,8 +44,7 @@
 /* 0 */
 /***/ function(module, exports) {
 
-	//const USER = 'phobos';
-	//const USER_ID = 1;
+	//const USER_ID = Number(prompt());
 	'use strict';
 
 	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
@@ -56,13 +55,10 @@
 
 	function _inherits(subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-	var USER_ID = Number(prompt());
-	//const USER_ID = 1;
-	//const USER_ID = document.querySelector('body').dataset['id'];
+	var USER_ID = document.querySelector('body').dataset['id'];
 	var USER = document.getElementById('poker-app').dataset['name'];
 
 	var ROOM = '';
-	//let USER = USER_ID;
 	var cardList = [0, 1, 2, 3, 5, 8, 13, 20, 40, 100, '?', 'coffee'];
 	var startUserList = [];
 	var startIssueList = [];
@@ -77,12 +73,6 @@
 	    }
 	    return 56 * cardList.indexOf(Number(x));
 	}
-
-	//*********************************
-	// поднять на уровень выше юзелист и флип
-	// настроить фласк в облаке
-	// добавить авторизацию
-	// добавить очистку "состояния румы", если из нее все вышли
 
 	if (location.pathname.substr(1, 4) === 'room') {
 	    ROOM = String(location.pathname.replace(/^\/room\/|\/$/g, ''));

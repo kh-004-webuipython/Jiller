@@ -1,12 +1,8 @@
-//const USER = 'phobos';
-//const USER_ID = 1;
-const USER_ID = Number(prompt());
-//const USER_ID = 1;
-//const USER_ID = document.querySelector('body').dataset['id'];
+//const USER_ID = Number(prompt());
+const USER_ID = document.querySelector('body').dataset['id'];
 const USER = document.getElementById('poker-app').dataset['name'];
 
 let ROOM = '';
-//let USER = USER_ID;
 let cardList = [0, 1, 2, 3, 5, 8, 13, 20, 40, 100, '?', 'coffee'];
 let startUserList = [];
 let startIssueList = [];
@@ -21,13 +17,6 @@ function progressBar(x) {
     }
     return 56 * cardList.indexOf(Number(x));
 }
-
-    //*********************************
-    // поднять на уровень выше юзелист и флип
-    // настроить фласк в облаке
-    // добавить авторизацию
-    // добавить очистку "состояния румы", если из нее все вышли
-
 
 
 if (location.pathname.substr(1,4) === 'room') {
