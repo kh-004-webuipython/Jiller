@@ -1,8 +1,9 @@
-//const USER_ID = Number(prompt());
 const USER_ID = document.querySelector('body').dataset['id'];
+
+const ROOM = document.querySelector('body').dataset['room'];
 const USER = document.getElementById('poker-app').dataset['name'];
 
-let ROOM = '';
+//let ROOM = '';
 let cardList = [0, 1, 2, 3, 5, 8, 13, 20, 40, 100, '?', 'coffee'];
 let startUserList = [];
 let startIssueList = [];
@@ -19,9 +20,9 @@ function progressBar(x) {
 }
 
 
-if (location.pathname.substr(1,4) === 'room') {
-    ROOM = String(location.pathname.replace(/^\/room\/|\/$/g, ''));
-}
+//if (location.pathname.substr(1,4) === 'room') {
+//    ROOM = String(location.pathname.replace(/^\/room\/|\/$/g, ''));
+//}
 
 let socket = io.connect('http://127.0.0.1:5000');
 socket.on('connect', () => socket.emit('join',{'room': ROOM}));

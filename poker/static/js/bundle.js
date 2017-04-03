@@ -55,10 +55,10 @@
 
 	function _inherits(subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-	var USER_ID = document.querySelector('body').dataset['id'];
+	var USER_ID = Number(document.getElementById('poker-app').dataset['id']);
 	var USER = document.getElementById('poker-app').dataset['name'];
-
-	var ROOM = '';
+    var ROOM = Number(document.querySelector('body').dataset['room']);
+	//var ROOM = '';
 	var cardList = [0, 1, 2, 3, 5, 8, 13, 20, 40, 100, '?', 'coffee'];
 	var startUserList = [];
 	var startIssueList = [];
@@ -74,13 +74,10 @@
 	    return 56 * cardList.indexOf(Number(x));
 	}
 
-	if (location.pathname.substr(1, 4) === 'room') {
-	    ROOM = String(location.pathname.replace(/^\/room\/|\/$/g, ''));
-	}
-
 	var socket = io.connect('http://127.0.0.1:5000');
 	socket.on('connect', function () {
-	    return socket.emit('join', { 'room': ROOM });
+	    return socket.emit('join', { 'room': ROOM , 'user_id': USER_ID,
+	    'name': USER});
 	});
 
 	socket.on('start_data', function (data) {
