@@ -747,8 +747,8 @@ def issue_create_workload(request, project_id, sprint_status):
 
 
 def poker_room_redirect_view(request, project_id):
-    project = Project.objects.get(id=project_id)
-    link = 'http://' + project.estimation_link
+    host = 'http://' + request.META['HTTP_HOST'].split(':')[0] + ':5000/'
+    link = host + 'room/' + str(project_id) + '/user/'+ str(request.user.id)
     return redirect(link)
 
 

@@ -19,10 +19,12 @@
          href="{% url 'project:update' project.id %}"> Edit project </a>
     {% endflag %}
     <a class="btn btn-info pull-right"
-       href="{% url 'project:estimate' project.id %}">Poker room</a>
+       href="{% url 'project:estimate' project.id %}">Create room</a>
+    <a class="btn btn-info pull-right"
+       href="{% url 'project:poker_room' project.id %}">Go to poker room</a>
   </div>
   {% include 'project/project_navbar.html' with detail=True %}
   <div class="col-sm-12"><span>{{ project.description }}</span></div>
 
-{#{% url 'project:estimate' project.id %}#}
+  {#{% url 'project:estimate' project.id %}#}
 {% endblock %}
