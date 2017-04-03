@@ -766,11 +766,7 @@ def create_poker_room_view(request, project_id):
 
     r = requests.post(url, data=json.dumps(data), headers=headers)
 
-    if r.headers.get('Status') == 'room is empty':
-        return redirect('project:issues', project_id)
-    else:
-        return HttpResponseRedirect(host + 'room/' + str(project.id) + '/user/'
-                                    + str(request.user.id))
+    return redirect('project:issue_search', int(project_id))
 
 
 def poker_room_with_issue_redirect_view(request, project_id, issue_id):
