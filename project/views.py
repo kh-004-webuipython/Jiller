@@ -14,7 +14,7 @@ from django.shortcuts import render, redirect, get_object_or_404, \
     render_to_response
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.views.generic import DetailView
-from django.views.decorators.csrf import csrf_protect
+from django.views.decorators.csrf import csrf_protect, csrf_exempt
 from django.utils.decorators import method_decorator
 from django.urls import reverse
 from django.core.exceptions import ValidationError
@@ -808,6 +808,23 @@ def poker_room_with_sprint_redirect_view(request, project_id):
     return HttpResponseRedirect(host + 'room/' + str(project.id) + '/user/' +
                                 str(request.user.id))
 
+@csrf_exempt
+def save_issue_estimation_view(request, project_id, issue_id):
+    if request.method == "POST":
 
+        current_project= get_object_or_404(Project, id=project_id)
+        current_issue = get_object_or_404(Issue, id=issue_id)
+        estimat = request.POST['estimation']
+        current_issue.estimation = request.POST['estimation']
+        try:
+            current_issue.save()
+        except ValidationError:
+            message = 'estimation is incorrect'
+            messages.add_message(request, messages.INFO, message)
+            return HttpResponseRedirect(reverse('project:issue_detail',
+                                                args=[current_project.id,current_issue.id, ]))
+
+        return HttpResponseRedirect(reverse('project:issue_detail',
+                                            args=[current_project.id, current_issue.id, ]))
 
 

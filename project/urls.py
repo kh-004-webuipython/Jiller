@@ -62,6 +62,8 @@ urlpatterns = [
         views.issue_create_workload, name='issue_create_workload'),
     url(r'^(?P<project_id>[0-9]+)/issue/(?P<issue_id>[0-9]+)/estimate/$',
         views.poker_room_with_issue_redirect_view, name='issue_estimate'),
+    url(r'^(?P<project_id>[0-9]+)/issue/(?P<issue_id>[0-9]+)/save_estimation/$',
+        views.save_issue_estimation_view, name='save_issue_estimation'),
 
     # team
     url(r'^(?P<project_id>\d+)/team/$', views.team_view, name='team'),

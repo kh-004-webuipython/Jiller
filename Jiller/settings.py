@@ -74,8 +74,8 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'Jiller.middleware.LoginRequiredMiddleware.LoginRequiredMiddleware',
-    'Jiller.middleware.CheckProjectRelationMiddleware.CheckProjectRelation',
+    # 'Jiller.middleware.LoginRequiredMiddleware.LoginRequiredMiddleware',
+    # 'Jiller.middleware.CheckProjectRelationMiddleware.CheckProjectRelation',
     'Jiller.middleware.SetLastSeenMiddleware.SetLastSeenMiddleware',
     'Jiller.middleware.SaveLastProjectMiddleware.SaveLastProjectMiddleware',
 ]
@@ -178,6 +178,7 @@ LOGIN_EXEMPT_URLS = (
     r'^accounts/twitter/login/callback/$',
     r'^accounts/facebook/login/$',
     r'^accounts/instagram/login',
+    r'^api/v1/',
 )
 
 SOCIALACCOUNT_PROVIDERS = \
