@@ -778,7 +778,7 @@ def poker_room_with_issue_redirect_view(request, project_id, issue_id):
     data_list = []
     data = model_to_dict(issue, fields=['id', 'title', 'description'])
 
-    data.update({'project_id': project.id, 'estimation': 0})
+    data.update({'project_id': project.id, 'estimation': ''})
     data_list.append(data)
     headers = {'Content-Type': 'application/json',
                'user_id': str(request.user.id)}
@@ -798,7 +798,7 @@ def poker_room_with_sprint_redirect_view(request, project_id):
     data_list = []
     for issue in issues:
         data = model_to_dict(issue, fields=['id', 'title', 'description'])
-        data.update({'project_id': project.id, 'estimation':0})
+        data.update({'project_id': project.id, 'estimation': ''})
         data_list.append(data)
 
     headers = {'Content-Type': 'application/json'}
