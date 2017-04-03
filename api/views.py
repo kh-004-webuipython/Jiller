@@ -1,4 +1,6 @@
 from django.db.models import Q
+from django.utils.decorators import method_decorator
+from django.views.decorators.csrf import csrf_exempt
 
 from rest_framework.filters import (
     SearchFilter,
@@ -48,10 +50,6 @@ class IssueDetailAPIView(RetrieveAPIView):
 class IssueUpdateAPIView(RetrieveUpdateAPIView):
     queryset = Issue.objects.all()
     serializer_class = IssueUpdateSerializer
-
-    # def perform_update(self, serializer):
-    #     serializer.save(user=self.request.user)
-
 
 
 class IssueListAPIView(ListAPIView):
