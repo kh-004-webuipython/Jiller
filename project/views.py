@@ -759,8 +759,8 @@ def create_poker_room_view(request, project_id):
     url = host + 'create_room/'
     team_list = []
     for employee in team.employees.all():
-        team_list.append(model_to_dict(employee, fields=['id', 'username']))
-
+        employee_dict = {'id':employee.id, 'name':employee.username}
+        team_list.append(employee_dict)
     data = {'project_id': project.id, 'title': project.title, 'team': team_list}
     headers = {'Content-Type': 'application/json'}
 
