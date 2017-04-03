@@ -27,6 +27,7 @@ def login_form_view(request):
         if form.is_valid():
             user = authenticate(username=form.cleaned_data['username'],
                                 password=form.cleaned_data['password'])
+            #request.session['user_id'] = str(user.pk)
             if user is not None:
                 if user.is_confirmed:
                     login(request, user)

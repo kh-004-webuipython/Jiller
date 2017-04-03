@@ -126,7 +126,7 @@ def save_issue(issue_id):
         print('cant read')
     project_id = current_issue.get('project_id')
     host = 'http://' + request.host.split(':')[
-        0] + ':8000/'
+        0] + ':80/'
     url = host + 'project/' + str(project_id) +'/issue/'+str(issue_id)
     save_url = url + '/save_estimation/'
 

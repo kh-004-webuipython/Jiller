@@ -2,6 +2,7 @@ import datetime
 import json
 import re
 
+import requests
 from django.contrib import messages
 from django.conf import settings
 from django.db.models import Q
@@ -9,16 +10,23 @@ from django.http import HttpResponseRedirect, Http404, HttpResponse, \
     HttpResponseBadRequest
 from django.http.request import QueryDict
 from django.http.response import JsonResponse
-from django.shortcuts import render, redirect, get_object_or_404
+from django.shortcuts import render, redirect, get_object_or_404, \
+    render_to_response
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.views.generic import DetailView
-from django.views.decorators.csrf import csrf_protect
+from django.views.decorators.csrf import csrf_protect, csrf_exempt
 from django.utils.decorators import method_decorator
 from django.urls import reverse
 from django.core.exceptions import ValidationError
 from django_tables2 import SingleTableView, RequestConfig
+from django.core import serializers
+from django.forms.models import model_to_dict
+from rest_framework.request import Request
+from rest_framework.test import APIRequestFactory
 from waffle.decorators import waffle_flag
 
+from api.serializers import IssueDetailSerializer
+from api.views import IssueDetailAPIView
 from .forms import ProjectForm, SprintCreateForm, CreateTeamForm, \
     IssueCommentCreateForm, CreateIssueForm, IssueLogForm, \
     IssueFormForEditing, SprintFinishForm, NoteForm, \
@@ -736,3 +744,86 @@ def issue_create_workload(request, project_id, sprint_status):
                                                 args=[project_id,
                                                       sprint_status]))
     raise Http404
+
+
+def poker_room_redirect_view(request, project_id):
+    host = 'http://' + request.META['HTTP_HOST'].split(':')[0] + ':5000/'
+    link = host + 'room/' + str(project_id) + '/user/'+ str(request.user.id)
+    return redirect(link)
+
+
+def create_poker_room_view(request, project_id):
+    host = 'http://' + request.META['HTTP_HOST'].split(':')[0] + ':5000/'
+    project = Project.objects.get(id=project_id)
+    team = ProjectTeam.objects.get(project=project.id)
+    url = host + 'create_room/'
+    team_list = []
+    for employee in team.employees.all():
+        employee_dict = {'id': employee.id, 'name': employee.username}
+        team_list.append(employee_dict)
+    data = {'project_id': project.id, 'title': project.title, 'team': team_list}
+    headers = {'Content-Type': 'application/json'}
+
+    r = requests.post(url, data=json.dumps(data), headers=headers)
+
+    return redirect('project:issue_search', int(project_id))
+
+
+def poker_room_with_issue_redirect_view(request, project_id, issue_id):
+    host = 'http://' + request.META['HTTP_HOST'].split(':')[0] + ':5000/'
+    project = Project.objects.get(id=project_id)
+    issue = Issue.objects.get(id=issue_id)
+    url = host + 'add_issue/'
+    data_list = []
+    data = model_to_dict(issue, fields=['id', 'title', 'description'])
+
+    data.update({'project_id': project.id, 'estimation': ''})
+    data_list.append(data)
+    headers = {'Content-Type': 'application/json',
+               'user_id': str(request.user.id)}
+
+    r = requests.post(url, data=json.dumps(data_list), headers=headers)
+
+    return HttpResponseRedirect(host + 'room/' + str(project.id) + '/user/' +
+                                str(request.user.id))
+
+
+def poker_room_with_sprint_redirect_view(request, project_id):
+    host = 'http://' + request.META['HTTP_HOST'].split(':')[0] + ':5000/'
+    project = Project.objects.get(id=project_id)
+    issue_sprint = Sprint.objects.get(status=Sprint.NEW)
+    issues = Issue.objects.filter(sprint=issue_sprint)
+    url = host + 'add_issue/'
+    data_list = []
+    for issue in issues:
+        data = model_to_dict(issue, fields=['id', 'title', 'description'])
+        data.update({'project_id': project.id, 'estimation': ''})
+        data_list.append(data)
+
+    headers = {'Content-Type': 'application/json'}
+
+    r = requests.post(url, data=json.dumps(data_list), headers=headers)
+
+    return HttpResponseRedirect(host + 'room/' + str(project.id) + '/user/' +
+                                str(request.user.id))
+
+
+@csrf_exempt
+def save_issue_estimation_view(request, project_id, issue_id):
+    if request.method == "POST":
+
+        current_project= get_object_or_404(Project, id=project_id)
+        current_issue = get_object_or_404(Issue, id=issue_id)
+        current_issue.estimation = int(request.POST['estimation'])
+        try:
+            current_issue.save()
+        except ValidationError:
+            message = 'estimation is incorrect'
+            messages.add_message(request, messages.INFO, message)
+            return HttpResponseRedirect(reverse('project:issue_detail',
+                                                args=[current_project.id,current_issue.id, ]))
+
+        return HttpResponseRedirect(reverse('project:issue_detail',
+                                            args=[current_project.id, current_issue.id, ]))
+
+

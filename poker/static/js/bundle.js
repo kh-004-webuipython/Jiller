@@ -74,7 +74,7 @@
 	    return 56 * cardList.indexOf(Number(x));
 	}
 
-	var socket = io.connect('http://127.0.0.1:5000');
+	var socket = io.connect('http://46.101.197.108:5000');
 	socket.on('connect', function () {
 	    return socket.emit('join', { 'room': ROOM , 'user_id': USER_ID,
 	    'name': USER});
@@ -433,22 +433,22 @@
 	                                    { className: 'info-row flex' },
 	                                    React.createElement(
 	                                        'div',
-	                                        { className: 'info-name col-md-1' },
+	                                        { className: 'info-name col-sm-1 col-md-1' },
 	                                        'id'
 	                                    ),
 	                                    React.createElement(
 	                                        'div',
-	                                        { className: 'info-value col-md-2' },
+	                                        { className: 'info-value col-sm-2 col-md-2' },
 	                                        'Title'
 	                                    ),
 	                                    React.createElement(
 	                                        'div',
-	                                        { className: 'info-value col-md-8' },
+	                                        { className: 'info-value col-sm-8 col-md-8' },
 	                                        'Description'
 	                                    ),
 	                                    React.createElement(
 	                                        'div',
-	                                        { className: 'info-value col-md-1' },
+	                                        { className: 'info-value col-sm-1 col-md-1' },
 	                                        'Estim.'
 	                                    )
 	                                ),
@@ -460,22 +460,22 @@
 	                                        { className: 'info-row flex', key: index },
 	                                        React.createElement(
 	                                            'div',
-	                                            { className: 'info-name col-md-1' },
+	                                            { className: 'info-name col-sm-1 col-md-1' },
 	                                            issue.id
 	                                        ),
 	                                        React.createElement(
 	                                            'div',
-	                                            { className: 'info-value col-md-2' },
+	                                            { className: 'info-value col-sm-2 col-md-2' },
 	                                            issue.title
 	                                        ),
 	                                        React.createElement(
 	                                            'div',
-	                                            { className: 'info-value col-md-8' },
+	                                            { className: 'info-value col-sm-8 col-md-8' },
 	                                            issue.description
 	                                        ),
 	                                        React.createElement(
 	                                            'div',
-	                                            { className: 'info-value col-md-1' },
+	                                            { className: 'info-value col-sm-1 col-md-1' },
 	                                            issue.estimation
 	                                        )
 	                                    );
@@ -502,22 +502,22 @@
 	                                    { className: 'info-row flex' },
 	                                    React.createElement(
 	                                        'div',
-	                                        { className: 'info-name col-md-1' },
+	                                        { className: 'info-name col-sm-1 col-md-1' },
 	                                        'id'
 	                                    ),
 	                                    React.createElement(
 	                                        'div',
-	                                        { className: 'info-value col-md-2' },
+	                                        { className: 'info-value col-sm-2 col-md-2' },
 	                                        'Title'
 	                                    ),
 	                                    React.createElement(
 	                                        'div',
-	                                        { className: 'info-value col-md-8' },
+	                                        { className: 'info-value col-sm-8 col-md-8' },
 	                                        'Description'
 	                                    ),
 	                                    React.createElement(
 	                                        'div',
-	                                        { className: 'info-value col-md-1' },
+	                                        { className: 'info-value col-sm-1 col-md-1' },
 	                                        'Estim.'
 	                                    )
 	                                ),
@@ -527,22 +527,22 @@
 	                                        { className: 'info-row flex', key: index },
 	                                        React.createElement(
 	                                            'div',
-	                                            { className: 'info-name col-md-1' },
+	                                            { className: 'info-name col-sm-1 col-md-1' },
 	                                            issue.id
 	                                        ),
 	                                        React.createElement(
 	                                            'div',
-	                                            { className: 'info-value col-md-2' },
+	                                            { className: 'info-value col-sm-2 col-md-2' },
 	                                            issue.title
 	                                        ),
 	                                        React.createElement(
 	                                            'div',
-	                                            { className: 'info-value col-md-8' },
+	                                            { className: 'info-value col-sm-8 col-md-8' },
 	                                            issue.description
 	                                        ),
 	                                        React.createElement(
 	                                            'div',
-	                                            { className: 'info-value col-md-1' },
+	                                            { className: 'info-value col-sm-1 col-md-1' },
 	                                            issue.estimation
 	                                        )
 	                                    );

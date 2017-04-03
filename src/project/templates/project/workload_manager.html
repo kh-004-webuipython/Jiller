@@ -46,19 +46,23 @@
 {% endblock %}
 
 {% block content %}
-    <div class='btn-group pull-right'>
-    <a href="{% url 'project:sprint_active' project.id %}" class="btn btn-primary">Sprint Detail</a>
-  {% if sprint_status == 'new'|sprint_status %}
-    {% flag 'edit_sprint' %}
-      <button class="btn btn-primary" data-toggle="modal"
-              data-target="#confirm_start_modal">Start Sprint</button>
-    {% endflag %}
-  {% endif %}
-    </div>
+  <div class='btn-group pull-right'>
+    <a href="{% url 'project:sprint_active' project.id %}"
+       class="btn btn-primary">Sprint Detail</a>
+    {% if sprint_status == 'new'|sprint_status %}
+      {% flag 'edit_sprint' %}
+        <button class="btn btn-primary" data-toggle="modal"
+                data-target="#confirm_start_modal">Start Sprint
+        </button>
+      {% endflag %}
+      <a href="{% url 'project:sprint_estimate' project.id%}"
+       class="btn btn-primary">Estimate Sprint</a>
+    {% endif %}
+  </div>
 
   {% include 'project/project_navbar.html' with sprint_detail=True %}
 
-    <div id="error-message"></div>
+  <div id="error-message"></div>
 
   <div id="workload-template">
     {% include 'project/workload_template.html' %}
@@ -70,12 +74,16 @@
 
   {% block extrascripts %}
 
-    <script defer type="text/javascript" src="{% static 'project/js/progress_bar.js' %}"></script>
+    <script defer type="text/javascript"
+            src="{% static 'project/js/progress_bar.js' %}"></script>
 
     {% flag "update_workflow_manager" %}
-    <script defer type="text/javascript" src="{% static 'js/jquery-ui.min.js' %}"></script>
-    <script defer type="text/javascript" src="{% static 'js/ajax_csrf.js' %}"></script>
-    <script defer type="text/javascript" src="{% static 'project/js/workload_manager.js' %}"></script>
+      <script defer type="text/javascript"
+              src="{% static 'js/jquery-ui.min.js' %}"></script>
+      <script defer type="text/javascript"
+              src="{% static 'js/ajax_csrf.js' %}"></script>
+      <script defer type="text/javascript"
+              src="{% static 'project/js/workload_manager.js' %}"></script>
     {% endflag %}
 
   {% endblock %}

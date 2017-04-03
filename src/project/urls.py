@@ -15,6 +15,10 @@ urlpatterns = [
         name='update'),
     url(r'^delete/(?P<project_id>\d+)/$', views.ProjectDeleteView.as_view(),
         name='delete'),
+    url(r'^estimate/(?P<project_id>\d+)/$', views.create_poker_room_view,
+        name='estimate'),
+    url(r'^poker_room/(?P<project_id>\d+)/$', views.poker_room_redirect_view,
+        name='poker_room'),
 
     # backlog
     url(r'^(?P<project_id>[0-9]+)/backlog/$', views.backlog,
@@ -31,6 +35,8 @@ urlpatterns = [
         views.SprintStatusUpdate.as_view(), name='sprint_activate'),
     url(r'^(?P<project_id>\d+)/sprint_start/$',
         views.sprint_start_view, name='sprint_start'),
+    url(r'^(?P<project_id>\d+)/sprint/estimate/$',
+        views.poker_room_with_sprint_redirect_view, name='sprint_estimate'),
 
     # active_sprint
     url(r'^(?P<project_id>\d+)/sprint/active/$',
@@ -54,6 +60,10 @@ urlpatterns = [
         views.IssueSearchView.as_view(), name='issue_search'),
     url(r'^(?P<project_id>[0-9]+)/issue_create/(?P<sprint_status>\w+)/$',
         views.issue_create_workload, name='issue_create_workload'),
+    url(r'^(?P<project_id>[0-9]+)/issue/(?P<issue_id>[0-9]+)/estimate/$',
+        views.poker_room_with_issue_redirect_view, name='issue_estimate'),
+    url(r'^(?P<project_id>[0-9]+)/issue/(?P<issue_id>[0-9]+)/save_estimation/$',
+        views.save_issue_estimation_view, name='save_issue_estimation'),
 
     # team
     url(r'^(?P<project_id>\d+)/team/$', views.team_view, name='team'),
