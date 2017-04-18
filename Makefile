@@ -1,5 +1,5 @@
 clone:
-	git clone -b digitalocean https://github.com/kh-004-webuipython/Jiller.git src
+	git clone -b digitalocean https://github.com/Phobos-Programmer/Jiller.git src
 
 build:
 	docker-compose build
