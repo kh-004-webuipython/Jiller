@@ -214,18 +214,18 @@ class IssueBox extends React.Component {
                 <div id="issue-container" className="overflow">
                     <div className="info info-striped">
                         <div className="info-row flex">
-                            <div className="info-name col-md-1">id</div>
-                            <div className="info-value col-md-2">Title</div>
-                            <div className="info-value col-md-8">Description</div>
-                            <div className="info-value col-md-1">Estim.</div>
+                            <div className="info-name col-sm-1 col-md-1">id</div>
+                            <div className="info-value col-sm-2 col-md-2">Title</div>
+                            <div className="info-value col-sm-8 col-md-8">Description</div>
+                            <div className="info-value col-sm-1 col-md-1">Estim.</div>
                         </div>
                 {
                 this.state.issueList.filter(x=>x['estimation']).map((issue, index) => {
                 return (<div className="info-row flex" key={index}>
-                        <div className="info-name col-md-1">{issue.id}</div>
-                        <div className="info-value col-md-2">{issue.title}</div>
-                        <div className="info-value col-md-8">{issue.description}</div>
-                        <div className="info-value col-md-1">{issue.estimation}</div>
+                        <div className="info-name col-sm-1 col-md-1">{issue.id}</div>
+                        <div className="info-value col-sm-2 col-md-2">{issue.title}</div>
+                        <div className="info-value col-sm-8 col-md-8">{issue.description}</div>
+                        <div className="info-value col-sm-1 col-md-1">{issue.estimation}</div>
                         </div>)
                 })
                 }
@@ -242,18 +242,18 @@ class IssueBox extends React.Component {
                     <div id="issue-container" className="overflow">
                         <div className="info info-striped">
                         <div className="info-row flex">
-                            <div className="info-name col-md-1">id</div>
-                            <div className="info-value col-md-2">Title</div>
-                            <div className="info-value col-md-8">Description</div>
-                            <div className="info-value col-md-1">Estim.</div>
+                            <div className="info-name col-sm-1 col-md-1">id</div>
+                            <div className="info-value col-sm-2 col-md-2">Title</div>
+                            <div className="info-value col-sm-8 col-md-8">Description</div>
+                            <div className="info-value col-sm-1 col-md-1">Estim.</div>
                         </div>
                 {
                 this.state.issueList.map((issue, index) => {
                 return (<div className="info-row flex" key={index}>
-                        <div className="info-name col-md-1">{issue.id}</div>
-                        <div className="info-value col-md-2">{issue.title}</div>
-                        <div className="info-value col-md-8">{issue.description}</div>
-                        <div className="info-value col-md-1">{issue.estimation}</div>
+                        <div className="info-name col-sm-1 col-md-1">{issue.id}</div>
+                        <div className="info-value col-sm-2 col-md-2">{issue.title}</div>
+                        <div className="info-value col-sm-8 col-md-8">{issue.description}</div>
+                        <div className="info-value col-sm-1 col-md-1">{issue.estimation}</div>
                         </div>)
                 })
                 }
