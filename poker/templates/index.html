@@ -1,0 +1,24 @@
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <title>Poker Room</title>
+  <link href="{{ url_for('static', filename='css/style.css') }}" rel=stylesheet>
+  <link href="{{ url_for('static', filename='css/bootstrap.min.css') }}" rel="stylesheet">
+  <link href="{{ url_for('static', filename='css/font-awesome.min.css') }}" rel="stylesheet">
+
+</head>
+<body data-room="{{ room_name }}">
+  <header class="text-center container">
+  </header>
+  <div id="poker-app" data-name ="{{ user_name }}" data-id ="{{ user_id }}" class="container"></div>
+<footer>
+<p class="text-center">Jiller inc</p>
+</footer>
+  <script src="{{ url_for('static', filename='js/vendors/jquery.min.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/vendors/socket.io.min.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/vendors/bootstrap.min.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/vendors/react.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/vendors/react-dom.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/bundle.js') }}"></script>
+</body>
+</html>
