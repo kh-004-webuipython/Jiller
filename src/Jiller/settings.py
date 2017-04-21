@@ -74,8 +74,8 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    # 'Jiller.middleware.LoginRequiredMiddleware.LoginRequiredMiddleware',
-    # 'Jiller.middleware.CheckProjectRelationMiddleware.CheckProjectRelation',
+    'Jiller.middleware.LoginRequiredMiddleware.LoginRequiredMiddleware',
+    'Jiller.middleware.CheckProjectRelationMiddleware.CheckProjectRelation',
     'Jiller.middleware.SetLastSeenMiddleware.SetLastSeenMiddleware',
     'Jiller.middleware.SaveLastProjectMiddleware.SaveLastProjectMiddleware',
 ]
