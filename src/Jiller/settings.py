@@ -1,7 +1,6 @@
 import os
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
-from datetime import timedelta
 from redislite import Redis
 
 from django.urls.base import reverse_lazy
@@ -61,10 +60,6 @@ INSTALLED_APPS = [
 ]
 
 SITE_ID = 1
-
-MIDDLEWARE_CLASSES = (
-    'waffle.middleware.WaffleMiddleware',
-)
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',

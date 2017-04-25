@@ -47,6 +47,14 @@ a#createprojectbtn {
     display: table !important;
 }
 
+.sortable.ui-sortable {
+    min-height: 40px;
+}
+
+.list-group.pos-rel {
+    border: 1px solid darkgray;
+}
+
 button.team-event {
     border: none;
     background: white;
@@ -109,7 +117,7 @@ div.project-detail {
 }
 
 .contain-box {
-    min-height: 46px;
+    min-height: 46px !important;
 }
 
 .background-loading {
