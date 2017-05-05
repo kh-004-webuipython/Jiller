@@ -23,7 +23,7 @@ SECRET_KEY = 'olj^%!kemjn61dic)!y3k!(51&vciz$2jf*w_mji-(f(nwz#7$'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = ['0.0.0.0', '127.0.0.1', 'localhost', '45.55.140.239', '46.101.197.108', 'web',
+ALLOWED_HOSTS = ['0.0.0.0', '127.0.0.1', 'localhost', 'jiller.cf', '46.101.197.108', 'web',
                  gethostname(), os.environ.get('OPENSHIFT_APP_DNS')]
 
 # Application definition
