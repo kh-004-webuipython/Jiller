@@ -35,7 +35,6 @@ $(function() {
             stop: function (event, ui) {
                 var placeToDrop = $('#workload-template .sortable');
                 placeToDrop.off('sortover');
-
                 for(var i = 0; i < placeToDrop.length; i++)
                     placeToDrop[i].classList.remove('contain-box');
             },

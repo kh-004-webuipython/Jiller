@@ -173,7 +173,7 @@ def team_view(request, project_id):
                                  "table-hover table-sm"}
 
     employee = Employee.objects.filter(projectteam__project=project_id). \
-        exclude(groups__name='project manager')
+        filter(groups__pk__in=[1,2,3]).distinct()
 
     table_attrs_data.update({"data-table": "table_cur"})
     table_cur = ProjectTeamTable(employee, prefix='1-',
@@ -190,6 +190,7 @@ def team_view(request, project_id):
     # hide PMs on "global" team board
     if request.user.groups.filter(name='project manager').exists():
         user_list = Employee.objects.exclude(groups__name='project manager'). \
+            exclude(groups__name__isnull=True). \
             exclude(projectteam__project=project_id)
 
         table_attrs_data.update({"data-table": "table_add"})
@@ -519,7 +520,7 @@ def workload_manager(request, project_id, sprint_status):
 
     try:
         employees = ProjectTeam.objects.get(project=project) \
-            .employees.filter(groups__pk__in=[1, 2])
+            .employees.filter(groups__pk__in=[1])
     except ProjectTeam.DoesNotExist:
         raise Http404("ProjectTeam does not exist")
 

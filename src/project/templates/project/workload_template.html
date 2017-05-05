@@ -10,7 +10,7 @@
         <li class="blue lighter bigger-120 list-group-item">
           <span class="glyphicon glyphicon-user"></span>&nbsp
             <a class="no-underline" href="{% url 'employee:detail' item.employee.id %}">
-              {{ item.employee.last_name }}</a>
+              {{ item.employee.first_name }} {{ item.employee.last_name }}</a>
           <span class="badge">{{ item.workload }}%</span></li>
         <div class="background-{% if item.workload < 75 %}yellow
           {% elif item.workload > 100 %}red {% else %}green
@@ -106,7 +106,7 @@
   {% endif %}
 
   {% if forloop.counter|divisibleby:3 %}
-    </div><div class="row">
+    <div class="row"></div>
   {% endif %}
 {% endfor %}
 </div>
