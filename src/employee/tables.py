@@ -6,7 +6,8 @@ from .models import Employee, IssueLog
 class EmployeeTable(tables.Table):
     id = tables.Column()
     get_full_name = tables.LinkColumn('employee:detail',
-                                      kwargs={"employee_id": A('id')},\
+                                      attrs={'a': {'draggable': 'False'}},
+                                      kwargs={"employee_id": A('id')},
                                       order_by=('last_name'),
                                       verbose_name='Name')
     email = tables.Column()

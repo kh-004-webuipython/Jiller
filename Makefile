@@ -1,5 +1,5 @@
 clone:
-	git clone -b digitalocean https://github.com/Phobos-Programmer/Jiller.git src
+	git clone -b dev https://github.com/Phobos-Programmer/Jiller.git GIT_CLONE
 
 build:
 	docker-compose build

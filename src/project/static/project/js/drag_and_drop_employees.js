@@ -1,7 +1,7 @@
 document.addEventListener("DOMContentLoaded", function () {
     var csrftoken = getCookie('csrftoken');
     var tables = document.querySelectorAll('[data-table]');
-    var rows = document.querySelectorAll('[data-id]')
+    var rows = document.querySelectorAll('[data-id]');
     var srcRow, srcTable;
 
     tables.forEach(
@@ -59,7 +59,7 @@ document.addEventListener("DOMContentLoaded", function () {
     else {
         xhttp = new ActiveXObject("Microsoft.XMLHTTP");
     }
-    var data = ''
+    var data = '';
     if (srcRow.offsetParent.dataset['table'] == 'table_cur') {
         data = 'remove'
     } else {
