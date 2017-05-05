@@ -1,0 +1,73 @@
+version: '2'
+services:
+  nginx:
+    image: nginx:latest
+    container_name: Nginx01
+    ports:
+      - "80:80"
+      - "5000:5000"
+    volumes:
+      - ./config/nginx:/etc/nginx/conf.d
+      - ./src:/src
+      - /static:/static
+      - ./poker:/poker
+      - ./src/public/media:/media
+      - ./logs/nginx:/var/log/nginx
+    depends_on:
+      - web
+      - poker
+
+  web:
+    build: .
+    container_name: Django-Jiller
+    command: bash -c "python manage.py makemigrations && python manage.py migrate && python manage.py collectstatic --noinput && python manage.py loaddata project/fixtures/init_data.json && gunicorn Jiller.wsgi -b 0.0.0.0:8000"
+    depends_on:
+      - db
+    volumes:
+      - ./src:/src
+      - /static:/static
+    expose:
+      - "8000"
+
+  poker:
+    build: ./poker
+    container_name: Flask-Poker
+    command:  bash -c "gunicorn -k gevent -b 0.0.0.0:5000 -w 1 main:app"
+    volumes:
+      - ./poker:/poker
+    expose:
+      - "5000"
+
+  db:
+    image: postgres:latest
+    container_name: Postgres01
+
+  redis:
+    image: redis:latest
+    container_name: Redis01
+    ports:
+      - '6379:6379'
+
+  rabbit:
+    container_name: Rabbit01
+    hostname: rabbit
+    image: rabbitmq:3.6.0
+    environment:
+      - RABBITMQ_DEFAULT_USER=admin
+      - RABBITMQ_DEFAULT_PASS=mypass
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+
+  celeryworkers:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: Celery01
+    command: celery -A Jiller worker -l info
+    volumes:
+      - ./src:/src
+    depends_on:
+      - rabbit
+      - redis
+      - db

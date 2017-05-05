@@ -1,0 +1,252 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-size: 14px;
+    border-radius: 0;
+}
+.profile {
+    float: right;
+    padding: 0 20px;
+    background-color: aliceblue;
+}
+
+#poker-app {
+    text-align: center;
+}
+
+.user-box {
+    max-height: 490px !important;
+    margin: 0;
+    padding: 15px;
+    overflow-y: auto;
+}
+
+.chat-box {
+    padding-top: 15px;
+    border: 1px solid lightsteelblue;
+}
+
+.user-list {
+    display: table-cell;
+    text-align: center;
+}
+
+.main-block {
+    display: block;
+    min-height: 475px !important;
+    padding-top: 15px;
+}
+
+.main-issue-overflow > div {
+    height: 100%;
+}
+
+.mark-borders {
+    display: flex;
+    border-left: 1px solid lightsteelblue;
+    border-top: 1px solid lightsteelblue;
+    border-right: 1px solid lightsteelblue;
+}
+.overflow {
+    overflow-x: hidden;
+    overflow-y: auto;
+}
+
+.main-issue-overflow {
+    height: 130px !important;
+    overflow-x: hidden;
+    overflow-y: auto;
+    border-bottom: 1px solid #D5E4F1;
+}
+
+
+.comment-box {
+    height: 350px;
+    overflow-y: auto;
+}
+.comment > p {
+    margin: 0;
+}
+
+.comment {
+    min-height: 15px;
+    width: 100%;
+    text-align: left;
+    margin-top: 10px;
+}
+
+div.comment-box div.comment :nth-child(even) {
+    background-color: #f5f5f5;
+}
+
+.comment :first-child {
+    font-size: 0.9em;
+    font-weight: 600;
+}
+
+.current-issue {
+    min-height: 300px;
+}
+
+.issue-container {
+    padding: 5px 14px 5px 5px;
+}
+
+#issue-container {
+    display: block;
+    height: 420px !important;
+    margin: 0;
+}
+
+.info {
+    display: table;
+    margin: 0 auto;
+    width: 100%;
+}
+
+.info-striped {
+    border: 1px solid #DCEBF7;
+}
+
+.info-row {
+    display: table-header-group;
+    padding: 0;
+}
+
+.info-name {
+    text-align: right;
+    padding: 3px;
+    font-weight: normal;
+    color: #667E99;
+    background-color: transparent;
+    border-top: 1px dotted #D5E4F1;
+    display: table-cell;
+    vertical-align: middle;
+}
+
+.info-value {
+    display: table-cell;
+    width: 75%;
+    padding: 3px;
+    border-top: 1px dotted #D5E4F1;
+    border-left: 1px dotted #D5E4F1;
+}
+
+
+.info-striped .info-name {
+    color: #336199;
+    background-color: #EDF3F4;
+    border-top: 1px solid #F7FBFF;
+}
+
+.card {
+    display: inline-block;
+    width: 100px;
+    height: 135px;
+    margin: 5px;
+    padding: 5px;
+    border: 1px solid black;
+    border-radius: 5px;
+    background-color: #EDF3F4;
+}
+
+.card:hover {
+    background-color: #c2c1f4;
+}
+
+.card-top-data {
+    text-align: left;
+    font-size: 14px;
+}
+
+.card-center-data {
+    display: block;
+    height: 85px;
+    width: 70px;
+    margin: 0 auto;
+    border: 1px solid black;
+    border-radius: 5px;
+    line-height: 2.4;
+    font-size: 36px;
+}
+
+.card-center-data .fa-coffee {
+    font-size: 1.5em;
+    line-height: 1.5;
+}
+
+.chosen {
+    background-color: #7c8af4 !important;
+}
+
+.user-list > .info-row > .info-value > .fa {
+   position: absolute;
+    top: 0;
+    left: 33%;
+}
+
+.card-bottom-data {
+    text-align: right;
+    bottom: 0;
+    font-size: 14px;
+}
+
+.flex {
+    display: flex;
+}
+
+.issue-bar {
+    height: 30px;
+    width: 100%;
+    margin: 2px;
+}
+
+.form-control, .btn {
+    border-radius: 0 !important;
+}
+
+@media (min-width: 992px) {
+    .main-block {
+        border-right: 1px solid lightsteelblue;
+    }
+}
+
+@media (max-width: 991px) {
+    .main-block {
+        border-bottom: 1px solid lightsteelblue;
+    }
+}
+@media (max-width: 992px) {
+    .mark-borders {
+        display: block;
+    }
+}
+
+.est-bar {
+    border: 1px solid black;
+    display: block;
+    height: 15px;
+    background-color: #71ffc8;
+}
+
+.diagram {
+    width: 100%;
+}
+.diagram tr {
+    display: table;
+    width: 100%;
+    padding: 5px;
+}
+
+.diagram-name {
+    width: 50px;
+}
+
+.acceptManager {
+    padding: 15px;
+}
+
+.block-center {
+    margin: 0 auto;
+}
